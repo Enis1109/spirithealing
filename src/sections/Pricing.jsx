@@ -194,6 +194,39 @@ export const Pricing = () => {
                         <span className="font-serif italic font-normal text-white"> genau auf dich zugeschnitten. Butten dann zum Kontaktformular.</span>
                         <br/>
                     </h3>
+                    
+                </div>
+                    <div className="bg-card"> 
+                        <div className="grid md:grid-cols-3 ">
+                            <div className="flex items-center justify-center py-8">
+                                <Calendar1 className="md:w-36 md:h-36 w-24 h-24 text-primary"/>
+                            </div>
+                            <div className="md:-mx-8 py-8">    
+                                <p className="md:text-2xl text-lg text-center">Manchmal ist es nur ein kleiner erster Schritt, </p> 
+                                <p className="text-center md:text-2xl text-lg">der <span className="text-primary text-center"> alles in Bewegung </span> setzt. </p>
+                                <div className="grid gap-8 grid-cols-2 px-2 pt-4">
+                                    <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
+                                    <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
+                                </div>
+                                <div className="flex -mt-8 -mb-8 items-center justify-center">
+                                    <img src="/traumasensibel/Blume.png" className="w-18 h-16 rounded-full"/>
+                                </div>
+                                <p className="text-center pt-4">
+                                    Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir gut tut.
+                                    Ganz unverbindlich und nur für dich.
+                                </p>
+                                <div className="flex items-center justify-center pt-4">
+                                    <Button size="lg">
+                                        <div className="inline-flex justify-center text-black items-center">
+                                        Kennenlernen <ArrowRight className="w-5 h-5"/>
+                                        </div>
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="flex">
+                                <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-t-from-80%"/>
+                            </div>
+                        </div>
                 </div>
             </div>
         </section>

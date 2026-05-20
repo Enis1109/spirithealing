@@ -427,24 +427,35 @@ export const About = () => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-gray-500 -mt-8">
-                    <div className="container mx-auto">
-                        <div className="flex flex-row py-16 gap-8 items-center">
-                            <Calendar1 className="w-96 h-96"/>
-                            <div className="flex items-center justify-center flex-col space-y-8">    
-                                <span className="text-5xl flex pl-6 items-center justify-center text-center">Manchmal ist es nur ein kleiner erster Schritt, der alles in Bewegung setzt.</span>
-                                <p className="text-3xl flex items-center pl-10 justify-center text-center">
-                                    Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir gut tut.
-                                    Ganz unverbindlich und nur für dich.
-                                </p>
-                                <div className=" animate-fade-in animation-delay-300">
-                                    <Button size="lg">
-                                        <div className="inline-flex justify-center text-black items-center">
-                                        Kennenlernen <ArrowRight className="w-5 h-5"/>
-                                        </div>
-                                    </Button>
-                                </div>
+                <div className="bg-card"> 
+                    <div className="grid md:grid-cols-3 ">
+                        <div className="flex items-center justify-center py-8">
+                            <Calendar1 className="md:w-36 md:h-36 w-24 h-24 text-primary"/>
+                        </div>
+                        <div className="md:-mx-8 py-8">    
+                            <p className="md:text-2xl text-lg text-center">Manchmal ist es nur ein kleiner erster Schritt, </p> 
+                            <p className="text-center md:text-2xl text-lg">der <span className="text-primary text-center"> alles in Bewegung </span> setzt. </p>
+                            <div className="grid gap-8 grid-cols-2 px-2 pt-4">
+                                <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
+                                <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
                             </div>
+                            <div className="flex -mt-8 -mb-8 items-center justify-center">
+                                <img src="/traumasensibel/Blume.png" className="w-18 h-16 rounded-full"/>
+                            </div>
+                            <p className="text-center pt-4">
+                                Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir gut tut.
+                                Ganz unverbindlich und nur für dich.
+                            </p>
+                            <div className="flex items-center justify-center pt-4">
+                                <Button size="lg">
+                                    <div className="inline-flex justify-center text-black items-center">
+                                    Kennenlernen <ArrowRight className="w-5 h-5"/>
+                                    </div>
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="flex">
+                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50%"/>
                         </div>
                     </div>
                 </div>
