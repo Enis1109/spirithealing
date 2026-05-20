@@ -190,9 +190,9 @@ export const Coaching = () => {
             <div className="container mx-auto">
                     <div className="grid md:grid-cols-2">
                         <div className="ml-auto">
-                            <div className="container md:pr-44 pt-24">
+                            <div className="container md:pr-44 pt-24 animate-fade-in">
                                 <div className="pb-8">
-                                    <h1 className="text-3xl md:text-3xl font-bold leading-tight max-sm:text-center animate-fade-in animation-delay-100 text-primary glow-text">
+                                    <h1 className="text-3xl md:text-3xl font-bold leading-tight max-sm:text-center text-primary glow-text">
                                     Traumasensible <br/> <span className="text-white"> Prozessbegleitung</span>
                                     </h1>
                                 </div>
@@ -223,7 +223,7 @@ export const Coaching = () => {
                             <img src="/traumasensibel/Traumasensibel1.jpeg" className="object-cover sm:mask-b-from-80% mask-radial-[80%_60%] sm:mask-radial-from-50% sm:mask-l-from-80% sm:mask-r-from-80%"/>
                         </div>
                     </div>
-                    <div className="space-y-6 pt-4 pb-8">
+                    <div className="space-y-6 pt-4 pb-8 animate-fade-in animation-delay-200">
                         <div className="glass-strong rounded-2xl py-6 px-16 glow-border">
                             <h3 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Was,
                                 <span className="font-serif italic font-normal text-muted-foreground"> wenn deine Symptome Schutz sind?</span>

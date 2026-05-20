@@ -89,9 +89,9 @@ export const Pricing = () => {
     
     return (
         <section id="about" className="pt-20 relative overflow-hidden">
-            <div className="container relative z-10 min-w-screen">
+            <div className="container relative z-10 min-w-screen animate-fade-in">
                 <div className="container mx-auto space-y-6 py-16">
-                    <h1 className="text-4xl text-center md:text-5xl font-bold leading-tight animate-fade-in animation-delay-100 text-primary glow-text">
+                    <h1 className="text-4xl text-center md:text-5xl font-bold leading-tight text-primary glow-text">
                         Lerne uns 
                     <span className="font-serif italic font-normal text-white"> kennen</span>
                     </h1>

@@ -206,15 +206,15 @@ export const Therapie = () => {
                         Integrative Therapie – 
                         <span className="font-serif italic font-normal text-white"> Ganzheitliche Begleitung auf mehreren Ebenen</span>
                         </h1>
-                        <div className="grid gap-12 grid-cols-4 px-2">
+                        <div className="grid gap-12 grid-cols-4 px-2 animate-fade-in animation-delay-100">
                             <div/>
                             <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
                             <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
                         </div>
-                        <div className="flex -mt-20 -mb-8 items-center justify-center">
+                        <div className="flex -mt-20 -mb-8 items-center justify-center animate-fade-in animation-delay-100">
                             <img src="/traumasensibel/Blume.png" className="w-26 h-24 rounded-full"/>
                         </div>
-                        <div className="grid md:grid-cols-2 gap-8">
+                        <div className="grid md:grid-cols-2 gap-8 animate-fade-in animation-delay-300">
                             <div className="glass glow-border rounded-2xl overflow-hidden">
                                 <div className="grid h-full lg:grid-cols-2">
                                     <div className="flex lg:-ml-32 lg:mr-8 lg:-mt-16 max-md:-mt-80">
@@ -326,7 +326,7 @@ export const Therapie = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="grid h-full md:grid-cols-2 gap-8 pb-8">
+                        <div className="grid h-full md:grid-cols-2 gap-8 pb-8 animate-fade-in animation-delay-300">
                             <div className="glass rounded-2xl glow-border overflow-hidden">
                                 <div className="grid h-full lg:grid-cols-2">
                                     <div className="flex -ml-6">

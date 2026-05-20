@@ -207,7 +207,7 @@ export const About = () => {
                             </div>
                             
                         </div>
-                        <div className="rounded-4xl pt-6">
+                        <div className="rounded-4xl pt-6 animate-fade-in animation-delay-200">
                             <img src="ueberuns.jpeg"className=" w-full h-full rounded-2xl glow-border" >
                             </img>
                         </div>
