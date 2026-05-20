@@ -234,9 +234,9 @@ export const Herotest = () => {
                 <div className="container mx-auto">
                     <div className="space-y-8 py-8 pb-16 items-center justify-center">
                         <div className="bg-card/70 glow-border p-8 rounded-2xl flex">
-                            <div className="grid md:flex">
-                                <div className="flex items-center justify-center md:px-1 sm:px-60 px-42 ">
-                                    <img src="/Hero/Blumehero.png" className="w-136 2xl:h-64 xl:h-52 lg:h-40 md:h-30 sm:h-24 h-24 rounded-full border-6 border-primary/80 object-cover"/>
+                            <div className="grid lg:flex">
+                                <div className="flex items-center justify-center md:px-1 ">
+                                    <img src="/Hero/Blumehero.png" className=" 2xl:h-64 xl:h-52 lg:h-40 md:h-30 sm:h-24 h-24 rounded-full object-cover"/>
                                 </div>
                                 <div className="pl-4">
                                     <p>
@@ -628,7 +628,7 @@ export const Herotest = () => {
                     </div>
                     <div className="grid lg:grid-cols-2 lg:gap-12 gap-8 w-full">
                         <div className="flex">
-                            <div className="bg-[url('Hero/pflanzelinks.jpeg')] bg-right bg-cover glow-border rounded-2xl overflow-hidden py-6 lg:pl-44 md:pl-80 sm:pl-48 max-sm:px-12">
+                            <div className="bg-[url('/pflanzelinks.jpeg')] bg-right bg-cover glow-border rounded-2xl overflow-hidden py-6 lg:pl-44 md:pl-80 sm:pl-48 max-sm:px-12">
                                 <h3 className="text-2xl md:text-2xl text-center leading-tight font-bold text-black">Wie Menschen
                                     <span className="font-serif italic font-normal text-muted-foreground"> unsere Arbeit oft erleben </span>
                                     <br/>
@@ -671,7 +671,7 @@ export const Herotest = () => {
                             </div>
                         </div>
                         <div className="flex ">
-                            <div className="bg-[url('Hero/steinerechts.jpeg')] bg-left bg-cover glow-border rounded-2xl overflow-hidden py-6 pr-16 pl-6">
+                            <div className="bg-[url('/steinerechts.jpeg')] bg-left bg-cover glow-border rounded-2xl overflow-hidden py-6 pr-16 pl-6">
                                 <div className="lg:flex lg:items-center h-full lg:justify-center md:pr-32">
                                     <div>    
                                         <h3 className="text-2xl md:text-2xl text-center leading-tight  font-bold text-black">Unsere

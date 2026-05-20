@@ -102,46 +102,46 @@ export const Fam = () => {
                             <div className="grid lg:grid-cols-6 md:grid-cols-4 gap-4 px-12">
                                 <div className="h-full border-2 border-primary rounded-2xl items-center justify-center">
                                     <div className="flex items-center justify-center">
-                                        <div className="w-full h-32 bg-[url('/familie/Herzmensch2.PNG')] bg-cover bg-center">
+                                        <div className="w-32 h-32 bg-[url('/familie/Herzmensch2.PNG')] bg-cover bg-center">
                                         </div>
                                     </div>
-                                    <p className="text-sm text-center items-center justify-center -mt-4 pb-6 md:px-4">
+                                    <p className="text-sm text-center items-center justify-center md:-mt-4 pb-6 md:px-4">
                                         unbewusste Loyalitäten
                                     </p>
                                 </div>
                                 <div className="h-full border-2 border-primary rounded-2xl items-center justify-center">
                                     <div className="flex items-center justify-center">
-                                        <div className="w-lg h-32  bg-[url('/familie/binden.PNG')] bg-cover bg-center">
+                                        <div className="w-32 h-32  bg-[url('/familie/binden.PNG')] bg-cover bg-center">
                                         </div>
                                     </div>
-                                    <p className="text-sm text-center items-center justify-center -mt-4 pb-6 md:px-4">
+                                    <p className="text-sm text-center items-center justify-center md:-mt-4 pb-6 md:px-4">
                                         Bindungen innerhalb des Familiensystems
                                     </p>
                                 </div>
                                 <div className="h-full border-2 border-primary rounded-2xl items-center justify-center">
                                     <div className="flex items-center justify-center">
-                                        <div className="w-lg h-32  bg-[url('/familie/hrz.PNG')] bg-cover bg-center">
+                                        <div className="w-32 h-32  bg-[url('/familie/hrz.PNG')] bg-cover bg-center">
                                         </div>
                                     </div>
-                                    <p className="text-sm text-center items-center justify-center -mt-4 pb-6 md:px-4">
+                                    <p className="text-sm text-center items-center justify-center md:-mt-4 pb-6 md:px-4">
                                         übernommene Gefühle
                                     </p>
                                 </div>
                                 <div className="h-full border-2 border-primary rounded-2xl items-center justify-center">
                                     <div className="flex items-center justify-center">
-                                        <div className="w-lg h-32 bg-[url('/familie/Kreise.PNG')] bg-cover bg-center">
+                                        <div className="w-32 h-32 bg-[url('/familie/Kreise.PNG')] bg-cover bg-center">
                                         </div>
                                     </div>
-                                    <p className="text-sm text-center items-center justify-center -mt-4 pb-6 md:px-4">
+                                    <p className="text-sm text-center items-center justify-center md:-mt-4 pb-6 md:px-4">
                                         verdeckte Konflikte
                                     </p>
                                 </div>
                                 <div className="h-full border-2 border-primary rounded-2xl items-center justify-center">
                                     <div className="flex items-center justify-center">
-                                        <div className="w-lg h-32 bg-[url('/familie/2mensch.PNG')] bg-cover bg-center">
+                                        <div className="w-32 h-32 bg-[url('/familie/2mensch.PNG')] bg-cover bg-center">
                                         </div>
                                     </div>
-                                    <p className="text-sm text-center items-center justify-center -mt-4 pb-6 md:px-4">
+                                    <p className="text-sm text-center items-center justify-center md:-mt-4 pb-6 md:px-4">
                                         emotionale Verstrickungen
                                     </p>
                                 </div>

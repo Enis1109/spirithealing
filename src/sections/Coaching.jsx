@@ -205,16 +205,18 @@ export const Coaching = () => {
                                         <img src="/traumasensibel/Blume.png" className="w-36 h-32 rounded-full"/>
                                     </div>
                                 </div>
-                                <h2 className="text-lg font-bold leading-tight">Kennst du die Stimme in dir, die dir sagt:</h2>
-                                <p className=" text-lg">„Irgendetwas stimmt mit mir nicht.“</p>
-                                <p className=" text-lg">„Ich reagiere zu stark.“</p>
-                                <p className=" text-lgs">„Warum kann ich mich nicht einfach entspannen?“</p>
-                                <p className="text-lg">Wenn du dich darin wiedererkennst: <br/><br/> Du bist nicht allein. Und vor allem – 
-                                <span className="font-bold">du bist nicht falsch.</span>
-                                </p>
-                                <p className="text-lg">Oft ist es nicht „du“, sondern dein Nervensystem, das zu lange im Überlebensmodus war.</p>
-                                <br/>
-                                <p className="text-lg">Wir begleiten dich einfühlsam zurück zu dir selbst. In deinem Tempo. Ohne Druck. In echter Verbindung.</p>             
+                                <div className="max-md:text-center">
+                                    <h2 className="text-lg font-bold leading-tight">Kennst du die Stimme in dir, die dir sagt:</h2>
+                                    <p className=" text-lg">„Irgendetwas stimmt mit mir nicht.“</p>
+                                    <p className=" text-lg">„Ich reagiere zu stark.“</p>
+                                    <p className=" text-lgs">„Warum kann ich mich nicht einfach entspannen?“</p>
+                                    <p className="text-lg">Wenn du dich darin wiedererkennst: <br/><br/> Du bist nicht allein. Und vor allem – 
+                                    <span className="font-bold">du bist nicht falsch.</span>
+                                    </p>
+                                    <p className="text-lg">Oft ist es nicht „du“, sondern dein Nervensystem, das zu lange im Überlebensmodus war.</p>
+                                    <br/>
+                                    <p className="text-lg">Wir begleiten dich einfühlsam zurück zu dir selbst. In deinem Tempo. Ohne Druck. In echter Verbindung.</p>             
+                                </div>
                             </div>
                         </div>
                         <div className="flex -ml-56 -mb-16">
@@ -321,7 +323,7 @@ export const Coaching = () => {
                 <div className="bg-secondary rounded-t-4xl shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] pt-6 pb-20 animate-fade-in">
                     <div className="container mx-auto space-y-6 py-16">
                         <div className="grid lg:grid-cols-2 gap-4">
-                            <div>
+                            <div className="max-md:text-center">
                                 <h3 className="text-xl md:text-xl leading-tight font-bold text-primary">Was bedeutet
                                     <span className="font-serif italic font-normal text-white"> traumasensible Prozessbegleitung ?</span>
                                 </h3>

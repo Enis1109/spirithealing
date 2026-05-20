@@ -93,7 +93,7 @@ export const Gsp = () => {
                             Manche Menschen brauchen keinen Ratschlag. Sondern einen Raum, in dem sie nicht bewertet werden. 
                         </h3>
                         <br/>
-                        <div className="grid grid-cols-3 -mr-24">
+                        <div className="grid md:grid-cols-3 md:-mr-24">
                             {number_onenew.map((item, idx) => (
                             <div 
                                 key={idx} 
@@ -115,7 +115,7 @@ export const Gsp = () => {
                         </p>
                         <br/>
                         <div className="lg:-mr-8 pt-2">
-                            <div className="grid grid-cols-2">
+                            <div className="grid md:grid-cols-2">
                                 <div className="grid grid-cols-2">
                                     {number_one.map((item, idx) => (
                                     <div 
@@ -135,7 +135,7 @@ export const Gsp = () => {
                                 </span>
                             </div>
                         </div>
-                        <div className="grid grid-cols-5 lg:-mr-24 pt-2">
+                        <div className="grid md:grid-cols-5 max-md:grid-cols-3 lg:-mr-24 pt-2">
                             {number_three.map((item, idx) => (
                                 <div 
                                     key={idx} 
@@ -167,7 +167,8 @@ export const Gsp = () => {
                                 <h3 className="text-xl md:text-xl text-center pb-2 leading-tight font-bold text-primary">Gespräche
                                     <span className="font-serif italic font-normal text-muted-foreground"> können regulieren </span>
                                 </h3>
-                                <div className="grid gap-16 grid-cols-2 px-2">
+                                <div className="grid grid-cols-2 px-16">
+                                    <div className="h-0.5 bg-primary"/>
                                     <div className="h-0.5 bg-primary"/>
                                 </div>
                                 <p className="text-muted-foreground pt-2">Nicht, weil jemand die perfekte Lösung sagt.
@@ -198,7 +199,7 @@ export const Gsp = () => {
                         </div>
                     </div>
                     <div className="glass-strong rounded-2xl overflow-hidden">
-                        <div className="grid lg:grid-cols-2">
+                        <div className="grid lg:grid-cols-2 h-full">
                             <div className="flex -mx-8">
                                 <img src="/gespr/gespr2.jpeg" className="flex object-fill lg:mask-r-from-50%"/>
                             </div>
@@ -206,7 +207,8 @@ export const Gsp = () => {
                                 <h3 className="text-xl md:text-xl text-center pb-2 leading-tight font-bold text-primary">Was
                                     <span className="font-serif italic font-normal text-muted-foreground"> viele Menschen erleben</span>
                                 </h3>
-                                <div className="grid gap-16 grid-cols-2 px-2">
+                                <div className="grid grid-cols-2 px-16">
+                                    <div className="h-0.5 bg-primary"/>
                                     <div className="h-0.5 bg-primary"/>
                                 </div>
                                 <p className="text-muted-foreground pt-2">Viele Menschen kommen zu uns, weil sie sich selbst längst nicht mehr verstehen.
