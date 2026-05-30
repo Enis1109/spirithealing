@@ -1,6 +1,7 @@
 import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "lucide-react"
 import { useState } from "react";
 import { Button } from "@/components/Button"
+import { Link } from "react-router-dom"
 
 const highlitghts = [
     {
@@ -455,8 +456,26 @@ export const About = () => {
                             </div>
                         </div>
                         <div className="flex">
-                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50%"/>
+                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-b-from-60%"/>
                         </div>
+                    </div>
+                </div>
+                <div className=" flex items-center justify-center mb-6">
+                    <div className="flex items-center justify-center px-4">   
+                        <Link 
+                            to="/impressum"
+                            className="px-8 py-2 text-sm text-white"
+                        >
+                            Impressum
+                        </Link>
+                    </div>
+                    <div className="flex items-center justify-center px-4">   
+                        <Link 
+                            to="/datenschutz"
+                            className="px-8 py-2 text-sm text-white"
+                        >
+                            Datenschutz
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { ArrowBigRight, ArrowRight, Check, Calendar1, Heart } from "lucide-react"
 import { Button } from "@/components/Button"
+import { Link } from "react-router-dom"
 
 {/*was,wenn deine Symptome Schutz sind*/}
 const number_one = [
@@ -556,10 +557,28 @@ export const Coaching = () => {
                             </div>
                         </div>
                         <div className="flex">
-                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50%"/>
+                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50%  md:mask-b-from-50%"/>
                         </div>
                     </div>
-            </div>
+                </div>
+                <div className=" flex items-center justify-center mb-6">
+                    <div className="flex items-center justify-center px-4">   
+                        <Link 
+                            to="/impressum"
+                            className="px-8 py-2 text-sm text-white"
+                        >
+                            Impressum
+                        </Link>
+                    </div>
+                    <div className="flex items-center justify-center px-4">   
+                        <Link 
+                            to="/datenschutz"
+                            className="px-8 py-2 text-sm text-white"
+                        >
+                            Datenschutz
+                        </Link>
+                    </div>
+                </div>
         </div>
     </section>
 }

@@ -746,9 +746,27 @@ export const Herotest = () => {
                             </div>
                         </div>
                         <div className="flex">
-                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50%"/>
+                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-b-from-60%  md:mask-t-from-80%"/>
                         </div>
                     </div>
+            </div>
+            <div className=" flex items-center justify-center mb-6">
+                <div className="flex items-center justify-center px-4">   
+                    <Link 
+                        to="/impressum"
+                        className="px-8 py-2 text-sm text-white"
+                    >
+                        Impressum
+                    </Link>
+                </div>
+                 <div className="flex items-center justify-center px-4">   
+                    <Link 
+                        to="/datenschutz"
+                        className="px-8 py-2 text-sm text-white"
+                    >
+                        Datenschutz
+                    </Link>
+                </div>
             </div>
         </div> 
     </section>

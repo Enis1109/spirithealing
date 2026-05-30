@@ -6,6 +6,7 @@ import { Nlp } from "@/sections/undersections/Nlp"
 import { Gsp } from "@/sections/undersections/Gespraech"
 import { Fam } from "@/sections/undersections/Fam"
 import { Schaman } from "@/sections/undersections/Schaman"
+import { Link } from "react-router-dom"
 
 {/*Wie läuft eine Sitzung bei euch ab ?*/}
 const number_one = [
@@ -435,6 +436,24 @@ export const FAQ = () => {
                             Wir arbeiten dabei nicht gegen Gefühle -
                             sondern versuchen gemeinsam zu verstehen, was dahinter wirkt.
                         </p>
+                    </div>
+                    <div className=" flex items-center justify-center my-16">
+                        <div className="flex items-center justify-center px-4">   
+                            <Link 
+                                to="/impressum"
+                                className="px-8 py-2 text-sm text-white"
+                            >
+                                Impressum
+                            </Link>
+                        </div>
+                        <div className="flex items-center justify-center px-4">   
+                            <Link 
+                                to="/datenschutz"
+                                className="px-8 py-2 text-sm text-white"
+                            >
+                                Datenschutz
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

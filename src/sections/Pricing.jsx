@@ -2,6 +2,7 @@ import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "l
 import { useState } from "react";
 import { Button } from "@/components/Button"
 import { InlineWidget, PopupButton } from "react-calendly";
+import { Link } from "react-router-dom";
 
 const booking_one = [
     {
@@ -191,7 +192,7 @@ export const Pricing = () => {
                         <br/>
                     </h3>
                     <h3 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Lass dir ein individuelles Paket schnüren, 
-                        <span className="font-serif italic font-normal text-white"> genau auf dich zugeschnitten. Butten dann zum Kontaktformular.</span>
+                        <span className="font-serif italic font-normal text-white"> genau auf dich zugeschnitten.</span>
                         <br/>
                     </h3>
                     
@@ -224,10 +225,29 @@ export const Pricing = () => {
                                 </div>
                             </div>
                             <div className="flex">
-                                <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-t-from-80%"/>
+                                <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-t-from-80% md:mask-b-from-80%"/>
                             </div>
                         </div>
-                </div>
+                    </div>
+                    <div className=" flex items-center justify-center mb-6">
+                        <div className="flex items-center justify-center px-4">   
+                            <Link 
+                                to="/impressum"
+                                className="px-8 py-2 text-sm text-white"
+                            >
+                                Impressum
+                            </Link>
+                        </div>
+                        <div className="flex items-center justify-center px-4">   
+                            <Link 
+                                to="/datenschutz"
+                                className="px-8 py-2 text-sm text-white"
+                            >
+                                Datenschutz
+                            </Link>
+                        </div>
+                    </div>
+                
             </div>
         </section>
     );

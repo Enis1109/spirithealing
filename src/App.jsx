@@ -7,6 +7,8 @@ import { Pricing } from "@/sections/Pricing"
 import { Coaching } from "@/sections/Coaching"
 import { FAQ } from "@/sections/FAQ"
 import { Route, Routes } from "react-router-dom"
+import { Imp } from "@/sections/Imp"
+import { Daten } from "@/sections/Daten"
 
 function App() {
 
@@ -21,6 +23,8 @@ function App() {
         <Route path="/about" element={<About/>}/>
         <Route path="/prices" element={<Pricing/>}/>
         <Route path="/faq" element={<FAQ/>}/>
+        <Route path="/impressum" element={<Imp/>}/>
+        <Route path="/datenschutz" element={<Daten/>}/>
       </Routes>
     </div>
   )
