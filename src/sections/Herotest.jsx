@@ -750,22 +750,46 @@ export const Herotest = () => {
                         </div>
                     </div>
             </div>
-            <div className=" flex items-center justify-center mb-6">
-                <div className="flex items-center justify-center px-4">   
-                    <Link 
-                        to="/impressum"
-                        className="px-8 py-2 text-sm text-white"
+            <div className="mb-6">
+                <div className="flex items-center justify-center gap-4 pb-3">
+                    <a
+                        href="https://www.facebook.com/profile.php?id=61588723230682"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/40 text-white transition hover:border-primary hover:text-primary"
                     >
-                        Impressum
-                    </Link>
+                        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 fill-current">
+                            <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.25c-1.24 0-1.62.77-1.62 1.56V12h2.76l-.44 2.89h-2.32v6.99A10 10 0 0 0 22 12Z" />
+                        </svg>
+                    </a>
+                    <a
+                        href="https://www.instagram.com/spirit4healing/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/40 text-white transition hover:border-primary hover:text-primary"
+                    >
+                        <Instagram className="h-6 w-6" aria-hidden="true" />
+                    </a>
                 </div>
-                 <div className="flex items-center justify-center px-4">   
-                    <Link 
-                        to="/datenschutz"
-                        className="px-8 py-2 text-sm text-white"
-                    >
-                        Datenschutz
-                    </Link>
+                <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center px-4">
+                        <Link
+                            to="/impressum"
+                            className="px-8 py-2 text-sm text-white"
+                        >
+                            Impressum
+                        </Link>
+                    </div>
+                    <div className="flex items-center justify-center px-4">
+                        <Link
+                            to="/datenschutz"
+                            className="px-8 py-2 text-sm text-white"
+                        >
+                            Datenschutz
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div> 
