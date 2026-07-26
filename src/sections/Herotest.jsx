@@ -1,5 +1,25 @@
-import { ArrowRight, Calendar1, Instagram } from "lucide-react";
+import { ArrowRight, BookOpen, Calendar1, Instagram, LockKeyhole, PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/i18n/LanguageContext";
+
+const memberCallout = {
+    de: {
+        eyebrow: "Neu: kostenloser Mitgliederbereich",
+        title: "Vortrag verpasst? Die Aufzeichnung wartet auf dich.",
+        text: "Melde dich kostenlos an und sieh dir den vollständigen Vortrag „Wer entscheidet eigentlich dein Leben?“ an. Das passende Workbook kannst du dort ebenfalls herunterladen.",
+        recording: "Vollständige Aufzeichnung",
+        workbook: "Workbook zum Download",
+        button: "Zum Mitgliederbereich",
+    },
+    tr: {
+        eyebrow: "Yeni: ücretsiz üye alanı",
+        title: "Semineri kaçırdın mı? Kaydı seni bekliyor.",
+        text: "Ücretsiz kaydol ve “Hayatına aslında kim karar veriyor?” seminerinin tamamını izle. Seminer çalışma kitabını da aynı alandan indirebilirsin.",
+        recording: "Seminer kaydının tamamı",
+        workbook: "İndirilebilir çalışma kitabı",
+        button: "Üye alanına git",
+    },
+};
 
 const number_four = [
     {
@@ -75,6 +95,9 @@ const number_five = [
 
 
 export const Herotest = () => {
+    const { language } = useLanguage();
+    const memberCopy = memberCallout[language];
+
     return <section id="hero" className="home-page relative overflow-hidden">
         <div className="relative z-10 w-full">
             <div className="relative isolate bg-[url('/herobg.jpeg')] bg-center bg-cover">
@@ -109,6 +132,27 @@ export const Herotest = () => {
                             </div>
                         </div>
                     </div>
+            </div>
+            <div data-no-translate className="relative z-20 mx-auto -mt-10 w-full max-w-6xl px-4 sm:px-6">
+                <div className="overflow-hidden rounded-[2rem] border border-primary/45 bg-[#f7f1e7] shadow-2xl shadow-black/20">
+                    <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10">
+                        <div>
+                            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-primary">
+                                <LockKeyhole className="h-5 w-5" aria-hidden="true" />
+                                {memberCopy.eyebrow}
+                            </p>
+                            <h2 className="mt-3 text-2xl font-bold leading-tight text-muted-foreground sm:text-3xl">{memberCopy.title}</h2>
+                            <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground/80 sm:text-lg">{memberCopy.text}</p>
+                            <div className="mt-5 flex flex-col gap-2 text-sm font-semibold text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-5">
+                                <span className="inline-flex items-center gap-2"><PlayCircle className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.recording}</span>
+                                <span className="inline-flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.workbook}</span>
+                            </div>
+                        </div>
+                        <Link to="/mitglieder" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface lg:w-auto">
+                            {memberCopy.button}<ArrowRight className="h-5 w-5" aria-hidden="true" />
+                        </Link>
+                    </div>
+                </div>
             </div>
             <div className="glass rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
                 <div className="container mx-auto px-4 sm:px-6">
