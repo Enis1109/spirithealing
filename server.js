@@ -32,7 +32,7 @@ const currentDirectory = path.dirname(currentFile);
 const distDirectory = path.join(currentDirectory, "dist");
 const privacyConsentVersion = "privacy-2026-07";
 const memberPrivacyConsentVersion = "members-privacy-2026-07";
-const memberRecordingPath = await prepareMemberRecording();
+let memberRecordingPath = "";
 
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
@@ -308,7 +308,15 @@ app.use((request, response, next) => {
 
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
 
-await initializeDatabase();
-app.listen(port, () => {
-    console.log(`Spirit Healing server listening on port ${port}`);
+const startServer = async () => {
+    memberRecordingPath = await prepareMemberRecording();
+    await initializeDatabase();
+    app.listen(port, () => {
+        console.log(`Spirit Healing server listening on port ${port}`);
+    });
+};
+
+startServer().catch((error) => {
+    console.error("Spirit Healing server could not be started", error);
+    process.exitCode = 1;
 });
