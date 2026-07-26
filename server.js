@@ -33,6 +33,8 @@ const distDirectory = path.join(currentDirectory, "dist");
 const privacyConsentVersion = "privacy-2026-07";
 const memberPrivacyConsentVersion = "members-privacy-2026-07";
 let memberRecordingPath = "";
+let startupError = null;
+let startupPromise = Promise.resolve();
 
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
@@ -46,6 +48,13 @@ app.use((request, response, next) => {
     next();
 });
 app.use(express.json({ limit: "16kb", type: "application/json" }));
+app.use("/api", async (_request, response, next) => {
+    await startupPromise;
+    if (startupError) {
+        return response.status(503).json({ ok: false, error: "service_starting" });
+    }
+    return next();
+});
 
 const submissionLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -308,15 +317,16 @@ app.use((request, response, next) => {
 
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
 
-const startServer = async () => {
+const initializeServices = async () => {
     memberRecordingPath = await prepareMemberRecording();
     await initializeDatabase();
-    app.listen(port, () => {
-        console.log(`Spirit Healing server listening on port ${port}`);
-    });
 };
 
-startServer().catch((error) => {
-    console.error("Spirit Healing server could not be started", error);
-    process.exitCode = 1;
+startupPromise = initializeServices().catch((error) => {
+    startupError = error;
+    console.error("Spirit Healing services could not be initialized", error);
+});
+
+app.listen(port, () => {
+    console.log(`Spirit Healing server listening on port ${port}`);
 });
