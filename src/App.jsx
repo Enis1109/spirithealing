@@ -8,6 +8,7 @@ import { Coaching } from "@/sections/Coaching"
 import { FAQ } from "@/sections/FAQ"
 import { Contact } from "@/sections/Contact"
 import { Events } from "@/sections/Events"
+import { NewsletterStatus } from "@/sections/NewsletterStatus"
 import { Route, Routes } from "react-router-dom"
 import { Imp } from "@/sections/Imp"
 import { Daten } from "@/sections/Daten"
@@ -53,6 +54,7 @@ function App() {
         <Route path="/faq" element={<FAQ/>}/>
         <Route path="/vortraege-seminare" element={<Events/>}/>
         <Route path="/kontakt" element={<Contact/>}/>
+        <Route path="/newsletter/status" element={<NewsletterStatus/>}/>
         <Route path="/impressum" element={<Imp/>}/>
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
       </Routes>

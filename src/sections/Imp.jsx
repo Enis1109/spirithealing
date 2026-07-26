@@ -1,12 +1,9 @@
 import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "lucide-react"
-import { useState } from "react";
 import { Button } from "@/components/Button"
 import { InlineWidget, PopupButton } from "react-calendly";
 
 
 export const Imp = () => {
-    const [isSchmidt, setIsSchmidt] = useState(true);
-    
     return (
         <section id="imp" className="pt-20 relative overflow-hidden">
             <div className="container relative z-10 min-w-screen animate-fade-in">

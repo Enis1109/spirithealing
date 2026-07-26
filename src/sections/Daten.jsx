@@ -1,12 +1,9 @@
 import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "lucide-react"
-import { useState } from "react";
 import { Button } from "@/components/Button"
 import { InlineWidget, PopupButton } from "react-calendly";
 
 
 export const Daten = () => {
-    const [isSchmidt, setIsSchmidt] = useState(true);
-    
     return (
          <section id="daten" className="pt-20 relative overflow-hidden">
             <div className="container relative z-10 min-w-screen animate-fade-in">
@@ -327,6 +324,25 @@ export const Daten = () => {
                             (z. B. nach abgeschlossener Bearbeitung Ihrer Anfrage). Zwingende gesetzliche Bestimmungen –<br/>
                             insbesondere Aufbewahrungsfristen – bleiben unberührt.<br/>
                         </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Technische Verarbeitung von Kontaktanfragen
+                        </h3>
+                        <p className="text-md">
+                            Bei Nutzung des Kontaktformulars verarbeiten wir Ihren Namen, Ihre E-Mail-Adresse, gegebenenfalls Ihre<br/>
+                            Telefonnummer, das ausgewählte Anliegen und den Inhalt Ihrer Nachricht. Die Übermittlung erfolgt über<br/>
+                            eine verschlüsselte Verbindung. Die Angaben werden in einer MySQL-Datenbank auf unserem<br/>
+                            Hostinger-Hosting gespeichert und zusätzlich als Benachrichtigung an info@spirit-healing.tr übermittelt.<br/>
+                            Die Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage und für notwendige Anschlussfragen<br/>
+                            verwendet. Eine optionale Newsletter-Einwilligung wird getrennt von der Kontaktanfrage erfasst.<br/>
+                        </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Anmeldung zu Vorträgen und Seminaren
+                        </h3>
+                        <p className="text-md">
+                            Bei einer Veranstaltungsanmeldung speichern wir Ihren Namen, Ihre E-Mail-Adresse, die ausgewählte<br/>
+                            Veranstaltung, den Zeitpunkt der Anmeldung und den Stand Ihrer Einwilligungen auf unserem<br/>
+                            Hostinger-System. Die Verarbeitung dient der Organisation und Durchführung der Veranstaltung. Eine<br/>
+                            Nutzung für den Newsletter erfolgt nur nach gesonderter freiwilliger Auswahl und anschließender<br/>
+                            Bestätigung Ihrer E-Mail-Adresse.<br/>
+                        </p>
                         <h3 className="text-lg md:text-xl leading-tight  font-bold text-primary">Anfrage per E-Mail, Telefon oder Telefax
                         </h3>
                         <p className="text-md">
@@ -462,6 +478,17 @@ export const Daten = () => {
                             Einhaltung der gesetzlichen Vorgaben beim Versand von Newslettern (berechtigtes Interesse im Sinne des<br/>
                             Art. 6 Abs. 1 lit. f DSGVO). Die Speicherung in der Blacklist ist zeitlich nicht befristet. Sie können der<br/>
                             Speicherung widersprechen, sofern Ihre Interessen unser berechtigtes Interesse überwiegen.<br/>
+                        </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Bestätigung der Newsletter-Anmeldung (Double-Opt-In)
+                        </h3>
+                        <p className="text-md">
+                            Die Newsletter-Auswahl ist freiwillig und nicht Voraussetzung für eine Kontakt- oder<br/>
+                            Veranstaltungsanfrage. Nach der Anmeldung senden wir eine Bestätigungs-E-Mail an die angegebene<br/>
+                            Adresse. Erst durch Anklicken des Bestätigungslinks wird die Adresse für den Newsletter freigeschaltet.<br/>
+                            Zum Nachweis der Einwilligung speichern wir die E-Mail-Adresse, den Namen, die Sprache, die Herkunft<br/>
+                            der Anmeldung, den verwendeten Einwilligungstext sowie Anfrage- und Bestätigungszeitpunkt. Nicht<br/>
+                            bestätigte Anmeldungen werden nicht für Newsletter verwendet. Jeder Newsletter enthält eine einfache<br/>
+                            Abmeldemöglichkeit.<br/>
                         </p>
                         <h2 className="text-xl md:text-2xl leading-tight  font-bold text-primary">7. Plugins und Tools
                         </h2>
