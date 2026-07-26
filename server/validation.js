@@ -70,3 +70,5 @@ export const validateEventRegistration = (body) => ({
     ...commonFields(body),
     eventKey: requiredText(body.eventKey, "eventKey", 80),
 });
+
+export const validateMemberAccess = (body) => commonFields(body);

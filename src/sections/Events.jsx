@@ -1,18 +1,11 @@
-import { useState } from "react";
-import { ArrowRight, CalendarDays, CheckCircle2, Clock3, ExternalLink, MonitorPlay, Send, Sparkles, UserPlus, UsersRound } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3, LockKeyhole, MailCheck, MonitorPlay, Sparkles, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Modal } from "@/components/Modal";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { submitForm } from "@/lib/submissions";
-
-const zoomUrl = "https://us06web.zoom.us/j/83378556575?pwd=1r3QjNen3GIaPLBYiHYJ5qTuEqMxP4.1";
-const eventKey = "wer-entscheidet-dein-leben-2026-07-26";
-const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-white/90 px-4 py-3 text-base text-muted-foreground outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-2 focus:ring-primary/25";
 
 const content = {
     de: {
         eyebrow: "Vorträge & Seminare",
-        live: "Live-Vortrag via Zoom",
+        live: "Aufzeichnung des Live-Vortrags",
         title: "Wer entscheidet eigentlich dein Leben?",
         subtitle: "Warum du oft gegen dein eigenes Gefühl handelst – und wie innere Anteile deine Entscheidungen beeinflussen.",
         intro: "Du weißt, was du verändern möchtest – und trotzdem hält etwas in dir dagegen. In diesem Vortrag zeigen wir, warum solche inneren Widersprüche keine Schwäche sind und welche Schutzlogik hinter ihnen wirken kann.",
@@ -21,12 +14,9 @@ const content = {
         timeLabel: "Uhrzeit",
         time: "10:00 Uhr (Berlin) · 11:00 Uhr (Türkiye)",
         formatLabel: "Format",
-        format: "Live und online über Zoom",
-        register: "Kostenlos anmelden",
-        join: "Direkt am Zoom-Vortrag teilnehmen",
-        access: "Der Zugangslink führt direkt in das geplante Zoom-Meeting.",
-        meetingId: "Meeting-ID: 833 7855 6575",
-        passcode: "Kenncode: 526287",
+        format: "Aufzeichnung im Mitgliederbereich",
+        register: "Kostenlosen Zugang erhalten",
+        access: "Die Aufzeichnung wird gerade sorgfältig geschnitten. Registriere dich kostenlos mit deiner E-Mail-Adresse und du erhältst Zugang, sobald sie im Mitgliederbereich bereitsteht.",
         topicsEyebrow: "Darum geht es",
         topicsTitle: "Innere Anteile verstehen, statt gegen dich selbst zu kämpfen",
         topicsIntro: "Der Vortrag verbindet psychologische Einordnung mit einer verständlichen Einführung in die systemische Anteilearbeit.",
@@ -45,7 +35,7 @@ const content = {
         futureText: "Künftig findest du hier unsere Live-Vorträge, vertiefenden Online-Seminare und begleiteten Gruppenformate. Im Mittelpunkt stehen innere Anteile, Nervensystem, Beziehungsmuster, systemische Zusammenhänge und Energiearbeit.",
         contact: "Interesse an weiteren Terminen",
         registrationTitle: "Zum Vortrag anmelden",
-        registrationIntro: "Nach der Anmeldung ist dein Platz gespeichert. Den Zoom-Zugang findest du weiterhin direkt auf dieser Seite.",
+        registrationIntro: "Nach der Anmeldung ist dein Platz gespeichert. Den Zoom-Zugang senden wir dir sofort an die angegebene E-Mail-Adresse.",
         name: "Vor- und Nachname",
         namePlaceholder: "Wie dürfen wir dich ansprechen?",
         email: "E-Mail-Adresse",
@@ -59,7 +49,7 @@ const content = {
         submitRegistration: "Anmeldung senden",
         submitting: "Anmeldung wird gespeichert …",
         successTitle: "Deine Anmeldung ist gespeichert",
-        successText: "Vielen Dank. Wir haben deinen Namen und deine E-Mail-Adresse für diesen Vortrag vorgemerkt.",
+        successText: "Schön, dass du dabei bist. Deine Bestätigungs-E-Mail mit dem Zoom-Zugang ist unterwegs. Bitte prüfe bei Bedarf auch deinen Spam-Ordner.",
         successNewsletter: "Bitte bestätige den Newsletter noch über den Link in der separaten E-Mail.",
         done: "Fertig",
         close: "Fenster schließen",
@@ -69,7 +59,7 @@ const content = {
     },
     tr: {
         eyebrow: "Seminerler & Eğitimler",
-        live: "Zoom üzerinden canlı seminer",
+        live: "Canlı seminerin kaydı",
         title: "Hayatına aslında kim karar veriyor?",
         subtitle: "Neden bazen kendi hislerine karşı hareket ediyorsun ve içsel parçaların kararlarını nasıl etkiliyor?",
         intro: "Neyi değiştirmek istediğini biliyorsun, ama yine de içinde bir şey buna karşı çıkıyor. Bu seminerde içsel çelişkilerin neden bir zayıflık olmadığını ve arkalarında hangi korunma mantığının bulunabileceğini anlatıyoruz.",
@@ -78,12 +68,9 @@ const content = {
         timeLabel: "Saat",
         time: "Berlin 10:00 · Türkiye 11:00",
         formatLabel: "Format",
-        format: "Zoom üzerinden canlı ve çevrim içi",
-        register: "Ücretsiz kayıt ol",
-        join: "Zoom seminerine doğrudan katıl",
-        access: "Bağlantı seni doğrudan planlanan Zoom toplantısına götürür.",
-        meetingId: "Toplantı kimliği: 833 7855 6575",
-        passcode: "Parola: 526287",
+        format: "Üye alanında seminer kaydı",
+        register: "Ücretsiz erişim al",
+        access: "Seminer kaydı şu anda özenle düzenleniyor. E-posta adresinle ücretsiz kaydol; kayıt üye alanında hazır olduğunda erişebilirsin.",
         topicsEyebrow: "Seminerin içeriği",
         topicsTitle: "Kendinle savaşmak yerine içsel parçalarını anlamak",
         topicsIntro: "Seminer, psikolojik çerçeveyi sistemik içsel parçalar çalışmasına anlaşılır bir girişle birleştiriyor.",
@@ -102,7 +89,7 @@ const content = {
         futureText: "Canlı seminerlerimizi, derinleştirici çevrim içi eğitimlerimizi ve eşlikli grup çalışmalarımızı ileride burada bulabileceksin. İçsel parçalar, sinir sistemi, ilişki örüntüleri, sistemik bağlantılar ve enerji çalışması temel konularımız arasında.",
         contact: "Yeni tarihlerle ilgileniyorum",
         registrationTitle: "Seminere kayıt ol",
-        registrationIntro: "Kayıttan sonra yerin ayrılır. Zoom erişim bağlantısını bu sayfada görmeye devam edebilirsin.",
+        registrationIntro: "Kayıttan sonra yerin ayrılır. Zoom erişim bağlantısını hemen belirttiğin e-posta adresine göndeririz.",
         name: "Ad ve soyad",
         namePlaceholder: "Sana nasıl hitap edelim?",
         email: "E-posta adresi",
@@ -116,7 +103,7 @@ const content = {
         submitRegistration: "Kaydı gönder",
         submitting: "Kayıt kaydediliyor …",
         successTitle: "Kaydın alındı",
-        successText: "Teşekkür ederiz. Adını ve e-posta adresini bu seminer için kaydettik.",
+        successText: "Aramızda olacağın için mutluyuz. Zoom erişim bağlantını içeren onay e-postası yola çıktı. Gerekirse spam klasörünü de kontrol et.",
         successNewsletter: "Lütfen bülten aboneliğini ayrı e-postadaki bağlantı üzerinden onayla.",
         done: "Tamam",
         close: "Pencereyi kapat",
@@ -129,43 +116,6 @@ const content = {
 export const Events = () => {
     const { language } = useLanguage();
     const copy = content[language];
-    const [registrationOpen, setRegistrationOpen] = useState(false);
-    const [submitState, setSubmitState] = useState("idle");
-    const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
-    const [errorMessage, setErrorMessage] = useState("");
-
-    const openRegistration = () => {
-        setSubmitState("idle");
-        setNewsletterStatus("not_requested");
-        setErrorMessage("");
-        setRegistrationOpen(true);
-    };
-
-    const handleRegistration = async (event) => {
-        event.preventDefault();
-        setSubmitState("submitting");
-        setErrorMessage("");
-        const form = event.currentTarget;
-        const formData = new FormData(form);
-
-        try {
-            const result = await submitForm("/api/event-registration", {
-                eventKey,
-                name: formData.get("name"),
-                email: formData.get("email"),
-                privacyConsent: formData.get("privacy") === "on",
-                newsletterConsent: formData.get("newsletter") === "on",
-                company: formData.get("company"),
-                locale: language,
-            });
-            setNewsletterStatus(result.newsletterStatus);
-            setSubmitState("success");
-            form.reset();
-        } catch (error) {
-            setErrorMessage(error.code === "rate_limit" ? copy.rateError : copy.error);
-            setSubmitState("error");
-        }
-    };
 
     const facts = [
         { icon: CalendarDays, label: copy.dateLabel, value: copy.date },
@@ -204,18 +154,13 @@ export const Events = () => {
                                 </div>;
                             })}
                         </div>
-                        <button type="button" onClick={openRegistration} className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-center font-bold text-primary-foreground transition hover:bg-surface">
+                        <Link to="/mitglieder" className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-center font-bold text-primary-foreground transition hover:bg-surface">
                             {copy.register}
-                            <UserPlus className="h-5 w-5" aria-hidden="true" />
-                        </button>
-                        <a href={zoomUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-primary/45 bg-white/55 px-5 py-3.5 text-center font-bold text-muted-foreground transition hover:bg-white">
-                            {copy.join}
-                            <ExternalLink className="h-5 w-5" aria-hidden="true" />
-                        </a>
-                        <p className="mt-4 text-sm leading-6 text-muted-foreground/75">{copy.access}</p>
-                        <div className="mt-3 space-y-1 text-sm font-semibold text-muted-foreground/75">
-                            <p>{copy.meetingId}</p>
-                            <p>{copy.passcode}</p>
+                            <LockKeyhole className="h-5 w-5" aria-hidden="true" />
+                        </Link>
+                        <div className="mt-4 flex items-start gap-3 rounded-2xl border border-primary/25 bg-white/50 p-4 text-sm leading-6 text-muted-foreground/80">
+                            <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                            <p>{copy.access}</p>
                         </div>
                     </aside>
                 </div>
@@ -270,60 +215,6 @@ export const Events = () => {
                 <Link to="/datenschutz" className="rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">{copy.legal.privacy}</Link>
             </footer>
 
-            <Modal open={registrationOpen} onClose={() => setRegistrationOpen(false)} title={submitState === "success" ? copy.successTitle : copy.registrationTitle} closeLabel={copy.close}>
-                {submitState === "success" ? (
-                    <div className="py-5 text-center">
-                        <CheckCircle2 className="mx-auto h-16 w-16 text-primary" aria-hidden="true" />
-                        <p className="mx-auto mt-5 max-w-lg text-lg leading-8 text-muted-foreground/80">{copy.successText}</p>
-                        {newsletterStatus === "pending" && <p className="mx-auto mt-3 max-w-lg rounded-2xl bg-primary/10 p-4 text-sm leading-6 text-muted-foreground">{copy.successNewsletter}</p>}
-                        <button type="button" onClick={() => setRegistrationOpen(false)} className="mt-7 min-h-12 rounded-full bg-primary px-7 py-3 font-bold text-primary-foreground transition hover:bg-surface">
-                            {copy.done}
-                        </button>
-                    </div>
-                ) : (
-                    <form onSubmit={handleRegistration} className="mt-3">
-                        <p className="text-sm leading-6 text-muted-foreground/75">{copy.registrationIntro}</p>
-                        <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
-                            <label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label>
-                        </div>
-                        <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                            <label className="block text-sm font-semibold text-muted-foreground">
-                                {copy.name} *
-                                <input className={fieldClass} type="text" name="name" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required />
-                            </label>
-                            <label className="block text-sm font-semibold text-muted-foreground">
-                                {copy.email} *
-                                <input className={fieldClass} type="email" name="email" autoComplete="email" inputMode="email" maxLength={254} pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" title={copy.emailFormat} placeholder={copy.emailPlaceholder} required />
-                                <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground/60">{copy.emailFormat}</span>
-                            </label>
-                        </div>
-
-                        <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
-                            <input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="privacy" required />
-                            <span>
-                                {copy.privacyStart}
-                                <Link to="/datenschutz" target="_blank" className="font-semibold text-primary underline decoration-primary/50 underline-offset-2 hover:decoration-primary">{copy.privacyLink}</Link>
-                                {copy.privacyEnd}
-                            </span>
-                        </label>
-
-                        <div className="mt-5 rounded-2xl border border-primary/30 bg-primary/[0.07] p-4">
-                            <label className="flex cursor-pointer items-start gap-3 text-sm font-semibold leading-6 text-muted-foreground">
-                                <input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="newsletter" />
-                                <span>{copy.newsletter}</span>
-                            </label>
-                            <p className="ml-7 mt-2 text-xs leading-5 text-muted-foreground/70">{copy.newsletterHint}</p>
-                        </div>
-
-                        {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-400/40 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
-
-                        <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-bold text-primary-foreground transition hover:bg-surface disabled:cursor-wait disabled:opacity-65 sm:w-auto">
-                            {submitState === "submitting" ? copy.submitting : copy.submitRegistration}
-                            <Send className="h-5 w-5" aria-hidden="true" />
-                        </button>
-                    </form>
-                )}
-            </Modal>
         </main>
     );
 };

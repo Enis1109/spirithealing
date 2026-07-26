@@ -1,19 +1,28 @@
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { database, initializeDatabase } from "./server/database.js";
-import { sendContactNotification, sendEventNotification } from "./server/mailer.js";
+import { sendContactNotification, sendMemberAccessEmail } from "./server/mailer.js";
 import {
+    activateMemberAccess,
+    clearMemberSessionCookie,
+    createMemberAccessRequest,
+    endMemberSession,
+    getMemberFromRequest,
+    setMemberSessionCookie,
+} from "./server/members.js";
+import {
+    acceptNewsletterOffer,
     confirmNewsletterSubscription,
+    createNewsletterOfferUrl,
     registerNewsletterInterest,
     unsubscribeFromNewsletter,
 } from "./server/newsletter.js";
-import {
-    ValidationError,
-    validateContact,
-    validateEventRegistration,
-} from "./server/validation.js";
+import { prepareMemberRecording } from "./server/recording.js";
+import { ValidationError, validateContact, validateMemberAccess } from "./server/validation.js";
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -22,6 +31,8 @@ const currentFile = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(currentFile);
 const distDirectory = path.join(currentDirectory, "dist");
 const privacyConsentVersion = "privacy-2026-07";
+const memberPrivacyConsentVersion = "members-privacy-2026-07";
+const memberRecordingPath = await prepareMemberRecording();
 
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
@@ -56,6 +67,16 @@ const updateNotificationStatus = async (table, id, status) => {
     const allowedTables = new Set(["contact_submissions", "event_registrations"]);
     if (!allowedTables.has(table)) return;
     await database.execute(`UPDATE ${table} SET notification_status = ? WHERE id = ?`, [status, id]);
+};
+
+const recordingIsAvailable = async () => {
+    if (!memberRecordingPath) return false;
+    try {
+        const fileInfo = await fsPromises.stat(memberRecordingPath);
+        return fileInfo.isFile();
+    } catch {
+        return false;
+    }
 };
 
 app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, response) => {
@@ -117,40 +138,14 @@ app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, resp
     }
 });
 
-app.post("/api/event-registration", submissionLimiter, sameOriginOnly, async (request, response) => {
+app.post("/api/members/request-access", submissionLimiter, sameOriginOnly, async (request, response) => {
     try {
-        const form = validateEventRegistration(request.body);
+        const form = validateMemberAccess(request.body);
         let newsletterStatus = form.newsletterConsent ? "pending" : "not_requested";
-
-        await database.execute(
-            `INSERT INTO event_registrations (
-                event_key, name, email, locale, privacy_consent_version,
-                newsletter_requested, newsletter_status, notification_status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
-            ON DUPLICATE KEY UPDATE
-                name = VALUES(name),
-                locale = VALUES(locale),
-                privacy_consent_version = VALUES(privacy_consent_version),
-                privacy_consent_at = NOW(),
-                newsletter_requested = VALUES(newsletter_requested),
-                newsletter_status = VALUES(newsletter_status),
-                notification_status = 'pending'`,
-            [
-                form.eventKey,
-                form.name,
-                form.email,
-                form.locale,
-                privacyConsentVersion,
-                form.newsletterConsent ? 1 : 0,
-                newsletterStatus,
-            ],
-        );
-
-        const [registrationRows] = await database.execute(
-            "SELECT id FROM event_registrations WHERE event_key = ? AND email = ? LIMIT 1",
-            [form.eventKey, form.email],
-        );
-        const registrationId = registrationRows[0].id;
+        const accessUrl = await createMemberAccessRequest({
+            ...form,
+            privacyConsentVersion: memberPrivacyConsentVersion,
+        });
 
         if (form.newsletterConsent) {
             try {
@@ -158,24 +153,30 @@ app.post("/api/event-registration", submissionLimiter, sameOriginOnly, async (re
                     name: form.name,
                     email: form.email,
                     locale: form.locale,
-                    source: `event:${form.eventKey}`,
+                    source: "member_registration",
                 });
             } catch (error) {
-                console.error("Newsletter confirmation could not be prepared", error);
+                console.error("Member newsletter confirmation could not be prepared", error);
                 newsletterStatus = "confirmation_failed";
             }
-            await database.execute(
-                "UPDATE event_registrations SET newsletter_status = ? WHERE id = ?",
-                [newsletterStatus, registrationId],
-            );
         }
 
+        const newsletterOfferUrl = createNewsletterOfferUrl({
+            name: form.name,
+            email: form.email,
+            locale: form.locale,
+            source: "member_access_email",
+        });
+
         try {
-            await sendEventNotification({ id: registrationId, ...form });
-            await updateNotificationStatus("event_registrations", registrationId, "sent");
+            await sendMemberAccessEmail({
+                ...form,
+                accessUrl,
+                newsletterOfferUrl,
+            });
         } catch (error) {
-            console.error("Event notification could not be sent", error);
-            await updateNotificationStatus("event_registrations", registrationId, "failed");
+            console.error("Member access email could not be sent", error);
+            return response.status(502).json({ ok: false, error: "email_delivery" });
         }
 
         return response.status(201).json({ ok: true, newsletterStatus });
@@ -183,9 +184,77 @@ app.post("/api/event-registration", submissionLimiter, sameOriginOnly, async (re
         if (error instanceof ValidationError) {
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
-        console.error("Event registration failed", error);
+        console.error("Member access request failed", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
+});
+
+app.get("/api/members/access", async (request, response) => {
+    try {
+        const access = await activateMemberAccess(String(request.query.token || ""));
+        if (!access) return response.redirect(303, "/mitglieder?state=invalid");
+
+        setMemberSessionCookie(response, access.sessionToken);
+        return response.redirect(303, "/mitglieder?state=verified");
+    } catch (error) {
+        console.error("Member access activation failed", error);
+        return response.redirect(303, "/mitglieder?state=error");
+    }
+});
+
+app.get("/api/members/session", async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "no-store");
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+
+    return response.json({
+        ok: true,
+        member: { name: member.name, email: member.email, locale: member.locale },
+        recordingAvailable: await recordingIsAvailable(),
+    });
+});
+
+app.post("/api/members/logout", sameOriginOnly, async (request, response) => {
+    await endMemberSession(request);
+    clearMemberSessionCookie(response);
+    return response.json({ ok: true });
+});
+
+app.get("/api/members/recording", async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+    if (!await recordingIsAvailable()) {
+        return response.status(404).json({ ok: false, error: "recording_processing" });
+    }
+
+    const fileInfo = await fsPromises.stat(memberRecordingPath);
+    const range = request.get("range");
+    response.set({
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "private, max-age=3600",
+        "Content-Type": "video/mp4",
+        "Content-Disposition": "inline",
+    });
+
+    if (!range) {
+        response.set("Content-Length", String(fileInfo.size));
+        return fs.createReadStream(memberRecordingPath).pipe(response);
+    }
+
+    const match = /^bytes=(\d+)-(\d*)$/u.exec(range);
+    if (!match) return response.status(416).end();
+    const start = Number(match[1]);
+    const requestedEnd = match[2] ? Number(match[2]) : fileInfo.size - 1;
+    const end = Math.min(requestedEnd, fileInfo.size - 1);
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || start > end) {
+        return response.status(416).end();
+    }
+
+    response.status(206).set({
+        "Content-Range": `bytes ${start}-${end}/${fileInfo.size}`,
+        "Content-Length": String(end - start + 1),
+    });
+    return fs.createReadStream(memberRecordingPath, { start, end }).pipe(response);
 });
 
 app.get("/api/newsletter/confirm", async (request, response) => {
@@ -194,6 +263,16 @@ app.get("/api/newsletter/confirm", async (request, response) => {
         return response.redirect(303, `/newsletter/status?state=${confirmed ? "confirmed" : "invalid"}`);
     } catch (error) {
         console.error("Newsletter confirmation failed", error);
+        return response.redirect(303, "/newsletter/status?state=error");
+    }
+});
+
+app.get("/api/newsletter/accept-offer", async (request, response) => {
+    try {
+        const confirmed = await acceptNewsletterOffer(String(request.query.token || ""));
+        return response.redirect(303, `/newsletter/status?state=${confirmed ? "confirmed" : "invalid"}`);
+    } catch (error) {
+        console.error("Newsletter email offer could not be accepted", error);
         return response.redirect(303, "/newsletter/status?state=error");
     }
 });

@@ -334,14 +334,16 @@ export const Daten = () => {
                             Die Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage und für notwendige Anschlussfragen<br/>
                             verwendet. Eine optionale Newsletter-Einwilligung wird getrennt von der Kontaktanfrage erfasst.<br/>
                         </p>
-                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Anmeldung zu Vorträgen und Seminaren
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Kostenloser Mitgliederbereich und Vortragsaufzeichnungen
                         </h3>
                         <p className="text-md">
-                            Bei einer Veranstaltungsanmeldung speichern wir Ihren Namen, Ihre E-Mail-Adresse, die ausgewählte<br/>
-                            Veranstaltung, den Zeitpunkt der Anmeldung und den Stand Ihrer Einwilligungen auf unserem<br/>
-                            Hostinger-System. Die Verarbeitung dient der Organisation und Durchführung der Veranstaltung. Eine<br/>
-                            Nutzung für den Newsletter erfolgt nur nach gesonderter freiwilliger Auswahl und anschließender<br/>
-                            Bestätigung Ihrer E-Mail-Adresse.<br/>
+                            Für den kostenlosen Mitgliederzugang speichern wir Ihren Namen, Ihre E-Mail-Adresse, die gewählte<br/>
+                            Sprache, den Zeitpunkt der Registrierung und den Stand der E-Mail-Bestätigung auf unserem<br/>
+                            Hostinger-System. Der Zugang erfolgt über einen zeitlich begrenzten persönlichen Link; nach erfolgreicher<br/>
+                            Bestätigung wird auf Ihrem Gerät ein technisch notwendiges, geschütztes Sitzungs-Cookie gesetzt. Dieses<br/>
+                            ermöglicht den Zugriff auf die nicht öffentlich bereitgestellte Vortragsaufzeichnung und läuft spätestens<br/>
+                            nach 30 Tagen ab. Eine Nutzung Ihrer Daten für den Newsletter erfolgt nur nach einer gesonderten,<br/>
+                            freiwilligen Auswahl oder einem eindeutigen Klick auf den Newsletter-Button in der Zugangs-E-Mail.<br/>
                         </p>
                         <h3 className="text-lg md:text-xl leading-tight  font-bold text-primary">Anfrage per E-Mail, Telefon oder Telefax
                         </h3>
@@ -482,9 +484,11 @@ export const Daten = () => {
                         <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Bestätigung der Newsletter-Anmeldung (Double-Opt-In)
                         </h3>
                         <p className="text-md">
-                            Die Newsletter-Auswahl ist freiwillig und nicht Voraussetzung für eine Kontakt- oder<br/>
-                            Veranstaltungsanfrage. Nach der Anmeldung senden wir eine Bestätigungs-E-Mail an die angegebene<br/>
+                            Die Newsletter-Auswahl ist freiwillig und nicht Voraussetzung für eine Kontaktanfrage oder den<br/>
+                            Mitgliederzugang. Nach der Auswahl im Formular senden wir eine Bestätigungs-E-Mail an die angegebene<br/>
                             Adresse. Erst durch Anklicken des Bestätigungslinks wird die Adresse für den Newsletter freigeschaltet.<br/>
+                            Wird der Newsletter stattdessen über den klar bezeichneten Newsletter-Button in einer persönlichen<br/>
+                            Zugangs-E-Mail bestellt, gilt dieser bewusste Klick zugleich als Bestätigung der angegebenen Adresse.<br/>
                             Zum Nachweis der Einwilligung speichern wir die E-Mail-Adresse, den Namen, die Sprache, die Herkunft<br/>
                             der Anmeldung, den verwendeten Einwilligungstext sowie Anfrage- und Bestätigungszeitpunkt. Nicht<br/>
                             bestätigte Anmeldungen werden nicht für Newsletter verwendet. Jeder Newsletter enthält eine einfache<br/>
