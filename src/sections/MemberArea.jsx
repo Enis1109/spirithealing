@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, Facebook, Instagram, LoaderCircle, LockKeyhole, LogOut, MailCheck, PlayCircle, Send } from "lucide-react";
+import { CheckCircle2, Download, Facebook, FileText, Instagram, LoaderCircle, LockKeyhole, LogOut, MailCheck, PlayCircle, Send } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { submitForm } from "@/lib/submissions";
@@ -14,7 +14,7 @@ const content = {
         benefitTitle: "Das erwartet dich",
         benefits: [
             "Die geschnittene Aufzeichnung des Vortrags „Wer entscheidet eigentlich dein Leben?“",
-            "Künftige Handouts und ergänzende Impulse an einem festen Ort",
+            "Das Workbook zum Vortrag mit Reflexionsfragen und Übungen",
             "Ein persönlicher Zugang, der 30 Tage auf deinem Gerät angemeldet bleibt",
         ],
         formTitle: "Zugang anfordern",
@@ -41,6 +41,10 @@ const content = {
         welcome: "Schön, dass du da bist",
         recordingTitle: "Wer entscheidet eigentlich dein Leben?",
         recordingText: "Die Aufzeichnung des Live-Vortrags vom 26. Juli 2026.",
+        workbookEyebrow: "Workbook zum Vortrag",
+        workbookTitle: "Deine Fragen und Übungen zum Weiterarbeiten",
+        workbookText: "Neun gestaltete Seiten, mit denen du deine inneren Anteile, ihre Schutzabsichten und deine Selbstführung vertiefen kannst.",
+        workbookDownload: "Workbook herunterladen",
         processingTitle: "Die Aufzeichnung wird gerade vorbereitet",
         processingText: "Wir schneiden die Wortbeiträge der Teilnehmenden und unnötige Pausen sorgfältig heraus. Sobald die fertige Fassung bereitsteht, erscheint sie hier automatisch.",
         socialTitle: "Bis dahin mit uns verbunden bleiben",
@@ -54,7 +58,7 @@ const content = {
         benefitTitle: "Seni neler bekliyor?",
         benefits: [
             "“Hayatına aslında kim karar veriyor?” seminerinin düzenlenmiş kaydı",
-            "Gelecekteki çalışma notları ve tamamlayıcı içerikler için sabit bir alan",
+            "Seminere eşlik eden düşünme soruları ve egzersizlerden oluşan çalışma kitabı",
             "Cihazında 30 gün boyunca açık kalan kişisel erişim",
         ],
         formTitle: "Erişim bağlantısı iste",
@@ -81,6 +85,10 @@ const content = {
         welcome: "Aramıza hoş geldin",
         recordingTitle: "Hayatına aslında kim karar veriyor?",
         recordingText: "26 Temmuz 2026 tarihli canlı seminerin kaydı.",
+        workbookEyebrow: "Seminer çalışma kitabı",
+        workbookTitle: "Çalışmaya devam etmek için sorular ve egzersizler",
+        workbookText: "İçsel parçalarını, koruma amaçlarını ve öz liderliğini daha derin keşfetmen için hazırlanmış dokuz sayfa.",
+        workbookDownload: "Çalışma kitabını indir",
         processingTitle: "Kayıt hazırlanıyor",
         processingText: "Katılımcıların konuşmalarını ve gereksiz araları dikkatle çıkarıyoruz. Tamamlanan sürüm hazır olduğunda burada otomatik olarak görünecek.",
         socialTitle: "Bu sırada bizimle bağlantıda kal",
@@ -96,6 +104,7 @@ export const MemberArea = () => {
     const [sessionState, setSessionState] = useState("loading");
     const [member, setMember] = useState(null);
     const [recordingAvailable, setRecordingAvailable] = useState(false);
+    const [workbookAvailable, setWorkbookAvailable] = useState(false);
     const [submitState, setSubmitState] = useState("idle");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
     const [errorMessage, setErrorMessage] = useState("");
@@ -109,6 +118,7 @@ export const MemberArea = () => {
                 if (result?.ok) {
                     setMember(result.member);
                     setRecordingAvailable(result.recordingAvailable);
+                    setWorkbookAvailable(result.workbookAvailable);
                     setSessionState("member");
                 } else {
                     setSessionState("guest");
@@ -182,6 +192,21 @@ export const MemberArea = () => {
                                 <PlayCircle className="h-14 w-14 text-primary" aria-hidden="true" />
                                 <h3 className="mt-5 text-2xl font-bold">{copy.processingTitle}</h3>
                                 <p className="mt-3 max-w-3xl text-lg leading-8 text-muted-foreground/75">{copy.processingText}</p>
+                            </div>
+                        )}
+                        {workbookAvailable && (
+                            <div className="flex flex-col gap-5 border-t border-primary/20 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-9">
+                                <div className="flex max-w-2xl gap-4">
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary"><FileText className="h-6 w-6" aria-hidden="true" /></div>
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{copy.workbookEyebrow}</p>
+                                        <h3 className="mt-1 text-xl font-bold sm:text-2xl">{copy.workbookTitle}</h3>
+                                        <p className="mt-2 leading-7 text-muted-foreground/75">{copy.workbookText}</p>
+                                    </div>
+                                </div>
+                                <a href="/api/members/workbook" download className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground transition hover:bg-surface">
+                                    <Download className="h-5 w-5" aria-hidden="true" />{copy.workbookDownload}
+                                </a>
                             </div>
                         )}
                     </section>

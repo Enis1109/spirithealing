@@ -21,7 +21,7 @@ import {
     registerNewsletterInterest,
     unsubscribeFromNewsletter,
 } from "./server/newsletter.js";
-import { prepareMemberRecording } from "./server/recording.js";
+import { prepareMemberRecording, prepareMemberWorkbook } from "./server/recording.js";
 import { ValidationError, validateContact, validateMemberAccess } from "./server/validation.js";
 
 const app = express();
@@ -33,6 +33,7 @@ const distDirectory = path.join(currentDirectory, "dist");
 const privacyConsentVersion = "privacy-2026-07";
 const memberPrivacyConsentVersion = "members-privacy-2026-07";
 let memberRecordingPath = "";
+let memberWorkbookPath = "";
 let startupError = null;
 let startupPromise = Promise.resolve();
 
@@ -78,15 +79,18 @@ const updateNotificationStatus = async (table, id, status) => {
     await database.execute(`UPDATE ${table} SET notification_status = ? WHERE id = ?`, [status, id]);
 };
 
-const recordingIsAvailable = async () => {
-    if (!memberRecordingPath) return false;
+const protectedFileIsAvailable = async (filePath) => {
+    if (!filePath) return false;
     try {
-        const fileInfo = await fsPromises.stat(memberRecordingPath);
+        const fileInfo = await fsPromises.stat(filePath);
         return fileInfo.isFile();
     } catch {
         return false;
     }
 };
+
+const recordingIsAvailable = () => protectedFileIsAvailable(memberRecordingPath);
+const workbookIsAvailable = () => protectedFileIsAvailable(memberWorkbookPath);
 
 app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, response) => {
     try {
@@ -220,6 +224,7 @@ app.get("/api/members/session", async (request, response) => {
         ok: true,
         member: { name: member.name, email: member.email, locale: member.locale },
         recordingAvailable: await recordingIsAvailable(),
+        workbookAvailable: await workbookIsAvailable(),
     });
 });
 
@@ -264,6 +269,23 @@ app.get("/api/members/recording", async (request, response) => {
         "Content-Length": String(end - start + 1),
     });
     return fs.createReadStream(memberRecordingPath, { start, end }).pipe(response);
+});
+
+app.get("/api/members/workbook", async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+    if (!await workbookIsAvailable()) {
+        return response.status(404).json({ ok: false, error: "workbook_processing" });
+    }
+
+    const fileInfo = await fsPromises.stat(memberWorkbookPath);
+    response.set({
+        "Cache-Control": "private, max-age=3600",
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "attachment; filename=\"Spirit-Healing-Workbook-Wer-entscheidet-dein-Leben.pdf\"",
+        "Content-Length": String(fileInfo.size),
+    });
+    return fs.createReadStream(memberWorkbookPath).pipe(response);
 });
 
 app.get("/api/newsletter/confirm", async (request, response) => {
@@ -318,7 +340,10 @@ app.use((request, response, next) => {
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
 
 const initializeServices = async () => {
-    memberRecordingPath = await prepareMemberRecording();
+    [memberRecordingPath, memberWorkbookPath] = await Promise.all([
+        prepareMemberRecording(),
+        prepareMemberWorkbook(),
+    ]);
     await initializeDatabase();
 };
 
