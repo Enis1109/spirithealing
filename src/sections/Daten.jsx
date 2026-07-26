@@ -134,7 +134,7 @@ export const Daten = () => {
                             Ragazerstr.15<br/>
                             13407 Berlin<br/><br/>
                             Telefon: 00491775022131<br/>
-                            E-Mail: kontakt@spirit-healing.coach<br/><br/>
+                            E-Mail: info@spirit-healing.tr<br/><br/>
                             Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über<br/>
                             die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z. B. Namen, E-Mail-Adressen o. Ä.)<br/>
                             entscheidet.<br/>

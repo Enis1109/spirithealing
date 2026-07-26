@@ -1,183 +1,9 @@
-import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "lucide-react"
-import { useState } from "react";
-import { Button } from "@/components/Button"
-
-{/* Oft entstehen über Jahre innere Schleifen: */}
-const number_one = [
-    {
-        description:
-        "im Nervensystem",
-    },
-    {
-        description:
-        "im Körper",
-    },
-    {
-        description:
-        "im Energiefeld",
-    },
-    {
-        description:
-        "im emotionalen Gedächtnis",
-    },
-    {
-        description:
-        "und auf seelischer Ebene",
-    },
-];
-
-{/* Der Blick nach innen */}
-const number_two = [
-    {
-        description:
-        "körperlich",
-    },
-    {
-        description:
-        "energetisch",
-    },
-    {
-        description:
-        "beziehungshaft",
-    },
-    {
-        description:
-        "oder als wiederkehrende innere Muster.",
-    },
-];
-
-{/* Warum Veränderung oft nicht funktioniert */}
-const number_three = [
-    {
-        description:
-        "innere Schwere",
-    },
-    {
-        description:
-        "chronische Erschöpfung",
-    },
-    {
-        description:
-        "das Gefühl, nicht richtig „im Leben“ zu sein",
-    },
-    {
-        description:
-        "emotionale Taubheit",
-    },
-    {
-        description:
-        "innere Zerrissenheit",
-    },
-    {
-        description:
-        "oder das Gefühl, von sich selbst abgeschnitten zu sein.",
-    },
-];
-
-{/* Der Weg zur inneren Klärung */}
-const number_four = [
-    {
-        description:
-        "Reinigung energetischer Verdichtungen",
-    },
-    {
-        description:
-        "Harmonisierung der Chakren",
-    },
-    {
-        description:
-        "Lösung gespeicherter emotionaler Informationen",
-    },
-    {
-        description:
-        "Arbeit mit inneren Bildern und Wahrnehmungen",
-    },
-    {
-        description:
-        "energetischer Neuordnung",
-    },
-];
-
-{/* Der Weg zur inneren Klärung */}
-const number_five = [
-    {
-        description:
-        "das Gefühl, nicht ganz da zu sein",
-    },
-    {
-        description:
-        "innere Leere",
-    },
-    {
-        description:
-        "fehlende Lebendigkeit",
-    },
-    {
-        description:
-        "emotionale Abgeschnittenheit",
-    },
-    {
-        description:
-        "oder das Gefühl, sich selbst verloren zu haben.",
-    },
-];
-
-const number_six = [
-    {
-        description:
-        "Nervensystemarbeit",
-    },
-    {
-        description:
-        "emotionale Prozessarbeit",
-    },
-    {
-        description:
-        "Bindungsdynamiken",
-    },
-    {
-        description:
-        "Körperwahrnehmung",
-    },
-    {
-        description:
-        "und schamanische Bewusstseinsarbeit.",
-    },
-];
-
-const number_seven = [
-    {
-        description:
-        "mehr innere Ruhe",
-    },
-    {
-        description:
-        "stärkeren Selbstkontakt",
-    },
-    {
-        description:
-        "emotionale Öffnung",
-    },
-    {
-        description:
-        "neue Klarheit",
-    },
-    {
-        description:
-        "mehr Lebendigkeit",
-    },
-    {
-        description:
-        "das Gefühl,  sich selbst wieder näher zu sein",
-    },
-];
-
 export const Schaman = () => {
     
     return (
-        <section id="about" className="relative overflow-hidden font-serif">
+        <section id="about" className="relative overflow-hidden">
             <div className="container relative rounded-4xl z-10">
-                <div className="rounded-2xl pl-8 border-primary border overflow-hidden glow-border">
+                <div className="rounded-2xl border border-primary p-4 overflow-hidden glow-border md:pl-8">
                     <div className="grid lg:grid-cols-2">
                         <div className="lg:-mr-4 py-4 max-lg:text-center max-lg:px-4">
                             <h2 className="max-md:text-xl md:text-3xl leading-tight  font-bold text-primary">SCHAMANISCHE ARBEIT &
@@ -205,8 +31,8 @@ export const Schaman = () => {
                                 <p className="">Als würde ein Teil von ihnen irgendwo unterwegs verloren gegangen sein.
                                 </p>
                         </div>
-                        <div className="h-full flex rounded-2xl -ml-32">
-                            <img src="/schamanisch/sch1.jpeg" className="flex object-fill  lg:mask-l-from-60% mask-radial-[70%_90%] lg:mask-radial-from-80%"/>
+                        <div className="mt-4 min-h-72 overflow-hidden rounded-2xl lg:mt-0 lg:-ml-32">
+                            <img src="/schamanisch/sch1.jpeg" className="h-full w-full object-cover object-center lg:mask-l-from-60% mask-radial-[70%_90%] lg:mask-radial-from-80%"/>
                         </div>
                     </div>
                 </div>
@@ -221,34 +47,16 @@ export const Schaman = () => {
                         <p className="text-sm text-center">Eine Arbeit, die davon ausgeht, dass Erfahrungen nicht nur psychologisch gespeichert werden.
                         </p>
                         <br/>
-                        <p className="text-sm text-center">Sondern auch:
-                        </p>
-                        <br/>
-                        <div className="flex items-center justify-center">
-                            <div className="pl-6">
-                                {number_one.map((item, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className="p-0"
-                                >
-                                    <span className="text-sm inline-flex items-center justify-center gap-4">
-                                        <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                        {item.description}
-                                    </span>
-                                </div>
-                                ))}
-                            </div>
-                        </div>
-                        <br/>
+                        <p className="mx-auto mt-5 max-w-xl border-l-2 border-primary pl-5 text-left text-base leading-8">Wir verstehen Erfahrung als etwas, das zugleich im Nervensystem, im Körper, im emotionalen Gedächtnis, im Energiefeld und auf seelischer Ebene Spuren hinterlassen kann.</p>
                         <p className="text-sm text-center">Viele Menschen spüren intuitiv, dass manche Verletzungen tiefer reichen, als Worte allein sie erreichen können.
                         </p>
                         <p className="text-sm text-center">Genau dort beginnt schamanische Arbeit.
                         </p>
                         <br/>
                     </div>
-                    <div className="border border-primary glow-border rounded-2xl pl-4 overflow-hidden">
-                        <div className="grid grid-cols-2">
-                            <div className="-me-24 pt-4 ">
+                    <div className="border border-primary glow-border rounded-2xl overflow-hidden">
+                        <div className="grid lg:grid-cols-2">
+                            <div className="p-4 lg:-me-24">
                                 <h3 className="text-2xl md:text-2xl leading-tight  font-bold text-primary">Arbeit
                                     <span className="font-serif italic font-normal text-white"> mit dem Energiefeld</span>
                                 </h3>
@@ -259,37 +67,23 @@ export const Schaman = () => {
                                 </p>
                                 <p className="text-sm">Diese Informationen wirken oft lange weiter.
                                 </p>
-                                <p className="text-sm">Nicht nur emotional. Sondern manchmal auch:
-                                </p>
-                                <br/>
-                                    {number_two.map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-0"
-                                    >
-                                        <span className="text-sm inline-flex items-center justify-center gap-4">
-                                            <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                            {item.description}
-                                        </span>
-                                    </div>
-                                    ))}
-                                <br/>
+                                <p className="mt-4 border-l-2 border-primary pl-4 text-base leading-7">Sie können körperlich oder energetisch spürbar bleiben, Beziehungen prägen oder als wiederkehrendes inneres Muster auftauchen.</p>
                                 <p className="text-sm">Unsere Arbeit richtet sich deshalb nicht nur auf Gedanken oder Verhalten.
                                 </p>
                                 <p className="text-sm">Sondern auf die tieferen Ebenen, auf denen Erfahrungen im Menschen weiterleben.
                                 </p>
                                 <br/>
                             </div>
-                            <div className="h-full flex rounded-2xl -mr-16">
-                                <img src="/schamanisch/sch22.JPG" className="flex object-fill  mask-l-from-60% mask-radial-[70%_90%] mask-radial-from-80%"/>
+                            <div className="min-h-64 overflow-hidden rounded-2xl lg:-mr-16">
+                                <img src="/schamanisch/sch22.JPG" className="h-full w-full object-cover object-center mask-l-from-60% mask-radial-[70%_90%] mask-radial-from-80%"/>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="border border-primary glow-border rounded-2xl pl-4 overflow-hidden">
+                <div className="border border-primary glow-border rounded-2xl overflow-hidden">
                     <div className="grid lg:grid-cols-2">
-                            <div className="h-full flex rounded-2xl -ml-32">
-                                <img src="/schamanisch/sch3.jpeg" className="flex object-fill  lg:mask-r-from-59%"/>
+                            <div className="min-h-64 overflow-hidden rounded-2xl lg:-ml-32">
+                                <img src="/schamanisch/sch3.jpeg" className="h-full w-full object-cover object-center lg:mask-r-from-59%"/>
                             </div>
                             <div className="pt-4 lg:-ml-4 lg:pr-4 max-lg:text-center">
                                 <h3 className="text-2xl md:text-2xl text-center leading-tight  font-bold text-primary">Chakrenarbeit &
@@ -306,42 +100,9 @@ export const Schaman = () => {
                                 </p>
                                 <p className="text-sm">Dadurch kann der Energiefluss blockiert werden.
                                 </p>
-                                <p className="text-sm pb-2">Menschen beschreiben dann häufig:
-                                </p>
-                                <div className="pl-4 pb-2 text-left">
-                                    <div className="">
-                                        {number_three.map((item, idx) => (
-                                        <div 
-                                            key={idx} 
-                                            className="p-0"
-                                        >
-                                            <span className="text-sm inline-flex items-center justify-center gap-4">
-                                                <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                                {item.description}
-                                            </span>
-                                        </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <p className="text-sm pb-2">In der schamanischen Energiearbeit arbeiten wir deshalb unter anderem mit:
-                                </p>
-                                 <div className="pl-4 pb-2 text-left">
-                                    <div className="">
-                                        {number_four.map((item, idx) => (
-                                        <div 
-                                            key={idx} 
-                                            className="p-0"
-                                        >
-                                            <span className="text-sm inline-flex items-center justify-center gap-4">
-                                                <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                                {item.description}
-                                            </span>
-                                        </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <p className="text-sm">iele Menschen erleben diese Prozesse als tief, bewegend und gleichzeitig überraschend klar.
-                                </p>
+                                <p className="mt-4 text-base leading-7">Wenn der Energiefluss aus unserer Sicht gebunden ist, wird das sehr unterschiedlich erlebt: als innere Schwere, anhaltende Erschöpfung, emotionale Taubheit oder das Gefühl, im eigenen Leben nicht vollständig anzukommen.</p>
+                                <p className="mt-4 border-l-2 border-primary pl-4 text-base leading-7">Unsere Arbeit kann energetische Reinigung, Chakrenarbeit, innere Bilder und die Lösung gebundener emotionaler Informationen miteinander verbinden. Welche Form sinnvoll ist, entscheidet sich im Prozess – nicht nach einem festen Ablauf.</p>
+                                <p className="mt-4 text-base leading-7">Viele Menschen beschreiben diese Prozesse als tief, bewegend und gleichzeitig überraschend klar.</p>
                                 <br/>
                             </div>
                         </div>
@@ -358,23 +119,7 @@ export const Schaman = () => {
                                 <p className="text-sm">In der schamanischen Tradition spricht man hier von Seelenanteilen, die sich zurückgezogen haben, <br/>
                                     um den Menschen vor zu großer emotionaler Überforderung zu schützen.
                                 </p>
-                                <p className="text-sm">Menschen beschreiben oft:
-                                </p>
-                                <div className="pl-2 py-2">
-                                    <div className="">
-                                        {number_five.map((item, idx) => (
-                                        <div 
-                                            key={idx} 
-                                            className="p-0"
-                                        >
-                                            <span className="text-sm inline-flex items-center justify-center gap-4">
-                                                <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/> 
-                                                {item.description}
-                                            </span>
-                                        </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                <p className="mt-4 border-l-2 border-primary pl-4 text-base leading-7">Menschen beschreiben diesen Zustand als innere Leere, fehlende Lebendigkeit oder das Gefühl, nicht ganz da und von sich selbst abgeschnitten zu sein.</p>
                                 <p className="text-sm">Die Seelenanteilsrückholung ist eine sehr tiefe, heilige Form schamanischer Arbeit. 
                                 </p>
                                 <p className="text-sm">Dabei geht es nicht darum, etwas künstlich hinzuzufügen.
@@ -387,19 +132,19 @@ export const Schaman = () => {
                                 </p>
                                 <br/>
                             </div>
-                            <div className="h-full w-full flex rounded-2xl lg:-mr-32">
-                                <img src="/schamanisch/sch4.jpeg" className="flex object-fill lg:mask-l-from-59%"/>
+                            <div className="min-h-64 w-full overflow-hidden rounded-2xl lg:-mr-32">
+                                <img src="/schamanisch/sch4.jpeg" className="h-full w-full object-cover object-center lg:mask-l-from-59%"/>
                             </div>
                         </div>
                     </div>
                 </div>
             <div className="grid lg:grid-cols-2 gap-4 pb-4">
                     <div className="border border-primary glow-border rounded-2xl overflow-hidden">
-                        <div className="grid grid-cols-2">
-                            <div className="h-full flex rounded-2xl -ml-24">
-                                <img src="/schamanisch/sch55.JPG" className="flex object-fill  mask-r-from-40%"/>
+                        <div className="grid md:grid-cols-2">
+                            <div className="min-h-56 overflow-hidden rounded-2xl md:-ml-24">
+                                <img src="/schamanisch/sch55.JPG" className="h-full w-full object-cover object-center mask-r-from-40%"/>
                             </div>
-                            <div className="-ml-16 py-4 pr-4">
+                            <div className="p-4 md:-ml-16">
                                 <h3 className="text-2xl md:text-2xl text-center leading-tight  font-bold text-primary">Schamanische Arbeit
                                     <span className="font-serif italic font-normal text-white"> & Trauma</span>
                                 </h3>
@@ -410,25 +155,7 @@ export const Schaman = () => {
                                 <p className="text-sm">Gerade Menschen mit frühen Bindungsverletzungen, chronischer innerer Spannung
                                     oder tiefen Scham- und Ohnmachtsdynamiken erleben oft, dass rein kognitive Prozesse nicht ausreichen.
                                 </p>
-                                <p className="text-sm">Deshalb verbinden wir:
-                                </p>
-                                <div className="flex items-center justify-center">
-                                    <div className="pl-6">
-                                        {number_six.map((item, idx) => (
-                                        <div 
-                                            key={idx} 
-                                            className="p-0"
-                                        >
-                                            <span className="text-sm inline-flex items-center justify-center gap-4">
-                                                <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                                {item.description}
-                                            </span>
-                                        </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <p className="text-sm">Nicht als Widerspruch. Sondern als Ergänzung.
-                                </p>
+                                <p className="mt-4 text-base leading-7">Darum verbinden wir Nervensystem- und Körperwahrnehmung mit emotionaler Prozessarbeit, Bindungsdynamiken und schamanischer Bewusstseinsarbeit. Nicht als Widerspruch, sondern als präzise aufeinander bezogene Ebenen.</p>
                             </div>
                         </div>
                     </div>
@@ -453,8 +180,8 @@ export const Schaman = () => {
                                 </p>
                                 <br/>
                             </div>
-                            <div className="flex rounded-2xl lg:-mr-32 lg:-ml-16">
-                                <img src="/schamanisch/sch6.jpeg" className="flex object-fill  lg:mask-l-from-59%"/>
+                            <div className="min-h-56 overflow-hidden rounded-2xl lg:-mr-32 lg:-ml-16">
+                                <img src="/schamanisch/sch6.jpeg" className="h-full w-full object-cover object-center lg:mask-l-from-59%"/>
                             </div>
                         </div>
                     </div>
@@ -465,47 +192,12 @@ export const Schaman = () => {
                         <h3 className="text-2xl md:text-2xl text-center leading-tight pb-4 font-bold text-primary">Unsere Arbeit
                             <span className="font-serif italic font-normal text-white"> ist eine Einladung.</span>
                         </h3>
-                        <div className="grid lg:grid-cols-3 gap-4">
-                                <div className="h-full items-center justify-center">
-                                    <div className="flex items-center justify-center">
-                                        <div className="h-18 w-18 items-center justify-center rounded-full bg-[url('/schamanisch/blatt1.png')] border-2 border-primary bg-center bg-cover  overflow-hidden">
-                                        </div>
-                                    </div>
-                                    <div className="flex pt-2 items-center justify-center ">
-                                        <p className="text-sm text-center text-muted-foreground">
-                                            Nicht, etwas <br/> glauben zu müssen
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="h-full items-center border-x justify-center">
-                                    <div className="flex items-center justify-center">
-                                        <div className="h-18 w-18 items-center justify-center rounded-full bg-[url('/schamanisch/straße.png')] border-2 border-primary bg-center bg-cover  overflow-hidden">
-                                        </div>
-                                    </div>
-                                    <div className="flex pt-2 items-center justify-center ">
-                                        <p className="text-sm text-center text-muted-foreground">
-                                            Sondern Erfahrungen <br/> zu machen
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="h-full items-center justify-center">
-                                    <div className="flex items-center justify-center">
-                                        <div className="h-18 w-18 items-center justify-center rounded-full bg-[url('/schamanisch/sonne.png')] border-2 border-primary bg-center bg-cover  overflow-hidden">
-                                        </div>
-                                    </div>
-                                    <div className="flex pt-2 items-center justify-center ">
-                                        <p className="text-sm text-center text-muted-foreground">
-                                            Und vielleicht Stück <br/> für Stück
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        <p className="text-sm text-center pt-4 px-4 text-muted-foreground">
-                           wieder Zugang zu Ebenen in dir zu bekommen, lange verschlossen waren.
-                        </p>
+                        <blockquote className="mx-auto max-w-xl border-l-2 border-primary px-5 text-lg leading-8 text-white/85">
+                            Es geht nicht darum, etwas glauben zu müssen. Es geht darum, eine eigene Erfahrung zu machen und wieder Zugang zu Ebenen in dir zu finden, die lange verschlossen waren.
+                        </blockquote>
                     </div>
-                    <div className="flex rounded-2xl -mr-32 -ml-16">
-                        <img src="/schamanisch/sch777.JPG" className="flex object-fill  mask-l-from-59%"/>
+                    <div className="min-h-64 overflow-hidden rounded-2xl lg:-mr-32 lg:-ml-16">
+                        <img src="/schamanisch/sch777.JPG" className="h-full w-full object-cover object-center mask-l-from-59%"/>
                     </div>
                 </div>
             </div>

@@ -1,20 +1,58 @@
 import { Button } from "@/components/Button"
-import { ArrowDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {useEffect, useState} from "react"
 import { Link } from "react-router-dom";
+import { LANGUAGE_SWITCHER_ENABLED, useLanguage } from "@/i18n/LanguageContext";
 
-const navLinks = [
-    { href: "/coaching", label: "Traumasensible Prozessbegleitung"},
-    { href: "/therapie", label: "Integrative Therapie"},
-    { href: "/about", label: "Über uns"},
-    { href: "/prices", label: "Preise/Termine"},
-    { href: "/faq", label: "FAQ"}
-];
+const navLinks = {
+    de: [
+        { href: "/coaching", label: "Prozessbegleitung" },
+        { href: "/therapie", label: "Integrative Therapie" },
+        { href: "/about", label: "Über uns" },
+        { href: "/vortraege-seminare", label: "Vorträge & Seminare" },
+        { href: "/prices", label: "Preise & Termine" },
+        { href: "/faq", label: "FAQ" },
+    ],
+    tr: [
+        { href: "/coaching", label: "Süreç Danışmanlığı" },
+        { href: "/therapie", label: "Bütüncül Terapi" },
+        { href: "/about", label: "Hakkımızda" },
+        { href: "/vortraege-seminare", label: "Seminerler & Eğitimler" },
+        { href: "/prices", label: "Ücretler & Randevular" },
+        { href: "/faq", label: "SSS" },
+    ],
+};
+
+const LanguageSwitcher = ({ language, setLanguage, mobile = false }) => (
+    <div
+        className={mobile ? "flex items-center gap-1 self-start rounded-full bg-surface/70 p-1" : "flex items-center gap-1 rounded-full bg-surface/70 p-1"}
+        aria-label={language === "tr" ? "Dil seçin" : "Sprache auswählen"}
+    >
+        <button
+            type="button"
+            onClick={() => setLanguage("de")}
+            aria-pressed={language === "de"}
+            className={language === "de" ? "rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground" : "rounded-full px-3 py-1 text-sm text-muted-foreground hover:text-primary"}
+        >
+            DE
+        </button>
+        <button
+            type="button"
+            onClick={() => setLanguage("tr")}
+            aria-pressed={language === "tr"}
+            className={language === "tr" ? "rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground" : "rounded-full px-3 py-1 text-sm text-muted-foreground hover:text-primary"}
+        >
+            TR
+        </button>
+    </div>
+);
 
 export const Navbar = () => {
     
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const { language, setLanguage } = useLanguage();
+    const links = navLinks[language];
 
     useEffect(() => {
         const handleScroll = () => {
@@ -23,55 +61,74 @@ export const Navbar = () => {
 
         window.addEventListener("scroll", handleScroll);
 
-        return () => window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return (
-    <header className={isScrolled ? "transition-all duration-500 glass-strong py-3 fixed top-0 left-0 right-0 z-50" : "transition-all duration-500 fixed top-0 left-0 right-0 z-50 bg-transparent py-3"}>
-        <nav className=" container  px-6 flex items-center justify-between min-w-screen">
-            <div className=" flex items-center">  
-                <img src="Logo.png" className="w-16 h-16"/>
-                <Link to="/" className={isScrolled ? "text-2xl font-bold tracking-tight hover:text-primary text-muted-foreground" : "text-2xl font-bold tracking-tight hover:text-primary"}>
-                Spirit Healing<span className="text-primary"></span>
-                </Link>
-            </div>
+    <header className={isScrolled ? "glass-strong fixed inset-x-0 top-0 z-50 py-2 transition-all duration-500" : "fixed inset-x-0 top-0 z-50 bg-transparent py-2 transition-all duration-500"}>
+        <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-4 sm:px-6">
+            <Link
+                to="/"
+                className="flex items-center gap-2"
+                aria-label={language === "tr" ? "Spirit Healing ana sayfası" : "Spirit Healing Startseite"}
+            >
+                <img
+                    src="/Logo-tuerkis.jpeg"
+                    alt="Spirit Healing Logo"
+                    className="h-14 w-14 rounded-full object-cover shadow-lg shadow-primary/20 ring-2 ring-primary/80 sm:h-16 sm:w-16"
+                />
+                <span className={isScrolled ? "text-xl font-bold tracking-tight text-muted-foreground transition hover:text-primary sm:text-2xl" : "text-xl font-bold tracking-tight transition hover:text-primary sm:text-2xl"}>
+                    Spirit Healing
+                </span>
+            </Link>
             {/*Navbar pc */}
-            <div className="hidden md:flex  gap-1">
+            <div className="hidden xl:flex gap-1">
                 <div className="glass rounded-full px-2 py-1 flex items-center gap-1">
-                    {navLinks.map((link, index) => (
+                    {links.map((link) => (
                         <Link 
                             to={link.href}
-                            key={index}
-                            className="px-4 py-2 text-sm text-muted-foreground hover:text-primary-foreground rounded-full hover:bg-surface"
+                            key={link.href}
+                            className="rounded-full px-2.5 py-2 text-sm text-muted-foreground hover:bg-surface hover:text-primary-foreground"
                         >
                             {link.label}
                         </Link>
                     ))}
                 </div>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden xl:flex items-center gap-3">
+                        {LANGUAGE_SWITCHER_ENABLED && <LanguageSwitcher language={language} setLanguage={setLanguage}/>}
                         <Button size="sm">
                             Kontakt
                         </Button>
                     </div>
-            <button className="md:hidden p-2 text-fourground cursor-pointer" onClick={() => setIsMobileMenuOpen((prev) => !prev)}>
+            <button
+                type="button"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-surface/65 p-2 text-muted-foreground shadow-sm xl:hidden"
+                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                aria-label={isMobileMenuOpen
+                    ? (language === "tr" ? "Menüyü kapat" : "Menü schließen")
+                    : (language === "tr" ? "Menüyü aç" : "Menü öffnen")}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-navigation"
+            >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24}/>}
             </button>
         </nav>
         {isMobileMenuOpen && (
-            <div className="md:hidden glass-strong animate-fade-in">
-                <div className="container mx-auto px-6 py-6 flex flex-col gap-4 ">
-                    {navLinks.map((link, index) => (
+            <div id="mobile-navigation" className="glass-strong animate-fade-in xl:hidden">
+                <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-3 px-6 py-6">
+                    {links.map((link) => (
                             <Link 
                                 to={link.href}
-                                key={index}
+                                key={link.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-lg text-muted-foreground hover:text-foreground py-2"
+                                className="rounded-xl py-2 text-lg text-muted-foreground hover:text-primary"
                             >
                                 {link.label}
                             </Link>
                         ))}
-                    <Button onClick={() => setIsMobileMenuOpen(false)}>
+                    {LANGUAGE_SWITCHER_ENABLED && <LanguageSwitcher language={language} setLanguage={setLanguage} mobile/>}
+                    <Button className="mt-1 w-full" onClick={() => setIsMobileMenuOpen(false)}>
                         Kontakt
                     </Button>
                 </div>

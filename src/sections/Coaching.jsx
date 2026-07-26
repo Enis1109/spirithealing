@@ -1,5 +1,4 @@
-import { ArrowBigRight, ArrowRight, Check, Calendar1, Heart } from "lucide-react"
-import { Button } from "@/components/Button"
+import { ArrowRight, Calendar1, Heart } from "lucide-react"
 import { Link } from "react-router-dom"
 
 {/*was,wenn deine Symptome Schutz sind*/}
@@ -12,7 +11,7 @@ const number_one = [
         description2:
         "aber fühlst dich innerlich leer",
         description3:
-        "Dein System schützt dich - auch wenn es sich schwer anfühlt",
+        "Dein System schützt dich – auch wenn es sich schwer anfühlt",
     },
     {
         image:
@@ -43,9 +42,9 @@ const number_seven = [
         icon:
         "/traumasensibel/Blatt.png",
         description2:
-        "Raus aus dem Überlebensmodus",
+        "Vom Alarm in mehr innere Sicherheit",
         description3:
-        "Wir helfen deinem Nervensystem, wieder in Sicherheit zu kommen",
+        "Wir arbeiten daran, dass dein Nervensystem nicht mehr jede Situation wie eine Gefahr behandeln muss.",
     },
     {
         image:
@@ -53,9 +52,9 @@ const number_seven = [
         icon:
         "/traumasensibel/Blumegelb.png",
         description2:
-        "Heilung auf allen Ebenen",
+        "Zusammenhänge statt Einzelbaustellen",
         description3:
-        "Integration von Körper, Emotionen, Verstand und inneren Anteilen.",
+        "Körper, Gefühle, innere Anteile und Beziehungserfahrungen werden als ein zusammenhängender Prozess betrachtet.",
     },
     {
         image:
@@ -63,169 +62,76 @@ const number_seven = [
         icon:
         "/traumasensibel/Blumegelb.png",
         description2:
-        "Dein Weg. Dein Tempo",
+        "Ein Tempo, das dein System mittragen kann",
         description3:
-        "Wir begleiten dich wertfrei, achtsam und in echter Verbidung",
+        "Veränderung braucht weder Druck noch eine perfekte Leistung, sondern einen verlässlichen und klaren Rahmen.",
     },
 ];
 
 {/*Was bedeutet traumasensible Begleitunf*/}
-const number_two = [
+const supportThemes = [
     {
-        description:
-        "dich innerlich angespannt oder dauerhaft „unter Strom“ fühlst",
+        number: "01",
+        title: "Alarm und Erschöpfung",
+        text: "Du bist dauerhaft unter Strom oder erschöpft, obwohl du nach außen weiter funktionierst.",
     },
     {
-        description:
-        "erschöpft bist, obwohl du funktionierst",
+        number: "02",
+        title: "Nähe und Schutz",
+        text: "Beziehungen kosten viel Kraft; du ziehst dich zurück oder erlebst Gefühle sehr intensiv.",
     },
     {
-        description:
-        "dich emotional abgeschnitten oder überfordert erlebst",
-    },
-    {
-        description:
-        "Schwierigkeiten in Beziehungen hast",
-    },
-    {
-        description:
-        "stark selbstkritisch bist oder dich schämst",
-    },
-    {
-        description:
-        "dich oft unsicher, orientierungslos oder „nicht richtig“ fühlst",
+        number: "03",
+        title: "Selbstbild und Orientierung",
+        text: "Selbstkritik, Scham oder das Gefühl, nicht richtig zu sein, bestimmen deinen inneren Ton.",
     },
 ];
 
-{/*Was ist ein Trauma wirklich*/}
-const number_three = [
+const changePhases = [
     {
-        description:
-        "emotionale Vernachlässigung",
-    },
-    {
-        description:
-        "fehlende Sicherheit oder Geborgenheit",
+        number: "01",
+        title: "Dein System lesen lernen",
+        text: "Du erkennst, was dich aktiviert und wie dein Nervensystem wieder in einen tragfähigeren Zustand findet.",
     },
     {
-        description:
-        "Kritik, Abwertung oder Überforderung",
+        number: "02",
+        title: "Dir selbst anders begegnen",
+        text: "Selbstkritik verliert an Macht. Bedürfnisse und Grenzen werden klarer und dürfen ausgesprochen werden.",
     },
     {
-        description:
-        "instabile oder unsichere Beziehungen",
-    },
-];
-
-{/*Typische Folgen zeigen sich oft so:*/}
-const number_four = [
-    {
-        description:
-        "Du stellst deine eigenen Bedürfnisse zurück",
-    },
-    {
-        description:
-        "Du versuchst, es allen recht zu machen",
-    },
-    {
-        description:
-        "Du vermeidest Gefühle oder lenkst dich ab",
-    },
-    {
-        description:
-        "Du ziehst dich zurück oder wirst schnell überwältigt",
-    },
-     {
-        description:
-        "Du fühlst dich leer, angespannt oder innerlich abgeschnitten",
-    },
-];
-
-{/*Was du bei uns lernst*/}
-const number_five = [
-    {
-        description:
-        "dein Nervensystem zu verstehen und zu regulieren",
-    },
-    {
-        description:
-        "mit emotionalen Auslösern sicher umzugehen",
-    },
-    {
-        description:
-        "Selbstkritik zu reduzieren und dich selbst anzunehmen",
-    },
-    {
-        description:
-        "deine Bedürfnisse wahrzunehmen und zu vertreten",
-    },
-     {
-        description:
-        "wieder in Verbindung mit dir selbst zu kommen",
-    },
-];
-
-{/*Unsere Arbeit mit dir*/}
-const number_six = [
-    {
-        description:
-        "Gespräch & Reflexion",
-    },
-    {
-        description:
-        "körperliche und emotionale Wahrnehmung",
-    },
-    {
-        description:
-        "traumasensible Prozessarbeit",
-    },
-    {
-        description:
-        "Integration innerer Anteile",
+        number: "03",
+        title: "Neue Entscheidungen verkörpern",
+        text: "Veränderung bleibt nicht nur ein Gedanke: Sie zeigt sich in Beziehungen, im Alltag und im Kontakt mit dir selbst.",
     },
 ];
 
 export const Coaching = () => {
-    return <section id="coaching" className="realtive flex">
+    return <section id="coaching" className="relative flex">
         <div className="container min-w-screen z-10 pb-0 relative">
-            <div className="container mx-auto">
-                    <div className="grid md:grid-cols-2">
-                        <div className="ml-auto">
-                            <div className="container md:pr-44 pt-24 animate-fade-in">
-                                <div className="pb-8">
-                                    <h1 className="text-3xl md:text-3xl font-bold leading-tight max-sm:text-center text-primary glow-text">
-                                    Traumasensible <br/> <span className="text-white"> Prozessbegleitung</span>
-                                    </h1>
-                                </div>
-                                <div className="pr-8">
-                                    <div className="grid gap-16 grid-cols-2 px-2">
-                                        <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
-                                        <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
-                                    </div>
-                                    <div className="flex -mt-15 -mb-8 items-center justify-center">
-                                        <img src="/traumasensibel/Blume.png" className="w-36 h-32 rounded-full"/>
-                                    </div>
-                                </div>
-                                <div className="max-md:text-center">
-                                    <h2 className="text-lg font-bold leading-tight">Kennst du die Stimme in dir, die dir sagt:</h2>
-                                    <p className=" text-lg">„Irgendetwas stimmt mit mir nicht.“</p>
-                                    <p className=" text-lg">„Ich reagiere zu stark.“</p>
-                                    <p className=" text-lgs">„Warum kann ich mich nicht einfach entspannen?“</p>
-                                    <p className="text-lg">Wenn du dich darin wiedererkennst: <br/><br/> Du bist nicht allein. Und vor allem – 
-                                    <span className="font-bold">du bist nicht falsch.</span>
-                                    </p>
-                                    <p className="text-lg">Oft ist es nicht „du“, sondern dein Nervensystem, das zu lange im Überlebensmodus war.</p>
-                                    <br/>
-                                    <p className="text-lg">Wir begleiten dich einfühlsam zurück zu dir selbst. In deinem Tempo. Ohne Druck. In echter Verbindung.</p>             
-                                </div>
+            <div className="container mx-auto px-4 sm:px-6">
+                    <div className="grid gap-10 pb-16 pt-28 md:grid-cols-[1fr_0.9fr] md:items-center md:pt-32 lg:gap-16">
+                        <div className="animate-fade-in">
+                            <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">Traumasensible Prozessbegleitung</p>
+                            <h1 className="mt-4 text-4xl font-bold leading-[1.08] text-white sm:text-5xl lg:text-6xl">
+                                Verstehen, was dein Nervensystem schützen will.
+                            </h1>
+                            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/85">
+                                Manche Reaktionen fühlen sich zu stark an, andere wie völlige Leere. Beides kann eine nachvollziehbare Antwort auf Erfahrungen sein, die dein System einmal überfordert haben.
+                            </p>
+                            <div className="mt-7 rounded-2xl border-l-4 border-primary bg-white/[0.07] px-5 py-4">
+                                <p className="font-semibold text-white">Vielleicht kennst du Gedanken wie:</p>
+                                <p className="mt-2 leading-7 text-white/80">„Irgendetwas stimmt mit mir nicht.“ · „Ich reagiere zu stark.“ · „Warum kann ich mich nicht einfach entspannen?“</p>
                             </div>
+                            <p className="mt-7 max-w-2xl text-lg leading-8 text-white/85">
+                                Wir helfen dir, diese Schutzreaktionen einzuordnen und wieder mehr Sicherheit, Selbstkontakt und Handlungsspielraum zu entwickeln – in deinem Tempo und ohne Druck.
+                            </p>
                         </div>
-                        <div className="flex -ml-56 -mb-16">
-                            <img src="/traumasensibel/Traumasensibel1.jpeg" className="object-cover sm:mask-b-from-80% mask-radial-[80%_60%] sm:mask-radial-from-50% sm:mask-l-from-80% sm:mask-r-from-80%"/>
+                        <div className="min-h-72 overflow-hidden md:min-h-full">
+                            <img src="/traumasensibel/Traumasensibel1.jpeg" className="h-full w-full object-cover object-center sm:mask-b-from-80% sm:mask-radial-from-50% sm:mask-l-from-80% sm:mask-r-from-80%"/>
                         </div>
                     </div>
                     <div className="space-y-6 pt-4 pb-8 animate-fade-in animation-delay-200">
-                        <div className="glass-strong rounded-2xl py-6 px-16 glow-border">
+                        <div className="glass-strong glow-border rounded-2xl px-4 py-6 sm:px-8 lg:px-16">
                             <h3 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Was,
                                 <span className="font-serif italic font-normal text-muted-foreground"> wenn deine Symptome Schutz sind?</span>
                                 <br/>
@@ -241,7 +147,7 @@ export const Coaching = () => {
                                             className="p-0"
                                         >
                                             <div className="flex items-center justify-center">
-                                                <img src={item.image} className="w-48 h-32 rounded-ful"/>
+                                                <img src={item.image} className="h-32 w-48 rounded-2xl object-cover object-center"/>
                                             </div>
                                             <div className="pb-2">
                                                 <p className="text-muted-foreground text-center font-bold">{item.description}</p>
@@ -292,7 +198,7 @@ export const Coaching = () => {
                                             className="p-0"
                                         >
                                             <div className="flex items-center justify-center">
-                                                <img src={item.image} className="rounded-2xl"/>
+                                                <img src={item.image} className="aspect-[4/3] w-full rounded-2xl object-cover object-center"/>
                                             </div>
                                             <div className="flex justify-center items-center">
                                                 <div className="flex items-center justify-center -mr-6 -ml-8">
@@ -321,12 +227,12 @@ export const Coaching = () => {
                         </div>                        
                     </div>
                 </div>    
-                <div className="bg-secondary rounded-t-4xl shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] pt-6 pb-20 animate-fade-in">
+                <div className="bg-secondary pb-20 pt-6 animate-fade-in">
                     <div className="container mx-auto space-y-6 py-16">
                         <div className="grid lg:grid-cols-2 gap-4">
                             <div className="max-md:text-center">
                                 <h3 className="text-xl md:text-xl leading-tight font-bold text-primary">Was bedeutet
-                                    <span className="font-serif italic font-normal text-white"> traumasensible Prozessbegleitung ?</span>
+                                    <span className="font-serif italic font-normal text-white"> traumasensible Prozessbegleitung?</span>
                                 </h3>
                                 <br/>
                                 <p className="">Unsere Arbeit ist 
@@ -337,31 +243,26 @@ export const Coaching = () => {
                                     <span className="font-bold"> Selbstregulation, Sicherheit und echte Veränderung von innen heraus.</span>
                                 </p>
                                 <br/>
-                                <h3 className="font-bold leading-tight">Dabei unterstützen wir dich, wenn du…<br/></h3>
-                                <br/>
-                                <div className="flex">
-                                        <div className="pl-6">
-                                            {number_two.map((item, idx) => (
-                                                    <div 
-                                                        key={idx} 
-                                                        className="p-0"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center gap-4">
-                                                            <ArrowRight className="w-4 h-4 text-primary items-center bg-primary rounded-full"/>
-                                                            {item.description}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                </div>
+                                <h3 className="mt-7 text-xl font-bold leading-tight">Woran wir mit dir arbeiten</h3>
+                                <ol className="mt-5 border-t border-white/20">
+                                    {supportThemes.map((item) => (
+                                        <li key={item.number} className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-white/15 py-4">
+                                            <span className="pt-1 text-sm font-bold tracking-[0.16em] text-primary">{item.number}</span>
+                                            <div>
+                                                <p className="font-bold">{item.title}</p>
+                                                <p className="mt-1 leading-7 text-white/80">{item.text}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ol>
                             </div>
-                            <div className="flex items-start rounded-2xl">
-                                    <img src="/traumasensibel/grubel.jpeg" className="rounded-2xl"/>
+                            <div className="min-h-72 overflow-hidden rounded-2xl">
+                                    <img src="/traumasensibel/grubel.jpeg" className="h-full w-full rounded-2xl object-cover object-center"/>
                             </div> 
                         </div>
                         <div className="grid lg:grid-cols-2 gap-4">
-                            <div className="flex items-start rounded-2xl">
-                                    <img src="/traumasensibel/stein.jpeg" className="rounded-2xl"/>
+                            <div className="min-h-72 overflow-hidden rounded-2xl">
+                                    <img src="/traumasensibel/stein.jpeg" className="h-full w-full rounded-2xl object-cover object-center"/>
                             </div>
                              <div className="glass rounded-2xl px-4 pt-6">
                                 <h3 className="text-xl md:text-xl leading-tight font-bold text-primary">Was ist
@@ -373,96 +274,59 @@ export const Coaching = () => {
                                     <br/>das zu viel, zu schnell oder zu überwältigend war.</p>
                                     <p >Das kann ein einzelnes Ereignis sein –
                                     oder viele kleine Erfahrungen über längere Zeit.</p>
-                                    <p>
-                                    Besonders prägend sind oft:</p> <br/>
-                                        <div className="pl-4">
-                                            {number_three.map((item, idx) => (
-                                                <div 
-                                                    key={idx} 
-                                                    className="p-0"
-                                                >
-                                                    <span className="inline-flex items-center justify-center gap-4">
-                                                        <ArrowRight className="w-3 h-3 text-primary bg-primary rounded-full"/>
-                                                            {item.description}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    <br/>
-                                    <p className="">Damals war es notwendig, dich anzupassen oder Gefühle zu unterdrücken.<br/>
-                                    Heute verhindern genau diese Schutzmechanismen, dass du dich wirklich frei fühlst.</p>
+                                    <p className="mt-5 border-l-2 border-primary pl-4 text-lg leading-8">
+                                        Prägend kann sein, wenn Sicherheit und Geborgenheit fehlen, Beziehungen unberechenbar sind oder Kritik, Abwertung und Überforderung zum Alltag gehören.
+                                    </p>
+                                    <p className="mt-5 leading-7">Nicht immer ist es der eine große Moment. Manchmal ist es die lange Wiederholung dessen, was ein Mensch zu früh und zu lange allein tragen musste.</p>
+                                    <p className="mt-4 leading-7">Anpassung und das Zurückhalten von Gefühlen waren damals sinnvoll. Heute können dieselben Schutzbewegungen Nähe, Freiheit und eine klare Wahrnehmung der eigenen Bedürfnisse erschweren.</p>
                             </div>
                         </div>
                         <div className="glass rounded-2xl glow-border overflow-hidden">
                             <div className="grid md:grid-cols-2">
                                 <div className="pt-16 px-4 py-4">
-                                    <h3 className="text-xl md:text-xl leading-tight  font-bold text-primary">Typische Folgen
-                                            <span className="font-serif italic font-normal text-white"> zeigen sich oft so:</span>
-                                            <br/>
-                                    </h3>
-                                    <br/>
-                                        <div>
-                                            {number_four.map((item, idx) => (
-                                                <div 
-                                                    key={idx} 
-                                                    className="p-0"
-                                                >
-                                                    <span className="text-white inline-flex items-center justify-center gap-4">
-                                                    <ArrowRight className="w-3 h-3 text-primary items-center bg-primary rounded-full"/>
-                                                        {item.description}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    <br/>
-                                    <p className="font-medium italic text-center lg:pt-14 md:text-xl">Das sind keine Schwächen. <br/> Das sind intelligente Schutzstrategien.
+                                    <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">Im Alltag</p>
+                                    <h3 className="mt-3 text-2xl font-bold leading-tight md:text-3xl">Schutz ist oft leiser, als man denkt</h3>
+                                    <p className="mt-5 text-lg leading-8 text-white/85">
+                                        Vielleicht stellst du eigene Bedürfnisse zurück und versuchst, es allen recht zu machen. Gefühle werden weggeschoben, bis Rückzug, Überforderung oder eine schwer erklärbare innere Leere entstehen.
                                     </p>
+                                    <blockquote className="mt-7 border-l-2 border-primary pl-5 text-xl font-semibold leading-8">
+                                        Du reagierst nicht falsch. Dein System reagiert folgerichtig auf das, was es gelernt hat.
+                                    </blockquote>
                                 </div>
-                                <div className="flex -ml-16">
-                                    <img src="/traumasensibel/steg.jpg" className="rounded-2xl md:mask-l-from-60%"/>
+                                <div className="min-h-72 overflow-hidden rounded-2xl">
+                                    <img src="/traumasensibel/steg.jpg" className="h-full w-full object-cover object-center md:mask-l-from-60%"/>
                                 </div> 
                             </div>
                         </div>   
                     </div>
                 </div>
-                <div className=" bg-secondary rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
+                <div className="bg-secondary pb-8 animate-fade-in animation-delay-400">
                     <div className="container mx-auto space-y-6 py-16">
                         <div className="grid lg:grid-cols-2">
                             <div className="pb-6 pt-4">
-                                <h3 className="text-2xl md:text-2xl text-center leading-tight  font-bold text-primary">Was du
-                                    <span className="font-serif italic font-normal text-white"> bei uns lernst</span>
-                                    <br/>
-                                </h3>
-                                <br/>
-                                <div className="px-6">
-                                    <p className="  text-center font-bold">In unserer Begleitung lernst du:<br/>
-                                    </p>
-                                    <br/>
-                                    <div className="flex items-center justify-center">
-                                        <div className="pl-6 space-y-2">
-                                            {number_five.map((item, idx) => (
-                                                <div 
-                                                    key={idx} 
-                                                    className="p-0"
-                                                >
-                                                    <span className=" inline-flex items-center justify-center gap-4">
-                                                        <ArrowRight className="w-3 h-3 text-primary items-center bg-primary rounded-full"/>
-                                                        {item.description}
-                                                    </span>
+                                <div className="px-4 sm:px-6">
+                                    <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">Veränderung im Alltag</p>
+                                    <h3 className="mt-3 text-2xl font-bold leading-tight md:text-3xl">Woran du merkst, dass sich wirklich etwas bewegt</h3>
+                                    <ol className="mt-6 space-y-5">
+                                        {changePhases.map((item) => (
+                                            <li key={item.number} className="grid grid-cols-[2.5rem_1fr] gap-3">
+                                                <span className="pt-1 text-sm font-bold tracking-[0.16em] text-primary">{item.number}</span>
+                                                <div>
+                                                    <p className="font-bold">{item.title}</p>
+                                                    <p className="mt-1 leading-7 text-white/80">{item.text}</p>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <br/>
+                                            </li>
+                                        ))}
+                                    </ol>
                                 </div>
                             </div>
-                            <div className="flex">
-                                    <img src="/traumasensibel/gucken.jpeg" className="rounded-2xl "/>
+                            <div className="min-h-72 overflow-hidden rounded-2xl">
+                                    <img src="/traumasensibel/gucken.jpeg" className="h-full w-full object-cover object-center"/>
                             </div>
                         </div>
                         <div className="grid lg:grid-cols-2 mb-12 gap-6">
-                            <div className="flex">
-                                    <img src="/traumasensibel/wald.jpeg" className="rounded-2xl "/>
+                            <div className="min-h-72 overflow-hidden rounded-2xl">
+                                    <img src="/traumasensibel/wald.jpeg" className="h-full w-full object-cover object-center"/>
                             </div>
                             <div>
                                 <div className="grid lg:grid-cols-2 gap-2 h-full">
@@ -471,34 +335,13 @@ export const Coaching = () => {
                                             <h3 className="text-xl md:text-xl leading-tight max-lg:text-center font-bold text-primary">Unsere Arbeit
                                                 <span className="font-serif italic font-normal text-white"> mit dir</span>
                                             </h3>
-                                            <p className=" text-sm font-bold mt-6 max-lg:text-center">Wir begleiten dich auf mehreren Ebenen:</p>
-                                            <br/>
-                                            <div className="max-lg:flex max-lg:items-center max-lg:justify-center">
-                                                <div>    
-                                                    {number_six.map((item, idx) => (
-                                                            <div 
-                                                                key={idx} 
-                                                                className="p-0"
-                                                            >
-                                                                <span className=" text-sm max-lg:text-center inline-flex items-center justify-center gap-4">
-                                                                    <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                                                    {item.description}
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                </div>
-                                            </div>
-                                            <br/>
-                                            <p className="text-sm max-lg:text-center">Schritt für Schritt kann sich lösen,<br/>
-                                            was dich bisher innerlich festgehalten hat.</p>
-                                            <p className="text-sm max-lg:text-center">Du beginnst, dich wieder zu spüren.<br/>
-                                            Dir selbst zu vertrauen.<br/>
-                                            Und dein Leben bewusster zu gestalten.
-                                            </p>
+                                            <p className="mt-6 leading-7 max-lg:text-center">Wir verbinden Gespräch und Reflexion mit körperlicher und emotionaler Wahrnehmung, traumasensibler Prozessarbeit und systemischer Anteilearbeit.</p>
+                                            <p className="mt-4 leading-7 max-lg:text-center">Nicht als Methodenkatalog, sondern als abgestimmten Prozess: Wir setzen dort an, wo sich dein Thema gerade tatsächlich zeigt.</p>
+                                            <p className="mt-4 font-semibold leading-7 max-lg:text-center">So kann aus Verstehen allmählich ein anderes Erleben – und daraus eine neue Handlungsmöglichkeit – werden.</p>
                                         </div>
                                     </div>
-                                    <div className="flex">
-                                        <img src="/traumasensibel/pflanze.jpeg" className="rounded-2xl object-cover object-right"/>
+                                    <div className="min-h-72 overflow-hidden rounded-2xl">
+                                        <img src="/traumasensibel/pflanze.jpeg" className="h-full w-full object-cover object-center"/>
                                     </div>
                                 </div>
                             </div>
@@ -522,42 +365,32 @@ export const Coaching = () => {
                                         <br/>
                                     </div>
                                 </div>
-                                <div className="flex">
-                                    <img src="/traumasensibel/strand.jpeg" className="rounded-2xl lg:mask-l-from-60%"/>
+                                <div className="min-h-72 overflow-hidden rounded-2xl">
+                                    <img src="/traumasensibel/strand.jpeg" className="h-full w-full object-cover object-center lg:mask-l-from-60%"/>
                                 </div>
                             </div>
                         </div>                    
                     </div>
                 </div>
-                <div className="bg-card"> 
-                    <div className="grid md:grid-cols-3 ">
-                        <div className="flex items-center justify-center py-8">
+                <div className="border-y border-white/10 bg-[#0B777A]">
+                    <div className="mx-auto grid max-w-6xl items-center md:grid-cols-[0.45fr_1.15fr_0.8fr]">
+                        <div className="flex items-center justify-center p-8">
                             <Calendar1 className="md:w-36 md:h-36 w-24 h-24 text-primary"/>
                         </div>
-                        <div className="md:-mx-8 py-8">    
-                            <p className="md:text-2xl text-lg text-center">Manchmal ist es nur ein kleiner erster Schritt, </p> 
-                            <p className="text-center md:text-2xl text-lg">der <span className="text-primary text-center"> alles in Bewegung </span> setzt. </p>
-                            <div className="grid gap-8 grid-cols-2 px-2 pt-4">
-                                <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
-                                <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
-                            </div>
-                            <div className="flex -mt-8 -mb-8 items-center justify-center">
-                                <img src="/traumasensibel/Blume.png" className="w-18 h-16 rounded-full"/>
-                            </div>
-                            <p className="text-center pt-4">
-                                Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir gut tut.
+                        <div className="px-6 py-10">
+                            <h2 className="text-3xl font-bold leading-tight">Ein erster Schritt kann vieles in Bewegung bringen</h2>
+                            <p className="mt-4 leading-7 text-white/85">
+                                Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir guttut.
                                 Ganz unverbindlich und nur für dich.
                             </p>
-                            <div className="flex items-center justify-center pt-4">
-                                <Button size="lg">
-                                    <div className="inline-flex justify-center text-black items-center">
+                            <div className="pt-6">
+                                <Link to="/kontakt" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
                                     Kennenlernen <ArrowRight className="w-5 h-5"/>
-                                    </div>
-                                </Button>
+                                </Link>
                             </div>
                         </div>
-                        <div className="flex">
-                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50%  md:mask-b-from-50%"/>
+                        <div className="min-h-64 overflow-hidden md:min-h-full">
+                            <img src="/breachright.jpeg" className="h-full w-full object-cover object-center md:mask-l-from-50%"/>
                         </div>
                     </div>
                 </div>

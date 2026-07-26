@@ -1,260 +1,352 @@
-import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "lucide-react"
-import { useState } from "react";
-import { Button } from "@/components/Button"
-import { InlineWidget, PopupButton } from "react-calendly";
+import {
+    ArrowRight,
+    CalendarDays,
+    Clock3,
+    MessageCircle,
+    Sparkles,
+    UserRound,
+    UsersRound,
+} from "lucide-react";
+import { PopupButton } from "react-calendly";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-const booking_one = [
-    {
-        title: "Erstgespräch mit Sabine",
-        dauer: "15 min",
-        description:
-        "Ein erstes Kennenlernen, um gemeinsam zu schauen, was dich aktuell bewegt und welche Form der Begleitung für dich passend sein könnte.",
-        price: "Kostenlos",
-        link: "https://calendly.com/spirit-healing/partner-einschreiben",
+const content = {
+    de: {
+        eyebrow: "Preise & Termine",
+        title: "Wähle den Rahmen, der zu deinem Anliegen passt",
+        intro: "Du kannst mit einem kostenfreien Kennenlernen beginnen oder direkt eine Sitzung buchen. Wenn du noch unsicher bist, klären wir gemeinsam, welche Form der Begleitung für dich sinnvoll ist.",
+        facts: ["Online und ortsunabhängig", "Deutsch und Türkisch", "Vertraulich und persönlich"],
+        book: "Termin wählen",
+        duration: "Dauer",
+        price: "Preis",
+        sections: [
+            {
+                eyebrow: "Unverbindlich kennenlernen",
+                title: "Kostenfreies Erstgespräch",
+                intro: "15 Minuten für dein Anliegen, deine Fragen und ein erstes Gefühl dafür, ob die Zusammenarbeit für dich stimmig ist.",
+                kind: "intro",
+                items: [
+                    {
+                        title: "Kennenlernen mit Sabine",
+                        duration: "15 Minuten",
+                        description: "Wir schauen gemeinsam darauf, was dich gerade beschäftigt und welche Form der Begleitung zu deiner Situation passen könnte.",
+                        price: "Kostenfrei",
+                        link: "https://calendly.com/spirit-healing/partner-einschreiben",
+                    },
+                    {
+                        title: "Kennenlernen mit Selcan",
+                        duration: "15 Minuten",
+                        description: "Ein ruhiger erster Austausch für dein Anliegen und die Frage, ob du dich in der Zusammenarbeit gut aufgehoben fühlst.",
+                        price: "Kostenfrei",
+                        link: "https://calendly.com/selcan1975/erstgesprach",
+                    },
+                ],
+            },
+            {
+                eyebrow: "Individuelle Begleitung",
+                title: "Einzelsitzungen",
+                intro: "Für Themen, die mehr Raum brauchen: emotionale Muster, Beziehungserfahrungen, innere Anspannung oder der Wunsch nach einer nachhaltigen Veränderung.",
+                kind: "single",
+                items: [
+                    {
+                        title: "Erstsitzung mit Sabine",
+                        duration: "60 Minuten",
+                        description: "Ein fundierter Einstieg in dein Thema und die Dynamiken, die heute noch auf dein Erleben und deine Beziehungen wirken.",
+                        price: "222 €",
+                        link: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
+                    },
+                    {
+                        title: "Erstsitzung mit Selcan",
+                        duration: "60 Minuten",
+                        description: "Ein erster vertiefender Prozessraum für emotionale Themen, Bindungsdynamiken, innere Spannungen und Selbstkontakt.",
+                        price: "222 €",
+                        link: "https://calendly.com/selcan1975/erstsitzung-selcan",
+                    },
+                    {
+                        title: "Folgesitzung mit Sabine",
+                        duration: "60 Minuten",
+                        description: "Wir greifen auf, was sich seit der letzten Sitzung gezeigt hat, und führen deinen persönlichen Prozess gezielt weiter.",
+                        price: "222 €",
+                        link: "https://calendly.com/spirit-healing/folgesitzung-sabine",
+                    },
+                    {
+                        title: "Folgesitzung mit Selcan",
+                        duration: "60 Minuten",
+                        description: "Raum für die nächste Ebene deines Prozesses und für das, was sich emotional oder im Alltag weiterentwickeln möchte.",
+                        price: "222 €",
+                        link: "https://calendly.com/selcan1975/folgesitzung-selcan",
+                    },
+                ],
+            },
+            {
+                eyebrow: "Mehrperspektivisch & intensiv",
+                title: "Gemeinsame und vertiefende Sitzungen",
+                intro: "Wenn ein Thema aus mehreren Blickwinkeln begleitet werden soll oder ein längerer, konzentrierter Prozess sinnvoll ist.",
+                kind: "intensive",
+                items: [
+                    {
+                        title: "Erstsitzung mit Sabine & Selcan",
+                        duration: "60 Minuten",
+                        description: "Gemeinsame Begleitung, die psychologische, systemische, körperorientierte und intuitive Wahrnehmung zusammenführt.",
+                        price: "333 €",
+                        link: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
+                    },
+                    {
+                        title: "Folgesitzung mit Sabine & Selcan",
+                        duration: "60 Minuten",
+                        description: "Wir betrachten deinen Prozess gemeinsam und arbeiten dort weiter, wo sich neue Zusammenhänge oder Entwicklungsschritte zeigen.",
+                        price: "333 €",
+                        link: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
+                    },
+                    {
+                        title: "Intensivsitzung mit Selcan",
+                        duration: "150 Minuten",
+                        description: "Ein längerer Prozessraum für systemische Aufstellungsarbeit oder schamanisch ausgerichtete Seelenrückholung.",
+                        price: "333 €",
+                        link: "https://calendly.com/selcan1975/aufstellungsarbeit-selcan",
+                    },
+                ],
+            },
+        ],
+        customEyebrow: "Noch nicht sicher?",
+        customTitle: "Wir finden gemeinsam den passenden Einstieg",
+        customText: "Nicht jedes Anliegen passt in eine feste Kategorie. Schreib uns kurz, worum es geht. Wir melden uns persönlich und empfehlen dir einen sinnvollen nächsten Schritt.",
+        contact: "Nachricht senden",
+        legal: { imprint: "Impressum", privacy: "Datenschutz" },
     },
-    {
-        title: "Erstgespräch mit Selcan",
-        dauer: "15 min",
-        description:
-        "Ein ruhiger erster Raum für deine Fragen, dein Anliegen und ein erstes gemeinsames Spüren, ob die Zusammenarbeit für dich stimmig ist.",
-        price: "Kostenlos",
-        link: "https://calendly.com/selcan1975/erstgesprach",
+    tr: {
+        eyebrow: "Ücretler & Randevu",
+        title: "İhtiyacına uygun çalışma biçimini seç",
+        intro: "Ücretsiz bir tanışma görüşmesiyle başlayabilir veya doğrudan seans randevusu alabilirsin. Hangisinin sana uygun olduğundan emin değilsen, birlikte netleştiririz.",
+        facts: ["Çevrim içi ve mekândan bağımsız", "Türkçe ve Almanca", "Gizli ve kişiye özel"],
+        book: "Randevu seç",
+        duration: "Süre",
+        price: "Ücret",
+        sections: [
+            {
+                eyebrow: "Önce tanışalım",
+                title: "Ücretsiz tanışma görüşmesi",
+                intro: "Konunu ve sorularını kısaca paylaşabileceğin, birlikte çalışmanın sana uygun olup olmadığını hissedebileceğin 15 dakikalık bir görüşme.",
+                kind: "intro",
+                items: [
+                    {
+                        title: "Sabine ile tanışma",
+                        duration: "15 dakika",
+                        description: "Şu anda seni neyin etkilediğine ve içinde bulunduğun durum için nasıl bir desteğin uygun olabileceğine birlikte bakarız.",
+                        price: "Ücretsiz",
+                        link: "https://calendly.com/spirit-healing/partner-einschreiben",
+                    },
+                    {
+                        title: "Selcan ile tanışma",
+                        duration: "15 dakika",
+                        description: "Konunu paylaşabileceğin ve bu çalışmada kendini güvende hissedip hissetmediğini anlayabileceğin sakin bir ilk görüşme.",
+                        price: "Ücretsiz",
+                        link: "https://calendly.com/selcan1975/erstgesprach",
+                    },
+                ],
+            },
+            {
+                eyebrow: "Bireysel çalışma",
+                title: "Bireysel seanslar",
+                intro: "Daha fazla alan isteyen konular için: duygusal örüntüler, ilişki deneyimleri, içsel gerginlik veya kalıcı bir değişim arzusu.",
+                kind: "single",
+                items: [
+                    {
+                        title: "Sabine ile ilk seans",
+                        duration: "60 dakika",
+                        description: "Konuna ve bugün hâlâ duygularını, davranışlarını ve ilişkilerini etkileyen dinamiklere sağlam bir başlangıç.",
+                        price: "222 €",
+                        link: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
+                    },
+                    {
+                        title: "Selcan ile ilk seans",
+                        duration: "60 dakika",
+                        description: "Duygusal konular, bağlanma dinamikleri, içsel gerilim ve kendinle temas için derinleşen bir ilk çalışma alanı.",
+                        price: "222 €",
+                        link: "https://calendly.com/selcan1975/erstsitzung-selcan",
+                    },
+                    {
+                        title: "Sabine ile devam seansı",
+                        duration: "60 dakika",
+                        description: "Önceki seanstan bu yana ortaya çıkanları ele alır, kişisel sürecini hedefli bir şekilde sürdürürüz.",
+                        price: "222 €",
+                        link: "https://calendly.com/spirit-healing/folgesitzung-sabine",
+                    },
+                    {
+                        title: "Selcan ile devam seansı",
+                        duration: "60 dakika",
+                        description: "Sürecinin bir sonraki adımı ve duygusal dünyanda ya da günlük yaşamında gelişmek isteyenler için alan açarız.",
+                        price: "222 €",
+                        link: "https://calendly.com/selcan1975/folgesitzung-selcan",
+                    },
+                ],
+            },
+            {
+                eyebrow: "Çok yönlü & yoğun",
+                title: "Ortak ve derinleştirici seanslar",
+                intro: "Bir konunun birden fazla bakış açısıyla ele alınması ya da daha uzun ve odaklı bir çalışma gerekmesi durumunda.",
+                kind: "intensive",
+                items: [
+                    {
+                        title: "Sabine & Selcan ile ilk seans",
+                        duration: "60 dakika",
+                        description: "Psikolojik, sistemik, beden odaklı ve sezgisel algıyı bir araya getiren ortak bir çalışma.",
+                        price: "333 €",
+                        link: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
+                    },
+                    {
+                        title: "Sabine & Selcan ile devam seansı",
+                        duration: "60 dakika",
+                        description: "Sürecine birlikte bakar, yeni bağlantıların veya gelişim adımlarının görünür olduğu yerden devam ederiz.",
+                        price: "333 €",
+                        link: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
+                    },
+                    {
+                        title: "Selcan ile yoğun seans",
+                        duration: "150 dakika",
+                        description: "Sistemik aile dizimi veya şamanik yaklaşımlı ruhsal bütünlenme çalışması için daha uzun bir süreç alanı.",
+                        price: "333 €",
+                        link: "https://calendly.com/selcan1975/aufstellungsarbeit-selcan",
+                    },
+                ],
+            },
+        ],
+        customEyebrow: "Emin değil misin?",
+        customTitle: "Sana uygun başlangıcı birlikte belirleyelim",
+        customText: "Her konu sabit bir kategoriye sığmaz. Bize kısaca neyle ilgili olduğunu yazabilirsin. Sana kişisel olarak geri döner ve anlamlı bir sonraki adım öneririz.",
+        contact: "Mesaj gönder",
+        legal: { imprint: "Künye", privacy: "Gizlilik" },
     },
-];
+};
 
-const booking_two = [
-    {
-        title: "Erstsitzung mit Sabine",
-        dauer: "60 min",
-        description:
-            "Für Menschen, die tiefer auf emotionale Muster, Nervensystem, Beziehungsthemen oder innere Dynamiken schauen möchten.",
-        price: "222 €",
-        link: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
-    },
-    {
-        title: "Erstsitzung mit Selcan",
-        dauer: "60 min",
-        description:
-            "Ein erster tiefergehender Prozessraum für emotionale Themen, innere Spannungen, Bindungsdynamiken und Selbstkontakt.",
-        price: "222 €",
-        link: "https://calendly.com/selcan1975/erstsitzung-selcan",            
-    },
-    {
-        title: "Folgesitzung mit Sabine",
-        dauer: "60 min",
-        description:
-            "Vertiefende Begleitung für deinen weiteren Prozess und das, was sich seit der letzten Sitzung gezeigt oder verändert hat.",
-        price: "222 €",
-        link: "https://calendly.com/spirit-healing/folgesitzung-sabine",            
-    },
-    {
-        title: "Folgesitzung mit Selcan",
-        dauer: "60 min",
-        description:
-            "Raum für weitere emotionale Prozessarbeit, innere Dynamiken und die nächste Ebene deines Weges.",
-        price: "222 €",
-        link: "https://calendly.com/selcan1975/folgesitzung-selcan",
-    },
-];
+const sectionIcons = {
+    intro: MessageCircle,
+    single: UserRound,
+    intensive: UsersRound,
+};
 
-const booking = [
-     {
-        title: "Erstsitzung mit Sabine & Selcan",
-        dauer: "60 min",
-        description:
-            "Gemeinsame Begleitung auf mehreren Ebenen gleichzeitig — emotional, psychologisch, systemisch und intuitiv.",
-        price: "333 €",
-        link: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
-    },
-    {
-        title: "Folgesitzung mit Sabine & Selcan",
-        dauer: "60 min",
-        description:
-        "Gemeinsame prozessorientierte Begleitung mit tiefer emotionaler, systemischer und intuitiver Wahrnehmung.g",
-        price: "333 €",
-        link: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
-    },
-    {
-        title: "Intensivsitzung mit Selcan",
-        dauer: "150 min",
-        description:
-            "Tiefergehende Prozessarbeit mit systemischer Aufstellungsarbeit oder schamanischer Seelenrückholung.",
-        price: "333 €",
-        link: "https://calendly.com/selcan1975/aufstellungsarbeit-selcan",            
-    },
-];
+const BookingCard = ({ item, labels, icon }) => {
+    const rootElement = typeof document !== "undefined" ? document.getElementById("root") : null;
+    const CardIcon = icon;
+
+    return (
+        <article className="glass-strong group flex h-full flex-col rounded-3xl p-5 shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-primary/30">
+                    <CardIcon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <span className="rounded-full bg-muted/10 px-3 py-1 text-sm font-semibold text-muted-foreground">{item.price}</span>
+            </div>
+
+            <div className="mt-5 flex flex-1 flex-col">
+                <h3 className="text-xl font-bold leading-snug text-muted-foreground">{item.title}</h3>
+                <p className="mt-3 flex-1 leading-7 text-muted-foreground/80">{item.description}</p>
+            </div>
+
+            <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-muted-foreground/15 pt-5">
+                <div>
+                    <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground/55">{labels.duration}</dt>
+                    <dd className="mt-1 flex items-center gap-2 font-semibold text-muted-foreground">
+                        <Clock3 className="h-4 w-4 text-primary" aria-hidden="true" />
+                        {item.duration}
+                    </dd>
+                </div>
+                <div className="text-right">
+                    <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground/55">{labels.price}</dt>
+                    <dd className="mt-1 font-bold text-muted-foreground">{item.price}</dd>
+                </div>
+            </dl>
+
+            <PopupButton
+                url={item.link}
+                className="mt-6 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-primary px-5 py-3 text-base font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                rootElement={rootElement}
+                text={labels.book}
+            />
+        </article>
+    );
+};
 
 export const Pricing = () => {
-    const [isSchmidt, setIsSchmidt] = useState(true);
-    
+    const { language } = useLanguage();
+    const copy = content[language];
+
     return (
-        <section id="about" className="pt-20 relative overflow-hidden">
-            <div className="container relative z-10 min-w-screen animate-fade-in">
-                <div className="container mx-auto space-y-6 py-16">
-                    <h1 className="text-4xl text-center md:text-5xl font-bold leading-tight text-primary glow-text">
-                        Lerne uns 
-                    <span className="font-serif italic font-normal text-white"> kennen</span>
-                    </h1>
-                    <div className="grid lg:grid-cols-2 md:grid-cols-2 gap-8 p-16">
-                        {booking_one.map((item, idx) => (
-                            <div 
-                                key={idx} 
-                                className="glass glow-border rounded-2xl p-4" 
-                            >
-                                <h2 className="text-center text-xl font-bold">{booking_one[idx].title}</h2>
-                                <br/>
-                                <p className="text-lg text-center">{booking_one[idx].description}</p>
-                                <br/>
-                                <p className="text-center text-xl font-bold">Dauer: {booking_one[idx].dauer}</p>
-                                <p className="text-center text-xl font-bold">Preis: {booking_one[idx].price}</p>
-                                <div className="flex mt-8 items-center justify-center">
-                                    <PopupButton
-                                        url={booking_one[idx].link}
-                                        /*
-                                        * react-calendly uses React's Portal feature (https://reactjs.org/docs/portals.html) to render the popup modal. As a result, you'll need to
-                                        * specify the rootElement property to ensure that the modal is inserted into the correct domNode.
-                                        */
-                                        className="bg-primary text-black rounded-full px-2 text-lg cursor-pointer hover:bg-primary/90"
-                                        rootElement={document.getElementById("root")}
-                                        text="Jetzt Buchen"
-                                    />
-                                </div>
+        <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
+            <section className="relative border-b border-white/10">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.18),transparent_38%)]" aria-hidden="true" />
+                <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_0.72fr] lg:items-end lg:px-8">
+                    <div className="max-w-3xl">
+                        <p className="font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
+                        <h1 className="mt-4 text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl">{copy.title}</h1>
+                        <p className="mt-6 max-w-2xl text-lg leading-8 text-white/85">{copy.intro}</p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                        {copy.facts.map((fact) => (
+                            <div key={fact} className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
+                                <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                                <span className="text-sm font-medium text-white/90">{fact}</span>
                             </div>
                         ))}
                     </div>
-                    <h2 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Lerne deine
-                        <span className="font-serif italic font-normal text-white"> inneren Prozesse kennen</span>
-                        <br/>
-                    </h2>
-                    <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 p-16">
-                        {booking_two.map((item, idx) => (
-                            <div 
-                                key={idx} 
-                                className="glass glow-border rounded-2xl p-4" 
-                            >
-                                <h2 className="text-center text-xl font-bold">{booking_two[idx].title}</h2>
-                                <br/>
-                                <p className="text-lg text-center">{booking_two[idx].description}</p>
-                                <br/>
-                                <p className="text-center text-xl font-bold">Dauer: {booking_two[idx].dauer}</p>
-                                <p className="text-center text-xl font-bold">Preis: {booking_two[idx].price}</p>
-                                <div className="flex mt-8 items-center justify-center">
-                                    <PopupButton
-                                        url={booking_two[idx].link}
-                                        /*
-                                        * react-calendly uses React's Portal feature (https://reactjs.org/docs/portals.html) to render the popup modal. As a result, you'll need to
-                                        * specify the rootElement property to ensure that the modal is inserted into the correct domNode.
-                                        */
-                                        className="bg-primary text-black rounded-full px-2 text-lg cursor-pointer hover:bg-primary/90"
-                                        rootElement={document.getElementById("root")}
-                                        text="Jetzt Buchen"
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <h2 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Lerne deine
-                        <span className="font-serif italic font-normal text-white"> inneren Prozesse selbst zu bestimmen</span>
-                        <br/>
-                    </h2>
-                    <div className="px-16">
-                        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8 p-16">
-                            {booking.map((item, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className="glass glow-border rounded-2xl p-4" 
-                                >
-                                    <h2 className="text-center text-xl font-bold">{booking[idx].title}</h2>
-                                    <br/>
-                                    <p className="text-lg text-center">{booking[idx].description}</p>
-                                    <br/>
-                                    <p className="text-center text-xl font-bold">Dauer: {booking[idx].dauer}</p>
-                                    <p className="text-center text-xl font-bold">Preis: {booking[idx].price}</p>
-                                    <div className="flex mt-8 items-center justify-center">
-                                        <PopupButton
-                                            url={booking[idx].link}
-                                            /*
-                                            * react-calendly uses React's Portal feature (https://reactjs.org/docs/portals.html) to render the popup modal. As a result, you'll need to
-                                            * specify the rootElement property to ensure that the modal is inserted into the correct domNode.
-                                            */
-                                            className="bg-primary text-black rounded-full px-2 text-lg cursor-pointer hover:bg-primary/90"
-                                            rootElement={document.getElementById("root")}
-                                            text="Jetzt Buchen"
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <h3 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Dein Weg in die Freiheit -
-                        <span className="font-serif italic font-normal text-white"> ein selbstbestimmtes Leben</span>
-                        <br/>
-                    </h3>
-                    <h3 className="text-2xl md:text-3xl text-center leading-tight  font-bold text-primary">Lass dir ein individuelles Paket schnüren, 
-                        <span className="font-serif italic font-normal text-white"> genau auf dich zugeschnitten.</span>
-                        <br/>
-                    </h3>
-                    
                 </div>
-                    <div className="bg-card"> 
-                        <div className="grid md:grid-cols-3 ">
-                            <div className="flex items-center justify-center py-8">
-                                <Calendar1 className="md:w-36 md:h-36 w-24 h-24 text-primary"/>
+            </section>
+
+            <div className="mx-auto w-full max-w-6xl space-y-24 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+                {copy.sections.map((section) => {
+                    const Icon = sectionIcons[section.kind];
+                    const gridClass = section.items.length === 4
+                        ? "md:grid-cols-2 xl:grid-cols-4"
+                        : section.items.length === 3
+                            ? "md:grid-cols-2 xl:grid-cols-3"
+                            : "md:grid-cols-2";
+
+                    return (
+                        <section key={section.title} aria-labelledby={`pricing-${section.kind}`}>
+                            <div className="max-w-3xl">
+                                <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{section.eyebrow}</p>
+                                <h2 id={`pricing-${section.kind}`} className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">{section.title}</h2>
+                                <p className="mt-4 text-lg leading-8 text-white/80">{section.intro}</p>
                             </div>
-                            <div className="md:-mx-8 py-8">    
-                                <p className="md:text-2xl text-lg text-center">Manchmal ist es nur ein kleiner erster Schritt, </p> 
-                                <p className="text-center md:text-2xl text-lg">der <span className="text-primary text-center"> alles in Bewegung </span> setzt. </p>
-                                <div className="grid gap-8 grid-cols-2 px-2 pt-4">
-                                    <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
-                                    <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
-                                </div>
-                                <div className="flex -mt-8 -mb-8 items-center justify-center">
-                                    <img src="/traumasensibel/Blume.png" className="w-18 h-16 rounded-full"/>
-                                </div>
-                                <p className="text-center pt-4">
-                                    Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir gut tut.
-                                    Ganz unverbindlich und nur für dich.
-                                </p>
-                                <div className="flex items-center justify-center pt-4">
-                                    <Button size="lg">
-                                        <div className="inline-flex justify-center text-black items-center">
-                                        Kennenlernen <ArrowRight className="w-5 h-5"/>
-                                        </div>
-                                    </Button>
-                                </div>
+                            <div className={`mt-8 grid items-stretch gap-5 ${gridClass}`}>
+                                {section.items.map((item) => (
+                                    <BookingCard
+                                        key={item.title}
+                                        item={item}
+                                        labels={copy}
+                                        icon={Icon}
+                                    />
+                                ))}
                             </div>
-                            <div className="flex">
-                                <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-t-from-80% md:mask-b-from-80%"/>
+                        </section>
+                    );
+                })}
+
+                <section className="overflow-hidden rounded-[2rem] border border-primary/35 bg-[#0B777A] shadow-2xl shadow-black/15">
+                    <div className="grid lg:grid-cols-[0.78fr_1.22fr]">
+                        <div className="flex min-h-56 items-center justify-center bg-primary/10 p-8">
+                            <div className="flex h-28 w-28 items-center justify-center rounded-full border border-primary/40 bg-card/45 text-primary shadow-inner sm:h-36 sm:w-36">
+                                <CalendarDays className="h-14 w-14 sm:h-16 sm:w-16" aria-hidden="true" />
                             </div>
                         </div>
-                    </div>
-                    <div className=" flex items-center justify-center mb-6">
-                        <div className="flex items-center justify-center px-4">   
-                            <Link 
-                                to="/impressum"
-                                className="px-8 py-2 text-sm text-white"
-                            >
-                                Impressum
+                        <div className="p-6 sm:p-10 lg:p-12">
+                            <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{copy.customEyebrow}</p>
+                            <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">{copy.customTitle}</h2>
+                            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/80">{copy.customText}</p>
+                            <Link to="/kontakt" className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
+                                {copy.contact}
+                                <ArrowRight className="h-5 w-5" aria-hidden="true" />
                             </Link>
                         </div>
-                        <div className="flex items-center justify-center px-4">   
-                            <Link 
-                                to="/datenschutz"
-                                className="px-8 py-2 text-sm text-white"
-                            >
-                                Datenschutz
-                            </Link>
-                        </div>
                     </div>
-                
+                </section>
             </div>
-        </section>
+
+            <footer className="flex items-center justify-center gap-2 px-4 pt-2 text-sm text-white/75">
+                <Link to="/impressum" className="rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">{copy.legal.imprint}</Link>
+                <Link to="/datenschutz" className="rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">{copy.legal.privacy}</Link>
+            </footer>
+        </main>
     );
-}
-{/* 
-    - Erstgespr. S/F/G 15min
-    - Sitzung S/F/G 1std g 1.5 std
-    - Aufstellung S/F/G 2std g bis zu 4std
-    - Schamanische S/F/G 2std g bis zu 3 std 
-    */}
+};

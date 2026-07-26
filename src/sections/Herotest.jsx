@@ -1,124 +1,5 @@
-import { Calendar1, CloudLightning, Github, GlassWater, Heart, Instagram, Twitter, Users } from "lucide-react";
-import { Button } from "@/components/Button"
+import { ArrowRight, Calendar1, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Menu, X } from "lucide-react";
-
-const highlitghts = [
-    {
-        icon: Heart,
-        title: "Seelenlesung",
-        description:
-        "Erfahren Sie, was Ihr spiritueller Weg für Sie bereithält und gewinnen Sie Klarheit über Ihre innere Welt.",
-    },
-    {
-        icon: CloudLightning,
-        title: "Heilungsrituale",
-        description:
-            "Nutzen Sie unsere Rituale, um emotionale Blockaden zu lösen und neue Energie zu tanken.",
-    },
-    {
-        icon: Users,
-        title: "Energiearbeit",
-        description:
-            "Lassen Sie negative Energien hinter sich und bringen Sie Ihre Lebensenergie wieder ins Fließen.",            
-    },
-    {
-        icon: GlassWater,
-        title: "Energiearbeit",
-        description:
-            "Lassen Sie negative Energien hinter sich und bringen Sie Ihre Lebensenergie wieder ins Fließen.",            
-    },
-];
-
-const left_side = [
-    {
-        description:
-        "Du stellst deine eigenen Bedürfnisse hinter die von anderen.",
-    },
-    {
-        description:
-            "Du bist dir deiner eigenen Bedürfnisse nicht bewusst.",
-    },
-    {
-        description:
-            "Du spürst eine innere Blockade.",            
-    },
-    {
-        description:
-            "Eine kritische Stimme in dir sagt: „Ich schaffe es nicht.“",            
-    },
-    {
-        description:
-            "Du möchtest alles perfekt machen und fürchtest dich davor zu versagen.",            
-    },
-    {
-        description:
-            "Deine persönlichen Grenzen sind verschwommen.",            
-    },
-    {
-        description:
-            "Der Sinn deines Lebens bleibt für dich unklar.",            
-    },
-    {
-        description:
-            "Du neigst dazu, selbstkritisch zu sein.",            
-    },
-    {
-        description:
-            "Deine Selbstachtung leidet unter Vernachlässigung.",            
-    },
-    {
-        description:
-            "Soziale Situationen lösen häufig Unsicherheit in dir aus.",            
-    },
-    {
-        description:
-            "Du verspürst häufig Lustlosigkeit und Erschöpfung.",            
-    },
-    {
-        description:
-            "Der Drang, dich ständig beweisen zu müssen, belastet dich.",            
-    },
-    {
-        description:
-            "Endloses Grübeln und ein Gedankenkarussell halten dich gefangen.",            
-    },
-];
-
-const right_side = [
-    {
-        description:
-        "dich in dir selbst sicher und getragen zu fühlen.",
-    },
-    {
-        description:
-            "innere Anspannung loszulassen und mehr Gelassenheit zu erleben.",
-    },
-    {
-        description:
-            "wieder mehr Energie, Lebendigkeit und Klarheit in deinem Alltag zu spüren.",            
-    },
-    {
-        description:
-            "dir selbst mit Akzeptanz und Wertschätzung zu begegnen.",            
-    },
-    {
-        description:
-            "deine eigenen Bedürfnisse besser wahrzunehmen und ihnen Raum zu geben.",            
-    },
-    {
-        description:
-            "dich unabhängig von äußeren Umständen innerlich stabil zu fühlen.",            
-    },
-    {
-        description:
-            "mit Stress bewusster umgehen zu können und deine emotionalen Grenzen zu achten.",            
-    },
-    {
-        description:
-            "Beziehungen zu erleben, die von Sicherheit, Vertrauen und gegenseitiger Wertschätzung geprägt sind.",            
-    },
-];
 
 const number_four = [
     {
@@ -194,36 +75,35 @@ const number_five = [
 
 
 export const Herotest = () => {
-    return <section id="hero" className="relative overflow-hidden">
-        <div className="container relative z-10 min-w-screen">
-            <div className=" bg-[url('/herobg.jpeg')] bg-center bg-cover">
-                <div className="container mx-auto pt-6 pb-32">
-                        <div className="grid lg:grid-cols-2 gap-12">
-                            <div className="flex pt-20 pr-16">
-                                <div className="rounded-2xl py-4 px-4 space-y-8 animate-fade-in">
+    return <section id="hero" className="home-page relative overflow-hidden">
+        <div className="relative z-10 w-full">
+            <div className="relative isolate bg-[url('/herobg.jpeg')] bg-center bg-cover">
+                <div className="absolute inset-0 -z-10 bg-linear-to-r from-surface/95 via-surface/70 to-surface/10" aria-hidden="true"/>
+                <div className="container relative mx-auto px-4 pb-28 pt-24 sm:px-6 sm:pb-32 sm:pt-28 lg:px-10">
+                        <div className="grid gap-12 lg:grid-cols-2">
+                            <div className="flex lg:pr-16">
+                                <div className="animate-fade-in space-y-7 rounded-3xl border border-white/20 bg-surface/45 p-5 shadow-xl backdrop-blur-sm sm:p-8">
                                     <div className="space-y-0">    
-                                        <h1 className="text-5xl md:text-6xl lg:text-7xl text-primary font-bold leading-tight">Online 
+                                        <h1 className="text-4xl font-bold leading-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">Online
                                             <span className="text-muted-foreground font-serif italic font-normal glow-text"> Praxis</span>
                                             <br/>
                                         </h1>
                                         <br/>
-                                        <span className="py-4 text-muted-foreground lg:text-4xl md:text-3xl text-2xl">
+                                        <span className="py-4 text-xl text-muted-foreground sm:text-2xl md:text-3xl lg:text-4xl">
                                             Für integrative Therapie, Coaching & Beratung
                                         </span>
                                         <br/>
                                         <br/>
-                                        <p className=" text-black">
-                                            Bei Menschen, die viel tragen, viel fühlen- und trotzdem das Gefühl haben, 
-                                            sich selbst irgendwo verloren zu haben. Wir begleiten emotionale Prozesse, 
-                                            innere Muster und Nervensystemdynamiken mit Tiefe, Klarheit und echter menschlicher Präsenz.
+                                        <p className="text-base leading-7 text-[#123f38] sm:text-lg">
+                                            Wir begleiten Menschen, die viel tragen und viel fühlen – und trotzdem das Gefühl haben,
+                                            sich selbst irgendwo verloren zu haben. Mit Tiefe, Klarheit und echter menschlicher Präsenz
+                                            schauen wir auf emotionale Prozesse, innere Muster und die Dynamiken des Nervensystems.
                                         </p>
                                     </div>
                                     <div>
-                                        <Button size="lg">
-                                            <div className="inline-flex justify-center items-center">
+                                        <Link to="/kontakt" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
                                             Kontakt <ArrowRight className="w-5 h-5"/>
-                                            </div>
-                                        </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -231,14 +111,14 @@ export const Herotest = () => {
                     </div>
             </div>
             <div className="glass rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
-                <div className="container mx-auto">
+                <div className="container mx-auto px-4 sm:px-6">
                     <div className="space-y-8 py-8 pb-16 items-center justify-center">
-                        <div className="bg-card/70 glow-border p-8 rounded-2xl flex">
-                            <div className="grid lg:flex">
+                        <div className="glow-border flex rounded-2xl bg-card/70 p-5 sm:p-8">
+                            <div className="grid gap-4 lg:flex">
                                 <div className="flex items-center justify-center md:px-1 ">
                                     <img src="/Hero/Blumehero.png" className=" 2xl:h-64 xl:h-52 lg:h-40 md:h-30 sm:h-24 h-24 rounded-full object-cover"/>
                                 </div>
-                                <div className="pl-4">
+                                <div className="sm:pl-4">
                                     <p>
                                         Vielleicht kennst du das Gefühl, stark sein zu müssen – vieles zu tragen, 
                                         für andere da zu sein und dabei deine eigenen Bedürfnisse aus dem Blick zu verlieren.
@@ -511,7 +391,7 @@ export const Herotest = () => {
                                             to="/coaching"
                                             className="px-8 py-2 text-xl text-muted-foreground hover:text-primary-foreground rounded-full"
                                         >
-                                            Mehr Erfahren
+                                            Mehr erfahren
                                         </Link>
                                         <ArrowRight className="text-muted-foreground"/>
                                     </div>
@@ -547,13 +427,13 @@ export const Herotest = () => {
                                         </p>
                                         <br/>
                                         <p className="text-sm text-center">
-                                            In unserer therapeutische Begleitung unterstützen wir dich dabei, diese Muster besser zu 
+                                            In unserer therapeutischen Begleitung unterstützen wir dich dabei, diese Muster besser zu
                                             verstehen und einen achtsameren Umgang mit dir selbst zu entwickeln. 
                                             Gemeinsam schauen wir auf die inneren Überzeugungen und Erfahrungen, die dein Erleben geprägt haben.
                                         </p>
                                         <br/>
                                         <p className="text-sm text-center">
-                                            Handle Jetzt!
+                                            Du darfst jetzt den nächsten Schritt gehen.
                                         </p>
                                         <br/>
                                         <p className="text-sm text-center pb-4">
@@ -570,7 +450,7 @@ export const Herotest = () => {
                                             to="/therapie"
                                             className="px-8 py-2 text-xl text-muted-foreground hover:text-primary-foreground rounded-full"
                                         >
-                                            Mehr Erfahren
+                                            Mehr erfahren
                                         </Link>
                                         <ArrowRight className="text-muted-foreground"/>
                                     </div>
@@ -621,8 +501,8 @@ export const Herotest = () => {
                                 <p className="text-sm text-center "> Manchmal ruhig und stabilisierend. Manchmal direkt.</p>
                                 <p className="text-sm text-center "> Manchmal konfrontierend. Aber niemals beschämend.</p>
                             </div>
-                            <div className="flex justify-end">
-                                <img src="/Hero/bild.jpeg" className="flex object-fill md:mask-l-from-70%"/>
+                            <div className="min-h-72 overflow-hidden">
+                                <img src="/Hero/bild.jpeg" className="h-full w-full object-cover object-center md:mask-l-from-70%"/>
                             </div>
                         </div>
                     </div>
@@ -718,35 +598,25 @@ export const Herotest = () => {
                 </div>
             </div>
 
-            <div className="bg-card"> 
-                    <div className="grid md:grid-cols-3 ">
-                        <div className="flex items-center justify-center py-8">
+            <div className="border-y border-white/10 bg-[#0B777A]">
+                    <div className="mx-auto grid max-w-6xl items-center md:grid-cols-[0.45fr_1.15fr_0.8fr]">
+                        <div className="flex items-center justify-center p-8">
                             <Calendar1 className="md:w-36 md:h-36 w-24 h-24 text-primary"/>
                         </div>
-                        <div className="md:-mx-8 py-8">    
-                            <p className="md:text-2xl text-lg text-center">Manchmal ist es nur ein kleiner erster Schritt, </p> 
-                            <p className="text-center md:text-2xl text-lg">der <span className="text-primary text-center"> alles in Bewegung </span> setzt. </p>
-                            <div className="grid gap-8 grid-cols-2 px-2 pt-4">
-                                <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
-                                <div className="h-0.5 bg-linear-to-r from-primary via-primary/60 to-transparent"/>
-                            </div>
-                            <div className="flex -mt-8 -mb-8 items-center justify-center">
-                                <img src="/traumasensibel/Blume.png" className="w-18 h-16 rounded-full"/>
-                            </div>
-                            <p className="text-center pt-4">
-                                Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir gut tut.
+                        <div className="px-6 py-10">
+                            <h2 className="text-3xl font-bold leading-tight">Ein erster Schritt kann vieles in Bewegung bringen</h2>
+                            <p className="mt-4 leading-7 text-white/85">
+                                Wenn du möchtest, finden wir in einem kostenfreien Gespräch heraus, was dir guttut.
                                 Ganz unverbindlich und nur für dich.
                             </p>
-                            <div className="flex items-center justify-center pt-4">
-                                <Button size="lg">
-                                    <div className="inline-flex justify-center text-black items-center">
+                            <div className="pt-6">
+                                <Link to="/kontakt" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
                                     Kennenlernen <ArrowRight className="w-5 h-5"/>
-                                    </div>
-                                </Button>
+                                </Link>
                             </div>
                         </div>
-                        <div className="flex">
-                            <img src="/breachright.jpeg" className="flex object-cover md:mask-l-from-50% md:mask-b-from-60%  md:mask-t-from-80%"/>
+                        <div className="min-h-64 overflow-hidden md:min-h-full">
+                            <img src="/breachright.jpeg" className="h-full w-full object-cover object-center md:mask-l-from-50%"/>
                         </div>
                     </div>
             </div>

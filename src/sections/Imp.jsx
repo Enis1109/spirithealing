@@ -24,7 +24,7 @@ export const Imp = () => {
                         </h2>
                         <p className="text-lg">
                             Telefon: 00491775022131 <br/>
-                            E-Mail: kontakt@spirit-healing.coach <br/>
+                            E-Mail: info@spirit-healing.tr <br/>
                         </p>
                         <h2 className="text-2xl md:text-3xl leading-tight  font-bold text-primary">Verbraucherstreitbeilegung/Universalschlichtungsstelle
                         </h2>

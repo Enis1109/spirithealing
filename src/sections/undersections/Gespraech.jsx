@@ -1,81 +1,3 @@
-import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1, Sun, Leaf, UserCheck } from "lucide-react"
-import { useState } from "react";
-import { Button } from "@/components/Button"
-
-{/* Oft entstehen über Jahre innere Schleifen: */}
-const number_one = [
-    {
-        description:
-        "Grübeln",
-    },
-    {
-        description:
-        "Selbstkritik",
-    },
-];
-
-const number_three = [
-    {
-        description:
-        "Scham",
-    },
-    {
-        description:
-        "Rückzug",
-    },
-    {
-        description:
-        "Anpassung",
-    },
-    {
-        description:
-        "Kontrolle",
-    },
-    {
-        description:
-        "innerer Druck",
-    },
-];
-
-{/* Der Blick nach innen */}
-const number_two = [
-    {
-        description:
-        "welche Dynamiken wirken",
-    },
-    {
-        description:
-        "welche Schutzmechanismen aktiv sind",
-    },
-    {
-        description:
-        "welche inneren Konflikte bestehen",
-    },
-    {
-        description:
-        "welche emotionalen Erfahrungen darunterliegen",
-    },
-];
-
-const number_onenew = [
-    {
-        icon: UserCheck,
-        description:
-        "Viele Menschen haben gelernt, ihre Gefühle zu erklären.",
-    },
-    {
-        icon: Leaf,
-        description:
-        "Aber nicht, sie wirklich zu fühlen.",
-    },
-    {
-        icon: Sun,
-        description:
-        "Oder überhaupt wahrzunehmen, was in ihnen passiert.",
-    },
-];
-
-
 export const Gsp = () => {
     
     return (
@@ -93,75 +15,21 @@ export const Gsp = () => {
                             Manche Menschen brauchen keinen Ratschlag. Sondern einen Raum, in dem sie nicht bewertet werden. 
                         </h3>
                         <br/>
-                        <div className="grid md:grid-cols-3 md:-mr-24">
-                            {number_onenew.map((item, idx) => (
-                            <div 
-                                key={idx} 
-                                className="p-0"
-                            >
-                                <div className="inline-flex justify-center gap-4">
-                                    <div>
-                                        <item.icon className="text-primary p-2 bg-white rounded-full w-12 h-12"/>
-                                    </div>
-                                    <span className="inline-flex text-sm text-muted-foreground items-center justify-center gap-4">
-                                        {item.description}
-                                    </span>    
-                                </div>
-                            </div>
-                            ))}
-                        </div>
-                        <br/>
-                        <p className="text-muted-foreground pt-2">Oft entstehen über Jahre innere Schleifen:
-                        </p>
-                        <br/>
-                        <div className="lg:-mr-8 pt-2">
-                            <div className="grid md:grid-cols-2">
-                                <div className="grid grid-cols-2">
-                                    {number_one.map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-0"
-                                    >
-                                        <span className="text-muted-foreground inline-flex items-center justify-center gap-4">
-                                            <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                            {item.description}
-                                        </span>
-                                    </div>
-                                    ))}
-                                </div>
-                                <span className="text-muted-foreground inline-flex items-center justify-center gap-4">
-                                    <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                    emotionale Überforderung
-                                </span>
-                            </div>
-                        </div>
-                        <div className="grid md:grid-cols-5 max-md:grid-cols-3 lg:-mr-24 pt-2">
-                            {number_three.map((item, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className="p-0"
-                                >
-                                    <span className="text-muted-foreground inline-flex items-center justify-center gap-4">
-                                        <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                        {item.description}
-                                    </span>
-                                </div>
-                                ))}
-                            </div>
-                            <br/>
-                        <p className="text-muted-foreground pt-2">Und gleichzeitig die Angst, wirklich gesehen zu werden.
-                        </p>
+                        <p className="max-w-2xl text-lg leading-8 text-muted-foreground">Viele Menschen können ihre Gefühle sehr genau erklären und bleiben ihnen trotzdem innerlich fern. Sie wissen, was passiert – aber nicht, wie sie im entscheidenden Moment bei sich bleiben können.</p>
+                        <blockquote className="mt-6 border-l-2 border-primary pl-5 text-lg font-semibold leading-8 text-muted-foreground">
+                            Aus Grübeln und Selbstkritik wird über Jahre ein vertrauter innerer Kreislauf. Scham, Anpassung, Kontrolle oder Rückzug halten ihn aufrecht – häufig zusammen mit der Angst, wirklich gesehen zu werden.
+                        </blockquote>
                     </div>
-                    <div className="flex">
-                        <img src="/gespr/gespr.jpeg" className="flex object-fill lg:mask-l-from-50% object-bottom"/>
+                    <div className="min-h-72 overflow-hidden">
+                        <img src="/gespr/gespr.jpeg" className="h-full w-full object-cover object-center lg:mask-l-from-50%"/>
                     </div>
                 </div>
             </div>
                 <div className="grid md:grid-cols-2 gap-4 pt-4">
                     <div className="glass-strong rounded-2xl overflow-hidden">
                         <div className="grid h-full lg:grid-cols-2">
-                            <div className="flex -mx-8">
-                                <img src="/gespr/gespr3.jpeg" className="flex object-fill lg:mask-r-from-50%"/>
+                            <div className="min-h-64 overflow-hidden lg:min-h-full">
+                                <img src="/gespr/gespr3.jpeg" className="h-full w-full object-cover object-center lg:mask-r-from-50%"/>
                             </div>
                             <div className="py-4 max-lg:text-center">
                                 <h3 className="text-xl md:text-xl text-center pb-2 leading-tight font-bold text-primary">Gespräche
@@ -178,30 +46,14 @@ export const Gsp = () => {
                                 <p className="text-muted-foreground">Gesprächstherapie bedeutet für uns deshalb nicht nur, über Probleme zu reden.
                                 </p>
                                 <br/>
-                                <p className="text-muted-foreground">Sondern gemeinsam sichtbar zu machen:
-                                </p>
-                                <div className="flex items-center justify-center">
-                                    <div className="pl-6">
-                                        {number_two.map((item, idx) => (
-                                        <div 
-                                            key={idx} 
-                                            className="p-0"
-                                        >
-                                            <span className="text-muted-foreground inline-flex items-center justify-center gap-4">
-                                                <ArrowRight className="w-2 h-2 text-primary items-center bg-primary rounded-full"/>
-                                                {item.description}
-                                            </span>
-                                        </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                <p className="text-muted-foreground">Sondern gemeinsam herauszufinden, welche Dynamik gerade wirkt, welcher Schutzmechanismus übernimmt und welche Erfahrung unter dem aktuellen Konflikt weiterlebt.</p>
                             </div>
                         </div>
                     </div>
                     <div className="glass-strong rounded-2xl overflow-hidden">
                         <div className="grid lg:grid-cols-2 h-full">
-                            <div className="flex -mx-8">
-                                <img src="/gespr/gespr2.jpeg" className="flex object-fill lg:mask-r-from-50%"/>
+                            <div className="min-h-64 overflow-hidden lg:min-h-full">
+                                <img src="/gespr/gespr2.jpeg" className="h-full w-full object-cover object-center lg:mask-r-from-50%"/>
                             </div>
                             <div className="py-4 max-lg:text-center">
                                 <h3 className="text-xl md:text-xl text-center pb-2 leading-tight font-bold text-primary">Was

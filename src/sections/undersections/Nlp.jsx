@@ -1,106 +1,4 @@
-import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1, UserRound, Puzzle, ShieldHalf, SlidersHorizontal, Zap, DoorOpen, Flame, LockKeyhole, Star, Angry, BrainCircuit, HeartCrack, ShieldQuestionMark, CalendarDays, Heart, EyeClosed, Repeat, BrainCog, Leaf, Hourglass } from "lucide-react"
-import { useState } from "react";
-import { Button } from "@/components/Button"
-
-{/* Verstehe deine inneren Muster und finde neue Handlungsspielräume */}
-const number_one = [
-    {
-        description:
-        "Wann ist dieser Anteil entstanden?",
-    },
-    {
-        description:
-        "Wovor schützt er?",
-    },
-    {
-        description:
-        "Welche Erfahrung trägt er?",
-    },
-    {
-        description:
-        "Welche Gefühle durfte der Mensch damals nicht fühlen?",
-    },
-    {
-        description:
-        "Welche Dynamik wiederholt sich heute noch?",
-    },
-    {
-        description:
-        "Und was passiert im Nervensystem, wenn bestimmte Situationen aktiviert werden?",
-    },
-];
-
-{/* Der Blick nach innen */}
-const number_two = [
-    {
-        description:
-        "dass ihre inneren Reaktionen Sinn ergeben,",
-    },
-    {
-        description:
-        "dass Scham nicht ihre Identität ist,",
-    },
-    {
-        description:
-        "dass hinter Wut oft Schmerz liegt,",
-    },
-    {
-        description:
-        "dass Kontrolle manchmal Angst schützt,",
-    },
-    {
-        description:
-        "oder dass ein Anteil noch immer glaubt, in einer alten Realität überleben zu müssen.",
-    },
-];
-
-{/* Warum Veränderung oft nicht funktioniert */}
-const number_three = [
-    {
-        description:
-        "dich zu „kontrollieren“",
-    },
-    {
-        description:
-        "anders zu denken",
-    },
-    {
-        description:
-        "dich zusammenzureißen",
-    },
-];
-
-{/* Der Weg zur inneren Klärung */}
-const number_four = [
-    {
-        description:
-        "welche inneren Stimmen in dir wirken",
-    },
-    {
-        description:
-        "welche Bedürfnisse dahinter stehen",
-    },
-    {
-        description:
-        "und warum du in bestimmten Situationen so reagierst",
-    },
-];
-
-{/* Der Weg zur inneren Klärung */}
-const number_five = [
-    {
-        description:
-        "Ein Teil möchte Sicherheit",
-    },
-    {
-        description:
-        "ein anderer möchte Veränderung",
-    },
-    {
-        description:
-        "ein weiterer hält an alten Mustern fest",
-    },
-];
+import { UserRound, Puzzle, ShieldHalf, SlidersHorizontal, Zap, DoorOpen, Flame, LockKeyhole, Star, Angry, BrainCircuit, HeartCrack, ShieldQuestionMark, CalendarDays, Heart, EyeClosed, Repeat, BrainCog, Leaf, Hourglass } from "lucide-react"
 
 const number_onenew = [
     {
@@ -149,22 +47,22 @@ const number_twonew = [
     {
         icon: Star,
         description:
-        "Kontrolle",
+        "Perfektionismus",
     },
     {
         icon: BrainCircuit,
         description:
-        "Kontrolle",
+        "Grübeln",
     },
     {
         icon: Angry,
         description:
-        "Kontrolle",
+        "Selbstkritik",
     },
     {
         icon: HeartCrack,
         description:
-        "Kontrolle",
+        "Scham",
     },
 ];
 
@@ -172,32 +70,32 @@ const number_threenew = [
     {
         icon: CalendarDays,
         description:
-        "Wann ist dieser Anteil entstanden ?",
+        "Wann ist dieser Anteil entstanden?",
     },
     {
         icon: ShieldQuestionMark,
         description:
-        "Wovor schützt er ?",
+        "Wovor schützt er?",
     },
     {
         icon: Heart,
         description:
-        "Welche Erfahrung trägt er ?",
+        "Welche Erfahrung trägt er?",
     },
     {
         icon: EyeClosed,
         description:
-        "Welche Gefühle durfte der Mensch damals nicht fühlen ?",
+        "Welche Gefühle durfte der Mensch damals nicht fühlen?",
     },
     {
         icon: Repeat,
         description:
-        "Welche Dynamik wiederholt sich heute ?",
+        "Welche Dynamik wiederholt sich heute?",
     },
     {
         icon: BrainCog,
         description:
-        "Und was passiert im Nervensystem, wenn bestimmte Situationen aktiviert werden ?",
+        "Und was passiert im Nervensystem, wenn bestimmte Situationen aktiviert werden?",
     },
 ];
 
@@ -247,7 +145,7 @@ export const Nlp = () => {
                         </p>
                         <div className=" pl-2">
                             <p>Ein Mensch besteht nicht nur aus einer einzigen Persönlichkeit. <br/>
-                                In uns leben unterschiedliche innere Anteile - manche laut, manche still, manche verletzt, <br/>
+                                In uns leben unterschiedliche innere Anteile – manche laut, manche still, manche verletzt, <br/>
                                 kontrollierend, wütend, angepasst, funktionierend, beschämend oder vollkommen erschöpft.
                             </p>
                         </div>
@@ -282,7 +180,7 @@ export const Nlp = () => {
                         </div>
                         ))}
                     </div>
-                    <p className="text-black pt-2 -mr-16">Unser Ziel ist nicht, Anteile zu verändern oder webzumachen - sondern sie zu verstehen und ihre positive Absicht zu erkennen.</p>
+                    <p className="text-black pt-2 -mr-16">Unser Ziel ist nicht, Anteile zu verändern oder zu beseitigen – sondern sie zu verstehen und ihre positive Absicht zu erkennen.</p>
                 </div>
                 <div>
                     <h2 className="text-2xl md:text-2xl leading-tight pb-2 text-white text-center">Anteile, die wir häufig begleiten
@@ -325,7 +223,7 @@ export const Nlp = () => {
                                 <div className="">
                                     <h2 className="text-2xl md:text-2xl leading-tight pb-2 text-muted-foreground">Wir
                                         <span className="font-serif font-normal text-primary"> begegnen </span>
-                                        den Anteilen - <br/> wir machen sie nicht weg.
+                                        den Anteilen – <br/> wir machen sie nicht weg.
                                     </h2>
                                     <div className="grid grid-cols-4 pl-2">
                                         <div className="h-0.5 bg-linear-to-l from-primary via-primary/60 to-transparent"/>
@@ -389,7 +287,7 @@ export const Nlp = () => {
                                         ))}
                                     </div>
                             <p className="text-primary pt-4 text-center">Denn wirkliche Veränderung entsteht <br/>
-                                aus unserer Erfahrung - nicht durch Druck, <br/>
+                                aus unserer Erfahrung – nicht durch Druck, <br/>
                                 sondern durch Verständnis.
                             </p>
                         </div>

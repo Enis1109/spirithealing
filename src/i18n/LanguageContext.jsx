@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const LanguageContext = createContext(null);
+export const LANGUAGE_SWITCHER_ENABLED = false;
 
 const getInitialLanguage = () => {
     if (typeof window === "undefined") return "de";
+    if (!LANGUAGE_SWITCHER_ENABLED) return "de";
 
     const storedLanguage = window.localStorage.getItem("spirit-healing-language");
     return storedLanguage === "tr" ? "tr" : "de";

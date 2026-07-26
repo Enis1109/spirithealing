@@ -30,9 +30,60 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
   }
   .font-serif {
     font-family: "Playfair Display", serif;
+  }
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+@media (max-width: 767px) {
+  body {
+    font-size: 16px;
+  }
+
+  .home-page p {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .home-page h1,
+  .home-page h2,
+  .home-page h3 {
+    text-wrap: balance;
+  }
+
+  .home-page .text-sm {
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+
+  .home-page .px-16 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  section[id="about"] p,
+  section[id="about"] .text-sm {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
