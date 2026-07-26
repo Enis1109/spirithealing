@@ -63,8 +63,8 @@ export const sendMemberAccessEmail = async ({
         : "Dein Zugang zum Spirit Healing Mitgliederbereich";
     const greeting = isTurkish ? `Merhaba ${name},` : `Hallo ${name},`;
     const intro = isTurkish
-        ? "Ücretsiz üye alanına giriş yapmak ve seminer kaydına erişmek için aşağıdaki düğmeye tıkla. Bağlantı 30 dakika geçerlidir."
-        : "Klicke auf den folgenden Button, um dich im kostenlosen Mitgliederbereich anzumelden und auf die Vortragsaufzeichnung zuzugreifen. Der Link ist 30 Minuten gültig.";
+        ? "Ücretsiz üye alanına giriş yapmak ve seminer kaydına erişmek için aşağıdaki düğmeye tıkla. Kişisel erişim bağlantın kalıcıdır ve daha sonra yeniden kullanılabilir."
+        : "Klicke auf den folgenden Button, um den kostenlosen Mitgliederbereich zu öffnen. Dein persönlicher Zugangslink bleibt dauerhaft gültig und kann später erneut verwendet werden.";
     const accessButton = isTurkish ? "Üye alanını aç" : "Mitgliederbereich öffnen";
     const newsletterText = newsletterConsent
         ? (isTurkish

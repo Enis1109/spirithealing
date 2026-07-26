@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import { database } from "./database.js";
 
-const accessLifetimeMinutes = 30;
 const sessionLifetimeDays = 30;
 const sessionCookieName = "spirit_member_session";
 
@@ -41,16 +40,11 @@ export const createMemberAccessRequest = async ({
     );
     const memberId = memberRows[0].id;
     const token = crypto.randomBytes(32).toString("base64url");
-    const expiresAt = new Date(Date.now() + accessLifetimeMinutes * 60 * 1000);
 
     await database.execute(
-        "DELETE FROM member_access_tokens WHERE member_id = ? AND used_at IS NULL",
-        [memberId],
-    );
-    await database.execute(
         `INSERT INTO member_access_tokens (member_id, token_hash, expires_at)
-         VALUES (?, ?, ?)`,
-        [memberId, hashToken(token), expiresAt],
+         VALUES (?, ?, '9999-12-31 23:59:59')`,
+        [memberId, hashToken(token)],
     );
 
     return `${baseUrl()}/api/members/access?token=${encodeURIComponent(token)}`;
@@ -67,8 +61,7 @@ export const activateMemberAccess = async (token) => {
                     members.name, members.email, members.locale
              FROM member_access_tokens AS access_tokens
              INNER JOIN members ON members.id = access_tokens.member_id
-             WHERE access_tokens.token_hash = ? AND access_tokens.used_at IS NULL
-               AND access_tokens.expires_at > NOW()
+             WHERE access_tokens.token_hash = ?
              LIMIT 1 FOR UPDATE`,
             [hashToken(token)],
         );
@@ -80,10 +73,9 @@ export const activateMemberAccess = async (token) => {
 
         const member = rows[0];
         const sessionToken = crypto.randomBytes(32).toString("base64url");
-        const sessionExpiresAt = new Date(Date.now() + sessionLifetimeDays * 24 * 60 * 60 * 1000);
 
         await connection.execute(
-            "UPDATE member_access_tokens SET used_at = NOW() WHERE id = ?",
+            "UPDATE member_access_tokens SET used_at = COALESCE(used_at, UTC_TIMESTAMP()) WHERE id = ?",
             [member.access_token_id],
         );
         await connection.execute(
@@ -94,8 +86,8 @@ export const activateMemberAccess = async (token) => {
         );
         await connection.execute(
             `INSERT INTO member_sessions (member_id, token_hash, expires_at)
-             VALUES (?, ?, ?)`,
-            [member.member_id, hashToken(sessionToken), sessionExpiresAt],
+             VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL ${sessionLifetimeDays} DAY))`,
+            [member.member_id, hashToken(sessionToken)],
         );
         await connection.commit();
 
@@ -135,7 +127,7 @@ export const getMemberFromRequest = async (request) => {
         `SELECT sessions.id AS session_id, members.id, members.name, members.email, members.locale
          FROM member_sessions AS sessions
          INNER JOIN members ON members.id = sessions.member_id
-         WHERE sessions.token_hash = ? AND sessions.expires_at > NOW()
+         WHERE sessions.token_hash = ? AND sessions.expires_at > UTC_TIMESTAMP()
            AND members.status = 'active'
          LIMIT 1`,
         [hashToken(sessionToken)],

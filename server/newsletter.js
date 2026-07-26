@@ -57,26 +57,25 @@ export const registerNewsletterInterest = async ({ name, email, locale, source }
 
     const token = crypto.randomBytes(32).toString("base64url");
     const tokenHash = hashToken(token);
-    const expiresAt = new Date(Date.now() + confirmationLifetimeHours * 60 * 60 * 1000);
 
     await database.execute(
         `INSERT INTO newsletter_subscribers (
             name, email, locale, status, source, consent_text_version,
             requested_at, confirmation_token_hash, confirmation_expires_at,
             confirmed_at, unsubscribed_at
-        ) VALUES (?, ?, ?, 'pending', ?, ?, NOW(), ?, ?, NULL, NULL)
+        ) VALUES (?, ?, ?, 'pending', ?, ?, UTC_TIMESTAMP(), ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL ${confirmationLifetimeHours} HOUR), NULL, NULL)
         ON DUPLICATE KEY UPDATE
             name = VALUES(name),
             locale = VALUES(locale),
             status = 'pending',
             source = VALUES(source),
             consent_text_version = VALUES(consent_text_version),
-            requested_at = NOW(),
+            requested_at = UTC_TIMESTAMP(),
             confirmation_token_hash = VALUES(confirmation_token_hash),
             confirmation_expires_at = VALUES(confirmation_expires_at),
             confirmed_at = NULL,
             unsubscribed_at = NULL`,
-        [name, email, locale, source, consentVersion, tokenHash, expiresAt],
+        [name, email, locale, source, consentVersion, tokenHash],
     );
 
     const confirmationUrl = `${baseUrl()}/api/newsletter/confirm?token=${encodeURIComponent(token)}`;
@@ -90,10 +89,10 @@ export const confirmNewsletterSubscription = async (token) => {
     const tokenHash = hashToken(token);
     const [result] = await database.execute(
         `UPDATE newsletter_subscribers
-         SET status = 'active', confirmed_at = NOW(), confirmation_token_hash = NULL,
+         SET status = 'active', confirmed_at = UTC_TIMESTAMP(), confirmation_token_hash = NULL,
              confirmation_expires_at = NULL, unsubscribed_at = NULL
          WHERE confirmation_token_hash = ? AND status = 'pending'
-           AND confirmation_expires_at > NOW()`,
+           AND confirmation_expires_at > UTC_TIMESTAMP()`,
         [tokenHash],
     );
 
