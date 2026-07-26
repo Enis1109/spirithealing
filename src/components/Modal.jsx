@@ -5,6 +5,11 @@ import { X } from "lucide-react";
 export const Modal = ({ open, onClose, title, closeLabel, children }) => {
     const titleId = useId();
     const dialogRef = useRef(null);
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
 
     useEffect(() => {
         if (!open) return undefined;
@@ -18,7 +23,7 @@ export const Modal = ({ open, onClose, title, closeLabel, children }) => {
         }, 0);
 
         const handleKeyDown = (event) => {
-            if (event.key === "Escape") onClose();
+            if (event.key === "Escape") onCloseRef.current();
 
             if (event.key === "Tab" && dialogRef.current) {
                 const focusable = Array.from(dialogRef.current.querySelectorAll(
@@ -44,7 +49,7 @@ export const Modal = ({ open, onClose, title, closeLabel, children }) => {
             document.removeEventListener("keydown", handleKeyDown);
             previouslyFocused?.focus?.();
         };
-    }, [onClose, open]);
+    }, [open]);
 
     if (!open) return null;
 
@@ -60,7 +65,7 @@ export const Modal = ({ open, onClose, title, closeLabel, children }) => {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby={titleId}
-                className="max-h-[94dvh] w-full overflow-y-auto rounded-t-[2rem] bg-[#f7f1e7] p-5 text-muted-foreground shadow-2xl sm:max-w-2xl sm:rounded-[2rem] sm:p-8"
+                className="max-h-[94dvh] w-full overflow-y-auto rounded-t-[2rem] bg-[#f7f1e7] p-5 text-muted-foreground shadow-2xl sm:max-w-3xl sm:rounded-[2rem] sm:p-8 lg:max-w-4xl"
             >
                 <div className="flex items-start justify-between gap-4">
                     <h2 id={titleId} className="text-2xl font-bold leading-tight sm:text-3xl">{title}</h2>
