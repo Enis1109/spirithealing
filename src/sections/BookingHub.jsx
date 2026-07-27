@@ -8,8 +8,21 @@ const bookingLinks = {
     firstSabine: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
     firstSelcan: "https://calendly.com/selcan1975/erstsitzung-selcan",
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
-    packages: "/kontakt",
 };
+
+const packageCheckoutLinks = [
+    "https://buy.stripe.com/aFa7sN3FwbSB6p52Bh83C03",
+    "https://buy.stripe.com/eVq28t0tk1dXdRx1xd83C02",
+    "https://buy.stripe.com/8x25kF6RIg8ReVB8ZF83C01",
+    "https://buy.stripe.com/28EbJ36RIaOxdRx3Fl83C00",
+];
+
+const packageImages = [
+    "/images/packages/3er-einzelsitzungen.jpg",
+    "/images/packages/5er-einzelsitzungen.jpg",
+    "/images/packages/3er-kombisitzungen.jpg",
+    "/images/packages/5er-kombisitzungen.jpg",
+];
 
 const copy = {
     de: {
@@ -81,7 +94,7 @@ const copy = {
             { title: "3er-Paket Kombisitzungen", basis: "899,10 €", discount: "10 % Rabatt", text: "Drei gemeinsame Sitzungen mit Sabine und Selcan statt 999 €." },
             { title: "5er-Paket Kombisitzungen", basis: "1.415,25 €", discount: "15 % Rabatt", text: "Fünf gemeinsame Sitzungen mit Sabine und Selcan statt 1.665 €." },
         ],
-        packageCta: "Paket anfragen",
+        packageCta: "Paket kaufen",
     },
     tr: {
         eyebrow: "Randevu al",
@@ -152,7 +165,7 @@ const copy = {
             { title: "3'lü ortak seans paketi", basis: "899,10 €", discount: "%10 indirim", text: "Sabine ve Selcan ile üç ortak seans; 999 € yerine." },
             { title: "5'li ortak seans paketi", basis: "1.415,25 €", discount: "%15 indirim", text: "Sabine ve Selcan ile beş ortak seans; 1.665 € yerine." },
         ],
-        packageCta: "Paket hakkında bilgi al",
+        packageCta: "Paketi satın al",
     },
 };
 
@@ -210,8 +223,14 @@ export const BookingHub = () => {
                     <p className="mt-4 text-lg leading-8 text-white/80">{content.packagesIntro}</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                    {content.packages.map((item) => (
+                    {content.packages.map((item, index) => (
                         <article key={item.title} className="rounded-3xl border border-white/15 bg-white/[0.05] p-6">
+                            <img
+                                src={packageImages[index]}
+                                alt={item.title}
+                                className="mb-5 aspect-square w-full rounded-2xl object-cover"
+                                loading="lazy"
+                            />
                             <div className="flex flex-wrap items-start justify-between gap-3">
                                 <h3 className="text-xl font-bold">{item.title}</h3>
                                 <span className="rounded-full bg-primary/15 px-3 py-1 text-sm font-bold text-primary">{item.basis}</span>
@@ -219,7 +238,7 @@ export const BookingHub = () => {
                             <p className="mt-3 leading-7 text-white/75">{item.text}</p>
                             <p className="mt-4 text-sm font-semibold text-primary">{item.discount}</p>
                             <a
-                                href={bookingLinks.packages}
+                                href={packageCheckoutLinks[index]}
                                 className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-primary/50 px-5 py-2.5 font-bold text-white transition hover:bg-primary hover:text-primary-foreground"
                             >
                                 {content.packageCta}<ArrowRight className="h-4 w-4" aria-hidden="true" />
