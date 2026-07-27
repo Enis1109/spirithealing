@@ -1,7 +1,13 @@
 import { ArrowRight, CalendarDays, CalendarRange, HeartHandshake, MessageCircle, UserRound, UsersRound } from "lucide-react";
-import { PopupButton } from "react-calendly";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+const bookingLinks = {
+    intro: "https://spirit4healing.simplybook.me/v2/#book/service/2/count/1/",
+    single: "https://spirit4healing.simplybook.me/v2/#book/service/3/count/1/",
+    combined: "https://spirit4healing.simplybook.me/v2/#book/service/4/count/1/",
+    packages: "https://spirit4healing.simplybook.me/v2/#packages",
+};
 
 const copy = {
     de: {
@@ -17,8 +23,8 @@ const copy = {
                 text: "15 Minuten für dein Anliegen, deine Fragen und ein erstes Gefühl für die Zusammenarbeit.",
                 price: "Kostenfrei · 15 Min.",
                 people: [
-                    ["Mit Sabine", "https://calendly.com/spirit-healing/partner-einschreiben"],
-                    ["Mit Selcan", "https://calendly.com/selcan1975/erstgesprach"],
+                    ["Mit Sabine", bookingLinks.intro],
+                    ["Mit Selcan", bookingLinks.intro],
                 ],
             },
             {
@@ -27,8 +33,8 @@ const copy = {
                 text: "Ein fundierter Einstieg in ein persönliches, emotionales oder beziehungsbezogenes Thema.",
                 price: "222 € · 60 Min.",
                 people: [
-                    ["Erstsitzung mit Sabine", "https://calendly.com/spirit-healing/einzelsitzung-sabine"],
-                    ["Erstsitzung mit Selcan", "https://calendly.com/selcan1975/erstsitzung-selcan"],
+                    ["Erstsitzung mit Sabine", bookingLinks.single],
+                    ["Erstsitzung mit Selcan", bookingLinks.single],
                 ],
             },
             {
@@ -37,7 +43,7 @@ const copy = {
                 text: "Sabine und Selcan begleiten dein Thema gemeinsam aus mehreren fachlichen Perspektiven.",
                 price: "333 € · 60 Min.",
                 people: [
-                    ["Gemeinsame Erstsitzung", "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung"],
+                    ["Gemeinsame Erstsitzung", bookingLinks.combined],
                 ],
             },
         ],
@@ -66,14 +72,14 @@ const copy = {
         programsCta: "Interesse unverbindlich vormerken",
         packagesEyebrow: "Sitzungspakete",
         packagesTitle: "Mehrere Sitzungen verbindlich planen",
-        packagesIntro: "Die Paketpreise und Rabatte werden noch kalkuliert. Bereits vorgesehen sind diese vier Varianten:",
+        packagesIntro: "Buche mehrere Sitzungen gemeinsam und sichere dir je nach Paket 10 % oder 15 % Preisvorteil.",
         packages: [
-            { title: "3er-Paket Einzelsitzungen", basis: "3 × 222 €", text: "Drei persönliche Sitzungen mit Sabine oder Selcan." },
-            { title: "5er-Paket Einzelsitzungen", basis: "5 × 222 €", text: "Fünf persönliche Sitzungen mit Sabine oder Selcan." },
-            { title: "3er-Paket Kombisitzungen", basis: "3 × 333 €", text: "Drei gemeinsame Sitzungen mit Sabine und Selcan." },
-            { title: "5er-Paket Kombisitzungen", basis: "5 × 333 €", text: "Fünf gemeinsame Sitzungen mit Sabine und Selcan." },
+            { title: "3er-Paket Einzelsitzungen", basis: "599,40 €", discount: "10 % Rabatt", text: "Drei persönliche Sitzungen mit Sabine oder Selcan statt 666 €." },
+            { title: "5er-Paket Einzelsitzungen", basis: "943,50 €", discount: "15 % Rabatt", text: "Fünf persönliche Sitzungen mit Sabine oder Selcan statt 1.110 €." },
+            { title: "3er-Paket Kombisitzungen", basis: "899,10 €", discount: "10 % Rabatt", text: "Drei gemeinsame Sitzungen mit Sabine und Selcan statt 999 €." },
+            { title: "5er-Paket Kombisitzungen", basis: "1.415,25 €", discount: "15 % Rabatt", text: "Fünf gemeinsame Sitzungen mit Sabine und Selcan statt 1.665 €." },
         ],
-        packageStatus: "Paketpreis & Rabatt folgen",
+        packageCta: "Paket buchen",
     },
     tr: {
         eyebrow: "Randevu al",
@@ -88,8 +94,8 @@ const copy = {
                 text: "Konun, soruların ve birlikte çalışmanın sana uygun olup olmadığını hissetmek için 15 dakika.",
                 price: "Ücretsiz · 15 dk.",
                 people: [
-                    ["Sabine ile", "https://calendly.com/spirit-healing/partner-einschreiben"],
-                    ["Selcan ile", "https://calendly.com/selcan1975/erstgesprach"],
+                    ["Sabine ile", bookingLinks.intro],
+                    ["Selcan ile", bookingLinks.intro],
                 ],
             },
             {
@@ -98,8 +104,8 @@ const copy = {
                 text: "Kişisel, duygusal veya ilişki odaklı bir konuya sağlam bir başlangıç.",
                 price: "222 € · 60 dk.",
                 people: [
-                    ["Sabine ile ilk seans", "https://calendly.com/spirit-healing/einzelsitzung-sabine"],
-                    ["Selcan ile ilk seans", "https://calendly.com/selcan1975/erstsitzung-selcan"],
+                    ["Sabine ile ilk seans", bookingLinks.single],
+                    ["Selcan ile ilk seans", bookingLinks.single],
                 ],
             },
             {
@@ -108,7 +114,7 @@ const copy = {
                 text: "Sabine ve Selcan konuna farklı uzmanlık perspektiflerinden birlikte eşlik eder.",
                 price: "333 € · 60 dk.",
                 people: [
-                    ["Ortak ilk seans", "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung"],
+                    ["Ortak ilk seans", bookingLinks.combined],
                 ],
             },
         ],
@@ -137,21 +143,20 @@ const copy = {
         programsCta: "Bağlayıcı olmadan ilgini bildir",
         packagesEyebrow: "Seans paketleri",
         packagesTitle: "Birden fazla seansı planlı şekilde ilerlet",
-        packagesIntro: "Paket ücretleri ve indirimler henüz hesaplanıyor. Şimdiden planlanan dört seçenek şunlardır:",
+        packagesIntro: "Birden fazla seansı birlikte al ve pakete göre %10 veya %15 fiyat avantajından yararlan.",
         packages: [
-            { title: "3'lü bireysel seans paketi", basis: "3 × 222 €", text: "Sabine veya Selcan ile üç bireysel seans." },
-            { title: "5'li bireysel seans paketi", basis: "5 × 222 €", text: "Sabine veya Selcan ile beş bireysel seans." },
-            { title: "3'lü ortak seans paketi", basis: "3 × 333 €", text: "Sabine ve Selcan ile üç ortak seans." },
-            { title: "5'li ortak seans paketi", basis: "5 × 333 €", text: "Sabine ve Selcan ile beş ortak seans." },
+            { title: "3'lü bireysel seans paketi", basis: "599,40 €", discount: "%10 indirim", text: "Sabine veya Selcan ile üç bireysel seans; 666 € yerine." },
+            { title: "5'li bireysel seans paketi", basis: "943,50 €", discount: "%15 indirim", text: "Sabine veya Selcan ile beş bireysel seans; 1.110 € yerine." },
+            { title: "3'lü ortak seans paketi", basis: "899,10 €", discount: "%10 indirim", text: "Sabine ve Selcan ile üç ortak seans; 999 € yerine." },
+            { title: "5'li ortak seans paketi", basis: "1.415,25 €", discount: "%15 indirim", text: "Sabine ve Selcan ile beş ortak seans; 1.665 € yerine." },
         ],
-        packageStatus: "Paket ücreti ve indirim hazırlanıyor",
+        packageCta: "Paketi al",
     },
 };
 
 export const BookingHub = () => {
     const { language } = useLanguage();
     const content = copy[language];
-    const rootElement = typeof document !== "undefined" ? document.getElementById("root") : null;
 
     return (
         <main data-no-translate className="min-h-screen bg-card pb-16 pt-24 text-white sm:pt-28">
@@ -182,13 +187,13 @@ export const BookingHub = () => {
                             <p className="mt-3 flex-1 leading-7 text-muted-foreground/80">{option.text}</p>
                             <div className="mt-6 space-y-3 border-t border-muted-foreground/15 pt-5">
                                 {option.people.map(([label, url]) => (
-                                    <PopupButton
+                                    <a
                                         key={url}
-                                        url={url}
-                                        rootElement={rootElement}
-                                        text={`${label} – ${content.choose}`}
+                                        href={url}
                                         className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                                    />
+                                    >
+                                        {label} – {content.choose}
+                                    </a>
                                 ))}
                             </div>
                         </article>
@@ -210,7 +215,13 @@ export const BookingHub = () => {
                                 <span className="rounded-full bg-primary/15 px-3 py-1 text-sm font-bold text-primary">{item.basis}</span>
                             </div>
                             <p className="mt-3 leading-7 text-white/75">{item.text}</p>
-                            <p className="mt-4 text-sm font-semibold text-primary">{content.packageStatus}</p>
+                            <p className="mt-4 text-sm font-semibold text-primary">{item.discount}</p>
+                            <a
+                                href={bookingLinks.packages}
+                                className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-primary/50 px-5 py-2.5 font-bold text-white transition hover:bg-primary hover:text-primary-foreground"
+                            >
+                                {content.packageCta}<ArrowRight className="h-4 w-4" aria-hidden="true" />
+                            </a>
                         </article>
                     ))}
                 </div>
