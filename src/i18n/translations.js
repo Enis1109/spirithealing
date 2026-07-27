@@ -894,22 +894,22 @@ export const turkishTranslationsByPath = {
     "/impressum": Object.fromEntries(imprintEntries),
 };
 
-const sharedGermanDescription = "Integrative Therapie, traumasensible Prozessbegleitung und Beratung – achtsam, klar und in Ihrem Tempo.";
 const sharedTurkishDescription = "Bütüncül terapi, travma bilgili danışmanlık ve koçluk – güvenli, özenli ve kendi hızınızda.";
 
 export const pageMeta = {
     de: {
-        "/": { title: "Spirit Healing | Online Praxis", description: sharedGermanDescription },
-        "/coaching": { title: "Traumasensible Prozessbegleitung | Spirit Healing", description: sharedGermanDescription },
-        "/therapie": { title: "Integrative Therapie | Spirit Healing", description: sharedGermanDescription },
-        "/about": { title: "Über uns | Spirit Healing", description: sharedGermanDescription },
-        "/prices": { title: "Preise & Termine | Spirit Healing", description: sharedGermanDescription },
-        "/faq": { title: "FAQ | Spirit Healing", description: sharedGermanDescription },
+        "/": { title: "Traumasensible Online-Begleitung | Spirit Healing", description: "Traumasensible Prozessbegleitung und integrative Therapie online - achtsam, klar und in Ihrem Tempo. Kostenloses Kennenlerngespräch vereinbaren." },
+        "/coaching": { title: "Traumasensible Prozessbegleitung online | Spirit Healing", description: "Schutzmuster und Reaktionen des Nervensystems besser verstehen. Traumasensible Online-Begleitung mit Sabine und Selcan kennenlernen." },
+        "/therapie": { title: "Integrative Therapie online | Spirit Healing", description: "Integrative Online-Therapie verbindet Anteilearbeit, Energiearbeit und einen traumasensiblen Blick - individuell und in Ihrem Tempo." },
+        "/about": { title: "Sabine & Selcan - Über Spirit Healing", description: "Lernen Sie Sabine und Selcan, ihre Haltung und die Verbindung aus Anteilearbeit, Energiearbeit und traumasensibler Begleitung kennen." },
+        "/prices": { title: "Preise & Termine für Online-Begleitung | Spirit Healing", description: "Preise für Einzelsitzungen, gemeinsame Begleitung und Intensivtermine. Kostenfreies 15-minütiges Kennenlerngespräch buchen." },
+        "/faq": { title: "Häufige Fragen zur Online-Begleitung | Spirit Healing", description: "Antworten zu Ablauf, Terminen, Kosten und zur traumasensiblen Online-Begleitung bei Spirit Healing." },
         "/vortraege-seminare": { title: "Vorträge & Seminare | Spirit Healing", description: "Live-Vorträge und Seminare von Spirit Healing zu inneren Anteilen, Nervensystem, Beziehungsmustern und Energiearbeit." },
         "/mitglieder": { title: "Kostenloser Mitgliederbereich | Spirit Healing", description: "Kostenlos anmelden, den Spirit-Healing-Vortrag ansehen und das begleitende Workbook herunterladen." },
         "/kontakt": { title: "Kontakt | Spirit Healing", description: "Nehmen Sie Kontakt mit Spirit Healing auf und vereinbaren Sie ein unverbindliches Kennenlerngespräch." },
-        "/impressum": { title: "Impressum | Spirit Healing", description: sharedGermanDescription },
-        "/datenschutz": { title: "Datenschutz | Spirit Healing", description: sharedGermanDescription },
+        "/impressum": { title: "Impressum | Spirit Healing", description: "Impressum und Anbieterinformationen von Spirit Healing." },
+        "/datenschutz": { title: "Datenschutz | Spirit Healing", description: "Datenschutzhinweise zur Nutzung der Website und Angebote von Spirit Healing." },
+        "/newsletter/status": { title: "Newsletter-Status | Spirit Healing", description: "Status Ihrer Newsletter-Anmeldung bei Spirit Healing.", noindex: true },
     },
     tr: {
         "/": { title: "Spirit Healing | Çevrim İçi Danışmanlık", description: sharedTurkishDescription },
