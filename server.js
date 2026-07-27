@@ -49,6 +49,15 @@ app.use((request, response, next) => {
     next();
 });
 app.use(express.json({ limit: "16kb", type: "application/json" }));
+
+app.get("/robots.txt", (_request, response) => {
+    response.type("text/plain").sendFile(path.join(currentDirectory, "public", "robots.txt"));
+});
+
+app.get("/sitemap.xml", (_request, response) => {
+    response.type("application/xml").sendFile(path.join(currentDirectory, "public", "sitemap.xml"));
+});
+
 app.use("/api", async (_request, response, next) => {
     await startupPromise;
     if (startupError) {
