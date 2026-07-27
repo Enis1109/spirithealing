@@ -67,7 +67,7 @@ const submissionLimiter = rateLimit({
 
 const sameOriginOnly = (request, response, next) => {
     const origin = request.get("origin");
-    if (!origin || origin === productionOrigin || /^http:\/\/127\.0\.0\.1:\d+$/u.test(origin) || /^http:\/\/localhost:\d+$/u.test(origin)) {
+    if (!origin || origin.replace("://www.", "://") === productionOrigin.replace("://www.", "://") || /^http:\/\/127\.0\.0\.1:\d+$/u.test(origin) || /^http:\/\/localhost:\d+$/u.test(origin)) {
         return next();
     }
     return response.status(403).json({ ok: false, error: "origin" });
