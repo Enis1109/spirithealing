@@ -102,8 +102,8 @@ export const Navbar = () => {
             </div>
             <div className="hidden xl:flex items-center gap-3">
                         {LANGUAGE_SWITCHER_ENABLED && <LanguageSwitcher language={language} setLanguage={setLanguage}/>}
-                        <Button size="sm">
-                            Kontakt
+                        <Button size="sm" to="/termin-buchen">
+                            {language === "tr" ? "Randevu al" : "Termin buchen"}
                         </Button>
                     </div>
             <button
@@ -136,8 +136,8 @@ export const Navbar = () => {
                             </Link>
                         ))}
                     {LANGUAGE_SWITCHER_ENABLED && <LanguageSwitcher language={language} setLanguage={setLanguage} mobile/>}
-                    <Button className="mt-1 w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                        Kontakt
+                    <Button className="mt-1 w-full" to="/termin-buchen" onClick={() => setIsMobileMenuOpen(false)}>
+                        {language === "tr" ? "Randevu al" : "Termin buchen"}
                     </Button>
                 </div>
             </div>
