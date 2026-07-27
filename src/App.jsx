@@ -10,6 +10,7 @@ import { Contact } from "@/sections/Contact"
 import { Events } from "@/sections/Events"
 import { NewsletterStatus } from "@/sections/NewsletterStatus"
 import { MemberArea } from "@/sections/MemberArea"
+import { BookingHub } from "@/sections/BookingHub"
 import { Route, Routes } from "react-router-dom"
 import { Imp } from "@/sections/Imp"
 import { Daten } from "@/sections/Daten"
@@ -52,6 +53,7 @@ function App() {
         <Route path="/therapie" element={<Therapie/>}/>
         <Route path="/about" element={<About/>}/>
         <Route path="/prices" element={<Pricing/>}/>
+        <Route path="/termin-buchen" element={<BookingHub/>}/>
         <Route path="/faq" element={<FAQ/>}/>
         <Route path="/vortraege-seminare" element={<Events/>}/>
         <Route path="/kontakt" element={<Contact/>}/>
