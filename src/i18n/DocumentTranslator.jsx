@@ -4,6 +4,53 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { pageMeta, turkishTranslations, turkishTranslationsByPath } from "@/i18n/translations";
 
 const translatedAttributes = ["aria-label", "alt", "placeholder", "title"];
+const siteUrl = "https://spirit-healing.tr";
+const defaultSocialImage = `${siteUrl}/Logo-tuerkis.jpeg`;
+
+const upsertMeta = (selector, attributes) => {
+    let element = document.head.querySelector(selector);
+    if (!element) {
+        element = document.createElement("meta");
+        document.head.appendChild(element);
+    }
+    Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
+};
+
+const upsertLink = (rel, href) => {
+    let element = document.head.querySelector(`link[rel="${rel}"]`);
+    if (!element) {
+        element = document.createElement("link");
+        element.setAttribute("rel", rel);
+        document.head.appendChild(element);
+    }
+    element.setAttribute("href", href);
+};
+
+const structuredDataFor = (pathname, language, meta) => {
+    const url = `${siteUrl}${pathname === "/" ? "" : pathname}`;
+    const common = { "@context": "https://schema.org", inLanguage: language, url };
+
+    if (pathname === "/") return [
+        { ...common, "@type": "WebSite", name: "Spirit Healing" },
+        { ...common, "@type": "Organization", name: "Spirit Healing", logo: defaultSocialImage, description: meta.description },
+    ];
+    if (["/coaching", "/therapie"].includes(pathname)) return [{
+        ...common,
+        "@type": "Service",
+        name: meta.title.split("|")[0].trim(),
+        description: meta.description,
+        provider: { "@type": "Organization", name: "Spirit Healing", url: siteUrl },
+        areaServed: ["DE", "AT", "CH", "TR"],
+    }];
+    if (pathname === "/about") return [{
+        ...common,
+        "@type": "AboutPage",
+        name: meta.title,
+        description: meta.description,
+        about: { "@type": "Organization", name: "Spirit Healing", url: siteUrl },
+    }];
+    return [{ ...common, "@type": "WebPage", name: meta.title, description: meta.description }];
+};
 
 const normalize = (value = "") => value.replace(/\s+/g, " ").trim();
 
@@ -54,6 +101,10 @@ export const DocumentTranslator = () => {
 
         const translateElementAttributes = (element) => {
             if (isExcluded(element)) return;
+
+            if (element.tagName === "IMG" && !element.hasAttribute("alt")) {
+                element.setAttribute("alt", "");
+            }
 
             for (const attribute of translatedAttributes) {
                 const currentValue = element.getAttribute?.(attribute);
@@ -131,13 +182,30 @@ export const DocumentTranslator = () => {
         const routeMeta = pageMeta[language]?.[pathname] ?? pageMeta[language]?.["/"];
         if (routeMeta) {
             document.title = routeMeta.title;
-            let description = document.querySelector('meta[name="description"]');
-            if (!description) {
-                description = document.createElement("meta");
-                description.setAttribute("name", "description");
-                document.head.appendChild(description);
+            const canonicalUrl = `${siteUrl}${pathname === "/" ? "" : pathname}`;
+            document.documentElement.lang = language;
+            upsertMeta('meta[name="description"]', { name: "description", content: routeMeta.description });
+            upsertMeta('meta[name="robots"]', { name: "robots", content: routeMeta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large" });
+            upsertMeta('meta[property="og:title"]', { property: "og:title", content: routeMeta.title });
+            upsertMeta('meta[property="og:description"]', { property: "og:description", content: routeMeta.description });
+            upsertMeta('meta[property="og:type"]', { property: "og:type", content: "website" });
+            upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
+            upsertMeta('meta[property="og:image"]', { property: "og:image", content: defaultSocialImage });
+            upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: language === "tr" ? "tr_TR" : "de_DE" });
+            upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
+            upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: routeMeta.title });
+            upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: routeMeta.description });
+            upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: defaultSocialImage });
+            upsertLink("canonical", canonicalUrl);
+
+            let structuredData = document.head.querySelector('script[data-spirit-healing-seo="true"]');
+            if (!structuredData) {
+                structuredData = document.createElement("script");
+                structuredData.type = "application/ld+json";
+                structuredData.dataset.spiritHealingSeo = "true";
+                document.head.appendChild(structuredData);
             }
-            description.setAttribute("content", routeMeta.description);
+            structuredData.textContent = JSON.stringify(structuredDataFor(pathname, language, routeMeta));
         }
 
         return () => observer.disconnect();
