@@ -38,7 +38,6 @@ const testimonialCopy = {
             "Von Herzen: Danke euch beiden. ❤️",
         ],
         author: "D. C.",
-        note: "Persönlicher Erfahrungsbericht. Erfahrungen und Veränderungen sind individuell; daraus lässt sich kein bestimmtes Ergebnis für andere Personen ableiten.",
     },
     tr: {
         eyebrow: "Kişisel deneyim",
@@ -56,7 +55,6 @@ const testimonialCopy = {
             "Tüm kalbimle: İkinize de teşekkür ederim. ❤️",
         ],
         author: "D. C.",
-        note: "Bu kişisel bir deneyim paylaşımıdır. Deneyimler ve değişimler kişiden kişiye farklılık gösterir; başkaları için belirli bir sonuç vaat etmez.",
     },
 };
 
@@ -700,7 +698,6 @@ export const Herotest = () => {
                             </blockquote>
                             <footer className="mt-8 border-t border-primary/20 pt-6">
                                 <p className="font-bold text-muted-foreground">— {testimonial.author}</p>
-                                <p className="mt-4 max-w-3xl text-xs leading-5 text-muted-foreground/65">{testimonial.note}</p>
                             </footer>
                         </div>
                     </article>
