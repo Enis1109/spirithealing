@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Calendar1, Instagram, LockKeyhole, PlayCircle } from "lucide-react";
+import { ArrowRight, BookOpen, Calendar1, Instagram, LockKeyhole, PlayCircle, Quote, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -18,6 +18,45 @@ const memberCallout = {
         recording: "Seminer kaydının tamamı",
         workbook: "İndirilebilir çalışma kitabı",
         button: "Üye alanına git",
+    },
+};
+
+const testimonialCopy = {
+    de: {
+        eyebrow: "Persönliche Erfahrung",
+        title: "Was Menschen über unsere Begleitung sagen",
+        session: "Rückmeldung nach einer Intensivsitzung",
+        paragraphs: [
+            "Liebe Selcan, liebe Sabine, ich möchte euch einfach von Herzen Danke sagen.",
+            "Als ich zu euch in die Intensivsitzung gekommen bin, wusste ich nicht, was mich erwartet. Umso überraschter war ich, was sich seitdem bei mir verändert hat.",
+            "Das Erste, was ich direkt nach der Sitzung bemerkt habe, war, dass ich plötzlich viel tiefer einatmen konnte. Es fühlte sich an, als würde endlich wieder mehr Sauerstoff in meinen Lungen ankommen. Dieses Gefühl ist bis heute geblieben und begleitet mich jeden Tag.",
+            "Zunächst dachte ich, das wäre die einzige Veränderung. Doch in den letzten Tagen habe ich gemerkt, dass sich noch viel mehr getan hat.",
+            "Mein Essverhalten hat sich komplett verändert. Ich hatte über lange Zeit große Probleme damit. Jetzt habe ich kaum noch Hunger, kleine Portionen reichen mir völlig aus und ich bin schnell satt. Das fühlt sich für mich unglaublich befreiend an.",
+            "Außerdem spüre ich eine Energie, die ich so lange nicht mehr hatte. Ich habe angefangen, meine Wohnung auszumisten, kann mich ohne Schwierigkeiten von Dingen trennen und habe richtig Tatendrang. Es fühlt sich an, als würde ich nicht nur äußerlich aufräumen, sondern auch innerlich.",
+            "Am tiefsten berührt hat mich jedoch ein Moment während der Anteilarbeit mit dir, Sabine. Als du mein inneres Baby liebevoll gehalten hast, durfte ich etwas fühlen, das ich kaum in Worte fassen kann. Dieses Gefühl von Geborgenheit, Gehaltensein und bedingungsloser Liebe trage ich bis heute in meinem Herzen. Allein dieser Moment war für mich unbeschreiblich wertvoll.",
+            "Ich weiß nicht, was sich in den nächsten Wochen noch alles zeigen wird. Aber schon jetzt bin ich unendlich dankbar für diese Erfahrung und dafür, dass ihr mich so achtsam, liebevoll und wertschätzend begleitet habt.",
+            "Von Herzen: Danke euch beiden. ❤️",
+        ],
+        author: "D. C.",
+        note: "Persönlicher Erfahrungsbericht. Erfahrungen und Veränderungen sind individuell; daraus lässt sich kein bestimmtes Ergebnis für andere Personen ableiten.",
+    },
+    tr: {
+        eyebrow: "Kişisel deneyim",
+        title: "Danışanlarımız eşliğimiz hakkında ne söylüyor?",
+        session: "Yoğun bir seans sonrası geri bildirim",
+        paragraphs: [
+            "Sevgili Selcan, sevgili Sabine, size tüm kalbimle teşekkür etmek istiyorum.",
+            "Yoğun seansa geldiğimde beni neyin beklediğini bilmiyordum. O zamandan beri bende değişenleri fark etmek beni daha da şaşırttı.",
+            "Seanstan hemen sonra ilk fark ettiğim şey, birden çok daha derin nefes alabilmemdi. Sanki ciğerlerime sonunda yeniden daha fazla oksijen ulaşıyordu. Bu his bugüne kadar devam etti ve bana her gün eşlik ediyor.",
+            "Önce bunun tek değişiklik olduğunu düşündüm. Fakat son günlerde çok daha fazlasının değiştiğini fark ettim.",
+            "Yeme alışkanlıklarım tamamen değişti. Uzun zamandır bu konuda büyük zorluklar yaşıyordum. Şimdi neredeyse hiç açlık hissetmiyorum, küçük porsiyonlar bana yetiyor ve çabuk doyuyorum. Bu bana inanılmaz derecede özgürleştirici geliyor.",
+            "Ayrıca uzun zamandır hissetmediğim bir enerji hissediyorum. Evimi ayıklamaya başladım, eşyalardan zorlanmadan ayrılabiliyorum ve gerçekten harekete geçme isteğim var. Sanki yalnızca dışarıyı değil, içimi de düzenliyormuşum gibi geliyor.",
+            "Beni en derinden etkileyen ise seninle yaptığımız parça çalışması sırasında yaşadığım bir andı, Sabine. İçimdeki bebeği sevgiyle tuttuğunda kelimelere dökmekte zorlandığım bir şeyi hissetmeme izin verildi. O güven, tutulma ve koşulsuz sevgi hissini hâlâ kalbimde taşıyorum. Yalnızca o an bile benim için tarif edilemeyecek kadar değerliydi.",
+            "Önümüzdeki haftalarda daha nelerin ortaya çıkacağını bilmiyorum. Ancak şimdiden bu deneyim ve bana böylesine özenli, sevgi dolu ve değer veren bir şekilde eşlik ettiğiniz için sonsuz minnet duyuyorum.",
+            "Tüm kalbimle: İkinize de teşekkür ederim. ❤️",
+        ],
+        author: "D. C.",
+        note: "Bu kişisel bir deneyim paylaşımıdır. Deneyimler ve değişimler kişiden kişiye farklılık gösterir; başkaları için belirli bir sonuç vaat etmez.",
     },
 };
 
@@ -97,6 +136,7 @@ const number_five = [
 export const Herotest = () => {
     const { language } = useLanguage();
     const memberCopy = memberCallout[language];
+    const testimonial = testimonialCopy[language];
 
     return <section id="hero" className="home-page relative overflow-hidden">
         <div className="relative z-10 w-full">
@@ -639,6 +679,31 @@ export const Herotest = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div className="relative bg-[#f7f1e7] px-4 py-16 sm:px-6 sm:py-20">
+                <div className="mx-auto max-w-5xl">
+                    <div className="mb-9 text-center">
+                        <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{testimonial.eyebrow}</p>
+                        <h2 className="mt-3 text-3xl font-bold leading-tight text-muted-foreground sm:text-4xl">{testimonial.title}</h2>
+                    </div>
+                    <article className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-white/80 p-6 shadow-xl shadow-black/10 sm:p-10 lg:p-12">
+                        <Quote className="absolute right-6 top-6 h-16 w-16 text-primary/10 sm:right-10 sm:top-8 sm:h-20 sm:w-20" aria-hidden="true" />
+                        <div className="relative">
+                            <div className="mb-5 flex gap-1 text-primary" aria-label="5 von 5 Sternen">
+                                {[0, 1, 2, 3, 4].map((star) => <Star key={star} className="h-5 w-5 fill-current" aria-hidden="true" />)}
+                            </div>
+                            <p className="mb-7 text-sm font-semibold text-primary">{testimonial.session}</p>
+                            <blockquote className="space-y-5 text-base leading-8 text-muted-foreground sm:text-lg">
+                                {testimonial.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+                            </blockquote>
+                            <footer className="mt-8 border-t border-primary/20 pt-6">
+                                <p className="font-bold text-muted-foreground">— {testimonial.author}</p>
+                                <p className="mt-4 max-w-3xl text-xs leading-5 text-muted-foreground/65">{testimonial.note}</p>
+                            </footer>
+                        </div>
+                    </article>
                 </div>
             </div>
 
