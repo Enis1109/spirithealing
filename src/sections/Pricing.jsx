@@ -11,7 +11,8 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const bookingLinks = {
-    intro: "https://spirit4healing.simplybook.me/v2/#book/service/2/count/1/",
+    introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
+    introSelcan: "https://calendly.com/selcan1975/erstgesprach",
     single: "https://spirit4healing.simplybook.me/v2/#book/service/3/count/1/",
     combined: "https://spirit4healing.simplybook.me/v2/#book/service/4/count/1/",
     packages: "https://spirit4healing.simplybook.me/v2/#packages",
@@ -38,14 +39,14 @@ const content = {
                         duration: "15 Minuten",
                         description: "Wir schauen gemeinsam darauf, was dich gerade beschäftigt und welche Form der Begleitung zu deiner Situation passen könnte.",
                         price: "Kostenfrei",
-                        link: bookingLinks.intro,
+                        link: bookingLinks.introSabine,
                     },
                     {
                         title: "Kennenlernen mit Selcan",
                         duration: "15 Minuten",
                         description: "Ein ruhiger erster Austausch für dein Anliegen und die Frage, ob du dich in der Zusammenarbeit gut aufgehoben fühlst.",
                         price: "Kostenfrei",
-                        link: bookingLinks.intro,
+                        link: bookingLinks.introSelcan,
                     },
                 ],
             },
@@ -151,14 +152,14 @@ const content = {
                         duration: "15 dakika",
                         description: "Şu anda seni neyin etkilediğine ve içinde bulunduğun durum için nasıl bir desteğin uygun olabileceğine birlikte bakarız.",
                         price: "Ücretsiz",
-                        link: bookingLinks.intro,
+                        link: bookingLinks.introSabine,
                     },
                     {
                         title: "Selcan ile tanışma",
                         duration: "15 dakika",
                         description: "Konunu paylaşabileceğin ve bu çalışmada kendini güvende hissedip hissetmediğini anlayabileceğin sakin bir ilk görüşme.",
                         price: "Ücretsiz",
-                        link: bookingLinks.intro,
+                        link: bookingLinks.introSelcan,
                     },
                 ],
             },
