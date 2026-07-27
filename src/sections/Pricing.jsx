@@ -20,8 +20,21 @@ const bookingLinks = {
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
     combinedFollow: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
     intensiveSelcan: "https://calendly.com/selcan1975/aufstellungsarbeit-selcan",
-    packages: "/kontakt",
 };
+
+const packageCheckoutLinks = [
+    "https://buy.stripe.com/aFa7sN3FwbSB6p52Bh83C03",
+    "https://buy.stripe.com/eVq28t0tk1dXdRx1xd83C02",
+    "https://buy.stripe.com/8x25kF6RIg8ReVB8ZF83C01",
+    "https://buy.stripe.com/28EbJ36RIaOxdRx3Fl83C00",
+];
+
+const packageImages = [
+    "/images/packages/3er-einzelsitzungen.jpg",
+    "/images/packages/5er-einzelsitzungen.jpg",
+    "/images/packages/3er-kombisitzungen.jpg",
+    "/images/packages/5er-kombisitzungen.jpg",
+];
 
 const content = {
     de: {
@@ -124,7 +137,7 @@ const content = {
         packagesEyebrow: "Sitzungspakete",
         packagesTitle: "Mehrere Sitzungen mit Preisvorteil buchen",
         packagesIntro: "Wähle einen verbindlichen Rahmen für deinen Prozess und spare je nach Paket 10 % oder 15 % gegenüber der Einzelbuchung.",
-        packageCta: "Paket anfragen",
+        packageCta: "Paket kaufen",
         packages: [
             { title: "3er-Paket Einzelsitzungen", price: "599,40 €", discount: "10 % Rabatt", text: "Drei Einzelsitzungen mit Sabine oder Selcan statt 666 €." },
             { title: "5er-Paket Einzelsitzungen", price: "943,50 €", discount: "15 % Rabatt", text: "Fünf Einzelsitzungen mit Sabine oder Selcan statt 1.110 €." },
@@ -237,7 +250,7 @@ const content = {
         packagesEyebrow: "Seans paketleri",
         packagesTitle: "Birden fazla seansı avantajlı fiyatla al",
         packagesIntro: "Sürecin için güvenilir bir çerçeve seç ve tek tek randevu almaya göre pakete bağlı olarak %10 veya %15 tasarruf et.",
-        packageCta: "Paket hakkında bilgi al",
+        packageCta: "Paketi satın al",
         packages: [
             { title: "3'lü bireysel seans paketi", price: "599,40 €", discount: "%10 indirim", text: "Sabine veya Selcan ile üç bireysel seans; 666 € yerine." },
             { title: "5'li bireysel seans paketi", price: "943,50 €", discount: "%15 indirim", text: "Sabine veya Selcan ile beş bireysel seans; 1.110 € yerine." },
@@ -361,15 +374,21 @@ export const Pricing = () => {
                         <p className="mt-4 text-lg leading-8 text-white/80">{copy.packagesIntro}</p>
                     </div>
                     <div className="mt-8 grid gap-5 md:grid-cols-2">
-                        {copy.packages.map((item) => (
+                        {copy.packages.map((item, index) => (
                             <article key={item.title} className="glass-strong rounded-3xl p-6 shadow-lg shadow-black/10">
+                                <img
+                                    src={packageImages[index]}
+                                    alt={item.title}
+                                    className="mb-5 aspect-square w-full rounded-2xl object-cover"
+                                    loading="lazy"
+                                />
                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                     <h3 className="text-xl font-bold text-muted-foreground">{item.title}</h3>
                                     <span className="rounded-full bg-primary/15 px-3 py-1 text-sm font-bold text-primary">{item.price}</span>
                                 </div>
                                 <p className="mt-4 leading-7 text-muted-foreground/80">{item.text}</p>
                                 <p className="mt-4 text-sm font-semibold text-primary">{item.discount}</p>
-                                <a href={bookingLinks.packages} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground transition hover:bg-surface">
+                                <a href={packageCheckoutLinks[index]} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground transition hover:bg-surface">
                                     {copy.packageCta}<ArrowRight className="h-5 w-5" aria-hidden="true" />
                                 </a>
                             </article>
