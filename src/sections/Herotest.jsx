@@ -1,23 +1,25 @@
-import { ArrowRight, BookOpen, Calendar1, Instagram, LockKeyhole, PlayCircle, Quote, Star } from "lucide-react";
+import { ArrowRight, BookOpen, Calendar1, Headphones, Instagram, LockKeyhole, PlayCircle, Quote, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const memberCallout = {
     de: {
-        eyebrow: "Neu: kostenloser Mitgliederbereich",
-        title: "Vortrag verpasst? Die Aufzeichnung wartet auf dich.",
-        text: "Melde dich kostenlos an und sieh dir den vollständigen Vortrag „Wer entscheidet eigentlich dein Leben?“ an. Das passende Workbook kannst du dort ebenfalls herunterladen.",
-        recording: "Vollständige Aufzeichnung",
+        eyebrow: "Neu: deine kostenlose Spirit-Healing-Mediathek",
+        title: "2 Meditationen, Vortrag und Workbook – kostenlos für dich.",
+        text: "Melde dich einmalig kostenlos an. Im geschützten Mitgliederbereich kannst du die Meditationen „Loslassen & Reinigen“ und „Wiedergeburt“ anhören, den vollständigen Vortrag ansehen und mit dem Workbook weiterarbeiten.",
+        recording: "Vollständiger Vortrag",
         workbook: "Workbook zum Download",
-        button: "Zum Mitgliederbereich",
+        meditations: "2 geführte Meditationen",
+        button: "Kostenlose Inhalte öffnen",
     },
     tr: {
-        eyebrow: "Yeni: ücretsiz üye alanı",
-        title: "Semineri kaçırdın mı? Kaydı seni bekliyor.",
-        text: "Ücretsiz kaydol ve “Hayatına aslında kim karar veriyor?” seminerinin tamamını izle. Seminer çalışma kitabını da aynı alandan indirebilirsin.",
-        recording: "Seminer kaydının tamamı",
+        eyebrow: "Yeni: ücretsiz Spirit Healing içerik alanı",
+        title: "2 meditasyon, seminer ve çalışma kitabı – senin için ücretsiz.",
+        text: "Bir kez ücretsiz kaydol. Korumalı üye alanında “Bırakmak ve Arınmak” ile “Yeniden Doğuş” meditasyonlarını dinleyebilir, seminerin tamamını izleyebilir ve çalışma kitabıyla devam edebilirsin.",
+        recording: "Seminerin tamamı",
         workbook: "İndirilebilir çalışma kitabı",
-        button: "Üye alanına git",
+        meditations: "2 rehberli meditasyon",
+        button: "Ücretsiz içerikleri aç",
     },
 };
 
@@ -184,6 +186,7 @@ export const Herotest = () => {
                             <div className="mt-5 flex flex-col gap-2 text-sm font-semibold text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-5">
                                 <span className="inline-flex items-center gap-2"><PlayCircle className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.recording}</span>
                                 <span className="inline-flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.workbook}</span>
+                                <span className="inline-flex items-center gap-2"><Headphones className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.meditations}</span>
                             </div>
                         </div>
                         <Link to="/mitglieder" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface lg:w-auto">

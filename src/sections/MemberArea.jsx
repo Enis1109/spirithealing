@@ -9,15 +9,16 @@ const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-
 const content = {
     de: {
         eyebrow: "Kostenloser Mitgliederbereich",
-        title: "Die Aufzeichnung in deinem geschützten Bereich",
-        intro: "Registriere dich einmalig mit deiner E-Mail-Adresse. Wir senden dir einen sicheren Zugangslink – ganz ohne Passwort.",
+        title: "Deine kostenlose Spirit-Healing-Mediathek",
+        intro: "Registriere dich einmalig mit deiner E-Mail-Adresse. Wir senden dir einen sicheren Zugangslink zu allen kostenlosen Inhalten – ganz ohne Passwort.",
         benefitTitle: "Das erwartet dich",
         benefits: [
-            "Die geschnittene Aufzeichnung des Vortrags „Wer entscheidet eigentlich dein Leben?“",
+            "Zwei geführte Meditationen: „Loslassen & Reinigen“ und „Wiedergeburt“",
+            "Die Aufzeichnung des Vortrags „Wer entscheidet eigentlich dein Leben?“",
             "Das Workbook zum Vortrag mit Reflexionsfragen und Übungen",
             "Ein dauerhaft gültiger persönlicher Zugangslink, den du jederzeit wiederverwenden kannst",
         ],
-        formTitle: "Zugang anfordern",
+        formTitle: "Kostenlosen Zugang anfordern",
         name: "Vor- und Nachname",
         namePlaceholder: "Wie dürfen wir dich ansprechen?",
         email: "E-Mail-Adresse",
@@ -26,7 +27,7 @@ const content = {
         privacyStart: "Ich habe die ",
         privacyLink: "Datenschutzerklärung",
         privacyEnd: " gelesen und bin mit der Speicherung meiner Angaben für den kostenlosen Mitgliederzugang einverstanden.",
-        newsletter: "Ja, ich möchte per E-Mail über neue Vorträge, Seminare und Aufzeichnungen informiert werden.",
+        newsletter: "Ja, ich möchte per E-Mail über neue Meditationen, Vorträge, Seminare und Aufzeichnungen informiert werden.",
         newsletterHint: "Freiwillig. Du bestätigst die Newsletter-Anmeldung über einen separaten Link. Der Mitgliederzugang ist davon unabhängig.",
         submit: "Zugangslink senden",
         submitting: "Zugangslink wird gesendet …",
@@ -53,6 +54,7 @@ const content = {
         wiedergeburtTitle: "Wiedergeburt",
         wiedergeburtText: "Eine geführte Meditation für Übergang, Neuausrichtung und einen neuen inneren Beginn.",
         meditationDownload: "MP3 herunterladen",
+        meditationProcessing: "Die beiden Meditationen werden gerade für die Wiedergabe vorbereitet. Sobald sie bereitstehen, erscheinen die Abspielknöpfe hier automatisch.",
         processingTitle: "Die Aufzeichnung wird gerade vorbereitet",
         processingText: "Wir schneiden die Wortbeiträge der Teilnehmenden und unnötige Pausen sorgfältig heraus. Sobald die fertige Fassung bereitsteht, erscheint sie hier automatisch.",
         socialTitle: "Auch nach dem Vortrag mit uns verbunden bleiben",
@@ -61,15 +63,16 @@ const content = {
     },
     tr: {
         eyebrow: "Ücretsiz üye alanı",
-        title: "Seminer kaydı korumalı alanında",
-        intro: "E-posta adresinle bir kez kayıt ol. Sana şifresiz ve güvenli bir erişim bağlantısı gönderelim.",
+        title: "Ücretsiz Spirit Healing içerik alanın",
+        intro: "E-posta adresinle bir kez kayıt ol. Tüm ücretsiz içeriklere şifresiz ve güvenli bir erişim bağlantısı gönderelim.",
         benefitTitle: "Seni neler bekliyor?",
         benefits: [
-            "“Hayatına aslında kim karar veriyor?” seminerinin düzenlenmiş kaydı",
+            "İki rehberli meditasyon: “Bırakmak ve Arınmak” ve “Yeniden Doğuş”",
+            "“Hayatına aslında kim karar veriyor?” seminerinin kaydı",
             "Seminere eşlik eden düşünme soruları ve egzersizlerden oluşan çalışma kitabı",
             "İstediğin zaman yeniden kullanabileceğin kalıcı kişisel erişim bağlantısı",
         ],
-        formTitle: "Erişim bağlantısı iste",
+        formTitle: "Ücretsiz erişim bağlantısı iste",
         name: "Ad ve soyad",
         namePlaceholder: "Sana nasıl hitap edelim?",
         email: "E-posta adresi",
@@ -78,7 +81,7 @@ const content = {
         privacyStart: "",
         privacyLink: "Gizlilik bildirimini",
         privacyEnd: " okudum ve bilgilerimin ücretsiz üye erişimi için saklanmasını kabul ediyorum.",
-        newsletter: "Evet, yeni seminerler, eğitimler ve kayıtlar hakkında e-posta almak istiyorum.",
+        newsletter: "Evet, yeni meditasyonlar, seminerler, eğitimler ve kayıtlar hakkında e-posta almak istiyorum.",
         newsletterHint: "İsteğe bağlıdır. Bülten aboneliğini ayrı bir bağlantıyla onaylarsın; üye erişimin bundan bağımsızdır.",
         submit: "Erişim bağlantısını gönder",
         submitting: "Erişim bağlantısı gönderiliyor …",
@@ -105,6 +108,7 @@ const content = {
         wiedergeburtTitle: "Yeniden Doğuş",
         wiedergeburtText: "Geçiş, yeniden yönelme ve yeni bir içsel başlangıç için rehberli bir meditasyon.",
         meditationDownload: "MP3 indir",
+        meditationProcessing: "İki meditasyon şu anda dinlemeye hazırlanıyor. Hazır olduklarında oynatma düğmeleri burada otomatik olarak görünecek.",
         processingTitle: "Kayıt hazırlanıyor",
         processingText: "Katılımcıların konuşmalarını ve gereksiz araları dikkatle çıkarıyoruz. Tamamlanan sürüm hazır olduğunda burada otomatik olarak görünecek.",
         socialTitle: "Seminerden sonra da bizimle bağlantıda kal",
@@ -229,11 +233,13 @@ export const MemberArea = () => {
                         )}
                     </section>
 
-                    {(meditations.loslassenAvailable || meditations.wiedergeburtAvailable) && (
-                        <section className="mt-8 rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
+                    <section className="mt-8 rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
                             <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">{copy.meditationEyebrow}</p>
                             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{copy.meditationTitle}</h2>
                             <p className="mt-3 max-w-3xl text-lg leading-8 text-muted-foreground/75">{copy.meditationIntro}</p>
+                            {!meditations.loslassenAvailable && !meditations.wiedergeburtAvailable && (
+                                <p className="mt-6 rounded-2xl border border-primary/20 bg-primary/[0.08] p-5 leading-7 text-muted-foreground/75">{copy.meditationProcessing}</p>
+                            )}
                             <div className="mt-7 grid gap-6 md:grid-cols-2">
                                 {meditations.loslassenAvailable && (
                                     <article className="overflow-hidden rounded-3xl border border-primary/20 bg-white/70">
@@ -258,8 +264,7 @@ export const MemberArea = () => {
                                     </article>
                                 )}
                             </div>
-                        </section>
-                    )}
+                    </section>
 
                     <section className="mt-8 rounded-[2rem] border border-white/15 bg-white/[0.07] p-6 sm:p-8">
                         <h2 className="text-2xl font-bold">{copy.socialTitle}</h2>
