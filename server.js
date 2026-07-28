@@ -21,7 +21,7 @@ import {
     registerNewsletterInterest,
     unsubscribeFromNewsletter,
 } from "./server/newsletter.js";
-import { prepareMemberRecording, prepareMemberWorkbook } from "./server/recording.js";
+import { prepareMemberMeditations, prepareMemberRecording, prepareMemberWorkbook } from "./server/recording.js";
 import { ValidationError, validateContact, validateMemberAccess } from "./server/validation.js";
 
 const app = express();
@@ -34,6 +34,8 @@ const privacyConsentVersion = "privacy-2026-07";
 const memberPrivacyConsentVersion = "members-privacy-2026-07";
 let memberRecordingPath = "";
 let memberWorkbookPath = "";
+let memberLoslassenPath = "";
+let memberWiedergeburtPath = "";
 let startupError = null;
 let startupPromise = Promise.resolve();
 
@@ -100,6 +102,8 @@ const protectedFileIsAvailable = async (filePath) => {
 
 const recordingIsAvailable = () => protectedFileIsAvailable(memberRecordingPath);
 const workbookIsAvailable = () => protectedFileIsAvailable(memberWorkbookPath);
+const loslassenIsAvailable = () => protectedFileIsAvailable(memberLoslassenPath);
+const wiedergeburtIsAvailable = () => protectedFileIsAvailable(memberWiedergeburtPath);
 
 app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, response) => {
     try {
@@ -234,6 +238,10 @@ app.get("/api/members/session", async (request, response) => {
         member: { name: member.name, email: member.email, locale: member.locale },
         recordingAvailable: await recordingIsAvailable(),
         workbookAvailable: await workbookIsAvailable(),
+        meditations: {
+            loslassenAvailable: await loslassenIsAvailable(),
+            wiedergeburtAvailable: await wiedergeburtIsAvailable(),
+        },
     });
 });
 
@@ -297,6 +305,52 @@ app.get("/api/members/workbook", async (request, response) => {
     return fs.createReadStream(memberWorkbookPath).pipe(response);
 });
 
+const streamMemberAudio = async ({ request, response, filePath, filename, available }) => {
+    const member = await getMemberFromRequest(request);
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+    if (!await available()) return response.status(404).json({ ok: false, error: "meditation_processing" });
+
+    const fileInfo = await fsPromises.stat(filePath);
+    const range = request.get("range");
+    response.set({
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "private, max-age=3600",
+        "Content-Type": "audio/mpeg",
+        "Content-Disposition": request.query.download === "1" ? `attachment; filename="${filename}"` : "inline",
+    });
+    if (!range) {
+        response.set("Content-Length", String(fileInfo.size));
+        return fs.createReadStream(filePath).pipe(response);
+    }
+    const match = /^bytes=(\d+)-(\d*)$/u.exec(range);
+    if (!match) return response.status(416).end();
+    const start = Number(match[1]);
+    const requestedEnd = match[2] ? Number(match[2]) : fileInfo.size - 1;
+    const end = Math.min(requestedEnd, fileInfo.size - 1);
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || start > end) return response.status(416).end();
+    response.status(206).set({
+        "Content-Range": `bytes ${start}-${end}/${fileInfo.size}`,
+        "Content-Length": String(end - start + 1),
+    });
+    return fs.createReadStream(filePath, { start, end }).pipe(response);
+};
+
+app.get("/api/members/meditations/loslassen", (request, response) => streamMemberAudio({
+    request,
+    response,
+    filePath: memberLoslassenPath,
+    filename: "Spirit-Healing-Meditation-Loslassen-und-Reinigen.mp3",
+    available: loslassenIsAvailable,
+}));
+
+app.get("/api/members/meditations/wiedergeburt", (request, response) => streamMemberAudio({
+    request,
+    response,
+    filePath: memberWiedergeburtPath,
+    filename: "Spirit-Healing-Meditation-Wiedergeburt.mp3",
+    available: wiedergeburtIsAvailable,
+}));
+
 app.get("/api/newsletter/confirm", async (request, response) => {
     try {
         const confirmed = await confirmNewsletterSubscription(String(request.query.token || ""));
@@ -349,10 +403,15 @@ app.use((request, response, next) => {
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
 
 const initializeServices = async () => {
-    [memberRecordingPath, memberWorkbookPath] = await Promise.all([
+    const [recordingPath, workbookPath, meditations] = await Promise.all([
         prepareMemberRecording(),
         prepareMemberWorkbook(),
+        prepareMemberMeditations(),
     ]);
+    memberRecordingPath = recordingPath;
+    memberWorkbookPath = workbookPath;
+    memberLoslassenPath = meditations.loslassen;
+    memberWiedergeburtPath = meditations.wiedergeburt;
     await initializeDatabase();
 };
 

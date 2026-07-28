@@ -22,13 +22,18 @@ const encryptedWorkbookPath = path.join(
     "workbook-wer-entscheidet-dein-leben.enc",
 );
 const decryptedWorkbookPath = path.join(os.tmpdir(), "spirit-healing-workbook.pdf");
+const meditationSecretPath = path.join(currentDirectory, "..", "private_assets", ".meditation-media.key");
+const encryptedLoslassenPath = path.join(currentDirectory, "..", "private_assets", "meditation-loslassen-reinigen.enc");
+const decryptedLoslassenPath = path.join(os.tmpdir(), "spirit-healing-meditation-loslassen-reinigen.mp3");
+const encryptedWiedergeburtPath = path.join(currentDirectory, "..", "private_assets", "meditation-wiedergeburt.enc");
+const decryptedWiedergeburtPath = path.join(os.tmpdir(), "spirit-healing-meditation-wiedergeburt.mp3");
 
-const prepareEncryptedAsset = async ({ encryptedPath, decryptedPath, magicText }) => {
-    if (!process.env.MEMBER_RECORDING_KEY) return "";
+const prepareEncryptedAsset = async ({ encryptedPath, decryptedPath, magicText, keyText = process.env.MEMBER_RECORDING_KEY }) => {
+    if (!keyText) return "";
 
     const magic = Buffer.from(magicText, "ascii");
     const headerLength = magic.length + 12;
-    const key = Buffer.from(process.env.MEMBER_RECORDING_KEY, "base64url");
+    const key = Buffer.from(keyText.trim(), "base64url");
     if (key.length !== 32) throw new Error("Invalid protected asset key");
 
     const encryptedInfo = await fsPromises.stat(encryptedPath);
@@ -77,6 +82,15 @@ const prepareEncryptedAsset = async ({ encryptedPath, decryptedPath, magicText }
     }
 };
 
+const readMeditationKey = async () => {
+    if (process.env.MEMBER_MEDITATION_KEY) return process.env.MEMBER_MEDITATION_KEY;
+    try {
+        return await fsPromises.readFile(meditationSecretPath, "utf8");
+    } catch {
+        return "";
+    }
+};
+
 export const prepareMemberRecording = async () => {
     if (process.env.MEMBER_RECORDING_PATH) return process.env.MEMBER_RECORDING_PATH;
     return prepareEncryptedAsset({
@@ -93,4 +107,24 @@ export const prepareMemberWorkbook = async () => {
         decryptedPath: decryptedWorkbookPath,
         magicText: "SPIRPDF1",
     });
+};
+
+export const prepareMemberMeditations = async () => {
+    const keyText = await readMeditationKey();
+    if (!keyText) return { loslassen: "", wiedergeburt: "" };
+    const [loslassen, wiedergeburt] = await Promise.all([
+        prepareEncryptedAsset({
+            encryptedPath: encryptedLoslassenPath,
+            decryptedPath: decryptedLoslassenPath,
+            magicText: "SPIRMED1",
+            keyText,
+        }),
+        prepareEncryptedAsset({
+            encryptedPath: encryptedWiedergeburtPath,
+            decryptedPath: decryptedWiedergeburtPath,
+            magicText: "SPIRMED1",
+            keyText,
+        }),
+    ]);
+    return { loslassen, wiedergeburt };
 };

@@ -45,6 +45,14 @@ const content = {
         workbookTitle: "Deine Fragen und Übungen zum Weiterarbeiten",
         workbookText: "Neun gestaltete Seiten, mit denen du deine inneren Anteile, ihre Schutzabsichten und deine Selbstführung vertiefen kannst.",
         workbookDownload: "Workbook herunterladen",
+        meditationEyebrow: "Spirit Healing Meditationen",
+        meditationTitle: "Geführte Meditationen für deinen Prozess",
+        meditationIntro: "Nimm dir einen geschützten Moment für dich. Du kannst beide Meditationen direkt anhören oder für später herunterladen.",
+        loslassenTitle: "Loslassen & Reinigen",
+        loslassenText: "Eine geführte Meditation zum bewussten Loslassen und inneren Reinigen.",
+        wiedergeburtTitle: "Wiedergeburt",
+        wiedergeburtText: "Eine geführte Meditation für Übergang, Neuausrichtung und einen neuen inneren Beginn.",
+        meditationDownload: "MP3 herunterladen",
         processingTitle: "Die Aufzeichnung wird gerade vorbereitet",
         processingText: "Wir schneiden die Wortbeiträge der Teilnehmenden und unnötige Pausen sorgfältig heraus. Sobald die fertige Fassung bereitsteht, erscheint sie hier automatisch.",
         socialTitle: "Auch nach dem Vortrag mit uns verbunden bleiben",
@@ -89,6 +97,14 @@ const content = {
         workbookTitle: "Çalışmaya devam etmek için sorular ve egzersizler",
         workbookText: "İçsel parçalarını, koruma amaçlarını ve öz liderliğini daha derin keşfetmen için hazırlanmış dokuz sayfa.",
         workbookDownload: "Çalışma kitabını indir",
+        meditationEyebrow: "Spirit Healing Meditasyonları",
+        meditationTitle: "Sürecin için rehberli meditasyonlar",
+        meditationIntro: "Kendine korunaklı bir an ayır. Her iki meditasyonu da doğrudan dinleyebilir veya daha sonrası için indirebilirsin.",
+        loslassenTitle: "Bırakmak ve Arınmak",
+        loslassenText: "Bilinçli bırakma ve içsel arınma için rehberli bir meditasyon.",
+        wiedergeburtTitle: "Yeniden Doğuş",
+        wiedergeburtText: "Geçiş, yeniden yönelme ve yeni bir içsel başlangıç için rehberli bir meditasyon.",
+        meditationDownload: "MP3 indir",
         processingTitle: "Kayıt hazırlanıyor",
         processingText: "Katılımcıların konuşmalarını ve gereksiz araları dikkatle çıkarıyoruz. Tamamlanan sürüm hazır olduğunda burada otomatik olarak görünecek.",
         socialTitle: "Seminerden sonra da bizimle bağlantıda kal",
@@ -105,6 +121,7 @@ export const MemberArea = () => {
     const [member, setMember] = useState(null);
     const [recordingAvailable, setRecordingAvailable] = useState(false);
     const [workbookAvailable, setWorkbookAvailable] = useState(false);
+    const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false });
     const [submitState, setSubmitState] = useState("idle");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
     const [errorMessage, setErrorMessage] = useState("");
@@ -119,6 +136,7 @@ export const MemberArea = () => {
                     setMember(result.member);
                     setRecordingAvailable(result.recordingAvailable);
                     setWorkbookAvailable(result.workbookAvailable);
+                    setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false });
                     setSessionState("member");
                 } else {
                     setSessionState("guest");
@@ -210,6 +228,38 @@ export const MemberArea = () => {
                             </div>
                         )}
                     </section>
+
+                    {(meditations.loslassenAvailable || meditations.wiedergeburtAvailable) && (
+                        <section className="mt-8 rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
+                            <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">{copy.meditationEyebrow}</p>
+                            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{copy.meditationTitle}</h2>
+                            <p className="mt-3 max-w-3xl text-lg leading-8 text-muted-foreground/75">{copy.meditationIntro}</p>
+                            <div className="mt-7 grid gap-6 md:grid-cols-2">
+                                {meditations.loslassenAvailable && (
+                                    <article className="overflow-hidden rounded-3xl border border-primary/20 bg-white/70">
+                                        <img src="/images/meditations/loslassen-reinigen.png" alt="Spirit Healing Meditation Loslassen und Reinigen" className="aspect-square w-full object-cover" />
+                                        <div className="p-5">
+                                            <h3 className="text-2xl font-bold">{copy.loslassenTitle}</h3>
+                                            <p className="mt-2 min-h-14 leading-7 text-muted-foreground/75">{copy.loslassenText}</p>
+                                            <audio className="mt-4 w-full" controls preload="metadata" src="/api/members/meditations/loslassen" />
+                                            <a href="/api/members/meditations/loslassen?download=1" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-primary-foreground"><Download className="h-5 w-5" />{copy.meditationDownload}</a>
+                                        </div>
+                                    </article>
+                                )}
+                                {meditations.wiedergeburtAvailable && (
+                                    <article className="overflow-hidden rounded-3xl border border-primary/20 bg-white/70">
+                                        <img src="/images/meditations/wiedergeburt.png" alt="Spirit Healing Meditation Wiedergeburt" className="aspect-square w-full object-cover" />
+                                        <div className="p-5">
+                                            <h3 className="text-2xl font-bold">{copy.wiedergeburtTitle}</h3>
+                                            <p className="mt-2 min-h-14 leading-7 text-muted-foreground/75">{copy.wiedergeburtText}</p>
+                                            <audio className="mt-4 w-full" controls preload="metadata" src="/api/members/meditations/wiedergeburt" />
+                                            <a href="/api/members/meditations/wiedergeburt?download=1" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-primary-foreground"><Download className="h-5 w-5" />{copy.meditationDownload}</a>
+                                        </div>
+                                    </article>
+                                )}
+                            </div>
+                        </section>
+                    )}
 
                     <section className="mt-8 rounded-[2rem] border border-white/15 bg-white/[0.07] p-6 sm:p-8">
                         <h2 className="text-2xl font-bold">{copy.socialTitle}</h2>
