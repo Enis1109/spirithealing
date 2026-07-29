@@ -1,29 +1,8 @@
-import { ArrowRight, BookOpen, Calendar1, Headphones, Instagram, LockKeyhole, PlayCircle, Quote, Star } from "lucide-react";
+import { ArrowRight, Calendar1, Instagram, Quote, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { MemberWelcomeModal } from "@/components/MemberWelcomeModal";
-
-const memberCallout = {
-    de: {
-        eyebrow: "Neu: deine kostenlose Spirit-Healing-Mediathek",
-        title: "2 Meditationen, Vortrag und Workbook – kostenlos für dich.",
-        text: "Melde dich einmalig kostenlos an. Im geschützten Mitgliederbereich kannst du die Meditationen „Loslassen & Reinigen“ und „Wiedergeburt“ anhören, den vollständigen Vortrag ansehen und mit dem Workbook weiterarbeiten.",
-        recording: "Vollständiger Vortrag",
-        workbook: "Workbook zum Download",
-        meditations: "2 geführte Meditationen",
-        button: "Kostenlose Inhalte öffnen",
-    },
-    tr: {
-        eyebrow: "Yeni: ücretsiz Spirit Healing içerik alanı",
-        title: "2 meditasyon, seminer ve çalışma kitabı – senin için ücretsiz.",
-        text: "Bir kez ücretsiz kaydol. Korumalı üye alanında “Bırakmak ve Arınmak” ile “Yeniden Doğuş” meditasyonlarını dinleyebilir, seminerin tamamını izleyebilir ve çalışma kitabıyla devam edebilirsin.",
-        recording: "Seminerin tamamı",
-        workbook: "İndirilebilir çalışma kitabı",
-        meditations: "2 rehberli meditasyon",
-        button: "Ücretsiz içerikleri aç",
-    },
-};
 
 const testimonialCopy = {
     de: {
@@ -137,11 +116,8 @@ const number_five = [
 
 export const Herotest = () => {
     const { language } = useLanguage();
-    const navigate = useNavigate();
-    const memberCopy = memberCallout[language];
     const testimonial = testimonialCopy[language];
     const [memberModalOpen, setMemberModalOpen] = useState(false);
-    const [hasMemberSession, setHasMemberSession] = useState(false);
 
     useEffect(() => {
         if (sessionStorage.getItem("spirit-member-popup-dismissed") === "yes") return undefined;
@@ -151,10 +127,7 @@ export const Herotest = () => {
         fetch("/api/members/session", { headers: { Accept: "application/json" } })
             .then((response) => {
                 if (!active) return;
-                if (response.ok) {
-                    setHasMemberSession(true);
-                    return;
-                }
+                if (response.ok) return;
                 timer = window.setTimeout(() => active && setMemberModalOpen(true), 650);
             })
             .catch(() => {
@@ -171,14 +144,6 @@ export const Herotest = () => {
         setMemberModalOpen(false);
         sessionStorage.setItem("spirit-member-popup-dismissed", "yes");
     }, []);
-
-    const openMemberArea = () => {
-        if (hasMemberSession) {
-            navigate("/mitglieder");
-            return;
-        }
-        setMemberModalOpen(true);
-    };
 
     return <section id="hero" className="home-page relative overflow-hidden">
         <MemberWelcomeModal language={language} open={memberModalOpen} onClose={closeMemberModal} />
@@ -215,28 +180,6 @@ export const Herotest = () => {
                             </div>
                         </div>
                     </div>
-            </div>
-            <div data-no-translate className="relative z-20 mx-auto -mt-10 w-full max-w-6xl px-4 sm:px-6">
-                <div className="overflow-hidden rounded-[2rem] border border-primary/45 bg-[#f7f1e7] shadow-2xl shadow-black/20">
-                    <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10">
-                        <div>
-                            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-primary">
-                                <LockKeyhole className="h-5 w-5" aria-hidden="true" />
-                                {memberCopy.eyebrow}
-                            </p>
-                            <h2 className="mt-3 text-2xl font-bold leading-tight text-muted-foreground sm:text-3xl">{memberCopy.title}</h2>
-                            <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground/80 sm:text-lg">{memberCopy.text}</p>
-                            <div className="mt-5 flex flex-col gap-2 text-sm font-semibold text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-5">
-                                <span className="inline-flex items-center gap-2"><PlayCircle className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.recording}</span>
-                                <span className="inline-flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.workbook}</span>
-                                <span className="inline-flex items-center gap-2"><Headphones className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.meditations}</span>
-                            </div>
-                        </div>
-                        <button type="button" onClick={openMemberArea} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface lg:w-auto">
-                            {memberCopy.button}<ArrowRight className="h-5 w-5" aria-hidden="true" />
-                        </button>
-                    </div>
-                </div>
             </div>
             <div className="glass rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
                 <div className="container mx-auto px-4 sm:px-6">
