@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS members (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(254) NOT NULL,
+    password_hash VARCHAR(255) NULL,
+    password_set_at DATETIME NULL,
     locale CHAR(2) NOT NULL DEFAULT 'de',
     status VARCHAR(24) NOT NULL DEFAULT 'pending',
     privacy_consent_version VARCHAR(32) NOT NULL,
@@ -76,6 +78,7 @@ CREATE TABLE IF NOT EXISTS member_access_tokens (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     member_id BIGINT UNSIGNED NOT NULL,
     token_hash CHAR(64) NOT NULL,
+    pending_password_hash VARCHAR(255) NULL,
     expires_at DATETIME NOT NULL,
     used_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -98,4 +101,18 @@ CREATE TABLE IF NOT EXISTS member_sessions (
     INDEX member_session_member_idx (member_id),
     INDEX member_session_expires_idx (expires_at),
     CONSTRAINT member_session_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS member_password_reset_tokens (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    member_id BIGINT UNSIGNED NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY member_password_reset_token_unique (token_hash),
+    INDEX member_password_reset_member_idx (member_id),
+    INDEX member_password_reset_expires_idx (expires_at),
+    CONSTRAINT member_password_reset_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -10,13 +10,13 @@ const content = {
     de: {
         eyebrow: "Kostenloser Mitgliederbereich",
         title: "Deine kostenlose Spirit-Healing-Mediathek",
-        intro: "Registriere dich einmalig mit deiner E-Mail-Adresse. Wir senden dir einen sicheren Zugangslink zu allen kostenlosen Inhalten – ganz ohne Passwort.",
+        intro: "Melde dich mit E-Mail-Adresse und Passwort an. Wenn du bereits einen persönlichen Direktlink von uns hast, kannst du ihn unverändert weiterverwenden.",
         benefitTitle: "Das erwartet dich",
         benefits: [
             "Zwei geführte Meditationen: „Loslassen & Reinigen“ und „Wiedergeburt“",
             "Die Aufzeichnung des Vortrags „Wer entscheidet eigentlich dein Leben?“",
             "Das Workbook zum Vortrag mit Reflexionsfragen und Übungen",
-            "Ein dauerhaft gültiger persönlicher Zugangslink, den du jederzeit wiederverwenden kannst",
+            "Ein persönliches Konto – bestehende Direktlinks bleiben dauerhaft gültig",
         ],
         formTitle: "Kostenlosen Zugang anfordern",
         name: "Vor- und Nachname",
@@ -38,6 +38,34 @@ const content = {
         invalid: "Dieser Zugangslink konnte nicht erkannt werden. Fordere bitte einen neuen persönlichen Link an.",
         error: "Der Zugangslink konnte gerade nicht versendet werden. Bitte versuche es erneut oder schreibe an info@spirit-healing.tr.",
         rateError: "Es wurden zu viele Zugangslinks in kurzer Zeit angefordert. Bitte versuche es in einigen Minuten erneut.",
+        loginTitle: "Im Mitgliederbereich anmelden",
+        registerTitle: "Kostenloses Konto erstellen",
+        loginTab: "Anmelden",
+        registerTab: "Neu registrieren",
+        password: "Passwort",
+        newPassword: "Neues Passwort",
+        confirmPassword: "Passwort wiederholen",
+        passwordHint: "Mindestens 10 Zeichen.",
+        loginSubmit: "Jetzt anmelden",
+        registering: "Konto wird eingerichtet …",
+        registerSubmit: "Kostenlos registrieren",
+        forgotLink: "Passwort vergessen?",
+        forgotTitle: "Neues Passwort anfordern",
+        forgotText: "Gib deine E-Mail-Adresse ein. Wenn dazu ein Konto besteht, erhältst du gleich einen Link für ein neues Passwort.",
+        forgotSubmit: "Link per E-Mail senden",
+        forgotSentTitle: "Schau bitte in dein E-Mail-Postfach",
+        forgotSentText: "Wenn unter dieser Adresse ein Konto besteht, haben wir dir einen Link zum Festlegen eines neuen Passworts geschickt.",
+        resetTitle: "Neues Passwort festlegen",
+        resetSubmit: "Passwort speichern",
+        resetSuccess: "Dein neues Passwort ist gespeichert. Du kannst dich jetzt anmelden.",
+        resetInvalid: "Dieser Link ist nicht mehr gültig. Fordere bitte einen neuen Link an.",
+        passwordsMismatch: "Die beiden Passwörter stimmen nicht überein.",
+        loginError: "E-Mail-Adresse oder Passwort stimmen nicht. Wenn du bisher nur einen Direktlink nutzt, kannst du über „Passwort vergessen“ ein Passwort anlegen.",
+        authError: "Das hat gerade nicht geklappt. Bitte versuche es erneut oder schreibe an info@spirit-healing.tr.",
+        directLinkTitle: "Lieber mit deinem persönlichen Direktlink?",
+        directLinkText: "Deine bisherigen Direktlinks bleiben gültig. Wenn du einen neuen Link benötigst, kannst du ihn hier anfordern.",
+        directLinkButton: "Neuen Direktlink anfordern",
+        backToLogin: "Zurück zur Anmeldung",
         memberEyebrow: "Dein Mitgliederbereich",
         welcome: "Schön, dass du da bist",
         recordingTitle: "Wer entscheidet eigentlich dein Leben?",
@@ -64,13 +92,13 @@ const content = {
     tr: {
         eyebrow: "Ücretsiz üye alanı",
         title: "Ücretsiz Spirit Healing içerik alanın",
-        intro: "E-posta adresinle bir kez kayıt ol. Tüm ücretsiz içeriklere şifresiz ve güvenli bir erişim bağlantısı gönderelim.",
+        intro: "E-posta adresin ve şifrenle giriş yap. Daha önce aldığın kişisel erişim bağlantısı varsa onu aynı şekilde kullanmaya devam edebilirsin.",
         benefitTitle: "Seni neler bekliyor?",
         benefits: [
             "İki rehberli meditasyon: “Bırakmak ve Arınmak” ve “Yeniden Doğuş”",
             "“Hayatına aslında kim karar veriyor?” seminerinin kaydı",
             "Seminere eşlik eden düşünme soruları ve egzersizlerden oluşan çalışma kitabı",
-            "İstediğin zaman yeniden kullanabileceğin kalıcı kişisel erişim bağlantısı",
+            "Kişisel hesabın – mevcut erişim bağlantıların kalıcı olarak geçerli kalır",
         ],
         formTitle: "Ücretsiz erişim bağlantısı iste",
         name: "Ad ve soyad",
@@ -92,6 +120,34 @@ const content = {
         invalid: "Bu erişim bağlantısı tanınamadı. Lütfen yeni bir kişisel bağlantı iste.",
         error: "Erişim bağlantısı şu anda gönderilemedi. Lütfen yeniden dene veya info@spirit-healing.tr adresine yaz.",
         rateError: "Kısa süre içinde çok fazla erişim bağlantısı istendi. Lütfen birkaç dakika sonra yeniden dene.",
+        loginTitle: "Üye alanına giriş yap",
+        registerTitle: "Ücretsiz hesap oluştur",
+        loginTab: "Giriş yap",
+        registerTab: "Yeni kayıt",
+        password: "Şifre",
+        newPassword: "Yeni şifre",
+        confirmPassword: "Şifreyi tekrarla",
+        passwordHint: "En az 10 karakter.",
+        loginSubmit: "Giriş yap",
+        registering: "Hesap hazırlanıyor …",
+        registerSubmit: "Ücretsiz kayıt ol",
+        forgotLink: "Şifreni mi unuttun?",
+        forgotTitle: "Yeni şifre bağlantısı iste",
+        forgotText: "E-posta adresini gir. Bu adrese ait bir hesap varsa yeni şifre belirlemen için sana bir bağlantı göndereceğiz.",
+        forgotSubmit: "Bağlantıyı e-postayla gönder",
+        forgotSentTitle: "Lütfen e-posta kutunu kontrol et",
+        forgotSentText: "Bu adrese ait bir hesap varsa yeni şifre belirleme bağlantısını gönderdik.",
+        resetTitle: "Yeni şifre belirle",
+        resetSubmit: "Şifreyi kaydet",
+        resetSuccess: "Yeni şifren kaydedildi. Şimdi giriş yapabilirsin.",
+        resetInvalid: "Bu bağlantı artık geçerli değil. Lütfen yeni bir bağlantı iste.",
+        passwordsMismatch: "Girdiğin şifreler aynı değil.",
+        loginError: "E-posta adresi veya şifre doğru değil. Şimdiye kadar yalnızca kişisel bağlantı kullandıysan “Şifreni mi unuttun?” üzerinden şifre oluşturabilirsin.",
+        authError: "İşlem şu anda tamamlanamadı. Lütfen yeniden dene veya info@spirit-healing.tr adresine yaz.",
+        directLinkTitle: "Kişisel erişim bağlantını mı kullanmak istiyorsun?",
+        directLinkText: "Mevcut erişim bağlantıların geçerli kalır. Yeni bir bağlantıya ihtiyacın varsa buradan isteyebilirsin.",
+        directLinkButton: "Yeni erişim bağlantısı iste",
+        backToLogin: "Giriş sayfasına dön",
         memberEyebrow: "Üye alanın",
         welcome: "Aramıza hoş geldin",
         recordingTitle: "Hayatına aslında kim karar veriyor?",
@@ -124,11 +180,17 @@ export const MemberArea = () => {
     const [sessionState, setSessionState] = useState("loading");
     const [member, setMember] = useState(null);
     const [recordingAvailable, setRecordingAvailable] = useState(false);
+    const [recordingEmbedUrl, setRecordingEmbedUrl] = useState("");
     const [workbookAvailable, setWorkbookAvailable] = useState(false);
     const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false });
     const [submitState, setSubmitState] = useState("idle");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
     const [errorMessage, setErrorMessage] = useState("");
+    const [mode, setMode] = useState(() => {
+        if (searchParams.get("reset")) return "reset";
+        const requestedMode = searchParams.get("mode");
+        return ["login", "register", "forgot", "access"].includes(requestedMode) ? requestedMode : "login";
+    });
 
     useEffect(() => {
         let active = true;
@@ -139,6 +201,7 @@ export const MemberArea = () => {
                 if (result?.ok) {
                     setMember(result.member);
                     setRecordingAvailable(result.recordingAvailable);
+                    setRecordingEmbedUrl(result.recordingEmbedUrl || "");
                     setWorkbookAvailable(result.workbookAvailable);
                     setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false });
                     setSessionState("member");
@@ -150,7 +213,14 @@ export const MemberArea = () => {
         return () => { active = false; };
     }, []);
 
-    const handleSubmit = async (event) => {
+    const changeMode = (nextMode) => {
+        setMode(nextMode);
+        setSubmitState("idle");
+        setNewsletterStatus("not_requested");
+        setErrorMessage("");
+    };
+
+    const handleAccessSubmit = async (event) => {
         event.preventDefault();
         setSubmitState("submitting");
         setErrorMessage("");
@@ -171,6 +241,95 @@ export const MemberArea = () => {
             form.reset();
         } catch (error) {
             setErrorMessage(error.code === "rate_limit" ? copy.rateError : copy.error);
+            setSubmitState("error");
+        }
+    };
+
+    const handleRegistration = async (event) => {
+        event.preventDefault();
+        setSubmitState("submitting");
+        setErrorMessage("");
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+
+        try {
+            const result = await submitForm("/api/members/register", {
+                name: formData.get("name"),
+                email: formData.get("email"),
+                password: formData.get("password"),
+                privacyConsent: formData.get("privacy") === "on",
+                newsletterConsent: formData.get("newsletter") === "on",
+                company: formData.get("company"),
+                locale: language,
+            });
+            setNewsletterStatus(result.newsletterStatus);
+            setSubmitState("sent");
+            form.reset();
+        } catch (error) {
+            setErrorMessage(error.code === "rate_limit" ? copy.rateError : copy.authError);
+            setSubmitState("error");
+        }
+    };
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        setSubmitState("submitting");
+        setErrorMessage("");
+        const formData = new FormData(event.currentTarget);
+
+        try {
+            await submitForm("/api/members/login", {
+                email: formData.get("email"),
+                password: formData.get("password"),
+            });
+            window.location.assign("/mitglieder");
+        } catch (error) {
+            setErrorMessage(error.code === "invalid_credentials" ? copy.loginError : (error.code === "rate_limit" ? copy.rateError : copy.authError));
+            setSubmitState("error");
+        }
+    };
+
+    const handleForgotPassword = async (event) => {
+        event.preventDefault();
+        setSubmitState("submitting");
+        setErrorMessage("");
+        const formData = new FormData(event.currentTarget);
+
+        try {
+            await submitForm("/api/members/password/forgot", {
+                email: formData.get("email"),
+                locale: language,
+            });
+            setSubmitState("sent");
+        } catch (error) {
+            setErrorMessage(error.code === "rate_limit" ? copy.rateError : copy.authError);
+            setSubmitState("error");
+        }
+    };
+
+    const handlePasswordReset = async (event) => {
+        event.preventDefault();
+        setSubmitState("submitting");
+        setErrorMessage("");
+        const formData = new FormData(event.currentTarget);
+        const password = String(formData.get("password") || "");
+
+        if (password !== String(formData.get("passwordConfirm") || "")) {
+            setErrorMessage(copy.passwordsMismatch);
+            setSubmitState("error");
+            return;
+        }
+
+        try {
+            await submitForm("/api/members/password/reset", {
+                token: searchParams.get("reset"),
+                password,
+            });
+            window.history.replaceState({}, "", "/mitglieder?mode=login");
+            setMode("login");
+            setSubmitState("reset_complete");
+        } catch (error) {
+            setErrorMessage(error.code === "invalid_reset_token" ? copy.resetInvalid : (error.code === "rate_limit" ? copy.rateError : copy.authError));
             setSubmitState("error");
         }
     };
@@ -205,7 +364,19 @@ export const MemberArea = () => {
                             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{copy.recordingTitle}</h2>
                             <p className="mt-3 text-lg leading-8 text-muted-foreground/75">{copy.recordingText}</p>
                         </div>
-                        {recordingAvailable ? (
+                        {recordingAvailable && recordingEmbedUrl ? (
+                            <div className="aspect-video w-full bg-black">
+                                <iframe
+                                    className="h-full w-full"
+                                    src={recordingEmbedUrl}
+                                    title={copy.recordingTitle}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                />
+                            </div>
+                        ) : recordingAvailable ? (
                             <video className="aspect-video w-full bg-black" controls playsInline preload="metadata" controlsList="nodownload" src="/api/members/recording">
                                 <track kind="captions" />
                             </video>
@@ -295,27 +466,102 @@ export const MemberArea = () => {
                 </section>
 
                 <section className="rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
+                    {searchParams.get("state") === "invalid" && <p role="alert" className="mb-5 rounded-2xl border border-amber-400/50 bg-amber-50 p-4 text-sm leading-6 text-amber-900">{copy.invalid}</p>}
+
                     {submitState === "sent" ? (
                         <div className="py-6 text-center">
                             <MailCheck className="mx-auto h-16 w-16 text-primary" />
-                            <h2 className="mt-5 text-3xl font-bold">{copy.sentTitle}</h2>
-                            <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-muted-foreground/75">{copy.sentText}</p>
+                            <h2 className="mt-5 text-3xl font-bold">{mode === "forgot" ? copy.forgotSentTitle : copy.sentTitle}</h2>
+                            <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-muted-foreground/75">{mode === "forgot" ? copy.forgotSentText : copy.sentText}</p>
                             {newsletterStatus === "pending" && <p className="mx-auto mt-4 max-w-xl rounded-2xl bg-primary/10 p-4 text-sm">{copy.newsletterSent}</p>}
-                            <button type="button" onClick={() => setSubmitState("idle")} className="mt-7 rounded-full border border-primary/45 px-5 py-3 font-bold text-primary">{copy.resend}</button>
+                            <button type="button" onClick={() => changeMode("login")} className="mt-7 rounded-full border border-primary/45 px-5 py-3 font-bold text-primary">{copy.backToLogin}</button>
                         </div>
                     ) : (
                         <>
-                            <h2 className="text-3xl font-bold">{copy.formTitle}</h2>
-                            {searchParams.get("state") === "invalid" && <p role="alert" className="mt-4 rounded-2xl border border-amber-400/50 bg-amber-50 p-4 text-sm leading-6 text-amber-900">{copy.invalid}</p>}
-                            <form onSubmit={handleSubmit} className="mt-6">
-                                <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label></div>
-                                <label className="block text-sm font-semibold">{copy.name} *<input className={fieldClass} name="name" type="text" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required /></label>
-                                <label className="mt-5 block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" title={copy.emailFormat} placeholder={copy.emailPlaceholder} required /><span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground/60">{copy.emailFormat}</span></label>
-                                <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6"><input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="privacy" required /><span>{copy.privacyStart}<Link to="/datenschutz" target="_blank" className="font-semibold text-primary underline underline-offset-2">{copy.privacyLink}</Link>{copy.privacyEnd}</span></label>
-                                <div className="mt-5 rounded-2xl border border-primary/30 bg-primary/[0.07] p-4"><label className="flex cursor-pointer items-start gap-3 text-sm font-semibold leading-6"><input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="newsletter" /><span>{copy.newsletter}</span></label><p className="ml-7 mt-2 text-xs leading-5 text-muted-foreground/70">{copy.newsletterHint}</p></div>
-                                {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-400/40 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
-                                <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface disabled:cursor-wait disabled:opacity-65">{submitState === "submitting" ? copy.submitting : copy.submit}<Send className="h-5 w-5" /></button>
-                            </form>
+                            {mode !== "reset" && mode !== "forgot" && mode !== "access" && (
+                                <div className="mb-7 grid grid-cols-2 rounded-full bg-primary/[0.08] p-1.5">
+                                    <button type="button" onClick={() => changeMode("login")} className={`min-h-11 rounded-full px-4 py-2 font-bold transition ${mode === "login" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground/70"}`}>{copy.loginTab}</button>
+                                    <button type="button" onClick={() => changeMode("register")} className={`min-h-11 rounded-full px-4 py-2 font-bold transition ${mode === "register" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground/70"}`}>{copy.registerTab}</button>
+                                </div>
+                            )}
+
+                            {mode === "login" && (
+                                <>
+                                    <h2 className="text-3xl font-bold">{copy.loginTitle}</h2>
+                                    {submitState === "reset_complete" && <p className="mt-4 rounded-2xl bg-emerald-50 p-4 text-sm leading-6 text-emerald-800">{copy.resetSuccess}</p>}
+                                    <form onSubmit={handleLogin} className="mt-6">
+                                        <label className="block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>
+                                        <label className="mt-5 block text-sm font-semibold">{copy.password} *<input className={fieldClass} name="password" type="password" autoComplete="current-password" minLength={10} maxLength={128} required /></label>
+                                        {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-400/40 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
+                                        <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface disabled:cursor-wait disabled:opacity-65">{submitState === "submitting" && <LoaderCircle className="h-5 w-5 animate-spin" />}{copy.loginSubmit}</button>
+                                        <button type="button" onClick={() => changeMode("forgot")} className="mt-4 w-full text-center text-sm font-bold text-primary underline underline-offset-4">{copy.forgotLink}</button>
+                                    </form>
+                                </>
+                            )}
+
+                            {mode === "register" && (
+                                <>
+                                    <h2 className="text-3xl font-bold">{copy.registerTitle}</h2>
+                                    <form onSubmit={handleRegistration} className="mt-6">
+                                        <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label></div>
+                                        <label className="block text-sm font-semibold">{copy.name} *<input className={fieldClass} name="name" type="text" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required /></label>
+                                        <label className="mt-5 block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>
+                                        <label className="mt-5 block text-sm font-semibold">{copy.password} *<input className={fieldClass} name="password" type="password" autoComplete="new-password" minLength={10} maxLength={128} required /><span className="mt-1.5 block text-xs font-normal text-muted-foreground/60">{copy.passwordHint}</span></label>
+                                        <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6"><input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="privacy" required /><span>{copy.privacyStart}<Link to="/datenschutz" target="_blank" className="font-semibold text-primary underline underline-offset-2">{copy.privacyLink}</Link>{copy.privacyEnd}</span></label>
+                                        <div className="mt-5 rounded-2xl border border-primary/30 bg-primary/[0.07] p-4"><label className="flex cursor-pointer items-start gap-3 text-sm font-semibold leading-6"><input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="newsletter" /><span>{copy.newsletter}</span></label><p className="ml-7 mt-2 text-xs leading-5 text-muted-foreground/70">{copy.newsletterHint}</p></div>
+                                        {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-400/40 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
+                                        <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface disabled:cursor-wait disabled:opacity-65">{submitState === "submitting" ? copy.registering : copy.registerSubmit}<Send className="h-5 w-5" /></button>
+                                    </form>
+                                </>
+                            )}
+
+                            {mode === "forgot" && (
+                                <>
+                                    <h2 className="text-3xl font-bold">{copy.forgotTitle}</h2>
+                                    <p className="mt-3 leading-7 text-muted-foreground/70">{copy.forgotText}</p>
+                                    <form onSubmit={handleForgotPassword} className="mt-6">
+                                        <label className="block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>
+                                        {errorMessage && <p role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">{errorMessage}</p>}
+                                        <button type="submit" disabled={submitState === "submitting"} className="mt-7 min-h-12 w-full rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-65">{submitState === "submitting" ? copy.submitting : copy.forgotSubmit}</button>
+                                        <button type="button" onClick={() => changeMode("login")} className="mt-4 w-full text-center text-sm font-bold text-primary underline underline-offset-4">{copy.backToLogin}</button>
+                                    </form>
+                                </>
+                            )}
+
+                            {mode === "reset" && (
+                                <>
+                                    <h2 className="text-3xl font-bold">{copy.resetTitle}</h2>
+                                    <form onSubmit={handlePasswordReset} className="mt-6">
+                                        <label className="block text-sm font-semibold">{copy.newPassword} *<input className={fieldClass} name="password" type="password" autoComplete="new-password" minLength={10} maxLength={128} required /><span className="mt-1.5 block text-xs font-normal text-muted-foreground/60">{copy.passwordHint}</span></label>
+                                        <label className="mt-5 block text-sm font-semibold">{copy.confirmPassword} *<input className={fieldClass} name="passwordConfirm" type="password" autoComplete="new-password" minLength={10} maxLength={128} required /></label>
+                                        {errorMessage && <p role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">{errorMessage}</p>}
+                                        <button type="submit" disabled={submitState === "submitting"} className="mt-7 min-h-12 w-full rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-65">{submitState === "submitting" ? copy.submitting : copy.resetSubmit}</button>
+                                    </form>
+                                </>
+                            )}
+
+                            {mode === "access" && (
+                                <>
+                                    <h2 className="text-3xl font-bold">{copy.formTitle}</h2>
+                                    <form onSubmit={handleAccessSubmit} className="mt-6">
+                                        <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label></div>
+                                        <label className="block text-sm font-semibold">{copy.name} *<input className={fieldClass} name="name" type="text" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required /></label>
+                                        <label className="mt-5 block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>
+                                        <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6"><input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="privacy" required /><span>{copy.privacyStart}<Link to="/datenschutz" target="_blank" className="font-semibold text-primary underline underline-offset-2">{copy.privacyLink}</Link>{copy.privacyEnd}</span></label>
+                                        {errorMessage && <p role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">{errorMessage}</p>}
+                                        <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-65">{submitState === "submitting" ? copy.submitting : copy.submit}<Send className="h-5 w-5" /></button>
+                                        <button type="button" onClick={() => changeMode("login")} className="mt-4 w-full text-center text-sm font-bold text-primary underline underline-offset-4">{copy.backToLogin}</button>
+                                    </form>
+                                </>
+                            )}
+
+                            {(mode === "login" || mode === "register") && (
+                                <div className="mt-7 border-t border-primary/20 pt-6 text-center">
+                                    <h3 className="font-bold">{copy.directLinkTitle}</h3>
+                                    <p className="mt-2 text-sm leading-6 text-muted-foreground/65">{copy.directLinkText}</p>
+                                    <button type="button" onClick={() => changeMode("access")} className="mt-3 text-sm font-bold text-primary underline underline-offset-4">{copy.directLinkButton}</button>
+                                </div>
+                            )}
                         </>
                     )}
                 </section>

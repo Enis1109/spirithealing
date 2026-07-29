@@ -5,13 +5,17 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { database, initializeDatabase } from "./server/database.js";
-import { sendContactNotification, sendMemberAccessEmail } from "./server/mailer.js";
+import { sendContactNotification, sendMemberAccessEmail, sendMemberPasswordResetEmail } from "./server/mailer.js";
 import {
     activateMemberAccess,
+    authenticateMember,
     clearMemberSessionCookie,
     createMemberAccessRequest,
+    createMemberPasswordReset,
+    createMemberRegistration,
     endMemberSession,
     getMemberFromRequest,
+    resetMemberPassword,
     setMemberSessionCookie,
 } from "./server/members.js";
 import {
@@ -22,7 +26,15 @@ import {
     unsubscribeFromNewsletter,
 } from "./server/newsletter.js";
 import { prepareMemberMeditations, prepareMemberRecording, prepareMemberWorkbook } from "./server/recording.js";
-import { ValidationError, validateContact, validateMemberAccess } from "./server/validation.js";
+import {
+    ValidationError,
+    validateContact,
+    validateMemberAccess,
+    validateMemberLogin,
+    validateMemberPasswordRequest,
+    validateMemberPasswordReset,
+    validateMemberRegistration,
+} from "./server/validation.js";
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -33,6 +45,7 @@ const distDirectory = path.join(currentDirectory, "dist");
 const privacyConsentVersion = "privacy-2026-07";
 const memberPrivacyConsentVersion = "members-privacy-2026-07";
 let memberRecordingPath = "";
+let memberRecordingEmbedUrl = "";
 let memberWorkbookPath = "";
 let memberLoslassenPath = "";
 let memberWiedergeburtPath = "";
@@ -76,6 +89,14 @@ const submissionLimiter = rateLimit({
     message: { ok: false, error: "rate_limit" },
 });
 
+const authenticationLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 12,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { ok: false, error: "rate_limit" },
+});
+
 const sameOriginOnly = (request, response, next) => {
     const origin = request.get("origin");
     if (!origin || origin.replace("://www.", "://") === productionOrigin.replace("://www.", "://") || /^http:\/\/127\.0\.0\.1:\d+$/u.test(origin) || /^http:\/\/localhost:\d+$/u.test(origin)) {
@@ -100,7 +121,26 @@ const protectedFileIsAvailable = async (filePath) => {
     }
 };
 
-const recordingIsAvailable = () => protectedFileIsAvailable(memberRecordingPath);
+const normalizeRecordingEmbedUrl = (value) => {
+    if (!value) return "";
+    try {
+        const url = new URL(value);
+        const hostname = url.hostname.toLowerCase();
+        const allowed = hostname === "www.youtube-nocookie.com"
+            || hostname === "www.youtube.com"
+            || hostname === "player.vimeo.com"
+            || hostname === "iframe.mediadelivery.net"
+            || hostname === "iframe.videodelivery.net"
+            || hostname.endsWith(".cloudflarestream.com");
+        return url.protocol === "https:" && allowed ? url.toString() : "";
+    } catch {
+        return "";
+    }
+};
+
+const recordingIsAvailable = () => memberRecordingEmbedUrl
+    ? Promise.resolve(true)
+    : protectedFileIsAvailable(memberRecordingPath);
 const workbookIsAvailable = () => protectedFileIsAvailable(memberWorkbookPath);
 const loslassenIsAvailable = () => protectedFileIsAvailable(memberLoslassenPath);
 const wiedergeburtIsAvailable = () => protectedFileIsAvailable(memberWiedergeburtPath);
@@ -160,6 +200,113 @@ app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, resp
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Contact submission failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/members/register", submissionLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const form = validateMemberRegistration(request.body);
+        let newsletterStatus = form.newsletterConsent ? "pending" : "not_requested";
+        const accessUrl = await createMemberRegistration({
+            ...form,
+            privacyConsentVersion: memberPrivacyConsentVersion,
+        });
+
+        if (form.newsletterConsent) {
+            try {
+                newsletterStatus = await registerNewsletterInterest({
+                    name: form.name,
+                    email: form.email,
+                    locale: form.locale,
+                    source: "member_registration",
+                });
+            } catch (error) {
+                console.error("Member newsletter confirmation could not be prepared", error);
+                newsletterStatus = "confirmation_failed";
+            }
+        }
+
+        const newsletterOfferUrl = createNewsletterOfferUrl({
+            name: form.name,
+            email: form.email,
+            locale: form.locale,
+            source: "member_access_email",
+        });
+
+        try {
+            await sendMemberAccessEmail({ ...form, accessUrl, newsletterOfferUrl });
+        } catch (error) {
+            console.error("Member registration email could not be sent", error);
+            return response.status(502).json({ ok: false, error: "email_delivery" });
+        }
+
+        return response.status(201).json({ ok: true, newsletterStatus });
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Member registration failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/members/login", authenticationLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const credentials = validateMemberLogin(request.body);
+        const access = await authenticateMember(credentials);
+        if (!access) return response.status(401).json({ ok: false, error: "invalid_credentials" });
+
+        setMemberSessionCookie(response, access.sessionToken);
+        return response.json({
+            ok: true,
+            member: { name: access.member.name, email: access.member.email, locale: access.member.locale },
+        });
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Member login failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/members/password/forgot", authenticationLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const form = validateMemberPasswordRequest(request.body);
+        const reset = await createMemberPasswordReset(form);
+        if (reset) {
+            try {
+                await sendMemberPasswordResetEmail({
+                    ...reset.member,
+                    resetUrl: reset.resetUrl,
+                });
+            } catch (error) {
+                console.error("Member password reset email could not be sent", error);
+            }
+        }
+
+        return response.status(202).json({ ok: true });
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Member password reset request failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/members/password/reset", authenticationLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const form = validateMemberPasswordReset(request.body);
+        const updated = await resetMemberPassword(form);
+        if (!updated) return response.status(400).json({ ok: false, error: "invalid_reset_token" });
+        return response.json({ ok: true });
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Member password reset failed", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
@@ -237,6 +384,7 @@ app.get("/api/members/session", async (request, response) => {
         ok: true,
         member: { name: member.name, email: member.email, locale: member.locale },
         recordingAvailable: await recordingIsAvailable(),
+        recordingEmbedUrl: memberRecordingEmbedUrl || null,
         workbookAvailable: await workbookIsAvailable(),
         meditations: {
             loslassenAvailable: await loslassenIsAvailable(),
@@ -254,6 +402,9 @@ app.post("/api/members/logout", sameOriginOnly, async (request, response) => {
 app.get("/api/members/recording", async (request, response) => {
     const member = await getMemberFromRequest(request);
     if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+    if (memberRecordingEmbedUrl) {
+        return response.status(404).json({ ok: false, error: "external_video_delivery" });
+    }
     if (!await recordingIsAvailable()) {
         return response.status(404).json({ ok: false, error: "recording_processing" });
     }
@@ -403,8 +554,12 @@ app.use((request, response, next) => {
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
 
 const initializeServices = async () => {
+    memberRecordingEmbedUrl = normalizeRecordingEmbedUrl(process.env.MEMBER_RECORDING_EMBED_URL);
+    if (process.env.MEMBER_RECORDING_EMBED_URL && !memberRecordingEmbedUrl) {
+        throw new Error("Invalid MEMBER_RECORDING_EMBED_URL");
+    }
     const [recordingPath, workbookPath, meditations] = await Promise.all([
-        prepareMemberRecording(),
+        memberRecordingEmbedUrl ? Promise.resolve("") : prepareMemberRecording(),
         prepareMemberWorkbook(),
         prepareMemberMeditations(),
     ]);

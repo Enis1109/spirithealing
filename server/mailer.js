@@ -114,6 +114,48 @@ export const sendMemberAccessEmail = async ({
     });
 };
 
+export const sendMemberPasswordResetEmail = async ({ name, email, locale, resetUrl }) => {
+    const isTurkish = locale === "tr";
+    const subject = isTurkish
+        ? "Spirit Healing şifreni yenile"
+        : "Dein neues Passwort für Spirit Healing";
+    const greeting = isTurkish ? `Merhaba ${name},` : `Hallo ${name},`;
+    const intro = isTurkish
+        ? "Üye alanın için yeni bir şifre belirlemek üzere aşağıdaki düğmeye tıkla. Bağlantı bir saat geçerlidir."
+        : "Über den folgenden Button kannst du ein neues Passwort für deinen Mitgliederbereich festlegen. Der Link ist eine Stunde gültig.";
+    const button = isTurkish ? "Yeni şifre belirle" : "Neues Passwort festlegen";
+    const ignore = isTurkish
+        ? "Bu isteği sen göndermediysen e-postayı görmezden gelebilirsin. Mevcut erişimin değişmez."
+        : "Falls du das nicht angefordert hast, kannst du diese E-Mail ignorieren. Dein bisheriger Zugang bleibt unverändert.";
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: email,
+        replyTo: notificationRecipient,
+        subject,
+        text: `${greeting}\n\n${intro}\n\n${resetUrl}\n\n${ignore}`,
+        html: `
+            <div style="margin:0;background:#edf7f5;padding:28px 12px;font-family:Arial,sans-serif;color:#143b3d">
+                <div style="max-width:640px;margin:0 auto;overflow:hidden;border-radius:26px;background:#fffaf2;box-shadow:0 16px 44px rgba(1,47,49,.14)">
+                    <div style="background:#168e91;padding:34px 28px;text-align:center;color:#fff">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ffe08a">Spirit Healing</div>
+                        <h1 style="margin:14px 0 0;font-size:29px;line-height:1.2">${escapeHtml(subject)}</h1>
+                    </div>
+                    <div style="padding:32px 28px;line-height:1.65">
+                        <p style="margin:0 0 14px;font-size:18px">${escapeHtml(greeting)}</p>
+                        <p style="margin:0 0 26px">${escapeHtml(intro)}</p>
+                        <p style="margin:0 0 30px;text-align:center">
+                            <a href="${escapeHtml(resetUrl)}" style="display:inline-block;border-radius:999px;background:#d4af37;padding:14px 24px;color:#034f52;text-decoration:none;font-size:16px;font-weight:700">${escapeHtml(button)}</a>
+                        </p>
+                        <p style="margin:0;font-size:13px;color:#557072">${escapeHtml(ignore)}</p>
+                        <p style="margin:24px 0 0;font-size:14px;color:#557072">Herzlich · Sevgiler<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
+                    </div>
+                </div>
+            </div>
+        `,
+    });
+};
+
 export const sendEventConfirmation = async ({
     name,
     email,

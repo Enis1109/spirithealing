@@ -1,6 +1,8 @@
 import { ArrowRight, BookOpen, Calendar1, Headphones, Instagram, LockKeyhole, PlayCircle, Quote, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { MemberWelcomeModal } from "@/components/MemberWelcomeModal";
 
 const memberCallout = {
     de: {
@@ -135,10 +137,51 @@ const number_five = [
 
 export const Herotest = () => {
     const { language } = useLanguage();
+    const navigate = useNavigate();
     const memberCopy = memberCallout[language];
     const testimonial = testimonialCopy[language];
+    const [memberModalOpen, setMemberModalOpen] = useState(false);
+    const [hasMemberSession, setHasMemberSession] = useState(false);
+
+    useEffect(() => {
+        if (sessionStorage.getItem("spirit-member-popup-dismissed") === "yes") return undefined;
+
+        let active = true;
+        let timer;
+        fetch("/api/members/session", { headers: { Accept: "application/json" } })
+            .then((response) => {
+                if (!active) return;
+                if (response.ok) {
+                    setHasMemberSession(true);
+                    return;
+                }
+                timer = window.setTimeout(() => active && setMemberModalOpen(true), 650);
+            })
+            .catch(() => {
+                timer = window.setTimeout(() => active && setMemberModalOpen(true), 650);
+            });
+
+        return () => {
+            active = false;
+            window.clearTimeout(timer);
+        };
+    }, []);
+
+    const closeMemberModal = useCallback(() => {
+        setMemberModalOpen(false);
+        sessionStorage.setItem("spirit-member-popup-dismissed", "yes");
+    }, []);
+
+    const openMemberArea = () => {
+        if (hasMemberSession) {
+            navigate("/mitglieder");
+            return;
+        }
+        setMemberModalOpen(true);
+    };
 
     return <section id="hero" className="home-page relative overflow-hidden">
+        <MemberWelcomeModal language={language} open={memberModalOpen} onClose={closeMemberModal} />
         <div className="relative z-10 w-full">
             <div className="relative isolate bg-[url('/herobg.jpeg')] bg-center bg-cover">
                 <div className="absolute inset-0 -z-10 bg-linear-to-r from-surface/95 via-surface/70 to-surface/10" aria-hidden="true"/>
@@ -189,9 +232,9 @@ export const Herotest = () => {
                                 <span className="inline-flex items-center gap-2"><Headphones className="h-5 w-5 text-primary" aria-hidden="true" />{memberCopy.meditations}</span>
                             </div>
                         </div>
-                        <Link to="/mitglieder" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface lg:w-auto">
+                        <button type="button" onClick={openMemberArea} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface lg:w-auto">
                             {memberCopy.button}<ArrowRight className="h-5 w-5" aria-hidden="true" />
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>

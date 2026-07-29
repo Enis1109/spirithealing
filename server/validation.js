@@ -4,6 +4,7 @@ export const limits = Object.freeze({
     phone: 40,
     topic: 120,
     message: 2000,
+    password: 128,
 });
 
 const cleanText = (value) => Array.from(String(value ?? ""))
@@ -39,6 +40,13 @@ const normalizeEmail = (value) => {
 
 const normalizeLocale = (value) => value === "tr" ? "tr" : "de";
 
+const normalizePassword = (value) => {
+    const password = String(value ?? "");
+    const length = characterLength(password);
+    if (length < 10 || length > limits.password) throw new ValidationError("password");
+    return password;
+};
+
 export class ValidationError extends Error {
     constructor(field) {
         super(`Invalid field: ${field}`);
@@ -72,3 +80,23 @@ export const validateEventRegistration = (body) => ({
 });
 
 export const validateMemberAccess = (body) => commonFields(body);
+
+export const validateMemberRegistration = (body) => ({
+    ...commonFields(body),
+    password: normalizePassword(body.password),
+});
+
+export const validateMemberLogin = (body) => ({
+    email: normalizeEmail(body.email),
+    password: normalizePassword(body.password),
+});
+
+export const validateMemberPasswordRequest = (body) => ({
+    email: normalizeEmail(body.email),
+    locale: normalizeLocale(body.locale),
+});
+
+export const validateMemberPasswordReset = (body) => ({
+    token: requiredText(body.token, "token", 128),
+    password: normalizePassword(body.password),
+});
