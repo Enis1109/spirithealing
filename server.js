@@ -138,6 +138,8 @@ const normalizeRecordingEmbedUrl = (value) => {
     }
 };
 
+const defaultMemberRecordingEmbedUrl = "https://player.vimeo.com/video/1214049496";
+
 const recordingIsAvailable = () => memberRecordingEmbedUrl
     ? Promise.resolve(true)
     : protectedFileIsAvailable(memberRecordingPath);
@@ -554,7 +556,9 @@ app.use((request, response, next) => {
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
 
 const initializeServices = async () => {
-    memberRecordingEmbedUrl = normalizeRecordingEmbedUrl(process.env.MEMBER_RECORDING_EMBED_URL);
+    memberRecordingEmbedUrl = normalizeRecordingEmbedUrl(
+        process.env.MEMBER_RECORDING_EMBED_URL || defaultMemberRecordingEmbedUrl,
+    );
     if (process.env.MEMBER_RECORDING_EMBED_URL && !memberRecordingEmbedUrl) {
         throw new Error("Invalid MEMBER_RECORDING_EMBED_URL");
     }
