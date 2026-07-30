@@ -75,7 +75,7 @@ export const Navbar = () => {
                 aria-label={language === "tr" ? "Spirit Healing ana sayfası" : "Spirit Healing Startseite"}
             >
                 <img
-                    src="/Logo-tuerkis.jpeg"
+                    src="/Logo-tuerkis.jpeg?v=20260730"
                     alt="Spirit Healing Logo"
                     className="h-14 w-14 rounded-full object-cover shadow-lg shadow-primary/20 ring-2 ring-primary/80 sm:h-16 sm:w-16"
                 />
