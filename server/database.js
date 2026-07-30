@@ -136,11 +136,30 @@ const schemaStatements = [
         INDEX member_password_reset_expires_idx (expires_at),
         CONSTRAINT member_password_reset_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+    `CREATE TABLE IF NOT EXISTS member_content_state (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        member_id BIGINT UNSIGNED NOT NULL,
+        content_key VARCHAR(80) NOT NULL,
+        is_favorite TINYINT(1) NOT NULL DEFAULT 0,
+        progress_state VARCHAR(24) NOT NULL DEFAULT 'new',
+        last_opened_at DATETIME NULL,
+        completed_at DATETIME NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY member_content_unique (member_id, content_key),
+        INDEX member_content_member_idx (member_id),
+        INDEX member_content_updated_idx (updated_at),
+        CONSTRAINT member_content_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 ];
 
 const additiveColumns = [
     { table: "members", column: "password_hash", definition: "VARCHAR(255) NULL AFTER email" },
     { table: "members", column: "password_set_at", definition: "DATETIME NULL AFTER password_hash" },
+    { table: "members", column: "role", definition: "VARCHAR(24) NOT NULL DEFAULT 'member' AFTER locale" },
+    { table: "members", column: "membership_tier", definition: "VARCHAR(24) NOT NULL DEFAULT 'free' AFTER role" },
+    { table: "members", column: "premium_expires_at", definition: "DATETIME NULL AFTER membership_tier" },
     { table: "member_access_tokens", column: "pending_password_hash", definition: "VARCHAR(255) NULL AFTER token_hash" },
 ];
 
