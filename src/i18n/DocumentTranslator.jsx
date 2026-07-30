@@ -5,7 +5,7 @@ import { pageMeta, turkishTranslations, turkishTranslationsByPath } from "@/i18n
 
 const translatedAttributes = ["aria-label", "alt", "placeholder", "title"];
 const siteUrl = "https://spirit-healing.tr";
-const defaultSocialImage = `${siteUrl}/Logo-tuerkis.jpeg`;
+const defaultSocialImage = `${siteUrl}/Logo-tuerkis.jpeg?v=20260730`;
 
 const upsertMeta = (selector, attributes) => {
     let element = document.head.querySelector(selector);
