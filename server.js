@@ -598,7 +598,14 @@ app.use(express.static(distDirectory, {
 
 app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith("/api/")) return next();
-    return response.sendFile(path.join(distDirectory, "index.html"));
+    try {
+        return response
+            .type("html")
+            .send(fs.readFileSync(path.join(distDirectory, "index.html"), "utf8"));
+    } catch (error) {
+        console.error("Frontend index could not be read", error);
+        return next(error);
+    }
 });
 
 app.use((_request, response) => response.status(404).json({ ok: false, error: "not_found" }));
