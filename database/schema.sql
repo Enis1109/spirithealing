@@ -62,6 +62,9 @@ CREATE TABLE IF NOT EXISTS members (
     password_hash VARCHAR(255) NULL,
     password_set_at DATETIME NULL,
     locale CHAR(2) NOT NULL DEFAULT 'de',
+    role VARCHAR(24) NOT NULL DEFAULT 'member',
+    membership_tier VARCHAR(24) NOT NULL DEFAULT 'free',
+    premium_expires_at DATETIME NULL,
     status VARCHAR(24) NOT NULL DEFAULT 'pending',
     privacy_consent_version VARCHAR(32) NOT NULL,
     privacy_consent_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -115,4 +118,21 @@ CREATE TABLE IF NOT EXISTS member_password_reset_tokens (
     INDEX member_password_reset_member_idx (member_id),
     INDEX member_password_reset_expires_idx (expires_at),
     CONSTRAINT member_password_reset_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS member_content_state (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    member_id BIGINT UNSIGNED NOT NULL,
+    content_key VARCHAR(80) NOT NULL,
+    is_favorite TINYINT(1) NOT NULL DEFAULT 0,
+    progress_state VARCHAR(24) NOT NULL DEFAULT 'new',
+    last_opened_at DATETIME NULL,
+    completed_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY member_content_unique (member_id, content_key),
+    INDEX member_content_member_idx (member_id),
+    INDEX member_content_updated_idx (updated_at),
+    CONSTRAINT member_content_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react"
 import { Navbar } from "@/layout/Navbar"
 import ScrollToTop from "@/layout/ScrollToTop"
 import { About } from "@/sections/About"
@@ -9,13 +10,14 @@ import { FAQ } from "@/sections/FAQ"
 import { Contact } from "@/sections/Contact"
 import { Events } from "@/sections/Events"
 import { NewsletterStatus } from "@/sections/NewsletterStatus"
-import { MemberArea } from "@/sections/MemberArea"
 import { BookingHub } from "@/sections/BookingHub"
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import { Imp } from "@/sections/Imp"
 import { Daten } from "@/sections/Daten"
 import { DocumentTranslator } from "@/i18n/DocumentTranslator"
 import { useLanguage } from "@/i18n/LanguageContext"
+
+const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
 
 const PrivacyPage = () => {
   const { language } = useLanguage();
@@ -41,12 +43,14 @@ const PrivacyPage = () => {
 };
 
 function App() {
+  const location = useLocation();
+  const isMemberApp = location.pathname.startsWith("/mitglieder");
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
       <DocumentTranslator/>
       <ScrollToTop/>
-      <Navbar/>
+      {!isMemberApp && <Navbar/>}
       <Routes>
         <Route path="/" element={ <Herotest/> }/>
         <Route path="/coaching" element={<Coaching/>}/>
@@ -58,7 +62,11 @@ function App() {
         <Route path="/vortraege-seminare" element={<Events/>}/>
         <Route path="/kontakt" element={<Contact/>}/>
         <Route path="/newsletter/status" element={<NewsletterStatus/>}/>
-        <Route path="/mitglieder" element={<MemberArea/>}/>
+        <Route path="/mitglieder" element={
+          <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#edf8f6] font-bold text-[#168e91]">Spirit Healing wird geladen …</main>}>
+            <MemberArea/>
+          </Suspense>
+        }/>
         <Route path="/impressum" element={<Imp/>}/>
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
       </Routes>

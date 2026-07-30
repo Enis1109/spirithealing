@@ -4,6 +4,13 @@ import { hashPassword, verifyPassword } from "./passwords.js";
 
 const sessionLifetimeDays = 30;
 const sessionCookieName = "spirit_member_session";
+const contentProgressStates = new Set(["new", "started", "completed"]);
+const ownerEmails = new Set(
+    String(process.env.MEMBER_ADMIN_EMAILS || "info@spirit-healing.tr,selcan1975@gmx.de")
+        .split(",")
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean),
+);
 
 const hashToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
 const baseUrl = () => (process.env.PUBLIC_BASE_URL || "https://www.spirit-healing.tr").replace(/\/$/u, "");
@@ -26,6 +33,12 @@ const readCookie = (request, name) => {
 
     return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : "";
 };
+
+const resolveRole = (member) => (
+    member.role === "admin" || ownerEmails.has(String(member.email || "").toLowerCase())
+        ? "admin"
+        : "member"
+);
 
 export const createMemberAccessRequest = async ({
     name,
@@ -277,7 +290,8 @@ export const getMemberFromRequest = async (request) => {
     if (!sessionToken || sessionToken.length > 128) return null;
 
     const [rows] = await database.execute(
-        `SELECT sessions.id AS session_id, members.id, members.name, members.email, members.locale
+        `SELECT sessions.id AS session_id, members.id, members.name, members.email, members.locale,
+                members.role, members.membership_tier, members.premium_expires_at
          FROM member_sessions AS sessions
          INNER JOIN members ON members.id = sessions.member_id
          WHERE sessions.token_hash = ? AND sessions.expires_at > UTC_TIMESTAMP()
@@ -292,7 +306,75 @@ export const getMemberFromRequest = async (request) => {
         [rows[0].session_id],
     );
 
-    return rows[0];
+    return {
+        ...rows[0],
+        role: resolveRole(rows[0]),
+        membership_tier: rows[0].membership_tier || "free",
+    };
+};
+
+export const getMemberContentState = async (memberId) => {
+    const [rows] = await database.execute(
+        `SELECT content_key, is_favorite, progress_state, last_opened_at, completed_at
+         FROM member_content_state
+         WHERE member_id = ?
+         ORDER BY updated_at DESC`,
+        [memberId],
+    );
+
+    return rows.map((row) => ({
+        contentKey: row.content_key,
+        favorite: Boolean(row.is_favorite),
+        progress: row.progress_state,
+        lastOpenedAt: row.last_opened_at,
+        completedAt: row.completed_at,
+    }));
+};
+
+export const updateMemberContentState = async ({
+    memberId,
+    contentKey,
+    favorite,
+    progress,
+}) => {
+    if (!/^[a-z0-9-]{3,80}$/u.test(contentKey)) return null;
+    if (progress !== undefined && !contentProgressStates.has(progress)) return null;
+
+    const [rows] = await database.execute(
+        `SELECT is_favorite, progress_state
+         FROM member_content_state
+         WHERE member_id = ? AND content_key = ?
+         LIMIT 1`,
+        [memberId, contentKey],
+    );
+    const current = rows[0] || { is_favorite: 0, progress_state: "new" };
+    const nextFavorite = favorite === undefined ? Boolean(current.is_favorite) : Boolean(favorite);
+    const nextProgress = progress === undefined ? current.progress_state : progress;
+
+    await database.execute(
+        `INSERT INTO member_content_state (
+            member_id, content_key, is_favorite, progress_state, last_opened_at, completed_at
+         ) VALUES (?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+            is_favorite = VALUES(is_favorite),
+            progress_state = VALUES(progress_state),
+            last_opened_at = VALUES(last_opened_at),
+            completed_at = VALUES(completed_at)`,
+        [
+            memberId,
+            contentKey,
+            nextFavorite ? 1 : 0,
+            nextProgress,
+            nextProgress === "new" ? null : new Date(),
+            nextProgress === "completed" ? new Date() : null,
+        ],
+    );
+
+    return {
+        contentKey,
+        favorite: nextFavorite,
+        progress: nextProgress,
+    };
 };
 
 export const endMemberSession = async (request) => {
