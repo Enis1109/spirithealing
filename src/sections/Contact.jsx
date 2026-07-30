@@ -145,7 +145,7 @@ export const Contact = () => {
             <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
                 <header className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-8">
                     <Link to="/" aria-label={copy.homeLabel} className="inline-flex w-fit">
-                        <img src="/Logo-tuerkis.jpeg" alt="Spirit Healing Logo" className="h-24 w-24 rounded-full object-cover shadow-xl shadow-black/15 ring-2 ring-primary sm:h-28 sm:w-28" />
+                        <img src="/Logo-tuerkis.jpeg?v=20260730" alt="Spirit Healing Logo" className="h-24 w-24 rounded-full object-cover shadow-xl shadow-black/15 ring-2 ring-primary sm:h-28 sm:w-28" />
                     </Link>
                     <div>
                             <p className="font-semibold uppercase tracking-[0.18em] text-primary">{copy.eyebrow}</p>

@@ -240,7 +240,7 @@ const contentDefinitions = {
             tr: "Bilinçli bırakma ve içsel arınma için rehberli meditasyon.",
         },
         meta: { de: "Geführte Meditation", tr: "Rehberli meditasyon" },
-        image: "/images/meditations/loslassen-reinigen.png",
+        image: "/images/meditations/loslassen-reinigen.png?v=20260730",
         icon: Headphones,
     },
     wiedergeburt: {
@@ -253,7 +253,7 @@ const contentDefinitions = {
             tr: "Geçiş, yeniden yönelme ve yeni bir içsel başlangıç için.",
         },
         meta: { de: "Geführte Meditation", tr: "Rehberli meditasyon" },
-        image: "/images/meditations/wiedergeburt.png",
+        image: "/images/meditations/wiedergeburt.png?v=20260730",
         icon: Headphones,
     },
     workbook: {
@@ -321,7 +321,7 @@ const localized = (value, language) => typeof value === "string" ? value : value
 const AppLogo = ({ compact = false }) => (
     <Link to="/" className="inline-flex items-center gap-3" aria-label="Spirit Healing">
         <img
-            src="/Logo-tuerkis.jpeg"
+            src="/Logo-tuerkis.jpeg?v=20260730"
             alt=""
             className={`${compact ? "h-11 w-11" : "h-14 w-14"} rounded-full object-cover shadow-md ring-2 ring-[#d3b461]/65`}
         />

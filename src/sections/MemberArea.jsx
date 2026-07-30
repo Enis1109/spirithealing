@@ -377,7 +377,7 @@ export const MemberArea = () => {
         <main data-no-translate className="min-h-screen bg-card px-4 pb-16 pt-7 text-white sm:px-6">
             <div className="mx-auto mb-10 flex w-full max-w-6xl items-center justify-between">
                 <Link to="/" className="inline-flex items-center gap-3" aria-label="Spirit Healing Startseite">
-                    <img src="/Logo-tuerkis.jpeg" alt="" className="h-14 w-14 rounded-full object-cover shadow-lg ring-2 ring-primary/75" />
+                    <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="h-14 w-14 rounded-full object-cover shadow-lg ring-2 ring-primary/75" />
                     <span className="font-serif text-xl font-bold">Spirit Healing</span>
                 </Link>
                 <Link to="/" className="rounded-full border border-white/25 px-4 py-2 text-sm font-bold text-white/80 transition hover:bg-white/10">

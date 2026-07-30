@@ -18,10 +18,10 @@ const packageCheckoutLinks = [
 ];
 
 const packageImages = [
-    "/images/packages/3er-einzelsitzungen.jpg",
-    "/images/packages/5er-einzelsitzungen.jpg",
-    "/images/packages/3er-kombisitzungen.jpg",
-    "/images/packages/5er-kombisitzungen.jpg",
+    "/images/packages/3er-einzelsitzungen.jpg?v=20260730",
+    "/images/packages/5er-einzelsitzungen.jpg?v=20260730",
+    "/images/packages/3er-kombisitzungen.jpg?v=20260730",
+    "/images/packages/5er-kombisitzungen.jpg?v=20260730",
 ];
 
 const copy = {

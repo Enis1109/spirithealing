@@ -30,7 +30,7 @@ export const NewsletterStatus = () => {
     return (
         <main className="flex min-h-screen items-center justify-center bg-card px-4 py-28 text-white">
             <section className="glass-strong w-full max-w-xl rounded-[2rem] p-7 text-center shadow-2xl sm:p-10">
-                <img src="/Logo-tuerkis.jpeg" alt="Spirit Healing Logo" className="mx-auto h-24 w-24 rounded-full object-cover ring-2 ring-primary" />
+                <img src="/Logo-tuerkis.jpeg?v=20260730" alt="Spirit Healing Logo" className="mx-auto h-24 w-24 rounded-full object-cover ring-2 ring-primary" />
                 <StatusIcon className="mx-auto mt-7 h-14 w-14 text-primary" aria-hidden="true" />
                 <h1 className="mt-5 text-3xl font-bold text-muted-foreground sm:text-4xl">{status.title}</h1>
                 <p className="mt-4 text-lg leading-8 text-muted-foreground/80">{status.text}</p>
