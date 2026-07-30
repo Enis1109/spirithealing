@@ -386,6 +386,30 @@ const intents = [
         },
     },
     {
+        id: "coaching_location",
+        priority: 76,
+        terms: ["wo findet das coaching", "wo ist das coaching", "wo findet coaching", "wo findet die begleitung", "coaching online", "coaching vor ort", "coaching per zoom", "wo trefft ihr euch"],
+        answer: {
+            text: "Das Coaching und die regulären Sitzungen finden überwiegend online über Zoom statt. Du kannst ortsunabhängig teilnehmen; die Begleitung ist auf Deutsch oder Türkisch möglich. Ausgewählte Intensiv- und Aufstellungsformate können nach persönlicher Absprache auch in Berlin oder Antalya stattfinden.",
+            links: [
+                { label: "Ablauf und Rahmen ansehen", href: `${SITE}/faq` },
+                { label: "Termin auswählen", href: `${SITE}/termin-buchen` },
+            ],
+        },
+    },
+    {
+        id: "coaching_expectation",
+        priority: 75,
+        terms: ["was erwartet mich beim coaching", "was passiert beim coaching", "wie läuft das coaching", "wie laeuft das coaching", "was macht man beim coaching", "ablauf coaching", "was erwartet mich in der begleitung"],
+        answer: {
+            text: "Zu Beginn klärt ihr, was dich gerade beschäftigt und was du dir wünschst. Danach schaut ihr gemeinsam auf Gefühle, Körperwahrnehmung, Nervensystem, Beziehungsmuster oder innere Anteile – je nachdem, was zu deinem Thema passt. Es gibt kein starres Programm: Vorgehen, Tempo und Grenzen werden transparent mit dir abgestimmt.",
+            links: [
+                { label: "Traumasensible Prozessbegleitung", href: `${SITE}/coaching` },
+                { label: "Häufige Fragen zum Ablauf", href: `${SITE}/faq` },
+            ],
+        },
+    },
+    {
         id: "coaching_therapy",
         priority: 66,
         terms: ["prozessbegleitung oder therapie", "coaching oder therapie", "coaching und therapie", "zwischen coaching", "unterschied therapie", "integrative therapie", "prozessbegleitung", "angebote unterscheiden"],
@@ -667,6 +691,14 @@ const turkishContent = {
         terms: ["hangi yöntemler", "hangi yontemler", "nasıl çalışıyorsunuz", "nasil calisiyorsunuz", "çalışma biçimi", "calisma bicimi", "yaklaşımınız", "yaklasiminiz"],
         text: "Konuya göre konuşma, beden farkındalığı, sinir sistemi, bağlanma ve ilişki örüntüleri, içsel parçalar ve sistemik bağlantılar birlikte ele alınır. Sezgisel, enerjetik veya şamanik bakışlar yalnızca senin için uygun ve anlamlıysa sürece katılır.",
     },
+    coaching_location: {
+        terms: ["koçluk nerede", "kocluk nerede", "danışmanlık nerede", "danismanlik nerede", "seans nerede", "koçluk online", "kocluk online", "zoom ile koçluk", "zoom ile kocluk", "yüz yüze koçluk", "yuz yuze kocluk", "nerede buluşuyoruz", "nerede bulusuyoruz"],
+        text: "Koçluk ve düzenli seanslar çoğunlukla Zoom üzerinden online yapılır. Bulunduğun yerden katılabilirsin; görüşmeler Almanca veya Türkçe olabilir. Seçili yoğun seanslar ve dizim çalışmaları kişisel görüşmeyle Berlin ya da Antalya'da yüz yüze de planlanabilir.",
+    },
+    coaching_expectation: {
+        terms: ["koçlukta beni ne bekliyor", "koclukta beni ne bekliyor", "koçlukta ne oluyor", "koclukta ne oluyor", "koçluk nasıl ilerliyor", "kocluk nasil ilerliyor", "koçlukta ne yapılıyor", "koclukta ne yapiliyor", "danışmanlıkta beni ne bekliyor", "danismanlikta beni ne bekliyor"],
+        text: "Başlangıçta şu anda seni neyin etkilediği ve ne istediğin netleştirilir. Ardından konuna göre duygulara, beden farkındalığına, sinir sistemine, ilişki örüntülerine veya içsel parçalara birlikte bakılır. Katı bir program yoktur; yöntem, hız ve sınırlar seninle açık biçimde kararlaştırılır.",
+    },
     coaching_therapy: {
         terms: ["koçluk ve terapi", "kocluk ve terapi", "farkı ne", "farki ne", "süreç eşliği", "surec esligi", "bütüncül terapi", "butuncul terapi", "hizmetler farkı", "hizmetler farki"],
         text: "Süreç eşliği özellikle koruyucu tepkilere, sinir sistemine, ilişkilere, sınırlara ve iç gerginliğe bakar. Bütüncül eşlik; konuşmayı, duyguları, beden farkındalığını, iç örüntüleri ve uygun diğer yöntemleri tek süreçte birleştirir. Uygun başlangıç tanışma görüşmesinde birlikte netleştirilir.",
@@ -767,7 +799,84 @@ const scoreTerm = (question, questionWords, rawTerm) => {
     return questionWords.some((word) => word.length >= 5 && (word.startsWith(term) || term.startsWith(word))) ? 2 : 0;
 };
 
-export const getAssistantAnswer = (question, language = "de") => {
+const answerForIntent = (intentId, language) => {
+    const intent = intents.find(({ id }) => id === intentId);
+    if (!intent) return null;
+
+    if (language === "tr") {
+        return {
+            intent: intent.id,
+            text: turkishContent[intent.id].text,
+            links: localizeLinks(intent.answer.links, language),
+        };
+    }
+
+    return { intent: intent.id, ...intent.answer };
+};
+
+const contextualFollowUps = {
+    de: [
+        {
+            contexts: ["coaching_location", "coaching_expectation", "coaching_therapy", "help_general"],
+            terms: ["was erwartet mich da", "was passiert da", "wie geht es da weiter", "und was erwartet mich"],
+            target: "coaching_expectation",
+        },
+        {
+            contexts: ["coaching_expectation", "coaching_therapy", "session_fit", "session_process", "individual_joint", "first_followup", "intensive"],
+            terms: ["wo findet das statt", "wo ist das", "ist das online", "geht das über zoom", "geht das ueber zoom"],
+            target: "coaching_location",
+        },
+        {
+            contexts: ["coaching_location", "coaching_expectation", "coaching_therapy", "session_fit", "session_process", "individual_joint", "first_followup", "intensive"],
+            terms: ["was kostet das", "wie viel kostet das", "und der preis", "und die kosten"],
+            target: "prices",
+        },
+        {
+            contexts: ["coaching_location", "coaching_expectation", "coaching_therapy", "session_fit", "session_process", "individual_joint", "first_followup", "intensive"],
+            terms: ["wie lange dauert das", "und wie lange", "welche dauer"],
+            target: "duration",
+        },
+        {
+            contexts: ["member_content", "member_details", "member_downloads", "event_recording", "meditation_difference"],
+            terms: ["wie komme ich da rein", "wie melde ich mich dafür an", "wie melde ich mich dafuer an", "brauche ich ein konto"],
+            target: "member_registration",
+        },
+    ],
+    tr: [
+        {
+            contexts: ["coaching_location", "coaching_expectation", "coaching_therapy", "help_general"],
+            terms: ["orada beni ne bekliyor", "orada ne oluyor", "sonra ne oluyor", "peki beni ne bekliyor"],
+            target: "coaching_expectation",
+        },
+        {
+            contexts: ["coaching_expectation", "coaching_therapy", "session_fit", "session_process", "individual_joint", "first_followup", "intensive"],
+            terms: ["bu nerede yapılıyor", "bu nerede yapiliyor", "online mı", "online mi", "zoom üzerinden mi", "zoom uzerinden mi"],
+            target: "coaching_location",
+        },
+        {
+            contexts: ["coaching_location", "coaching_expectation", "coaching_therapy", "session_fit", "session_process", "individual_joint", "first_followup", "intensive"],
+            terms: ["bunun ücreti ne", "bunun ucreti ne", "bu ne kadar", "peki fiyatı", "peki fiyati"],
+            target: "prices",
+        },
+        {
+            contexts: ["coaching_location", "coaching_expectation", "coaching_therapy", "session_fit", "session_process", "individual_joint", "first_followup", "intensive"],
+            terms: ["bu ne kadar sürüyor", "bu ne kadar suruyor", "peki kaç dakika", "peki kac dakika"],
+            target: "duration",
+        },
+        {
+            contexts: ["member_content", "member_details", "member_downloads", "event_recording", "meditation_difference"],
+            terms: ["oraya nasıl girerim", "oraya nasil girerim", "nasıl kayıt olurum", "nasil kayit olurum", "hesap gerekli mi"],
+            target: "member_registration",
+        },
+    ],
+};
+
+export const assistantKnowledgeStats = Object.freeze({
+    topicCount: intents.length,
+    languages: 2,
+});
+
+export const getAssistantAnswer = (question, language = "de", contextIntent = null) => {
     const normalized = normalizeAssistantText(question);
     const activeLanguage = language === "tr" ? "tr" : "de";
 
@@ -790,6 +899,12 @@ export const getAssistantAnswer = (question, language = "de") => {
         return { intent: "thanks", text: "Rica ederim. Aklında başka bir şey varsa sormaya devam edebilirsin." };
     }
 
+    const contextualMatch = contextualFollowUps[activeLanguage].find((rule) => (
+        rule.contexts.includes(contextIntent)
+        && rule.terms.some((term) => normalized.includes(normalizeAssistantText(term)))
+    ));
+    if (contextualMatch) return answerForIntent(contextualMatch.target, activeLanguage);
+
     const questionWords = normalized.split(" ").filter(Boolean);
     const ranked = intents
         .map((intent) => ({
@@ -801,15 +916,7 @@ export const getAssistantAnswer = (question, language = "de") => {
         .sort((a, b) => b.score - a.score || b.intent.priority - a.intent.priority);
 
     if (ranked.length > 0) {
-        const matchedIntent = ranked[0].intent;
-        if (activeLanguage === "tr") {
-            return {
-                intent: matchedIntent.id,
-                text: turkishContent[matchedIntent.id].text,
-                links: localizeLinks(matchedIntent.answer.links, activeLanguage),
-            };
-        }
-        return { intent: matchedIntent.id, ...matchedIntent.answer };
+        return answerForIntent(ranked[0].intent.id, activeLanguage);
     }
 
     if (activeLanguage === "tr") {

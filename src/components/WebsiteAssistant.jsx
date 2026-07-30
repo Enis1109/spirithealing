@@ -49,6 +49,7 @@ export const WebsiteAssistant = () => {
     const messageEndRef = useRef(null);
     const nextId = useRef(2);
     const responseTimerRef = useRef(null);
+    const lastIntentRef = useRef(null);
     const copy = interfaceCopy[assistantLanguage];
 
     useEffect(() => {
@@ -76,6 +77,7 @@ export const WebsiteAssistant = () => {
         setAssistantLanguage(language);
         setDraft("");
         setTyping(false);
+        lastIntentRef.current = null;
         setMessages([{ id: nextId.current++, role: "assistant", text: interfaceCopy[language].greeting }]);
     };
 
@@ -88,7 +90,9 @@ export const WebsiteAssistant = () => {
         setTyping(true);
 
         responseTimerRef.current = window.setTimeout(() => {
-            setMessages((current) => [...current, { id: nextId.current++, role: "assistant", ...getAssistantAnswer(question, assistantLanguage) }]);
+            const answer = getAssistantAnswer(question, assistantLanguage, lastIntentRef.current);
+            if (!["fallback", "greeting", "thanks"].includes(answer.intent)) lastIntentRef.current = answer.intent;
+            setMessages((current) => [...current, { id: nextId.current++, role: "assistant", ...answer }]);
             setTyping(false);
             responseTimerRef.current = null;
         }, 420);

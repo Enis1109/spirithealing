@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getAssistantAnswer } from "../src/components/assistantKnowledge.js";
+import { assistantKnowledgeStats, getAssistantAnswer } from "../src/components/assistantKnowledge.js";
 
 const examples = [
     ["Ich habe keine E-Mail bekommen", "missing_email"],
@@ -38,6 +38,8 @@ const examples = [
     ["Kann ich mit körperlichen Beschwerden kommen?", "body"],
     ["Was bedeutet traumasensibel?", "trauma_sensitive"],
     ["Welche Methoden nutzt ihr?", "methods_overview"],
+    ["Wo findet das Coaching statt?", "coaching_location"],
+    ["Was erwartet mich beim Coaching?", "coaching_expectation"],
     ["Was ist der Unterschied zwischen Coaching und Therapie?", "coaching_therapy"],
     ["Arbeitet ihr mit Hypnose oder NLP?", "hypnosis_nlp"],
     ["Bietet ihr Familienaufstellung an?", "constellation"],
@@ -89,6 +91,8 @@ const turkishExamples = [
     ["Bedensel şikâyetlerle gelebilir miyim?", "body"],
     ["Travma duyarlı çalışmak ne demek?", "trauma_sensitive"],
     ["Hangi yöntemlerle çalışıyorsunuz?", "methods_overview"],
+    ["Koçluk nerede yapılıyor?", "coaching_location"],
+    ["Koçlukta beni ne bekliyor?", "coaching_expectation"],
     ["Koçluk ve bütüncül terapi arasındaki fark ne?", "coaching_therapy"],
     ["Hipnoz veya NLP kullanıyor musunuz?", "hypnosis_nlp"],
     ["Aile dizimi yapıyor musunuz?", "constellation"],
@@ -127,6 +131,29 @@ test("answers the same broad range of questions in Turkish", () => {
 test("localizes Turkish answer links", () => {
     const answer = getAssistantAnswer("Üye alanında neler var?", "tr");
     assert.equal(answer.links[0].label, "Üye alanını aç");
+});
+
+test("keeps enough conversation context for short follow-up questions", () => {
+    const locationAnswer = getAssistantAnswer("Wo findet das Coaching statt?");
+    const expectationAnswer = getAssistantAnswer("Was erwartet mich da?", "de", locationAnswer.intent);
+    const priceAnswer = getAssistantAnswer("Und was kostet das?", "de", expectationAnswer.intent);
+
+    assert.equal(locationAnswer.intent, "coaching_location");
+    assert.equal(expectationAnswer.intent, "coaching_expectation");
+    assert.equal(priceAnswer.intent, "prices");
+});
+
+test("keeps conversation context for Turkish follow-up questions", () => {
+    const locationAnswer = getAssistantAnswer("Koçluk nerede yapılıyor?", "tr");
+    const expectationAnswer = getAssistantAnswer("Orada beni ne bekliyor?", "tr", locationAnswer.intent);
+
+    assert.equal(locationAnswer.intent, "coaching_location");
+    assert.equal(expectationAnswer.intent, "coaching_expectation");
+});
+
+test("reports the maintained topic count", () => {
+    assert.equal(assistantKnowledgeStats.topicCount, 54);
+    assert.equal(assistantKnowledgeStats.languages, 2);
 });
 
 test("falls back safely for questions not covered by the website", () => {
