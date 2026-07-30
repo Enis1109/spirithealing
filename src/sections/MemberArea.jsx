@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, Download, Facebook, FileText, Instagram, LoaderCircle, LockKeyhole, LogOut, MailCheck, PlayCircle, Send } from "lucide-react";
+import { CheckCircle2, LoaderCircle, LockKeyhole, MailCheck, Send } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { submitForm } from "@/lib/submissions";
+import { MemberApp } from "@/sections/MemberApp";
 
 const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-white/90 px-4 py-3 text-base text-muted-foreground outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-2 focus:ring-primary/25";
 
@@ -183,6 +184,8 @@ export const MemberArea = () => {
     const [recordingEmbedUrl, setRecordingEmbedUrl] = useState("");
     const [workbookAvailable, setWorkbookAvailable] = useState(false);
     const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false });
+    const [contentState, setContentState] = useState([]);
+    const [premiumCheckoutUrl, setPremiumCheckoutUrl] = useState("");
     const [submitState, setSubmitState] = useState("idle");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
     const [errorMessage, setErrorMessage] = useState("");
@@ -191,6 +194,15 @@ export const MemberArea = () => {
         const requestedMode = searchParams.get("mode");
         return ["login", "register", "forgot", "access"].includes(requestedMode) ? requestedMode : "login";
     });
+
+    useEffect(() => {
+        const robots = document.querySelector('meta[name="robots"]');
+        const previous = robots?.getAttribute("content");
+        robots?.setAttribute("content", "noindex, nofollow");
+        return () => {
+            if (previous) robots?.setAttribute("content", previous);
+        };
+    }, []);
 
     useEffect(() => {
         let active = true;
@@ -204,6 +216,8 @@ export const MemberArea = () => {
                     setRecordingEmbedUrl(result.recordingEmbedUrl || "");
                     setWorkbookAvailable(result.workbookAvailable);
                     setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false });
+                    setContentState(result.contentState || []);
+                    setPremiumCheckoutUrl(result.premiumCheckoutUrl || "");
                     setSessionState("member");
                 } else {
                     setSessionState("guest");
@@ -343,116 +357,33 @@ export const MemberArea = () => {
     if (sessionState === "loading") {
         return <main className="flex min-h-screen items-center justify-center bg-card text-primary"><LoaderCircle className="h-10 w-10 animate-spin" aria-label="Loading" /></main>;
     }
-
     if (sessionState === "member") {
         return (
-            <main data-no-translate className="min-h-screen bg-card px-4 pb-14 pt-28 text-white sm:px-6">
-                <div className="mx-auto w-full max-w-5xl">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{copy.memberEyebrow}</p>
-                            <h1 className="mt-2 text-4xl font-bold sm:text-5xl">{copy.welcome}, {member?.name}</h1>
-                        </div>
-                        <button type="button" onClick={logout} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 px-4 py-2 font-semibold text-white/85 transition hover:bg-white/10">
-                            <LogOut className="h-4 w-4" aria-hidden="true" />{copy.logout}
-                        </button>
-                    </div>
-
-                    <section className="mt-9 overflow-hidden rounded-[2rem] bg-[#f7f1e7] text-muted-foreground shadow-2xl">
-                        <div className="p-6 sm:p-9">
-                            <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Aufzeichnung · Kayıt</p>
-                            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{copy.recordingTitle}</h2>
-                            <p className="mt-3 text-lg leading-8 text-muted-foreground/75">{copy.recordingText}</p>
-                        </div>
-                        {recordingAvailable && recordingEmbedUrl ? (
-                            <div className="aspect-video w-full bg-black">
-                                <iframe
-                                    className="h-full w-full"
-                                    src={recordingEmbedUrl}
-                                    title={copy.recordingTitle}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowFullScreen
-                                    loading="lazy"
-                                    referrerPolicy="strict-origin-when-cross-origin"
-                                />
-                            </div>
-                        ) : recordingAvailable ? (
-                            <video className="aspect-video w-full bg-black" controls playsInline preload="metadata" controlsList="nodownload" src="/api/members/recording">
-                                <track kind="captions" />
-                            </video>
-                        ) : (
-                            <div className="border-t border-primary/20 bg-primary/[0.08] p-7 sm:p-10">
-                                <PlayCircle className="h-14 w-14 text-primary" aria-hidden="true" />
-                                <h3 className="mt-5 text-2xl font-bold">{copy.processingTitle}</h3>
-                                <p className="mt-3 max-w-3xl text-lg leading-8 text-muted-foreground/75">{copy.processingText}</p>
-                            </div>
-                        )}
-                        {workbookAvailable && (
-                            <div className="flex flex-col gap-5 border-t border-primary/20 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-9">
-                                <div className="flex max-w-2xl gap-4">
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary"><FileText className="h-6 w-6" aria-hidden="true" /></div>
-                                    <div>
-                                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{copy.workbookEyebrow}</p>
-                                        <h3 className="mt-1 text-xl font-bold sm:text-2xl">{copy.workbookTitle}</h3>
-                                        <p className="mt-2 leading-7 text-muted-foreground/75">{copy.workbookText}</p>
-                                    </div>
-                                </div>
-                                <a href="/api/members/workbook" download className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground transition hover:bg-surface">
-                                    <Download className="h-5 w-5" aria-hidden="true" />{copy.workbookDownload}
-                                </a>
-                            </div>
-                        )}
-                    </section>
-
-                    <section className="mt-8 rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
-                            <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">{copy.meditationEyebrow}</p>
-                            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{copy.meditationTitle}</h2>
-                            <p className="mt-3 max-w-3xl text-lg leading-8 text-muted-foreground/75">{copy.meditationIntro}</p>
-                            {!meditations.loslassenAvailable && !meditations.wiedergeburtAvailable && (
-                                <p className="mt-6 rounded-2xl border border-primary/20 bg-primary/[0.08] p-5 leading-7 text-muted-foreground/75">{copy.meditationProcessing}</p>
-                            )}
-                            <div className="mt-7 grid gap-6 md:grid-cols-2">
-                                {meditations.loslassenAvailable && (
-                                    <article className="overflow-hidden rounded-3xl border border-primary/20 bg-white/70">
-                                        <img src="/images/meditations/loslassen-reinigen.png" alt="Spirit Healing Meditation Loslassen und Reinigen" className="aspect-square w-full object-cover" />
-                                        <div className="p-5">
-                                            <h3 className="text-2xl font-bold">{copy.loslassenTitle}</h3>
-                                            <p className="mt-2 min-h-14 leading-7 text-muted-foreground/75">{copy.loslassenText}</p>
-                                            <audio className="mt-4 w-full" controls preload="metadata" src="/api/members/meditations/loslassen" />
-                                            <a href="/api/members/meditations/loslassen?download=1" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-primary-foreground"><Download className="h-5 w-5" />{copy.meditationDownload}</a>
-                                        </div>
-                                    </article>
-                                )}
-                                {meditations.wiedergeburtAvailable && (
-                                    <article className="overflow-hidden rounded-3xl border border-primary/20 bg-white/70">
-                                        <img src="/images/meditations/wiedergeburt.png" alt="Spirit Healing Meditation Wiedergeburt" className="aspect-square w-full object-cover" />
-                                        <div className="p-5">
-                                            <h3 className="text-2xl font-bold">{copy.wiedergeburtTitle}</h3>
-                                            <p className="mt-2 min-h-14 leading-7 text-muted-foreground/75">{copy.wiedergeburtText}</p>
-                                            <audio className="mt-4 w-full" controls preload="metadata" src="/api/members/meditations/wiedergeburt" />
-                                            <a href="/api/members/meditations/wiedergeburt?download=1" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-primary-foreground"><Download className="h-5 w-5" />{copy.meditationDownload}</a>
-                                        </div>
-                                    </article>
-                                )}
-                            </div>
-                    </section>
-
-                    <section className="mt-8 rounded-[2rem] border border-white/15 bg-white/[0.07] p-6 sm:p-8">
-                        <h2 className="text-2xl font-bold">{copy.socialTitle}</h2>
-                        <div className="mt-5 flex flex-wrap gap-3">
-                            <a href="https://www.instagram.com/spirit4healing/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-primary-foreground"><Instagram className="h-5 w-5" />Instagram</a>
-                            <a href="https://www.facebook.com/profile.php?id=61588723230682" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/50 px-5 py-2.5 font-bold text-white"><Facebook className="h-5 w-5" />Facebook</a>
-                        </div>
-                    </section>
-
-                    <Link to="/vortraege-seminare" className="mt-8 inline-flex text-sm font-bold text-primary underline underline-offset-4">{copy.back}</Link>
-                </div>
-            </main>
+            <MemberApp
+                language={language}
+                member={member}
+                recordingAvailable={recordingAvailable}
+                recordingEmbedUrl={recordingEmbedUrl}
+                workbookAvailable={workbookAvailable}
+                meditations={meditations}
+                initialContentState={contentState}
+                premiumCheckoutUrl={premiumCheckoutUrl}
+                onLogout={logout}
+            />
         );
     }
 
     return (
-        <main data-no-translate className="min-h-screen bg-card px-4 pb-16 pt-28 text-white sm:px-6">
+        <main data-no-translate className="min-h-screen bg-card px-4 pb-16 pt-7 text-white sm:px-6">
+            <div className="mx-auto mb-10 flex w-full max-w-6xl items-center justify-between">
+                <Link to="/" className="inline-flex items-center gap-3" aria-label="Spirit Healing Startseite">
+                    <img src="/Logo-tuerkis.jpeg" alt="" className="h-14 w-14 rounded-full object-cover shadow-lg ring-2 ring-primary/75" />
+                    <span className="font-serif text-xl font-bold">Spirit Healing</span>
+                </Link>
+                <Link to="/" className="rounded-full border border-white/25 px-4 py-2 text-sm font-bold text-white/80 transition hover:bg-white/10">
+                    {language === "tr" ? "Web sitesine dön" : "Zur Website"}
+                </Link>
+            </div>
             <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                 <section className="lg:sticky lg:top-28">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary"><LockKeyhole className="h-7 w-7" /></div>
