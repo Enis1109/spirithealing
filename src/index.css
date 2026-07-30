@@ -332,8 +332,9 @@
   height: 1.4rem;
 }
 
-.site-assistant__header div {
+.site-assistant__identity {
   display: grid;
+  min-width: 0;
   line-height: 1.25;
 }
 
@@ -342,7 +343,7 @@
   font-weight: 800;
 }
 
-.site-assistant__header div > span {
+.site-assistant__identity > span {
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -351,14 +352,44 @@
   font-size: 0.74rem;
 }
 
-.site-assistant__header div > span i {
+.site-assistant__identity > span i {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
   background: #5ee6a8;
 }
 
-.site-assistant__header > button {
+.site-assistant__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.site-assistant__language {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.site-assistant__language button {
+  min-width: 2rem;
+  border: 0;
+  background: transparent;
+  padding: 0.38rem 0.42rem;
+  color: #d8f2e9;
+  font-size: 0.64rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.site-assistant__language button.is-active {
+  background: var(--assistant-gold);
+  color: var(--assistant-deep);
+}
+
+.site-assistant__close {
   display: grid;
   width: 2.4rem;
   height: 2.4rem;
@@ -370,11 +401,11 @@
   cursor: pointer;
 }
 
-.site-assistant__header > button:hover {
+.site-assistant__close:hover {
   background: rgba(255, 255, 255, 0.19);
 }
 
-.site-assistant__header > button svg {
+.site-assistant__close svg {
   width: 1.2rem;
   height: 1.2rem;
 }
@@ -591,6 +622,20 @@
     width: calc(100vw - 1.3rem);
     height: min(39rem, calc(100dvh - 1.3rem));
     border-radius: 1.1rem;
+  }
+
+  .site-assistant__header {
+    gap: 0.55rem;
+    padding: 0.8rem;
+  }
+
+  .site-assistant__avatar {
+    width: 2.45rem;
+    height: 2.45rem;
+  }
+
+  .site-assistant__identity > span {
+    font-size: 0.68rem;
   }
 }
 
