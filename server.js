@@ -14,9 +14,11 @@ import {
     createMemberPasswordReset,
     createMemberRegistration,
     endMemberSession,
+    getMemberContentState,
     getMemberFromRequest,
     resetMemberPassword,
     setMemberSessionCookie,
+    updateMemberContentState,
 } from "./server/members.js";
 import {
     acceptNewsletterOffer,
@@ -139,6 +141,16 @@ const normalizeRecordingEmbedUrl = (value) => {
 };
 
 const defaultMemberRecordingEmbedUrl = "https://player.vimeo.com/video/1214049496";
+const normalizePremiumCheckoutUrl = (value) => {
+    if (!value) return "";
+    try {
+        const url = new URL(value);
+        return url.protocol === "https:" && url.hostname === "buy.stripe.com" ? url.toString() : "";
+    } catch {
+        return "";
+    }
+};
+const memberPremiumCheckoutUrl = normalizePremiumCheckoutUrl(process.env.MEMBER_PREMIUM_CHECKOUT_URL);
 
 const recordingIsAvailable = () => memberRecordingEmbedUrl
     ? Promise.resolve(true)
@@ -381,10 +393,20 @@ app.get("/api/members/session", async (request, response) => {
     const member = await getMemberFromRequest(request);
     response.set("Cache-Control", "no-store");
     if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+    const premiumActive = member.membership_tier === "premium"
+        && (!member.premium_expires_at || new Date(member.premium_expires_at) > new Date());
 
     return response.json({
         ok: true,
-        member: { name: member.name, email: member.email, locale: member.locale },
+        member: {
+            name: member.name,
+            email: member.email,
+            locale: member.locale,
+            role: member.role,
+            membershipTier: premiumActive ? "premium" : "free",
+        },
+        contentState: await getMemberContentState(member.id),
+        premiumCheckoutUrl: memberPremiumCheckoutUrl || null,
         recordingAvailable: await recordingIsAvailable(),
         recordingEmbedUrl: memberRecordingEmbedUrl || null,
         workbookAvailable: await workbookIsAvailable(),
@@ -393,6 +415,32 @@ app.get("/api/members/session", async (request, response) => {
             wiedergeburtAvailable: await wiedergeburtIsAvailable(),
         },
     });
+});
+
+app.post("/api/members/content-state", sameOriginOnly, async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "no-store");
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+
+    const contentKey = String(request.body?.contentKey || "").trim();
+    const favorite = typeof request.body?.favorite === "boolean" ? request.body.favorite : undefined;
+    const progress = request.body?.progress === undefined
+        ? undefined
+        : String(request.body.progress || "").trim();
+
+    try {
+        const contentState = await updateMemberContentState({
+            memberId: member.id,
+            contentKey,
+            favorite,
+            progress,
+        });
+        if (!contentState) return response.status(400).json({ ok: false, error: "validation" });
+        return response.json({ ok: true, contentState });
+    } catch (error) {
+        console.error("Member content state could not be updated", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
 });
 
 app.post("/api/members/logout", sameOriginOnly, async (request, response) => {
