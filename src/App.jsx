@@ -16,6 +16,7 @@ import { Imp } from "@/sections/Imp"
 import { Daten } from "@/sections/Daten"
 import { DocumentTranslator } from "@/i18n/DocumentTranslator"
 import { useLanguage } from "@/i18n/LanguageContext"
+import { WebsiteAssistant } from "@/components/WebsiteAssistant"
 
 const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
 
@@ -70,6 +71,7 @@ function App() {
         <Route path="/impressum" element={<Imp/>}/>
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
       </Routes>
+      <WebsiteAssistant/>
     </div>
   )
 }
