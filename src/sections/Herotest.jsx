@@ -1,4 +1,4 @@
-import { ArrowRight, Calendar1, Instagram, Quote, Star } from "lucide-react";
+import { ArrowRight, Calendar1, ChevronDown, ChevronLeft, ChevronRight, Instagram, Quote, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -8,36 +8,92 @@ const testimonialCopy = {
     de: {
         eyebrow: "Persönliche Erfahrung",
         title: "Was Menschen über unsere Begleitung sagen",
-        session: "Rückmeldung nach einer Intensivsitzung",
-        paragraphs: [
-            "Liebe Selcan, liebe Sabine, ich möchte euch einfach von Herzen Danke sagen.",
-            "Als ich zu euch in die Intensivsitzung gekommen bin, wusste ich nicht, was mich erwartet. Umso überraschter war ich, was sich seitdem bei mir verändert hat.",
-            "Das Erste, was ich direkt nach der Sitzung bemerkt habe, war, dass ich plötzlich viel tiefer einatmen konnte. Es fühlte sich an, als würde endlich wieder mehr Sauerstoff in meinen Lungen ankommen. Dieses Gefühl ist bis heute geblieben und begleitet mich jeden Tag.",
-            "Zunächst dachte ich, das wäre die einzige Veränderung. Doch in den letzten Tagen habe ich gemerkt, dass sich noch viel mehr getan hat.",
-            "Mein Essverhalten hat sich komplett verändert. Ich hatte über lange Zeit große Probleme damit. Jetzt habe ich kaum noch Hunger, kleine Portionen reichen mir völlig aus und ich bin schnell satt. Das fühlt sich für mich unglaublich befreiend an.",
-            "Außerdem spüre ich eine Energie, die ich so lange nicht mehr hatte. Ich habe angefangen, meine Wohnung auszumisten, kann mich ohne Schwierigkeiten von Dingen trennen und habe richtig Tatendrang. Es fühlt sich an, als würde ich nicht nur äußerlich aufräumen, sondern auch innerlich.",
-            "Am tiefsten berührt hat mich jedoch ein Moment während der Anteilarbeit mit dir, Sabine. Als du mein inneres Baby liebevoll gehalten hast, durfte ich etwas fühlen, das ich kaum in Worte fassen kann. Dieses Gefühl von Geborgenheit, Gehaltensein und bedingungsloser Liebe trage ich bis heute in meinem Herzen. Allein dieser Moment war für mich unbeschreiblich wertvoll.",
-            "Ich weiß nicht, was sich in den nächsten Wochen noch alles zeigen wird. Aber schon jetzt bin ich unendlich dankbar für diese Erfahrung und dafür, dass ihr mich so achtsam, liebevoll und wertschätzend begleitet habt.",
-            "Von Herzen: Danke euch beiden. ❤️",
+        readMore: "Vollständige Bewertung lesen",
+        readLess: "Bewertung einklappen",
+        previous: "Vorherige Bewertung",
+        next: "Nächste Bewertung",
+        review: "Bewertung",
+        fiveStars: "5 von 5 Sternen",
+        reviews: [
+            {
+                session: "Rückmeldung nach einer Intensivsitzung",
+                paragraphs: [
+                    "Liebe Selcan, liebe Sabine, ich möchte euch einfach von Herzen Danke sagen.",
+                    "Als ich zu euch in die Intensivsitzung gekommen bin, wusste ich nicht, was mich erwartet. Umso überraschter war ich, was sich seitdem bei mir verändert hat.",
+                    "Das Erste, was ich direkt nach der Sitzung bemerkt habe, war, dass ich plötzlich viel tiefer einatmen konnte. Es fühlte sich an, als würde endlich wieder mehr Sauerstoff in meinen Lungen ankommen. Dieses Gefühl ist bis heute geblieben und begleitet mich jeden Tag.",
+                    "Zunächst dachte ich, das wäre die einzige Veränderung. Doch in den letzten Tagen habe ich gemerkt, dass sich noch viel mehr getan hat.",
+                    "Mein Essverhalten hat sich komplett verändert. Ich hatte über lange Zeit große Probleme damit. Jetzt habe ich kaum noch Hunger, kleine Portionen reichen mir völlig aus und ich bin schnell satt. Das fühlt sich für mich unglaublich befreiend an.",
+                    "Außerdem spüre ich eine Energie, die ich so lange nicht mehr hatte. Ich habe angefangen, meine Wohnung auszumisten, kann mich ohne Schwierigkeiten von Dingen trennen und habe richtig Tatendrang. Es fühlt sich an, als würde ich nicht nur äußerlich aufräumen, sondern auch innerlich.",
+                    "Am tiefsten berührt hat mich jedoch ein Moment während der Anteilarbeit mit dir, Sabine. Als du mein inneres Baby liebevoll gehalten hast, durfte ich etwas fühlen, das ich kaum in Worte fassen kann. Dieses Gefühl von Geborgenheit, Gehaltensein und bedingungsloser Liebe trage ich bis heute in meinem Herzen. Allein dieser Moment war für mich unbeschreiblich wertvoll.",
+                    "Ich weiß nicht, was sich in den nächsten Wochen noch alles zeigen wird. Aber schon jetzt bin ich unendlich dankbar für diese Erfahrung und dafür, dass ihr mich so achtsam, liebevoll und wertschätzend begleitet habt.",
+                    "Von Herzen: Danke euch beiden. ❤️",
+                ],
+                author: "D. C.",
+            },
+            {
+                session: "Erfahrung mit unserer gemeinsamen Arbeit",
+                paragraphs: [
+                    "Ich hatte die sehr tiefgreifende, positive Erfahrung, eine Heilanwendung zu erhalten, in der Sabine und Selcan zeitgleich und gemeinsam mit meinem Thema arbeiteten. Seit diesem Moment kann ich mehr Leichtigkeit leben. Es rührt mich gerade beim Schreiben dieser Zeilen zu Tränen. Es sind Tränen der Dankbarkeit. Habe ich doch eine sehr traumatische Erfahrung aus meiner frühen Kindheit auf diesem Weg vollständig loslassen können. Ich lebe seitdem mit mehr seelischer Leichtigkeit, und auch körperliche Schmerzen haben sich verabschiedet. Ich bin glücklich – richtig, echt glücklich.",
+                    "Besonders wertschätzend empfand ich damals und empfinde ich immer wieder neu das authentische, natürliche Wesen von Sabine und Selcan innerhalb ihrer Heilarbeit, der Erfahrungsgruppe und im Vortrag. Die Wissensvermittlung beinhaltet bei beiden, neben den sehr wertvollen Inhalten, auch ihre individuell durchlebten Hürden als Beispiel für die erfolgreiche Heilung auf energetischer Ebene. Das schenkt mir das Gefühl von Vertrauen.",
+                    "Kurz gesagt: Ich war und bin immer wieder neu mutig und stelle mich meinen Hürden.",
+                    "Wer, wie ich, gelebte Professionalität mit authentischer Herzlichkeit in einem geschützten und getragenen Feld sucht, ist nach meinen individuellen Erfahrungen bei Sabine und Selcan am richtigen Ort.",
+                ],
+                author: "Daniela Schneider",
+            },
+            {
+                session: "Rückmeldung nach einer gemeinsamen Sitzung",
+                paragraphs: [
+                    "Ich habe es nicht für möglich gehalten, noch einmal an mein Thema aus vergangenen Zeiten heranzukommen. Doch tatsächlich zeigte sich spontan ein Zugang, und wir konnten das Thema in die Auflösung bringen. In diesem Moment konnte sich mein Brustkorb weiten und tiefes, befreites Durchatmen war möglich.",
+                    "Was für ein wundervolles Werkzeug uns hier zur Verfügung steht. Danke, Sabine und Selcan.",
+                ],
+                author: "Annette Sch.",
+            },
         ],
-        author: "D. C.",
     },
     tr: {
         eyebrow: "Kişisel deneyim",
         title: "Danışanlarımız eşliğimiz hakkında ne söylüyor?",
-        session: "Yoğun bir seans sonrası geri bildirim",
-        paragraphs: [
-            "Sevgili Selcan, sevgili Sabine, size tüm kalbimle teşekkür etmek istiyorum.",
-            "Yoğun seansa geldiğimde beni neyin beklediğini bilmiyordum. O zamandan beri bende değişenleri fark etmek beni daha da şaşırttı.",
-            "Seanstan hemen sonra ilk fark ettiğim şey, birden çok daha derin nefes alabilmemdi. Sanki ciğerlerime sonunda yeniden daha fazla oksijen ulaşıyordu. Bu his bugüne kadar devam etti ve bana her gün eşlik ediyor.",
-            "Önce bunun tek değişiklik olduğunu düşündüm. Fakat son günlerde çok daha fazlasının değiştiğini fark ettim.",
-            "Yeme alışkanlıklarım tamamen değişti. Uzun zamandır bu konuda büyük zorluklar yaşıyordum. Şimdi neredeyse hiç açlık hissetmiyorum, küçük porsiyonlar bana yetiyor ve çabuk doyuyorum. Bu bana inanılmaz derecede özgürleştirici geliyor.",
-            "Ayrıca uzun zamandır hissetmediğim bir enerji hissediyorum. Evimi ayıklamaya başladım, eşyalardan zorlanmadan ayrılabiliyorum ve gerçekten harekete geçme isteğim var. Sanki yalnızca dışarıyı değil, içimi de düzenliyormuşum gibi geliyor.",
-            "Beni en derinden etkileyen ise seninle yaptığımız parça çalışması sırasında yaşadığım bir andı, Sabine. İçimdeki bebeği sevgiyle tuttuğunda kelimelere dökmekte zorlandığım bir şeyi hissetmeme izin verildi. O güven, tutulma ve koşulsuz sevgi hissini hâlâ kalbimde taşıyorum. Yalnızca o an bile benim için tarif edilemeyecek kadar değerliydi.",
-            "Önümüzdeki haftalarda daha nelerin ortaya çıkacağını bilmiyorum. Ancak şimdiden bu deneyim ve bana böylesine özenli, sevgi dolu ve değer veren bir şekilde eşlik ettiğiniz için sonsuz minnet duyuyorum.",
-            "Tüm kalbimle: İkinize de teşekkür ederim. ❤️",
+        readMore: "Değerlendirmenin tamamını oku",
+        readLess: "Değerlendirmeyi daralt",
+        previous: "Önceki değerlendirme",
+        next: "Sonraki değerlendirme",
+        review: "Değerlendirme",
+        fiveStars: "5 üzerinden 5 yıldız",
+        reviews: [
+            {
+                session: "Yoğun bir seans sonrası geri bildirim",
+                paragraphs: [
+                    "Sevgili Selcan, sevgili Sabine, size tüm kalbimle teşekkür etmek istiyorum.",
+                    "Yoğun seansa geldiğimde beni neyin beklediğini bilmiyordum. O zamandan beri bende değişenleri fark etmek beni daha da şaşırttı.",
+                    "Seanstan hemen sonra ilk fark ettiğim şey, birden çok daha derin nefes alabilmemdi. Sanki ciğerlerime sonunda yeniden daha fazla oksijen ulaşıyordu. Bu his bugüne kadar devam etti ve bana her gün eşlik ediyor.",
+                    "Önce bunun tek değişiklik olduğunu düşündüm. Fakat son günlerde çok daha fazlasının değiştiğini fark ettim.",
+                    "Yeme alışkanlıklarım tamamen değişti. Uzun zamandır bu konuda büyük zorluklar yaşıyordum. Şimdi neredeyse hiç açlık hissetmiyorum, küçük porsiyonlar bana yetiyor ve çabuk doyuyorum. Bu bana inanılmaz derecede özgürleştirici geliyor.",
+                    "Ayrıca uzun zamandır hissetmediğim bir enerji hissediyorum. Evimi ayıklamaya başladım, eşyalardan zorlanmadan ayrılabiliyorum ve gerçekten harekete geçme isteğim var. Sanki yalnızca dışarıyı değil, içimi de düzenliyormuşum gibi geliyor.",
+                    "Beni en derinden etkileyen ise seninle yaptığımız parça çalışması sırasında yaşadığım bir andı, Sabine. İçimdeki bebeği sevgiyle tuttuğunda kelimelere dökmekte zorlandığım bir şeyi hissetmeme izin verildi. O güven, tutulma ve koşulsuz sevgi hissini hâlâ kalbimde taşıyorum. Yalnızca o an bile benim için tarif edilemeyecek kadar değerliydi.",
+                    "Önümüzdeki haftalarda daha nelerin ortaya çıkacağını bilmiyorum. Ancak şimdiden bu deneyim ve bana böylesine özenli, sevgi dolu ve değer veren bir şekilde eşlik ettiğiniz için sonsuz minnet duyuyorum.",
+                    "Tüm kalbimle: İkinize de teşekkür ederim. ❤️",
+                ],
+                author: "D. C.",
+            },
+            {
+                session: "Birlikte yürüttüğümüz çalışmaya dair deneyim",
+                paragraphs: [
+                    "Sabine ve Selcan'ın aynı anda ve birlikte benim konum üzerinde çalıştıkları bir şifa uygulamasını deneyimlemek benim için son derece derin ve olumlu bir tecrübeydi. O andan beri hayatımda daha fazla hafiflik hissediyorum. Bu satırları yazarken duygulanıp gözlerim doluyor. Bunlar minnettarlık gözyaşları. Erken çocukluğumda yaşadığım çok travmatik bir deneyimi bu yolla tamamen bırakabildim. O günden beri ruhsal olarak daha hafif hissediyorum; bedensel ağrılarım da geride kaldı. Mutluyum – gerçekten, içtenlikle mutluyum.",
+                    "Sabine ve Selcan'ın şifa çalışmalarında, deneyim grubunda ve seminerde sergiledikleri samimi ve doğal halleri o zaman da çok değerli bulmuştum; bugün de her defasında yeniden öyle hissediyorum. Aktardıkları kıymetli bilgilerin yanında, enerjetik düzeyde iyileşmeye örnek olan kendi yaşadıkları zorlukları da paylaşmaları bende güven duygusu oluşturuyor.",
+                    "Kısacası: Her seferinde yeniden cesaret buluyor ve kendi engellerimle yüzleşiyorum.",
+                    "Benim gibi profesyonelliği samimi bir içtenlikle, güvenli ve destekleyici bir alanda arayanlar için Sabine ve Selcan, kendi deneyimime dayanarak, doğru adres.",
+                ],
+                author: "Daniela Schneider",
+            },
+            {
+                session: "Birlikte yürüttüğümüz bir seans sonrası geri bildirim",
+                paragraphs: [
+                    "Geçmişte kalan konuma yeniden ulaşmanın mümkün olabileceğini düşünmüyordum. Fakat gerçekten de kendiliğinden bir kapı açıldı ve konuyu çözülmeye taşıyabildik. O anda göğüs kafesim genişledi; derin ve özgür bir nefes alabilmek mümkün oldu.",
+                    "Elimizde ne kadar harika bir yöntem var. Teşekkür ederim Sabine ve Selcan.",
+                ],
+                author: "Annette Sch.",
+            },
         ],
-        author: "D. C.",
     },
 };
 
@@ -117,7 +173,37 @@ const number_five = [
 export const Herotest = () => {
     const { language } = useLanguage();
     const testimonial = testimonialCopy[language];
+    const [activeTestimonial, setActiveTestimonial] = useState(0);
+    const [testimonialExpanded, setTestimonialExpanded] = useState(false);
+    const [testimonialPaused, setTestimonialPaused] = useState(false);
     const [memberModalOpen, setMemberModalOpen] = useState(false);
+    const activeReview = testimonial.reviews[activeTestimonial];
+    const testimonialNeedsExpansion = activeReview.paragraphs.join(" ").length > 700;
+
+    const showTestimonial = useCallback((index) => {
+        setActiveTestimonial(index);
+        setTestimonialExpanded(false);
+    }, []);
+
+    const showPreviousTestimonial = useCallback(() => {
+        setActiveTestimonial((current) => (current - 1 + testimonial.reviews.length) % testimonial.reviews.length);
+        setTestimonialExpanded(false);
+    }, [testimonial.reviews.length]);
+
+    const showNextTestimonial = useCallback(() => {
+        setActiveTestimonial((current) => (current + 1) % testimonial.reviews.length);
+        setTestimonialExpanded(false);
+    }, [testimonial.reviews.length]);
+
+    useEffect(() => {
+        if (testimonial.reviews.length < 2 || testimonialPaused || testimonialExpanded) return undefined;
+
+        const timer = window.setInterval(() => {
+            setActiveTestimonial((current) => (current + 1) % testimonial.reviews.length);
+        }, 10000);
+
+        return () => window.clearInterval(timer);
+    }, [testimonial.reviews.length, testimonialExpanded, testimonialPaused]);
 
     useEffect(() => {
         if (sessionStorage.getItem("spirit-member-popup-dismissed") === "yes") return undefined;
@@ -670,26 +756,85 @@ export const Herotest = () => {
             </div>
 
             <div className="relative bg-[#f7f1e7] px-4 py-16 sm:px-6 sm:py-20">
-                <div className="mx-auto max-w-5xl">
+                <div className="mx-auto max-w-4xl">
                     <div className="mb-9 text-center">
                         <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{testimonial.eyebrow}</p>
                         <h2 className="mt-3 text-3xl font-bold leading-tight text-muted-foreground sm:text-4xl">{testimonial.title}</h2>
                     </div>
-                    <article className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-white/80 p-6 shadow-xl shadow-black/10 sm:p-10 lg:p-12">
-                        <Quote className="absolute right-6 top-6 h-16 w-16 text-primary/10 sm:right-10 sm:top-8 sm:h-20 sm:w-20" aria-hidden="true" />
-                        <div className="relative">
-                            <div className="mb-5 flex gap-1 text-primary" aria-label="5 von 5 Sternen">
-                                {[0, 1, 2, 3, 4].map((star) => <Star key={star} className="h-5 w-5 fill-current" aria-hidden="true" />)}
+                    <div
+                        data-testid="testimonial-carousel"
+                        className="group"
+                        onMouseEnter={() => setTestimonialPaused(true)}
+                        onMouseLeave={() => setTestimonialPaused(false)}
+                        onFocusCapture={() => setTestimonialPaused(true)}
+                        onBlurCapture={(event) => {
+                            if (!event.currentTarget.contains(event.relatedTarget)) setTestimonialPaused(false);
+                        }}
+                    >
+                        <article
+                            key={`${language}-${activeTestimonial}`}
+                            className="testimonial-slide-in relative overflow-hidden rounded-[2rem] border border-primary/30 bg-white/85 p-6 shadow-xl shadow-black/10 sm:p-9 lg:p-10"
+                            aria-live="polite"
+                        >
+                            <Quote className="absolute right-5 top-5 h-14 w-14 text-primary/10 sm:right-9 sm:top-7 sm:h-20 sm:w-20" aria-hidden="true" />
+                            <div className="relative">
+                                <div className="mb-4 flex items-center justify-between gap-4 pr-14 sm:pr-20">
+                                    <div className="flex gap-1 text-primary" aria-label={testimonial.fiveStars}>
+                                        {[0, 1, 2, 3, 4].map((star) => <Star key={star} className="h-4 w-4 fill-current sm:h-5 sm:w-5" aria-hidden="true" />)}
+                                    </div>
+                                    <span className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground/60">
+                                        {activeTestimonial + 1} / {testimonial.reviews.length}
+                                    </span>
+                                </div>
+                                <p className="mb-6 text-sm font-semibold text-primary">{activeReview.session}</p>
+                                <div className="relative">
+                                    <blockquote
+                                        id={`testimonial-text-${activeTestimonial}`}
+                                        className={`space-y-5 text-base leading-8 text-muted-foreground sm:text-lg ${testimonialNeedsExpansion && !testimonialExpanded ? "max-h-72 overflow-hidden sm:max-h-80" : "max-h-[200rem]"}`}
+                                    >
+                                        {activeReview.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+                                    </blockquote>
+                                    {testimonialNeedsExpansion && !testimonialExpanded && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-white via-white/90 to-transparent" aria-hidden="true" />}
+                                </div>
+                                {testimonialNeedsExpansion && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setTestimonialExpanded((expanded) => !expanded)}
+                                        className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/35 bg-[#f7f1e7]/80 px-5 py-2.5 text-sm font-bold text-muted-foreground transition hover:border-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                                        aria-expanded={testimonialExpanded}
+                                        aria-controls={`testimonial-text-${activeTestimonial}`}
+                                    >
+                                        {testimonialExpanded ? testimonial.readLess : testimonial.readMore}
+                                        <ChevronDown className={`h-4 w-4 text-primary transition-transform ${testimonialExpanded ? "rotate-180" : ""}`} aria-hidden="true" />
+                                    </button>
+                                )}
+                                <footer className="mt-7 border-t border-primary/20 pt-5">
+                                    <p className="font-bold text-muted-foreground">— {activeReview.author}</p>
+                                </footer>
                             </div>
-                            <p className="mb-7 text-sm font-semibold text-primary">{testimonial.session}</p>
-                            <blockquote className="space-y-5 text-base leading-8 text-muted-foreground sm:text-lg">
-                                {testimonial.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-                            </blockquote>
-                            <footer className="mt-8 border-t border-primary/20 pt-6">
-                                <p className="font-bold text-muted-foreground">— {testimonial.author}</p>
-                            </footer>
+                        </article>
+
+                        <div className="mt-6 flex items-center justify-center gap-4" aria-label={`${testimonial.review} ${activeTestimonial + 1}`}>
+                            <button type="button" onClick={showPreviousTestimonial} className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/35 bg-white/70 text-muted-foreground transition hover:border-primary hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label={testimonial.previous}>
+                                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                            </button>
+                            <div className="flex items-center gap-2">
+                                {testimonial.reviews.map((review, index) => (
+                                    <button
+                                        key={review.author}
+                                        type="button"
+                                        onClick={() => showTestimonial(index)}
+                                        className={`h-2.5 rounded-full transition-all ${index === activeTestimonial ? "w-8 bg-primary" : "w-2.5 bg-primary/30 hover:bg-primary/60"}`}
+                                        aria-label={`${testimonial.review} ${index + 1}: ${review.author}`}
+                                        aria-current={index === activeTestimonial ? "true" : undefined}
+                                    />
+                                ))}
+                            </div>
+                            <button type="button" onClick={showNextTestimonial} className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/35 bg-white/70 text-muted-foreground transition hover:border-primary hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label={testimonial.next}>
+                                <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                            </button>
                         </div>
-                    </article>
+                    </div>
                 </div>
             </div>
 
