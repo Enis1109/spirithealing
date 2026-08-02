@@ -164,3 +164,34 @@ CREATE TABLE IF NOT EXISTS funnel_events (
     INDEX funnel_event_created_idx (created_at),
     INDEX funnel_event_source_idx (utm_source, utm_campaign)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cms_content_entries (
+    content_key VARCHAR(160) NOT NULL,
+    draft_de LONGTEXT NULL,
+    draft_tr LONGTEXT NULL,
+    published_de LONGTEXT NULL,
+    published_tr LONGTEXT NULL,
+    updated_by BIGINT UNSIGNED NULL,
+    published_by BIGINT UNSIGNED NULL,
+    published_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (content_key),
+    INDEX cms_content_updated_idx (updated_at),
+    INDEX cms_content_published_idx (published_at),
+    CONSTRAINT cms_content_updated_member_fk FOREIGN KEY (updated_by) REFERENCES members(id) ON DELETE SET NULL,
+    CONSTRAINT cms_content_published_member_fk FOREIGN KEY (published_by) REFERENCES members(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cms_content_revisions (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    content_key VARCHAR(160) NOT NULL,
+    value_de LONGTEXT NULL,
+    value_tr LONGTEXT NULL,
+    published_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX cms_revision_content_idx (content_key, created_at),
+    CONSTRAINT cms_revision_content_fk FOREIGN KEY (content_key) REFERENCES cms_content_entries(content_key) ON DELETE CASCADE,
+    CONSTRAINT cms_revision_member_fk FOREIGN KEY (published_by) REFERENCES members(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

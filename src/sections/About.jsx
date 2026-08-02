@@ -10,8 +10,11 @@ import {
 import { Link } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePublishedContent } from "@/content/ContentContext";
+import { getPublishedValue } from "@/content/contentValues";
 
-const content = {
+// eslint-disable-next-line react-refresh/only-export-components
+export const aboutContent = {
     de: {
         eyebrow: "Über uns",
         titleStart: "Anteilearbeit und Energiearbeit.",
@@ -189,7 +192,16 @@ const FactList = ({ facts }) => (
 
 export const About = () => {
     const { language } = useLanguage();
-    const copy = content[language];
+    const { content: publishedContent } = usePublishedContent();
+    const defaults = aboutContent[language];
+    const copy = {
+        ...defaults,
+        eyebrow: getPublishedValue(publishedContent, "about.eyebrow", language, defaults.eyebrow),
+        titleStart: getPublishedValue(publishedContent, "about.title-start", language, defaults.titleStart),
+        titleAccent: getPublishedValue(publishedContent, "about.title-accent", language, defaults.titleAccent),
+        intro: getPublishedValue(publishedContent, "about.intro", language, defaults.intro),
+        introStrong: getPublishedValue(publishedContent, "about.intro-strong", language, defaults.introStrong),
+    };
 
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pt-24 text-white sm:pt-28">

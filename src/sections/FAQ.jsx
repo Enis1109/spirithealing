@@ -1,8 +1,11 @@
 import { ArrowRight, ChevronDown, CircleHelp, MessageCircle, ShieldCheck, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePublishedContent } from "@/content/ContentContext";
+import { getPublishedValue } from "@/content/contentValues";
 
-const content = {
+// eslint-disable-next-line react-refresh/only-export-components
+export const faqContent = {
     de: {
         eyebrow: "Häufige Fragen",
         title: "Was du vor einer Begleitung wissen möchtest",
@@ -237,6 +240,38 @@ const content = {
     },
 };
 
+const withPublishedFaqContent = (defaults, publishedContent, language) => ({
+    ...defaults,
+    eyebrow: getPublishedValue(publishedContent, "faq.eyebrow", language, defaults.eyebrow),
+    title: getPublishedValue(publishedContent, "faq.title", language, defaults.title),
+    intro: getPublishedValue(publishedContent, "faq.intro", language, defaults.intro),
+    groups: defaults.groups.map((group, groupIndex) => ({
+        ...group,
+        label: getPublishedValue(publishedContent, `faq.group-${groupIndex}.label`, language, group.label),
+        items: group.items.map((item, itemIndex) => {
+            const answer = getPublishedValue(
+                publishedContent,
+                `faq.group-${groupIndex}.item-${itemIndex}.answer`,
+                language,
+                item.answer.join("\n\n"),
+            );
+            return {
+                ...item,
+                question: getPublishedValue(
+                    publishedContent,
+                    `faq.group-${groupIndex}.item-${itemIndex}.question`,
+                    language,
+                    item.question,
+                ),
+                answer: answer.split(/\n\s*\n/gu).map((paragraph) => paragraph.trim()).filter(Boolean),
+            };
+        }),
+    })),
+    stillEyebrow: getPublishedValue(publishedContent, "faq.still-eyebrow", language, defaults.stillEyebrow),
+    stillQuestion: getPublishedValue(publishedContent, "faq.still-question", language, defaults.stillQuestion),
+    stillText: getPublishedValue(publishedContent, "faq.still-text", language, defaults.stillText),
+});
+
 const FaqItem = ({ item }) => (
     <details className="group rounded-2xl border border-white/15 bg-white/[0.07] px-5 py-1 transition open:bg-white/[0.1] sm:px-6">
         <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-5 py-4 text-left text-lg font-bold text-white marker:content-none">
@@ -251,7 +286,8 @@ const FaqItem = ({ item }) => (
 
 export const FAQ = () => {
     const { language } = useLanguage();
-    const copy = content[language];
+    const { content: publishedContent } = usePublishedContent();
+    const copy = withPublishedFaqContent(faqContent[language], publishedContent, language);
 
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">

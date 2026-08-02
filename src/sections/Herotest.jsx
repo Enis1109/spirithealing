@@ -3,6 +3,26 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { MemberWelcomeModal } from "@/components/MemberWelcomeModal";
+import { usePublishedContent } from "@/content/ContentContext";
+import { getPublishedValue } from "@/content/contentValues";
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const homeHeroContent = {
+    de: {
+        headingMain: "Online",
+        headingAccent: "Praxis",
+        subtitle: "Für integrative Therapie, Coaching & Beratung",
+        intro: "Wir begleiten Menschen, die viel tragen und viel fühlen – und trotzdem das Gefühl haben, sich selbst irgendwo verloren zu haben. Mit Tiefe, Klarheit und echter menschlicher Präsenz schauen wir auf emotionale Prozesse, innere Muster und die Dynamiken des Nervensystems.",
+        cta: "Kontakt",
+    },
+    tr: {
+        headingMain: "Online",
+        headingAccent: "Danışmanlık",
+        subtitle: "Bütüncül terapi, koçluk ve danışmanlık",
+        intro: "Çok şey taşıyan ve yoğun hisseden, buna rağmen kendini bir yerde kaybetmiş gibi yaşayan insanlara eşlik ediyoruz. Duygusal süreçlere, içsel örüntülere ve sinir sistemi dinamiklerine derinlik, açıklık ve gerçek insani temasla bakıyoruz.",
+        cta: "İletişim",
+    },
+};
 
 const testimonialCopy = {
     de: {
@@ -172,6 +192,15 @@ const number_five = [
 
 export const Herotest = () => {
     const { language } = useLanguage();
+    const { content: publishedContent } = usePublishedContent();
+    const heroDefaults = homeHeroContent[language];
+    const heroCopy = {
+        headingMain: getPublishedValue(publishedContent, "home.hero.heading-main", language, heroDefaults.headingMain),
+        headingAccent: getPublishedValue(publishedContent, "home.hero.heading-accent", language, heroDefaults.headingAccent),
+        subtitle: getPublishedValue(publishedContent, "home.hero.subtitle", language, heroDefaults.subtitle),
+        intro: getPublishedValue(publishedContent, "home.hero.intro", language, heroDefaults.intro),
+        cta: getPublishedValue(publishedContent, "home.hero.cta", language, heroDefaults.cta),
+    };
     const testimonial = testimonialCopy[language];
     const [activeTestimonial, setActiveTestimonial] = useState(0);
     const [testimonialExpanded, setTestimonialExpanded] = useState(false);
@@ -241,25 +270,23 @@ export const Herotest = () => {
                             <div className="flex lg:pr-16">
                                 <div className="animate-fade-in space-y-7 rounded-3xl border border-white/20 bg-surface/45 p-5 shadow-xl backdrop-blur-sm sm:p-8">
                                     <div className="space-y-0">    
-                                        <h1 className="text-4xl font-bold leading-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">Online
-                                            <span className="text-muted-foreground font-serif italic font-normal glow-text"> Praxis</span>
+                                        <h1 className="text-4xl font-bold leading-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">{heroCopy.headingMain}
+                                            <span className="text-muted-foreground font-serif italic font-normal glow-text"> {heroCopy.headingAccent}</span>
                                             <br/>
                                         </h1>
                                         <br/>
                                         <span className="py-4 text-xl text-muted-foreground sm:text-2xl md:text-3xl lg:text-4xl">
-                                            Für integrative Therapie, Coaching & Beratung
+                                            {heroCopy.subtitle}
                                         </span>
                                         <br/>
                                         <br/>
                                         <p className="text-base leading-7 text-[#123f38] sm:text-lg">
-                                            Wir begleiten Menschen, die viel tragen und viel fühlen – und trotzdem das Gefühl haben,
-                                            sich selbst irgendwo verloren zu haben. Mit Tiefe, Klarheit und echter menschlicher Präsenz
-                                            schauen wir auf emotionale Prozesse, innere Muster und die Dynamiken des Nervensystems.
+                                            {heroCopy.intro}
                                         </p>
                                     </div>
                                     <div>
                                         <Link to="/kontakt" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
-                                            Kontakt <ArrowRight className="w-5 h-5"/>
+                                            {heroCopy.cta} <ArrowRight className="w-5 h-5"/>
                                         </Link>
                                     </div>
                                 </div>

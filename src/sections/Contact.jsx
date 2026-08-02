@@ -4,10 +4,13 @@ import { Link } from "react-router-dom";
 import { Modal } from "@/components/Modal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { submitForm } from "@/lib/submissions";
+import { usePublishedContent } from "@/content/ContentContext";
+import { getPublishedValue } from "@/content/contentValues";
 
 const MESSAGE_LIMIT = 2000;
 
-const content = {
+// eslint-disable-next-line react-refresh/only-export-components
+export const contactContent = {
     de: {
         eyebrow: "Kontakt",
         title: "Lass uns ins Gespräch kommen",
@@ -96,7 +99,17 @@ const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-
 
 export const Contact = () => {
     const { language } = useLanguage();
-    const copy = content[language];
+    const { content: publishedContent } = usePublishedContent();
+    const defaults = contactContent[language];
+    const copy = {
+        ...defaults,
+        eyebrow: getPublishedValue(publishedContent, "contact.eyebrow", language, defaults.eyebrow),
+        title: getPublishedValue(publishedContent, "contact.title", language, defaults.title),
+        intro: getPublishedValue(publishedContent, "contact.intro", language, defaults.intro),
+        directText: getPublishedValue(publishedContent, "contact.direct-text", language, defaults.directText),
+        formCardTitle: getPublishedValue(publishedContent, "contact.form-card-title", language, defaults.formCardTitle),
+        formCardText: getPublishedValue(publishedContent, "contact.form-card-text", language, defaults.formCardText),
+    };
     const [modalOpen, setModalOpen] = useState(false);
     const [submitState, setSubmitState] = useState("idle");
     const [errorMessage, setErrorMessage] = useState("");

@@ -1,6 +1,7 @@
 import { ExternalLink, MessageCircle, Send, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { assistantQuickQuestions, getAssistantAnswer } from "@/components/assistantKnowledge";
+import { usePublishedContent } from "@/content/ContentContext";
 
 const interfaceCopy = {
     de: {
@@ -36,6 +37,7 @@ const interfaceCopy = {
 };
 
 export const WebsiteAssistant = () => {
+    const { content } = usePublishedContent();
     const [open, setOpen] = useState(false);
     const [assistantLanguage, setAssistantLanguage] = useState("de");
     const [draft, setDraft] = useState("");
@@ -90,7 +92,7 @@ export const WebsiteAssistant = () => {
         setTyping(true);
 
         responseTimerRef.current = window.setTimeout(() => {
-            const answer = getAssistantAnswer(question, assistantLanguage, lastIntentRef.current);
+            const answer = getAssistantAnswer(question, assistantLanguage, lastIntentRef.current, content);
             if (!["fallback", "greeting", "thanks"].includes(answer.intent)) lastIntentRef.current = answer.intent;
             setMessages((current) => [...current, { id: nextId.current++, role: "assistant", ...answer }]);
             setTyping(false);

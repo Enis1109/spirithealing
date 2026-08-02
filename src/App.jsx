@@ -19,6 +19,7 @@ import { useLanguage } from "@/i18n/LanguageContext"
 import { WebsiteAssistant } from "@/components/WebsiteAssistant"
 
 const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
+const AdminArea = lazy(() => import("@/sections/AdminArea").then((module) => ({ default: module.AdminArea })));
 
 const PrivacyPage = () => {
   const { language } = useLanguage();
@@ -46,14 +47,16 @@ const PrivacyPage = () => {
 function App() {
   const location = useLocation();
   const isCampaignLanding = location.pathname === "/gratis-meditationen";
+  const isAdminApp = location.pathname.startsWith("/admin");
   const isMemberApp = location.pathname.startsWith("/mitglieder")
     || isCampaignLanding;
+  const isStandaloneApp = isMemberApp || isAdminApp;
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
       <DocumentTranslator/>
       <ScrollToTop/>
-      {!isMemberApp && <Navbar/>}
+      {!isStandaloneApp && <Navbar/>}
       <Routes>
         <Route path="/" element={ <Herotest/> }/>
         <Route path="/coaching" element={<Coaching/>}/>
@@ -75,10 +78,15 @@ function App() {
             <MemberArea/>
           </Suspense>
         }/>
+        <Route path="/admin" element={
+          <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#eaf4f1] font-bold text-[#0f8b8d]">Admin-Bereich wird geladen …</main>}>
+            <AdminArea/>
+          </Suspense>
+        }/>
         <Route path="/impressum" element={<Imp/>}/>
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
       </Routes>
-      {!isCampaignLanding && <WebsiteAssistant/>}
+      {!isStandaloneApp && <WebsiteAssistant/>}
     </div>
   )
 }

@@ -235,6 +235,26 @@ test("routes acute crisis wording to the emergency guidance in both languages", 
     assert.match(turkishAnswer.text, /112/);
 });
 
+test("uses published admin answers and additional question formulations", () => {
+    const content = {
+        "assistant.booking.answer": {
+            de: "Dieser Buchungstext wurde im Admin-Bereich veröffentlicht.",
+            tr: "Bu rezervasyon metni yönetim alanında yayınlandı.",
+        },
+        "assistant.booking.terms": {
+            de: "persönlichen buchungscode verwenden",
+            tr: "kişisel rezervasyon kodu kullanmak",
+        },
+    };
+
+    const germanAnswer = getAssistantAnswer("Wie kann ich meinen persönlichen Buchungscode verwenden?", "de", null, content);
+    const turkishAnswer = getAssistantAnswer("Kişisel rezervasyon kodu kullanmak istiyorum", "tr", null, content);
+    assert.equal(germanAnswer.intent, "booking");
+    assert.equal(turkishAnswer.intent, "booking");
+    assert.match(germanAnswer.text, /Admin-Bereich/);
+    assert.match(turkishAnswer.text, /yönetim alanında/);
+});
+
 test("reports the maintained topic count", () => {
     assert.equal(assistantKnowledgeStats.topicCount, 60);
     assert.equal(assistantKnowledgeStats.languages, 2);

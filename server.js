@@ -40,6 +40,19 @@ import {
     recordFunnelEvent,
 } from "./server/funnel.js";
 import {
+    getAdminContent,
+    getPublishedContent,
+    publishContentDrafts,
+    restoreContentRevision,
+    saveContentDrafts,
+} from "./server/content.js";
+import {
+    ContentValidationError,
+    normalizeContentDraftItems,
+    normalizeContentKeys,
+    normalizeRevisionRequest,
+} from "./server/contentValidation.js";
+import {
     ValidationError,
     validateContact,
     validateMemberAccess,
@@ -84,7 +97,7 @@ app.use((request, response, next) => {
     });
     next();
 });
-app.use(express.json({ limit: "16kb", type: "application/json" }));
+app.use(express.json({ limit: "64kb", type: "application/json" }));
 
 app.get("/robots.txt", (_request, response) => {
     response.type("text/plain").sendFile(path.join(currentDirectory, "public", "robots.txt"));
@@ -132,6 +145,29 @@ const sameOriginOnly = (request, response, next) => {
         return next();
     }
     return response.status(403).json({ ok: false, error: "origin" });
+};
+
+const adminSameOriginOnly = (request, response, next) => {
+    const origin = request.get("origin");
+    const normalizedOrigin = String(origin || "").replace("://www.", "://");
+    const normalizedProductionOrigin = productionOrigin.replace("://www.", "://");
+    const isLocal = /^http:\/\/(127\.0\.0\.1|localhost):\d+$/u.test(origin || "");
+    if (origin && (normalizedOrigin === normalizedProductionOrigin || isLocal)) return next();
+    return response.status(403).json({ ok: false, error: "origin" });
+};
+
+const getAdminMember = async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "no-store");
+    if (!member) {
+        response.status(401).json({ ok: false, error: "unauthorized" });
+        return null;
+    }
+    if (member.role !== "admin") {
+        response.status(403).json({ ok: false, error: "forbidden" });
+        return null;
+    }
+    return member;
 };
 
 const zepterLandingOnly = (request, response, next) => {
@@ -569,10 +605,86 @@ app.post("/api/analytics/funnel", analyticsLimiter, sameOriginOnly, async (reque
     }
 });
 
-app.get("/api/admin/funnel-summary", async (request, response) => {
-    const member = await getMemberFromRequest(request);
+app.get("/api/content", async (_request, response) => {
     response.set("Cache-Control", "no-store");
-    if (!member || member.role !== "admin") return response.status(403).json({ ok: false, error: "forbidden" });
+    try {
+        return response.json({ ok: true, content: await getPublishedContent() });
+    } catch (error) {
+        console.error("Published content could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/admin/content", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        return response.json({ ok: true, content: await getAdminContent() });
+    } catch (error) {
+        console.error("Admin content could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/content", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const items = normalizeContentDraftItems(request.body?.items);
+        await saveContentDrafts({ items, memberId: member.id });
+        return response.json({ ok: true, content: await getAdminContent() });
+    } catch (error) {
+        if (error instanceof ContentValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Content draft could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/content/publish", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const keys = normalizeContentKeys(request.body?.keys);
+        await publishContentDrafts({ keys, memberId: member.id });
+        return response.json({ ok: true, content: await getAdminContent() });
+    } catch (error) {
+        if (error instanceof ContentValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        if (error?.code === "MISSING_DRAFT") {
+            return response.status(409).json({ ok: false, error: "missing_draft" });
+        }
+        console.error("Content draft could not be published", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/content/restore", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const revision = normalizeRevisionRequest(request.body);
+        const restored = await restoreContentRevision({ ...revision, memberId: member.id });
+        if (!restored) return response.status(404).json({ ok: false, error: "not_found" });
+        return response.json({ ok: true, content: await getAdminContent() });
+    } catch (error) {
+        if (error instanceof ContentValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Content revision could not be restored", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/admin/funnel-summary", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
 
     try {
         return response.json({ ok: true, summary: await getFunnelSummary(request.query.days) });
@@ -778,6 +890,7 @@ app.use(express.static(distDirectory, {
 app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith("/api/")) return next();
     try {
+        if (request.path.startsWith("/admin")) response.set("X-Robots-Tag", "noindex, nofollow");
         return response
             .type("html")
             .send(fs.readFileSync(path.join(distDirectory, "index.html"), "utf8"));

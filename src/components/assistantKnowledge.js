@@ -864,6 +864,41 @@ const localizeLinks = (links, language) => {
     });
 };
 
+const topicTitle = (intent) => {
+    const firstTerm = intent.terms[0] || intent.id.replaceAll("_", " ");
+    return firstTerm.charAt(0).toUpperCase() + firstTerm.slice(1);
+};
+
+export const assistantAdminCatalog = Object.freeze(intents.map((intent) => ({
+    id: intent.id,
+    title: topicTitle(intent),
+    priority: intent.priority,
+    defaults: {
+        answer: {
+            de: intent.answer.text,
+            tr: turkishContent[intent.id].text,
+        },
+        terms: {
+            de: intent.terms.join("\n"),
+            tr: turkishContent[intent.id].terms.join("\n"),
+        },
+    },
+})));
+
+const getOverride = (content, intentId, field, language) => {
+    const value = content?.[`assistant.${intentId}.${field}`]?.[language];
+    return typeof value === "string" ? value : null;
+};
+
+const getIntentTerms = (intent, language, content) => {
+    const override = getOverride(content, intent.id, "terms", language);
+    if (override !== null) {
+        const terms = override.split("\n").map((term) => term.trim()).filter(Boolean);
+        if (terms.length > 0) return terms;
+    }
+    return language === "tr" ? turkishContent[intent.id]?.terms || [] : intent.terms;
+};
+
 export const normalizeAssistantText = (value) => String(value || "")
     .toLowerCase()
     .normalize("NFD")
@@ -890,19 +925,23 @@ const scoreTerm = (question, questionWords, rawTerm) => {
     }) ? 2 : 0;
 };
 
-const answerForIntent = (intentId, language) => {
+const answerForIntent = (intentId, language, content) => {
     const intent = intents.find(({ id }) => id === intentId);
     if (!intent) return null;
 
     if (language === "tr") {
         return {
             intent: intent.id,
-            text: turkishContent[intent.id].text,
+            text: getOverride(content, intent.id, "answer", language) ?? turkishContent[intent.id].text,
             links: localizeLinks(intent.answer.links, language),
         };
     }
 
-    return { intent: intent.id, ...intent.answer };
+    return {
+        intent: intent.id,
+        ...intent.answer,
+        text: getOverride(content, intent.id, "answer", language) ?? intent.answer.text,
+    };
 };
 
 const contextualFollowUps = {
@@ -967,7 +1006,7 @@ export const assistantKnowledgeStats = Object.freeze({
     languages: 2,
 });
 
-export const getAssistantAnswer = (question, language = "de", contextIntent = null) => {
+export const getAssistantAnswer = (question, language = "de", contextIntent = null, content = {}) => {
     const normalized = normalizeAssistantText(question);
     const activeLanguage = language === "tr" ? "tr" : "de";
 
@@ -994,20 +1033,20 @@ export const getAssistantAnswer = (question, language = "de", contextIntent = nu
         rule.contexts.includes(contextIntent)
         && rule.terms.some((term) => normalized.includes(normalizeAssistantText(term)))
     ));
-    if (contextualMatch) return answerForIntent(contextualMatch.target, activeLanguage);
+    if (contextualMatch) return answerForIntent(contextualMatch.target, activeLanguage, content);
 
     const questionWords = normalized.split(" ").filter(Boolean);
     const ranked = intents
         .map((intent) => ({
             intent,
-            score: (activeLanguage === "tr" ? turkishContent[intent.id]?.terms || [] : intent.terms)
+            score: getIntentTerms(intent, activeLanguage, content)
                 .reduce((sum, term) => sum + scoreTerm(normalized, questionWords, term), 0),
         }))
         .filter(({ score }) => score > 0)
         .sort((a, b) => b.score - a.score || b.intent.priority - a.intent.priority);
 
     if (ranked.length > 0) {
-        return answerForIntent(ranked[0].intent.id, activeLanguage);
+        return answerForIntent(ranked[0].intent.id, activeLanguage, content);
     }
 
     if (activeLanguage === "tr") {
