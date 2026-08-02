@@ -108,6 +108,62 @@ const turkishExamples = [
     ["Telefon numaranız nedir?", "contact"],
 ];
 
+const extendedGermanExamples = [
+    ["Ich bin in einer akuten psychischen Krise. Was soll ich tun?", "emergency"],
+    ["Ich brauche in einer psychischen Krise sofort Hilfe", "emergency"],
+    ["Wie buche ich einen Termin?", "booking"],
+    ["Wie kann ich einen freien Termin buchen?", "booking"],
+    ["Was ist der Direktlink zum Mitgliederbereich?", "direct_link"],
+    ["Wer sind Sabine und Selcan?", "team_overview"],
+    ["Wer steckt hinter Spirit Healing?", "team_overview"],
+    ["ich krieg die mail nich", "missing_email"],
+    ["Meine Zugangsmail fehlt", "missing_email"],
+    ["Wobei könnt ihr bei Bindungsangst helfen?", "relationships"],
+    ["Helft ihr bei Panikattacken?", "mental_health_scope"],
+    ["Kann ich mit Depressionen zu euch kommen?", "mental_health_scope"],
+    ["Ist das kostenlose Kennenlernen unverbindlich?", "intro_call"],
+    ["Muss ich mich nach dem Kennenlerngespräch entscheiden?", "intro_call"],
+    ["Wie oft sollte ich eine Sitzung machen?", "frequency"],
+    ["Wie viele Sitzungen brauche ich?", "frequency"],
+    ["Kann ich mit meiner Partnerin als Paar kommen?", "couples_scope"],
+    ["Ist die gemeinsame Sitzung eine Paartherapie?", "couples_scope"],
+    ["Wie kann ich bezahlen?", "payment_methods"],
+    ["Kann ich in Raten zahlen?", "payment_methods"],
+    ["Kann ich aus dem Ausland teilnehmen?", "online_location_language"],
+    ["Brauche ich Zoom für die Sitzung?", "preparation"],
+    ["Was mache ich nach der Sitzung?", "preparation"],
+    ["was macht ihr bei beziehungsproblemen", "relationships"],
+    ["wie geht der erste termin", "session_process"],
+    ["wie komm ich in den mitglieder bereich", "member_registration"],
+    ["ich weiß nicht ob einzel oder zu zweit", "individual_joint"],
+    ["Kann ich direkt eine Sitzung buchen?", "booking"],
+    ["Kann ich mit euch Türkisch reden?", "online_location_language"],
+    ["Kann ich den Termin kurzfristig absagen?", "cancellation"],
+];
+
+const extendedTurkishExamples = [
+    ["Akut psikolojik krizdeyim. Ne yapmalıyım?", "emergency"],
+    ["Nasıl randevu alabilirim?", "booking"],
+    ["Üyelik e-postası gelmedi", "missing_email"],
+    ["uyelik maili yok", "missing_email"],
+    ["Üye alanına direkt bağlantı nedir?", "direct_link"],
+    ["Sabine ve Selcan kimdir?", "team_overview"],
+    ["seans kac para", "prices"],
+    ["Bağlanma korkusu konusunda yardımcı oluyor musunuz?", "relationships"],
+    ["iliski sorunlarina yardim ediyor musunuz", "relationships"],
+    ["Panik atak için yardımcı oluyor musunuz?", "mental_health_scope"],
+    ["ilk gorusme nasil oluyor", "intro_call"],
+    ["Randevuyu son anda iptal edebilir miyim?", "cancellation"],
+    ["uye alanina nasil gircem", "member_registration"],
+    ["tek mi iki kisi mi hangisi", "individual_joint"],
+    ["zoom lazim mi", "preparation"],
+    ["yurt disindan katilabilir miyim", "online_location_language"],
+    ["kac seans gerekir", "frequency"],
+    ["Partnerimle çift olarak gelebilir miyim?", "couples_scope"],
+    ["Taksitle ödeme yapabilir miyim?", "payment_methods"],
+    ["Kişisel verilerime ne oluyor?", "privacy"],
+];
+
 test("recognizes a broad range of natural homepage questions", () => {
     const mismatches = examples
         .map(([question, expectedIntent]) => ({ question, expectedIntent, actualIntent: getAssistantAnswer(question).intent }))
@@ -126,6 +182,24 @@ test("answers the same broad range of questions in Turkish", () => {
         .map(({ question, expectedIntent, answer }) => ({ question, expectedIntent, actualIntent: answer.intent }));
     assert.deepEqual(mismatches, []);
     assert.ok(answers.every(({ answer }) => answer.text.length > 40));
+});
+
+test("recognizes the additional German questions found in the live audit", () => {
+    const mismatches = extendedGermanExamples
+        .map(([question, expectedIntent]) => ({ question, expectedIntent, actualIntent: getAssistantAnswer(question).intent }))
+        .filter(({ expectedIntent, actualIntent }) => expectedIntent !== actualIntent);
+    assert.deepEqual(mismatches, []);
+});
+
+test("recognizes additional everyday Turkish wording", () => {
+    const mismatches = extendedTurkishExamples
+        .map(([question, expectedIntent]) => ({ question, expectedIntent, actualIntent: getAssistantAnswer(question, "tr").intent }))
+        .filter(({ expectedIntent, actualIntent }) => expectedIntent !== actualIntent);
+    assert.deepEqual(mismatches, []);
+});
+
+test("maintains 150 reviewed question formulations", () => {
+    assert.equal(examples.length + turkishExamples.length + extendedGermanExamples.length + extendedTurkishExamples.length, 150);
 });
 
 test("localizes Turkish answer links", () => {
@@ -151,8 +225,18 @@ test("keeps conversation context for Turkish follow-up questions", () => {
     assert.equal(expectationAnswer.intent, "coaching_expectation");
 });
 
+test("routes acute crisis wording to the emergency guidance in both languages", () => {
+    const germanAnswer = getAssistantAnswer("Ich bin in einer akuten psychischen Krise. Was soll ich tun?");
+    const turkishAnswer = getAssistantAnswer("Akut psikolojik krizdeyim. Ne yapmalıyım?", "tr");
+
+    assert.equal(germanAnswer.intent, "emergency");
+    assert.equal(turkishAnswer.intent, "emergency");
+    assert.match(germanAnswer.text, /112/);
+    assert.match(turkishAnswer.text, /112/);
+});
+
 test("reports the maintained topic count", () => {
-    assert.equal(assistantKnowledgeStats.topicCount, 54);
+    assert.equal(assistantKnowledgeStats.topicCount, 60);
     assert.equal(assistantKnowledgeStats.languages, 2);
 });
 

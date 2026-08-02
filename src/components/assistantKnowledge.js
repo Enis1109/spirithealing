@@ -23,15 +23,15 @@ const intents = [
     {
         id: "emergency",
         priority: 100,
-        terms: ["suizid", "selbstmord", "akute gefahr", "notfall", "nicht mehr leben", "mir etwas antun"],
+        terms: ["suizid", "selbstmord", "akute gefahr", "notfall", "nicht mehr leben", "mir etwas antun", "akute psychische krise", "akuten psychischen krise", "psychische krise", "psychischen krise", "akuter krisenfall", "ich bin in einer krise", "sofortige hilfe", "brauche sofort hilfe", "selbstverletzung", "mir wehtun", "jemand anderem etwas antun", "gefahr für mich", "gefahr fuer mich", "gefahr für andere", "gefahr fuer andere"],
         answer: {
-            text: "Wenn du oder jemand anderes akut in Gefahr ist, ruf bitte sofort den örtlichen Notruf 112 an. Dieser Website-Assistent kann in einer akuten Situation nicht passend helfen.",
+            text: "Wenn du dich in einer akuten psychischen Krise befindest oder eine unmittelbare Gefahr für dich oder andere besteht, ruf bitte sofort den örtlichen Notruf 112 an oder wende dich an eine geeignete Krisen- beziehungsweise Notfallstelle. Dieser Website-Assistent und die reguläre Begleitung sind für akute Notfälle nicht der passende Rahmen.",
         },
     },
     {
         id: "missing_email",
         priority: 90,
-        terms: ["keine mail", "keine e-mail", "email nicht", "e-mail nicht", "mail nicht", "nicht bekommen", "nicht angekommen", "spam", "junk", "postfach", "werbung ordner", "bestätigung fehlt"],
+        terms: ["keine mail", "keine e-mail", "email nicht", "e-mail nicht", "mail nicht", "nicht bekommen", "nicht angekommen", "spam", "junk", "postfach", "werbung ordner", "bestätigung fehlt", "krieg die mail nich", "bekomme die mail nicht", "mail kam nicht", "mail ist weg", "zugangsmail fehlt", "mitglieder mail fehlt"],
         answer: {
             text: "Schau bitte zuerst im Spam-, Werbung- oder Junk-Ordner nach und suche in deinem Postfach nach „Spirit Healing“. Prüfe auch, ob du die richtige E-Mail-Adresse verwendet hast. Wenn die Nachricht nicht auftaucht, kannst du im Mitgliederbereich ein neues Passwort oder einen neuen Zugangslink anfordern.",
             links: [{ label: "Mitgliederbereich öffnen", href: `${SITE}/mitglieder` }],
@@ -49,7 +49,7 @@ const intents = [
     {
         id: "direct_link",
         priority: 75,
-        terms: ["direktlink", "zugangslink", "persönlicher link", "personlicher link", "neuen link", "alter link", "link abgelaufen", "link verloren"],
+        terms: ["direktlink", "zugangslink", "persönlicher link", "personlicher link", "neuen link", "alter link", "link abgelaufen", "link verloren", "was ist der direktlink", "direktlink zum mitgliederbereich", "direkter link zum mitgliederbereich", "mit direktlink anmelden"],
         answer: {
             text: "Dein bisheriger persönlicher Direktlink bleibt gültig. Wenn du einen neuen brauchst, öffne den Mitgliederbereich und wähle „Neuen Direktlink anfordern“. Dort trägst du Name und E-Mail-Adresse ein und lässt dir den Zugangslink neu senden.",
             links: [{ label: "Direktlink anfordern", href: `${SITE}/mitglieder?mode=access` }],
@@ -58,7 +58,7 @@ const intents = [
     {
         id: "member_registration",
         priority: 65,
-        terms: ["registrieren", "wie registriere", "kostenlos registrieren", "kostenlos anmelden", "konto erstellen", "mitglied werden", "zugang erstellen", "mitgliederzugang", "anmeldung mitglieder"],
+        terms: ["registrieren", "wie registriere", "kostenlos registrieren", "kostenlos anmelden", "konto erstellen", "mitglied werden", "zugang erstellen", "mitgliederzugang", "anmeldung mitglieder", "wie komme ich in den mitgliederbereich", "wie komme ich in den mitglieder bereich", "wie komm ich in den mitgliederbereich", "wie komm ich in den mitglieder bereich", "zugang zum mitgliederbereich", "mitgliederbereich anmelden", "wie logge ich mich ein"],
         answer: {
             text: "Der Mitgliederbereich ist kostenlos. Du kannst dort ein Konto mit Name, E-Mail-Adresse und Passwort anlegen. Nach der Registrierung erhältst du eine Nachricht von Spirit Healing; prüfe bei Bedarf auch den Spam-Ordner.",
             links: [{ label: "Kostenlos registrieren", href: `${SITE}/mitglieder?mode=register` }],
@@ -131,6 +131,18 @@ const intents = [
         },
     },
     {
+        id: "payment_methods",
+        priority: 71,
+        terms: ["wie kann ich bezahlen", "wie bezahle ich", "zahlungsarten", "zahlungsmethode", "überweisung", "ueberweisung", "paypal", "kreditkarte", "stripe", "bar bezahlen", "ratenzahlung", "in raten zahlen"],
+        answer: {
+            text: "Sitzungspakete können direkt über die Preis- und Terminseite online gekauft werden. Welche Zahlungsarten für einzelne Termine möglich sind oder ob eine Ratenzahlung vereinbart werden kann, ist auf der Homepage nicht verbindlich beschrieben. Frag Spirit Healing dazu bitte vor der Buchung kurz persönlich.",
+            links: [
+                { label: "Preise und Pakete ansehen", href: `${SITE}/prices` },
+                { label: "Zahlungsfrage stellen", href: `${SITE}/kontakt` },
+            ],
+        },
+    },
+    {
         id: "prices",
         priority: 60,
         terms: ["was kostet", "wie viel kostet", "preise", "preis", "kosten", "euro", "bezahlen", "kostenfrei", "kostenloses erstgespräch", "kostenloses erstgespraech"],
@@ -153,8 +165,8 @@ const intents = [
     },
     {
         id: "booking",
-        priority: 65,
-        terms: ["termin buchen", "termin machen", "termin vereinbaren", "freien termin", "freie termine", "verfügbarkeit", "verfuegbarkeit", "kalender", "calendly", "wo buchen"],
+        priority: 78,
+        terms: ["termin buchen", "termin machen", "termin vereinbaren", "freien termin", "freie termine", "verfügbarkeit", "verfuegbarkeit", "kalender", "calendly", "wo buchen", "wie buche ich", "wie kann ich buchen", "wie kann ich einen termin buchen", "wo buche ich", "buchung starten", "direkt eine sitzung buchen", "sitzung direkt buchen", "randevu buchen"],
         answer: {
             text: "Auf der Buchungsseite wählst du zuerst die Terminart und danach direkt einen freien Zeitpunkt. Das kostenfreie Kennenlernen, Einzelsitzungen und die gemeinsame Erstsitzung können dort sofort ausgewählt werden.",
             links: [{ label: "Freien Termin auswählen", href: `${SITE}/termin-buchen` }],
@@ -172,7 +184,7 @@ const intents = [
     {
         id: "cancellation",
         priority: 70,
-        terms: ["stornieren", "termin absagen", "absage", "kann nicht teilnehmen", "termin fällt aus", "termin faellt aus", "geld zurück", "geld zuruck"],
+        terms: ["stornieren", "termin absagen", "absage", "kann nicht teilnehmen", "termin fällt aus", "termin faellt aus", "geld zurück", "geld zuruck", "kurzfristig absagen", "kurzfristig stornieren", "am selben tag absagen", "termin nicht wahrnehmen"],
         answer: {
             text: "Auf der Homepage ist die kostenfreie Umbuchung bis 48 Stunden vor dem Termin genannt. Für eine Absage oder Erstattung wende dich bitte direkt an Spirit Healing, damit dein konkreter Termin persönlich geklärt werden kann.",
             links: [{ label: "Termin persönlich klären", href: `${SITE}/kontakt` }],
@@ -188,12 +200,33 @@ const intents = [
         },
     },
     {
+        id: "frequency",
+        priority: 69,
+        terms: ["wie oft", "wie häufig", "wie haeufig", "abstand zwischen", "welcher rhythmus", "jede woche", "wöchentlich", "woechentlich", "wie viele sitzungen", "wie viele termine", "reicht eine sitzung", "brauche mehrere sitzungen"],
+        answer: {
+            text: "Es gibt keinen festen Sitzungsrhythmus, der für alle passt. Ob ein einzelner Termin genügt oder weitere Sitzungen sinnvoll sind, wird nach deinem Anliegen und dem bisherigen Prozess gemeinsam besprochen. Drei- und sechsmonatige Begleitungen sind derzeit noch in Vorbereitung.",
+            links: [
+                { label: "Begleitung kennenlernen", href: `${SITE}/faq` },
+                { label: "Unverbindlich fragen", href: `${SITE}/kontakt` },
+            ],
+        },
+    },
+    {
         id: "session_fit",
         priority: 74,
         terms: ["welche sitzung", "welche begleitung", "was passt zu mir", "welches angebot", "wo soll ich anfangen", "richtige sitzung", "bin unsicher", "passender einstieg"],
         answer: {
             text: "Du musst dich nicht allein entscheiden. Im kostenfreien 15-minütigen Kennenlernen schilderst du kurz, was dich beschäftigt. Danach klärt ihr gemeinsam, ob eine Einzel-, gemeinsame oder längere Intensivsitzung sinnvoll ist.",
             links: [{ label: "Kostenfreies Kennenlernen buchen", href: `${SITE}/termin-buchen` }],
+        },
+    },
+    {
+        id: "intro_call",
+        priority: 82,
+        terms: ["kennenlerngespräch", "kennenlerngespraech", "kostenfreies kennenlernen", "kostenloses kennenlernen", "kostenlose kennenlernen", "kostenlose kennenlerngespräch", "kostenlose kennenlerngespraech", "erstgespräch kostenlos", "erstgespraech kostenlos", "was passiert beim kennenlernen", "wie läuft das kennenlernen", "wie laeuft das kennenlernen", "muss ich mich danach entscheiden", "unverbindliches gespräch", "unverbindliches gespraech", "15 minuten kennenlernen"],
+        answer: {
+            text: "Das Kennenlerngespräch dauert 15 Minuten und ist kostenfrei. Du kannst kurz schildern, was dich beschäftigt, Fragen stellen und ein erstes Gefühl für die Zusammenarbeit bekommen. Danach wird transparent besprochen, welcher Einstieg passen könnte; du musst dich im Gespräch zu nichts entscheiden.",
+            links: [{ label: "Kostenfreies Kennenlernen wählen", href: `${SITE}/termin-buchen` }],
         },
     },
     {
@@ -215,12 +248,30 @@ const intents = [
         },
     },
     {
+        id: "couples_scope",
+        priority: 76,
+        terms: ["paarsitzung", "paartherapie", "paarberatung", "gemeinsame sitzung eine paartherapie", "mit meinem partner", "mit meiner partnerin", "als paar kommen", "zu zweit als paar", "beziehung gemeinsam", "partnerschaftsberatung"],
+        answer: {
+            text: "Die Homepage beschreibt persönliche Einzelsitzungen sowie gemeinsame Sitzungen, bei denen Sabine und Selcan dein Thema zusammen begleiten. Ob ihr auch als Paar gemeinsam teilnehmen könnt, ist dort nicht verbindlich angegeben. Schreibt Spirit Healing euer Anliegen bitte kurz, damit ihr eine klare persönliche Auskunft bekommt.",
+            links: [{ label: "Paarsitzung persönlich anfragen", href: `${SITE}/kontakt` }],
+        },
+    },
+    {
         id: "intensive",
         priority: 68,
         terms: ["intensivsitzung", "intensivprozess", "intensivtermin", "aufstellungsarbeit", "seelenrückholung", "seelenruckholung", "150 minuten"],
         answer: {
             text: "Die Intensivsitzung mit Selcan dauert 150 Minuten und kostet 333 €. Sie gibt systemischer Aufstellungsarbeit oder schamanisch ausgerichteter Seelenrückholung mehr Zeit, ohne den Prozess in ein enges Zeitfenster zu drängen.",
             links: [{ label: "Intensivsitzung ansehen", href: `${SITE}/prices` }],
+        },
+    },
+    {
+        id: "team_overview",
+        priority: 84,
+        terms: ["wer sind sabine und selcan", "wer seid ihr", "wer steckt hinter spirit healing", "euer team", "stellt euch vor", "über euch", "ueber euch", "wer begleitet mich", "wer arbeitet bei spirit healing"],
+        answer: {
+            text: "Spirit Healing wird von Sabine Schmidt und Selcan Yilmaz getragen. Sabine verbindet Coaching, Hypnose, NLP sowie Anteile- und Musterarbeit. Selcan ist Heilpraktikerin für Psychotherapie und bringt langjährige Erfahrung in Stabilisierung, Einzelfallhilfe und der Begleitung emotional stark belastender Situationen mit. Gemeinsam verbinden sie systemische Anteilearbeit und Energiearbeit.",
+            links: [{ label: "Sabine und Selcan kennenlernen", href: `${SITE}/about` }],
         },
     },
     {
@@ -260,6 +311,18 @@ const intents = [
         answer: {
             text: "Spirit Healing begleitet dich zum Beispiel, wenn du dich trotz vieler Gedanken immer wieder im Kreis drehst, ständig funktionieren musst, schnell überfordert bist, dich in Beziehungen zurückziehst oder anpasst, deine Grenzen schwer spürst oder dir mehr Klarheit und Selbstkontakt wünschst.",
             links: [{ label: "Möglichkeiten der Begleitung", href: `${SITE}/coaching` }],
+        },
+    },
+    {
+        id: "mental_health_scope",
+        priority: 78,
+        terms: ["panikattacke", "panikattacken", "panik", "angstzustände", "angstzustaende", "starke angst", "depression", "depressiv", "ptbs", "trauma heilen", "könnt ihr mich heilen", "koennt ihr mich heilen", "ersetzt psychotherapie", "ersetzt eine therapie", "psychische diagnose", "heilversprechen"],
+        answer: {
+            text: "Starke Angst, Panik, depressive Phasen oder belastende Erfahrungen können im Kennenlernen offen angesprochen werden. Spirit Healing kann dabei begleiten, Gefühle, Schutzmuster sowie Reaktionen von Körper und Nervensystem besser zu verstehen. Ob dieses Angebot für deine Situation passt, muss persönlich geklärt werden; es ersetzt keine notwendige medizinische oder psychotherapeutische Abklärung und macht keine Heilversprechen. Bei einer akuten Krise oder Gefahr ruf bitte 112 an.",
+            links: [
+                { label: "Rahmen und Grenzen lesen", href: `${SITE}/faq` },
+                { label: "Situation persönlich klären", href: `${SITE}/kontakt` },
+            ],
         },
     },
     {
@@ -322,7 +385,7 @@ const intents = [
     {
         id: "relationships",
         priority: 64,
-        terms: ["beziehungsmuster", "beziehungsprobleme", "immer falsche partner", "nähe", "naehe", "rückzug", "rueckzug", "bindung", "anpassung", "people pleasing", "grenzen setzen", "nein sagen", "verlustangst"],
+        terms: ["beziehungsmuster", "beziehungsprobleme", "immer falsche partner", "nähe", "naehe", "rückzug", "rueckzug", "bindung", "bindungsangst", "bei bindungsangst helfen", "angst vor nähe", "angst vor naehe", "anpassung", "people pleasing", "grenzen setzen", "nein sagen", "verlustangst"],
         answer: {
             text: "Beziehungsmuster, Rückzug, starke Anpassung, Schwierigkeiten mit Nähe oder Grenzen gehören zu den Themen der Begleitung. Gemeinsam wird verständlich, welche Schutzbewegung dahinterliegt und wie du mehr Wahlfreiheit im Kontakt mit anderen entwickeln kannst.",
             links: [{ label: "Mehr zu Beziehung und Schutz", href: `${SITE}/coaching` }],
@@ -460,7 +523,7 @@ const intents = [
     {
         id: "session_process",
         priority: 65,
-        terms: ["wie läuft eine sitzung", "ablauf einer sitzung", "was passiert in der sitzung", "nach der buchung", "zoom link", "zoom-link", "fragebogen", "terminbestätigung", "terminbestaetigung"],
+        terms: ["wie läuft eine sitzung", "ablauf einer sitzung", "was passiert in der sitzung", "wie geht der erste termin", "wie läuft der erste termin", "wie laeuft der erste termin", "nach der buchung", "zoom link", "zoom-link", "fragebogen", "terminbestätigung", "terminbestaetigung"],
         answer: {
             text: "Nach der Buchung erhältst du eine Terminbestätigung und den Zoom-Link. Je nach Format kommt ein kurzer Fragebogen dazu. Zu Beginn klärt ihr, was dich aktuell beschäftigt; danach richtet sich der Verlauf ohne starres Programm nach deinem Prozess.",
             links: [{ label: "FAQ zum Ablauf", href: `${SITE}/faq` }],
@@ -469,9 +532,9 @@ const intents = [
     {
         id: "preparation",
         priority: 64,
-        terms: ["vorbereiten", "bereite ich mich", "vorbereitung", "vor der sitzung", "was brauche ich", "ungestörter ort", "ungestoerter ort", "internetverbindung", "nach der sitzung"],
+        terms: ["vorbereiten", "bereite ich mich", "vorbereitung", "vor der sitzung", "was brauche ich", "ungestörter ort", "ungestoerter ort", "internetverbindung", "nach der sitzung", "was mache ich nach der sitzung", "danach arbeiten", "ruhe nach dem termin", "brauche ich zoom", "zoom installieren", "technik für zoom", "technik fuer zoom"],
         answer: {
-            text: "Plane möglichst etwas Ruhe vor und nach der Sitzung ein und sorge für einen ungestörten Ort mit stabiler Internetverbindung. Du brauchst nichts Besonderes vorzubereiten und musst dein Anliegen nicht perfekt formulieren.",
+            text: "Plane möglichst etwas Ruhe vor und nach der Sitzung ein und sorge für einen ungestörten Ort mit stabiler Internetverbindung. Für die Online-Sitzung brauchst du ein Gerät, auf dem du den zugesandten Zoom-Link öffnen kannst. Du musst sonst nichts Besonderes vorbereiten und dein Anliegen nicht perfekt formulieren.",
             links: [{ label: "Vorbereitung nachlesen", href: `${SITE}/faq` }],
         },
     },
@@ -496,7 +559,7 @@ const intents = [
     {
         id: "online_location_language",
         priority: 61,
-        terms: ["online", "vor ort", "zoom", "berlin", "antalya", "türkisch", "tuerkisch", "deutsch", "welche sprache", "wo finden"],
+        terms: ["online", "vor ort", "zoom", "berlin", "antalya", "türkisch", "tuerkisch", "deutsch", "welche sprache", "wo finden", "aus dem ausland", "aus einem anderen land", "von überall", "von ueberall", "ortsunabhängig", "ortsunabhaengig"],
         answer: {
             text: "Die Sitzungen finden überwiegend online über Zoom statt und sind auf Deutsch oder Türkisch möglich. Ausgewählte Intensiv- und Aufstellungsformate können nach Absprache auch in Berlin oder Antalya stattfinden.",
             links: [{ label: "Termine ansehen", href: `${SITE}/prices` }],
@@ -536,11 +599,11 @@ const intents = [
 
 const turkishContent = {
     emergency: {
-        terms: ["intihar", "kendime zarar", "acil durum", "yaşamak istemiyorum", "yasamak istemiyorum", "hayati tehlike"],
-        text: "Sen ya da başka biri şu anda tehlikedeyse lütfen hemen 112'yi ara. Bu web asistanı acil bir durumda uygun desteği sağlayamaz.",
+        terms: ["intihar", "kendime zarar", "acil durum", "yaşamak istemiyorum", "yasamak istemiyorum", "hayati tehlike", "akut psikolojik kriz", "psikolojik kriz", "krizdeyim", "hemen yardım", "hemen yardim", "acil psikolojik yardım", "acil psikolojik yardim", "tehlikedeyim", "birine zarar", "kendime bir şey yapacağım", "kendime bir sey yapacagim"],
+        text: "Akut bir psikolojik kriz yaşıyorsan veya kendin ya da başkaları için yakın bir tehlike varsa hemen 112'yi ara ya da uygun bir kriz ve acil yardım birimine başvur. Bu web asistanı ve normal Spirit Healing seansları acil durumlar için uygun değildir.",
     },
     missing_email: {
-        terms: ["e posta gelmedi", "e-posta gelmedi", "mail gelmedi", "üyelik e postası", "uyelik e postasi", "spam", "gereksiz", "onay gelmedi", "posta kutusu"],
+        terms: ["e posta gelmedi", "e-posta gelmedi", "mail gelmedi", "üyelik e postası", "uyelik e postasi", "üyelik e-postası gelmedi", "uyelik e-postasi gelmedi", "üyelik maili yok", "uyelik maili yok", "mail yok", "maili bulamıyorum", "maili bulamiyorum", "spam", "gereksiz", "onay gelmedi", "posta kutusu"],
         text: "Önce spam, gereksiz ve tanıtımlar klasörlerine bakıp posta kutunda “Spirit Healing” diye arama yap. Doğru e-posta adresini kullandığını da kontrol et. Mesaj yine yoksa üye alanından yeni şifre ya da yeni kişisel giriş bağlantısı isteyebilirsin.",
     },
     password: {
@@ -548,11 +611,11 @@ const turkishContent = {
         text: "Üye alanını açıp “Passwort vergessen?” seçeneğini seç. E-posta adresini girdikten sonra bağlantının e-postayla gönderilmesini iste. Mesaj görünmüyorsa spam ve gereksiz klasörlerini de kontrol et.",
     },
     direct_link: {
-        terms: ["direkt bağlantı", "direkt baglanti", "kişisel bağlantı", "kisisel baglanti", "giriş linki", "giris linki", "yeni link", "link kayboldu", "bağlantı kayboldu", "baglanti kayboldu"],
+        terms: ["direkt bağlantı", "direkt baglanti", "kişisel bağlantı", "kisisel baglanti", "giriş linki", "giris linki", "yeni link", "link kayboldu", "bağlantı kayboldu", "baglanti kayboldu", "direkt bağlantı nedir", "direkt baglanti nedir", "üye alanına direkt bağlantı", "uye alanina direkt baglanti"],
         text: "Mevcut kişisel giriş bağlantın geçerliliğini korur. Yeni bir bağlantıya ihtiyacın varsa üye alanında “Neuen Direktlink anfordern” seçeneğini aç, adını ve e-posta adresini yazıp bağlantının yeniden gönderilmesini iste.",
     },
     member_registration: {
-        terms: ["nasıl üye", "nasil uye", "ücretsiz nasıl üye", "ucretsiz nasil uye", "ücretsiz kayıt", "ucretsiz kayit", "hesap açmak", "hesap acmak", "üye olmak", "uye olmak", "kayıt olmak", "kayit olmak"],
+        terms: ["nasıl üye", "nasil uye", "ücretsiz nasıl üye", "ucretsiz nasil uye", "ücretsiz kayıt", "ucretsiz kayit", "hesap açmak", "hesap acmak", "üye olmak", "uye olmak", "kayıt olmak", "kayit olmak", "üye alanına nasıl girerim", "uye alanina nasil girerim", "üye alanına nasıl gircem", "uye alanina nasil gircem", "üyelik alanına giriş", "uyelik alanina giris"],
         text: "Üye alanı ücretsizdir. Ad, e-posta adresi ve şifreyle hesabını oluşturabilirsin. Kayıttan sonra Spirit Healing'den bir e-posta gelir; gerekirse spam klasörünü de kontrol et.",
     },
     member_content: {
@@ -583,8 +646,12 @@ const turkishContent = {
         terms: ["3 seans paketi", "5 seans paketi", "seans paketi", "paket fiyatı", "paket fiyati", "indirim", "birden fazla seans"],
         text: "Seans paketlerinde fiyat avantajı var: 3 bireysel seans 599,40 € (%10 indirim), 5 bireysel seans 943,50 € (%15 indirim). İki uzmanla 3 ortak seans 899,10 €, 5 ortak seans 1.415,25 €.",
     },
+    payment_methods: {
+        terms: ["nasıl öderim", "nasil oderim", "ödeme yöntemi", "odeme yontemi", "ödeme şekli", "odeme sekli", "havale", "paypal", "kredi kartı", "kredi karti", "stripe", "nakit", "taksit", "taksitle ödeme", "taksitle odeme"],
+        text: "Seans paketleri ücret ve randevu sayfasından çevrim içi satın alınabilir. Tek seanslar için hangi ödeme yöntemlerinin geçerli olduğu ya da taksit yapılıp yapılamadığı sitede kesin olarak açıklanmıyor. Rezervasyondan önce Spirit Healing'e kısaca sorman en doğrusu.",
+    },
     prices: {
-        terms: ["ne kadar", "ücret", "ucret", "fiyat", "maliyet", "euro", "ödeme", "odeme", "ücretsiz tanışma", "ucretsiz tanisma"],
+        terms: ["ne kadar", "ücret", "ucret", "fiyat", "maliyet", "euro", "ödeme", "odeme", "ücretsiz tanışma", "ucretsiz tanisma", "kaç para", "kac para", "seans kaç para", "seans kac para", "seans kaç euro", "seans kac euro"],
         text: "15 dakikalık tanışma görüşmesi ücretsizdir. Sabine veya Selcan ile 60 dakikalık ilk ya da takip seansı 222 €; ikisiyle birlikte 60 dakikalık ortak seans 333 €'dur. Selcan ile 150 dakikalık yoğun seans da 333 €'dur.",
     },
     duration: {
@@ -592,7 +659,7 @@ const turkishContent = {
         text: "Ücretsiz tanışma görüşmesi 15 dakika sürer. Bireysel ve ortak seanslar 60 dakika, Selcan ile yoğun seans ise 150 dakikadır.",
     },
     booking: {
-        terms: ["randevu al", "randevu oluştur", "randevu olustur", "randevu ayarla", "boş randevu", "bos randevu", "müsait", "musait", "takvim", "nereden randevu"],
+        terms: ["randevu al", "randevu oluştur", "randevu olustur", "randevu ayarla", "boş randevu", "bos randevu", "müsait", "musait", "takvim", "nereden randevu", "nasıl randevu alırım", "nasil randevu alirim", "randevuyu nasıl alırım", "randevuyu nasil alirim"],
         text: "Randevu sayfasında önce görüşme türünü, ardından uygun bir zamanı seçebilirsin. Ücretsiz tanışma, bireysel seanslar ve iki uzmanla ortak ilk seans doğrudan seçilebilir.",
     },
     rescheduling: {
@@ -600,28 +667,44 @@ const turkishContent = {
         text: "Randevudan 48 saat öncesine kadar ücretsiz değişiklik yapılabilir. Randevu onayındaki bağlantıyı kullanabilir ya da desteğe ihtiyacın varsa Spirit Healing ile iletişime geçebilirsin.",
     },
     cancellation: {
-        terms: ["randevu iptal", "randevumu iptal", "iptal etmek", "katılamıyorum", "katilamiyorum", "para iadesi", "ücret iadesi", "ucret iadesi"],
+        terms: ["randevu iptal", "randevumu iptal", "iptal etmek", "katılamıyorum", "katilamiyorum", "para iadesi", "ücret iadesi", "ucret iadesi", "son anda iptal", "aynı gün iptal", "ayni gun iptal", "randevuya gelemiyorum"],
         text: "Sitede randevudan 48 saat öncesine kadar ücretsiz tarih değişikliği yapılabildiği belirtiliyor. İptal veya ücret iadesi için kendi randevunun ayrıntılarını Spirit Healing ile doğrudan görüşmen en doğrusu.",
     },
     long_programs: {
         terms: ["3 aylık", "3 aylik", "6 aylık", "6 aylik", "uzun süreli", "uzun sureli", "aylarca destek", "uzun program"],
         text: "Üç ve altı aylık destek programları hazırlık aşamasındadır. İçerik, görüşme sıklığı ve ücret daha sonra kişiye özel netleştirilecektir. Şimdiden bağlayıcı olmayan ilgi kaydı bırakabilirsin.",
     },
+    frequency: {
+        terms: ["ne sıklıkta", "ne siklikta", "kaç seans", "kac seans", "kaç randevu", "kac randevu", "her hafta", "seans aralığı", "seans araligi", "bir seans yeter mi", "birden fazla seans"],
+        text: "Herkes için geçerli sabit bir seans sıklığı yoktur. Tek bir görüşmenin yeterli olup olmadığı veya başka seansların anlamlı olup olmayacağı, konuna ve süreçte ortaya çıkanlara göre birlikte konuşulur. Üç ve altı aylık destek programları hâlen hazırlanmaktadır.",
+    },
     session_fit: {
         terms: ["hangi seans", "hangisi bana uygun", "nereden başlamalı", "nereden baslamali", "hangi teklif", "kararsızım", "kararsizim", "doğru seans", "dogru seans"],
         text: "Buna tek başına karar vermek zorunda değilsin. Ücretsiz 15 dakikalık tanışmada seni meşgul eden konuyu kısaca anlatırsın; ardından bireysel, ortak veya daha uzun yoğun seansın uygun olup olmadığı birlikte netleştirilir.",
+    },
+    intro_call: {
+        terms: ["tanışma görüşmesi", "tanisma gorusmesi", "ücretsiz tanışma", "ucretsiz tanisma", "ilk görüşme nasıl", "ilk gorusme nasil", "tanışmada ne oluyor", "tanismada ne oluyor", "sonra karar vermek", "bağlayıcı mı", "baglayici mi", "15 dakikalık tanışma", "15 dakikalik tanisma"],
+        text: "Tanışma görüşmesi 15 dakika sürer ve ücretsizdir. Seni meşgul eden konuyu kısaca anlatabilir, sorularını sorabilir ve birlikte çalışmanın sana uygun olup olmadığını hissedebilirsin. Sonrasında hangi başlangıcın uygun olabileceği açıkça konuşulur; görüşmede karar vermek zorunda değilsin.",
     },
     first_followup: {
         terms: ["ilk seans", "takip seansı", "takip seansi", "ilk ve takip", "sonraki seans", "daha önce seans"],
         text: "İlk seans kapsamlı bir başlangıçtır: Konun ve önemli bağlantılar birlikte düzenlenir. Takip seansı, ilk görüşmeden sonra ortaya çıkanları ele alır ve başlayan süreci sürdürür. Her ikisi de 60 dakikadır.",
     },
     individual_joint: {
-        terms: ["bireysel mi ortak", "tek mi birlikte", "ortak seans", "ikinizle", "iki uzman", "sabine ve selcan birlikte", "bireysel seans farkı"],
+        terms: ["bireysel mi ortak", "tek mi birlikte", "ortak seans", "ikinizle", "iki uzman", "sabine ve selcan birlikte", "bireysel seans farkı", "tek mi iki kişi mi", "tek mi iki kisi mi", "tek seans mı ortak mı", "tek seans mi ortak mi"],
         text: "Bireysel seansta Sabine ya da Selcan ile çalışırsın. Ortak seansta ikisi farklı bakışlarını ve çalışma biçimlerini aynı süreçte birleştirir. Hangi biçimin uygun olduğu konuna ve kendini nerede rahat hissettiğine bağlıdır.",
+    },
+    couples_scope: {
+        terms: ["çift seansı", "cift seansi", "çift terapisi", "cift terapisi", "eşimle gelmek", "esimle gelmek", "partnerimle gelmek", "çift olarak", "cift olarak", "ilişki danışmanlığı", "iliski danismanligi"],
+        text: "Sitede bireysel seanslar ve Sabine ile Selcan'ın birlikte eşlik ettiği ortak seanslar anlatılıyor. Bir çift olarak birlikte katılımın mümkün olup olmadığı kesin biçimde belirtilmiyor. Konunuzu kısaca Spirit Healing'e yazarsanız size kişisel ve net bir yanıt verebilirler.",
     },
     intensive: {
         terms: ["yoğun seans", "yogun seans", "150 dakikalık", "150 dakikalik", "ruh parçası", "ruh parcasi"],
         text: "Selcan ile yoğun seans 150 dakika sürer ve 333 €'dur. Sistemik dizim ya da şamanik yönelimli ruh parçası geri çağırma çalışmasına dar bir zaman sınırı olmadan daha geniş alan sağlar.",
+    },
+    team_overview: {
+        terms: ["sabine ve selcan kimdir", "siz kimsiniz", "spirit healing arkasında kim var", "spirit healing arkasinda kim var", "ekibiniz", "kendinizi tanıtın", "kendinizi tanitin", "beni kim destekliyor", "kim çalışıyor", "kim calisiyor"],
+        text: "Spirit Healing, Sabine Schmidt ve Selcan Yilmaz tarafından yürütülür. Sabine koçluk, hipnoz, NLP ile içsel parça ve örüntü çalışmasını birleştirir. Selcan, Almanya'da Heilpraktikerin für Psychotherapie unvanına ve dengeleme, bireysel psikososyal destek ile yoğun duygusal durumlarda uzun yıllara dayanan deneyime sahiptir. Ortak çalışmalarında sistemik içsel parçalar çalışması ile enerji çalışmasını birleştirirler.",
     },
     choose_person: {
         terms: ["sabine mi selcan mı", "sabine mi selcan mi", "kiminle çalışmalıyım", "kiminle calismaliyim", "hangisini seçmeliyim", "hangisini secmeliyim", "sabine selcan farkı", "sabine selcan farki"],
@@ -638,6 +721,10 @@ const turkishContent = {
     help_general: {
         terms: ["hangi konularda", "neye yardımcı", "neye yardimci", "ne için gelebilirim", "ne icin gelebilirim", "kimler için", "kimler icin", "takılı kaldım", "takili kaldim", "destek olur musunuz"],
         text: "Çok düşünmene rağmen aynı yerde dönüp duruyorsan, sürekli güçlü durman gerekiyorsa, çabuk zorlanıyorsan, ilişkilerde geri çekiliyor ya da fazlaca uyum sağlıyorsan, sınırlarını hissetmekte zorlanıyor veya daha fazla netlik ve kendinle temas istiyorsan Spirit Healing sana eşlik edebilir.",
+    },
+    mental_health_scope: {
+        terms: ["panik atak", "panik", "yoğun kaygı", "yogun kaygi", "depresyon", "depresif", "travma sonrası", "travma sonrasi", "travmayı iyileştirmek", "travmayi iyilestirmek", "beni iyileştirir misiniz", "beni iyilestirir misiniz", "psikoterapi yerine", "psikolojik tanı", "psikolojik tani"],
+        text: "Yoğun kaygı, panik, depresif dönemler veya zorlayıcı deneyimler tanışma görüşmesinde açıkça konuşulabilir. Spirit Healing; duyguları, korunma örüntülerini, beden ve sinir sistemi tepkilerini anlamana eşlik edebilir. Bu desteğin senin durumuna uygun olup olmadığı kişisel olarak netleştirilmelidir; gerekli tıbbi veya psikoterapötik değerlendirme ve tedavinin yerini almaz, iyileşme vaadi vermez. Akut bir kriz veya tehlike varsa 112'yi ara.",
     },
     what_is_spirit_healing: {
         terms: ["spirit healing nedir", "spirit healing ne yapıyor", "spirit healing ne yapiyor", "yaklaşımınız nedir", "yaklasiminiz nedir", "sizin yaklaşımınız", "sizin yaklasiminiz"],
@@ -664,7 +751,7 @@ const turkishContent = {
         text: "Dışarıdan devam ediyor ama içeride yorgun, gergin veya sürekli alarmda hissediyorsan travma duyarlı süreç eşliği iyi bir başlangıç olabilir. Birlikte, sistemini neyin tetikte tuttuğuna ve yeniden daha fazla sakinlik ile kendinle temas için neyin yardımcı olacağına bakılır.",
     },
     relationships: {
-        terms: ["ilişki örüntüsü", "iliski oruntusu", "ilişki sorunu", "iliski sorunu", "yakınlık", "yakinlik", "geri çekilme", "geri cekilme", "uyum sağlama", "uyum saglama", "sınır koymak", "sinir koymak", "sınır koyam", "sinir koyam", "hayır diyemiyorum", "hayir diyemiyorum", "terk edilme korkusu"],
+        terms: ["ilişki örüntüsü", "iliski oruntusu", "ilişki sorunu", "iliski sorunu", "ilişki sorunları", "iliski sorunlari", "ilişki sorunlarına", "iliski sorunlarina", "yakınlık", "yakinlik", "geri çekilme", "geri cekilme", "uyum sağlama", "uyum saglama", "sınır koymak", "sinir koymak", "sınır koyam", "sinir koyam", "hayır diyemiyorum", "hayir diyemiyorum", "terk edilme korkusu", "bağlanma korkusu", "baglanma korkusu", "yakınlık korkusu", "yakinlik korkusu"],
         text: "İlişkilerde tekrar eden örüntüler, geri çekilme, aşırı uyum, yakınlık veya sınır koyma zorluğu eşlik edilebilen konulardandır. Arkasındaki koruyucu hareket anlaşılır hale gelir ve ilişkilerde daha fazla seçim alanı geliştirmene destek olunur.",
     },
     self_worth: {
@@ -720,12 +807,12 @@ const turkishContent = {
         text: "Konunu önceden tam olarak adlandırmak zorunda değilsin. Bazen yalnızca bir şeyin enerjini tükettiği, tekrar ettiği ya da içeride sıkıştığın fark edilir. O anda algılanabilen yerden birlikte başlanır.",
     },
     session_process: {
-        terms: ["seans nasıl ilerliyor", "seans nasil ilerliyor", "seansta ne oluyor", "seans akışı", "seans akisi", "rezervasyondan sonra", "zoom linki", "anket", "randevu onayı", "randevu onayi"],
+        terms: ["seans nasıl ilerliyor", "seans nasil ilerliyor", "seansta ne oluyor", "seans akışı", "seans akisi", "rezervasyondan sonra", "zoom linki", "anket", "randevu onayı", "randevu onayi", "ilk seans nasıl oluyor", "ilk seans nasil oluyor"],
         text: "Randevudan sonra onay mesajını ve Zoom bağlantısını alırsın. Görüşme türüne göre kısa bir soru formu da gelebilir. Başta o an seni meşgul eden konu netleştirilir; ardından süreç katı bir programa bağlı kalmadan ihtiyacına göre ilerler.",
     },
     preparation: {
-        terms: ["nasıl hazırlan", "nasil hazirlan", "seans öncesi", "seans oncesi", "neye ihtiyacım var", "neye ihtiyacim var", "sessiz yer", "internet bağlantısı", "internet baglantisi", "seans sonrası", "seans sonrasi"],
-        text: "Mümkünse seans öncesi ve sonrası biraz sakin zaman ayır; rahatsız edilmeyeceğin ve interneti sağlam bir yer seç. Özel bir hazırlık yapman veya konunu kusursuz biçimde anlatman gerekmez.",
+        terms: ["nasıl hazırlan", "nasil hazirlan", "seans öncesi", "seans oncesi", "neye ihtiyacım var", "neye ihtiyacim var", "sessiz yer", "internet bağlantısı", "internet baglantisi", "seans sonrası", "seans sonrasi", "zoom gerekli mi", "zoom lazim mi", "zoom kurmak", "seanstan sonra çalışmak", "seanstan sonra calismak"],
+        text: "Mümkünse seans öncesi ve sonrası biraz sakin zaman ayır; rahatsız edilmeyeceğin ve interneti sağlam bir yer seç. Çevrim içi seans için gönderilen Zoom bağlantısını açabileceğin bir cihaz gerekir. Bunun dışında özel bir hazırlık yapman veya konunu kusursuz biçimde anlatman gerekmez.",
     },
     substances: {
         terms: ["seans öncesinde alkol", "seans oncesinde alkol", "alkol", "uyuşturucu", "uyusturucu", "madde", "esrar", "sarhoş", "sarhos", "bilinç değiştirici", "bilinc degistirici"],
@@ -736,7 +823,7 @@ const turkishContent = {
         text: "Seansta kendini tutmak veya güçlü görünmek zorunda değilsin. Duygulara yer vardır ve yargılanmaz. Hız, o anda kendinle temasını koruyabildiğin ölçüye göre ayarlanır.",
     },
     online_location_language: {
-        terms: ["online", "yüz yüze", "yuz yuze", "zoom", "berlin", "antalya", "türkçe", "turkce", "almanca", "hangi dil", "nerede"],
+        terms: ["online", "yüz yüze", "yuz yuze", "zoom", "berlin", "antalya", "türkçe", "turkce", "almanca", "hangi dil", "nerede", "yurt dışından", "yurt disindan", "başka ülkeden", "baska ulkeden", "her yerden", "uzaktan katılmak", "uzaktan katilmak"],
         text: "Seanslar çoğunlukla Zoom üzerinden online yapılır ve Almanca ya da Türkçe mümkündür. Seçili yoğun seans ve dizim çalışmaları anlaşmaya göre Berlin veya Antalya'da yüz yüze de yapılabilir.",
     },
     privacy: {
@@ -781,6 +868,7 @@ export const normalizeAssistantText = (value) => String(value || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i")
     .replace(/ß/g, "ss")
     .replace(/[^a-z0-9€\s-]/g, " ")
     .replace(/\s+/g, " ")
@@ -796,7 +884,10 @@ const scoreTerm = (question, questionWords, rawTerm) => {
 
     if (term.includes(" ")) return 0;
     if (term.length < 5) return 0;
-    return questionWords.some((word) => word.length >= 5 && (word.startsWith(term) || term.startsWith(word))) ? 2 : 0;
+    return questionWords.some((word) => {
+        if (word.length < 5 || !(word.startsWith(term) || term.startsWith(word))) return false;
+        return Math.min(word.length, term.length) / Math.max(word.length, term.length) >= 0.72;
+    }) ? 2 : 0;
 };
 
 const answerForIntent = (intentId, language) => {
