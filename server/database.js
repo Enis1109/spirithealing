@@ -85,6 +85,17 @@ const schemaStatements = [
         password_hash VARCHAR(255) NULL,
         password_set_at DATETIME NULL,
         locale CHAR(2) NOT NULL DEFAULT 'de',
+        role VARCHAR(24) NOT NULL DEFAULT 'member',
+        membership_tier VARCHAR(24) NOT NULL DEFAULT 'free',
+        premium_expires_at DATETIME NULL,
+        acquisition_source VARCHAR(80) NULL,
+        acquisition_medium VARCHAR(80) NULL,
+        acquisition_campaign VARCHAR(120) NULL,
+        acquisition_content VARCHAR(120) NULL,
+        acquisition_term VARCHAR(120) NULL,
+        acquisition_landing_path VARCHAR(255) NULL,
+        acquisition_referrer_host VARCHAR(160) NULL,
+        acquisition_session_id CHAR(36) NULL,
         status VARCHAR(24) NOT NULL DEFAULT 'pending',
         privacy_consent_version VARCHAR(32) NOT NULL,
         privacy_consent_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -152,6 +163,25 @@ const schemaStatements = [
         INDEX member_content_updated_idx (updated_at),
         CONSTRAINT member_content_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+    `CREATE TABLE IF NOT EXISTS funnel_events (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        funnel_session_id CHAR(36) NOT NULL,
+        event_name VARCHAR(48) NOT NULL,
+        event_key VARCHAR(120) NOT NULL DEFAULT 'default',
+        pathname VARCHAR(255) NULL,
+        locale CHAR(2) NOT NULL DEFAULT 'de',
+        utm_source VARCHAR(80) NULL,
+        utm_medium VARCHAR(80) NULL,
+        utm_campaign VARCHAR(120) NULL,
+        utm_content VARCHAR(120) NULL,
+        utm_term VARCHAR(120) NULL,
+        referrer_host VARCHAR(160) NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY funnel_event_unique (funnel_session_id, event_name, event_key),
+        INDEX funnel_event_created_idx (created_at),
+        INDEX funnel_event_source_idx (utm_source, utm_campaign)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 ];
 
 const additiveColumns = [
@@ -160,6 +190,14 @@ const additiveColumns = [
     { table: "members", column: "role", definition: "VARCHAR(24) NOT NULL DEFAULT 'member' AFTER locale" },
     { table: "members", column: "membership_tier", definition: "VARCHAR(24) NOT NULL DEFAULT 'free' AFTER role" },
     { table: "members", column: "premium_expires_at", definition: "DATETIME NULL AFTER membership_tier" },
+    { table: "members", column: "acquisition_source", definition: "VARCHAR(80) NULL AFTER premium_expires_at" },
+    { table: "members", column: "acquisition_medium", definition: "VARCHAR(80) NULL AFTER acquisition_source" },
+    { table: "members", column: "acquisition_campaign", definition: "VARCHAR(120) NULL AFTER acquisition_medium" },
+    { table: "members", column: "acquisition_content", definition: "VARCHAR(120) NULL AFTER acquisition_campaign" },
+    { table: "members", column: "acquisition_term", definition: "VARCHAR(120) NULL AFTER acquisition_content" },
+    { table: "members", column: "acquisition_landing_path", definition: "VARCHAR(255) NULL AFTER acquisition_term" },
+    { table: "members", column: "acquisition_referrer_host", definition: "VARCHAR(160) NULL AFTER acquisition_landing_path" },
+    { table: "members", column: "acquisition_session_id", definition: "CHAR(36) NULL AFTER acquisition_referrer_host" },
     { table: "member_access_tokens", column: "pending_password_hash", definition: "VARCHAR(255) NULL AFTER token_hash" },
 ];
 
@@ -181,4 +219,7 @@ export const initializeDatabase = async () => {
     for (const column of additiveColumns) {
         await ensureColumn(column);
     }
+    await database.execute(
+        "DELETE FROM funnel_events WHERE created_at < DATE_SUB(UTC_TIMESTAMP(), INTERVAL 180 DAY)",
+    );
 };

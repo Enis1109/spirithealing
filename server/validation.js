@@ -47,6 +47,10 @@ const normalizePassword = (value) => {
     return password;
 };
 
+const normalizeAttributionInput = (value) => (
+    value && typeof value === "object" && !Array.isArray(value) ? value : {}
+);
+
 export class ValidationError extends Error {
     constructor(field) {
         super(`Invalid field: ${field}`);
@@ -79,11 +83,15 @@ export const validateEventRegistration = (body) => ({
     eventKey: requiredText(body.eventKey, "eventKey", 80),
 });
 
-export const validateMemberAccess = (body) => commonFields(body);
+export const validateMemberAccess = (body) => ({
+    ...commonFields(body),
+    attribution: normalizeAttributionInput(body.attribution),
+});
 
 export const validateMemberRegistration = (body) => ({
     ...commonFields(body),
     password: normalizePassword(body.password),
+    attribution: normalizeAttributionInput(body.attribution),
 });
 
 export const validateMemberLogin = (body) => ({

@@ -65,6 +65,14 @@ CREATE TABLE IF NOT EXISTS members (
     role VARCHAR(24) NOT NULL DEFAULT 'member',
     membership_tier VARCHAR(24) NOT NULL DEFAULT 'free',
     premium_expires_at DATETIME NULL,
+    acquisition_source VARCHAR(80) NULL,
+    acquisition_medium VARCHAR(80) NULL,
+    acquisition_campaign VARCHAR(120) NULL,
+    acquisition_content VARCHAR(120) NULL,
+    acquisition_term VARCHAR(120) NULL,
+    acquisition_landing_path VARCHAR(255) NULL,
+    acquisition_referrer_host VARCHAR(160) NULL,
+    acquisition_session_id CHAR(36) NULL,
     status VARCHAR(24) NOT NULL DEFAULT 'pending',
     privacy_consent_version VARCHAR(32) NOT NULL,
     privacy_consent_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -135,4 +143,24 @@ CREATE TABLE IF NOT EXISTS member_content_state (
     INDEX member_content_member_idx (member_id),
     INDEX member_content_updated_idx (updated_at),
     CONSTRAINT member_content_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS funnel_events (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    funnel_session_id CHAR(36) NOT NULL,
+    event_name VARCHAR(48) NOT NULL,
+    event_key VARCHAR(120) NOT NULL DEFAULT 'default',
+    pathname VARCHAR(255) NULL,
+    locale CHAR(2) NOT NULL DEFAULT 'de',
+    utm_source VARCHAR(80) NULL,
+    utm_medium VARCHAR(80) NULL,
+    utm_campaign VARCHAR(120) NULL,
+    utm_content VARCHAR(120) NULL,
+    utm_term VARCHAR(120) NULL,
+    referrer_host VARCHAR(160) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY funnel_event_unique (funnel_session_id, event_name, event_key),
+    INDEX funnel_event_created_idx (created_at),
+    INDEX funnel_event_source_idx (utm_source, utm_campaign)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
