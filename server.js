@@ -667,6 +667,20 @@ app.get("/api/health", async (_request, response) => {
     }
 });
 
+app.get("/", (request, response, next) => {
+    const source = String(request.query.utm_source || "").trim().toLowerCase();
+    const content = String(request.query.utm_content || "").trim().toLowerCase();
+    if (!["ig", "instagram"].includes(source) || content !== "link_in_bio") return next();
+
+    const campaignParams = new URLSearchParams();
+    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+        const value = String(request.query[key] || "").trim();
+        if (value) campaignParams.set(key, value.slice(0, 120));
+    }
+    if (!campaignParams.has("utm_campaign")) campaignParams.set("utm_campaign", "free_member_funnel");
+    return response.redirect(302, `/gratis-meditationen?${campaignParams.toString()}`);
+});
+
 app.use(express.static(distDirectory, {
     index: false,
     maxAge: process.env.NODE_ENV === "production" ? "1h" : 0,
