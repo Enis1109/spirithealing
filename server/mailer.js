@@ -49,6 +49,95 @@ export const sendContactNotification = async ({ id, name, email, phone, topic, m
     });
 };
 
+const getZepterBankDetails = () => {
+    const required = ["ZEPTER_BANK_ACCOUNT_NAME", "ZEPTER_BANK_IBAN", "ZEPTER_BANK_BIC"];
+    const missing = required.filter((name) => !String(process.env[name] || "").trim());
+    if (missing.length > 0) {
+        throw new Error(`Missing Zepter bank configuration: ${missing.join(", ")}`);
+    }
+
+    return {
+        accountName: process.env.ZEPTER_BANK_ACCOUNT_NAME.trim(),
+        iban: process.env.ZEPTER_BANK_IBAN.trim(),
+        bic: process.env.ZEPTER_BANK_BIC.trim(),
+    };
+};
+
+export const sendZepterBankTransferConfirmation = async ({ name, email, paymentPlan }) => {
+    const bank = getZepterBankDetails();
+    const isInstallmentPlan = paymentPlan === "installments";
+    const paymentLabel = isInstallmentPlan ? "Erste Rate: 360 €" : "Einmalzahlung: 690 €";
+    const installmentNote = isInstallmentPlan
+        ? "Die zweite und letzte Rate über 360 € wird 30 Tage nach der ersten Zahlung fällig."
+        : "Mit dieser Überweisung ist dein Teilnahmebeitrag vollständig bezahlt.";
+    const subject = "Schön, dass du mit uns auf den Weg gehst – deine Überweisungsdaten";
+    const reference = `ZEPTER – ${name}`;
+    const greeting = `Hallo ${name},`;
+    const welcome = "wie schön, dass du dich mit uns auf den Weg machen möchtest und bei „Das Zepter wieder übernehmen“ dabei sein willst.";
+    const nextStep = "Bitte überweise den unten genannten Betrag. Sobald deine Zahlung bei uns eingegangen ist, ist dein Platz verbindlich gebucht.";
+    const closing = "Wir freuen uns sehr auf diese gemeinsame Reise mit dir.";
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: email,
+        replyTo: notificationRecipient,
+        subject,
+        text: [
+            greeting,
+            "",
+            welcome,
+            "",
+            nextStep,
+            "",
+            paymentLabel,
+            installmentNote,
+            "",
+            `Kontoinhaberin: ${bank.accountName}`,
+            `IBAN: ${bank.iban}`,
+            `BIC: ${bank.bic}`,
+            `Verwendungszweck: ${reference}`,
+            "",
+            closing,
+            "",
+            "Von Herzen",
+            "Sabine & Selcan",
+            "Spirit Healing",
+        ].join("\n"),
+        html: `
+            <div style="margin:0;background:#eaf3f1;padding:30px 12px;font-family:Arial,sans-serif;color:#163f41">
+                <div style="max-width:640px;margin:0 auto;overflow:hidden;border-radius:28px;background:#fffaf2;box-shadow:0 16px 44px rgba(1,47,49,.16)">
+                    <div style="background:linear-gradient(145deg,#054e51,#087478);padding:36px 28px;text-align:center;color:#fff">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#e8ca67">Spirit Healing</div>
+                        <h1 style="margin:14px auto 0;max-width:520px;font-size:29px;line-height:1.22">Schön, dass du mit uns auf den Weg gehst</h1>
+                    </div>
+                    <div style="padding:34px 28px;line-height:1.65">
+                        <p style="margin:0 0 14px;font-size:18px">${escapeHtml(greeting)}</p>
+                        <p style="margin:0 0 15px">${escapeHtml(welcome)}</p>
+                        <p style="margin:0 0 26px">${escapeHtml(nextStep)}</p>
+                        <div style="border:1px solid #d8bd60;border-radius:20px;background:#f8f0d6;padding:22px">
+                            <div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6d5b20">Deine Buchung</div>
+                            <div style="margin-top:7px;font-size:23px;font-weight:700;color:#075f62">${escapeHtml(paymentLabel)}</div>
+                            <p style="margin:9px 0 0;color:#456668">${escapeHtml(installmentNote)}</p>
+                        </div>
+                        <div style="margin-top:24px;border-radius:20px;background:#eef6f3;padding:22px">
+                            <div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#557072">Kontodaten</div>
+                            <table role="presentation" style="margin-top:12px;width:100%;border-collapse:collapse;font-size:15px;line-height:1.55">
+                                <tr><td style="padding:5px 12px 5px 0;color:#557072;vertical-align:top">Kontoinhaberin</td><td style="padding:5px 0;font-weight:700">${escapeHtml(bank.accountName)}</td></tr>
+                                <tr><td style="padding:5px 12px 5px 0;color:#557072;vertical-align:top">IBAN</td><td style="padding:5px 0;font-weight:700;word-break:break-all">${escapeHtml(bank.iban)}</td></tr>
+                                <tr><td style="padding:5px 12px 5px 0;color:#557072;vertical-align:top">BIC</td><td style="padding:5px 0;font-weight:700">${escapeHtml(bank.bic)}</td></tr>
+                                <tr><td style="padding:5px 12px 5px 0;color:#557072;vertical-align:top">Verwendungszweck</td><td style="padding:5px 0;font-weight:700">${escapeHtml(reference)}</td></tr>
+                            </table>
+                        </div>
+                        <p style="margin:26px 0 0">${escapeHtml(closing)}</p>
+                        <p style="margin:24px 0 0;color:#557072">Von Herzen<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
+                        <p style="margin:24px 0 0;border-top:1px solid #d8e3df;padding-top:18px;font-size:13px;color:#607779">Du hast diese E-Mail erhalten, weil du auf unserer Zepter-Seite die Zahlung per Überweisung gewählt hast. Falls das nicht von dir war, antworte uns bitte kurz auf diese E-Mail.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+    });
+};
+
 export const sendMemberAccessEmail = async ({
     name,
     email,

@@ -78,6 +78,19 @@ export const validateContact = (body) => ({
     message: requiredText(body.message, "message", limits.message),
 });
 
+export const validateZepterBankTransfer = (body) => {
+    const paymentPlan = requiredText(body.paymentPlan, "paymentPlan", 24);
+    if (!["full", "installments"].includes(paymentPlan)) {
+        throw new ValidationError("paymentPlan");
+    }
+
+    return {
+        ...commonFields(body),
+        phone: optionalText(body.phone, "phone", limits.phone),
+        paymentPlan,
+    };
+};
+
 export const validateEventRegistration = (body) => ({
     ...commonFields(body),
     eventKey: requiredText(body.eventKey, "eventKey", 80),

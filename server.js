@@ -5,7 +5,12 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { database, initializeDatabase } from "./server/database.js";
-import { sendContactNotification, sendMemberAccessEmail, sendMemberPasswordResetEmail } from "./server/mailer.js";
+import {
+    sendContactNotification,
+    sendMemberAccessEmail,
+    sendMemberPasswordResetEmail,
+    sendZepterBankTransferConfirmation,
+} from "./server/mailer.js";
 import {
     activateMemberAccess,
     authenticateMember,
@@ -42,11 +47,19 @@ import {
     validateMemberPasswordRequest,
     validateMemberPasswordReset,
     validateMemberRegistration,
+    validateZepterBankTransfer,
 } from "./server/validation.js";
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const productionOrigin = new URL(process.env.PUBLIC_BASE_URL || "https://www.spirit-healing.tr").origin;
+const zepterLandingOrigins = new Set(
+    String(process.env.ZEPTER_LANDING_ORIGINS || "https://spirit-healing-zepter.sschmidt78.chatgpt.site")
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .map((value) => new URL(value).origin),
+);
 const currentFile = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(currentFile);
 const distDirectory = path.join(currentDirectory, "dist");
@@ -119,6 +132,24 @@ const sameOriginOnly = (request, response, next) => {
         return next();
     }
     return response.status(403).json({ ok: false, error: "origin" });
+};
+
+const zepterLandingOnly = (request, response, next) => {
+    const origin = request.get("origin");
+    const isLocal = /^http:\/\/(127\.0\.0\.1|localhost):\d+$/u.test(origin || "");
+    if (!origin || (!zepterLandingOrigins.has(origin) && !isLocal)) {
+        return response.status(403).json({ ok: false, error: "origin" });
+    }
+
+    response.set({
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+        Vary: "Origin",
+    });
+    if (request.method === "OPTIONS") return response.status(204).end();
+    return next();
 };
 
 const updateNotificationStatus = async (table, id, status) => {
@@ -228,6 +259,64 @@ app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, resp
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Contact submission failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.options("/api/zepter/bank-transfer", zepterLandingOnly);
+
+app.post("/api/zepter/bank-transfer", submissionLimiter, zepterLandingOnly, async (request, response) => {
+    try {
+        const form = validateZepterBankTransfer(request.body);
+        const paymentDescription = form.paymentPlan === "installments"
+            ? "Ratenzahlung – erste Rate 360 €, zweite Rate 360 € nach 30 Tagen"
+            : "Einmalzahlung – 690 €";
+        const [result] = await database.execute(
+            `INSERT INTO contact_submissions (
+                name, email, phone, topic, message, locale, privacy_consent_version,
+                newsletter_requested, newsletter_status, notification_status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'not_requested', 'pending')`,
+            [
+                form.name,
+                form.email,
+                form.phone,
+                "Zepter – Buchung per Überweisung",
+                paymentDescription,
+                "de",
+                privacyConsentVersion,
+            ],
+        );
+
+        try {
+            await sendZepterBankTransferConfirmation(form);
+        } catch (error) {
+            console.error("Zepter bank transfer email could not be sent", error);
+            await updateNotificationStatus("contact_submissions", result.insertId, "confirmation_failed");
+            return response.status(502).json({ ok: false, error: "email_delivery" });
+        }
+
+        try {
+            await sendContactNotification({
+                id: result.insertId,
+                name: form.name,
+                email: form.email,
+                phone: form.phone,
+                topic: "Zepter – Buchung per Überweisung",
+                message: paymentDescription,
+                newsletterConsent: false,
+            });
+            await updateNotificationStatus("contact_submissions", result.insertId, "sent");
+        } catch (error) {
+            console.error("Zepter booking notification could not be sent", error);
+            await updateNotificationStatus("contact_submissions", result.insertId, "notification_failed");
+        }
+
+        return response.status(201).json({ ok: true });
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Zepter bank transfer booking failed", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
