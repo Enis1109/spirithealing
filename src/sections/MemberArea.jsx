@@ -1,17 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, LoaderCircle, LockKeyhole, MailCheck, Send } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { submitForm } from "@/lib/submissions";
 import { MemberApp } from "@/sections/MemberApp";
+import { readAttribution, trackFunnelEvent } from "@/lib/funnelTracking";
 
 const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-white/90 px-4 py-3 text-base text-muted-foreground outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-2 focus:ring-primary/25";
 
 const content = {
     de: {
         eyebrow: "Kostenloser Mitgliederbereich",
+        campaignEyebrow: "0 € · kein Abo · sofort verfügbar",
         title: "Deine kostenlose Spirit-Healing-Mediathek",
         intro: "Melde dich mit E-Mail-Adresse und Passwort an. Wenn du bereits einen persönlichen Direktlink von uns hast, kannst du ihn unverändert weiterverwenden.",
+        campaignIntro: "Erstelle jetzt dein kostenloses Konto. Nach der Bestätigung kannst du beide Meditationen, den vollständigen Vortrag und das Workbook direkt öffnen.",
+        campaignTrust: "Dein Zugang bleibt kostenlos. Du kannst jederzeit zurückkehren und in deinem eigenen Tempo weitergehen.",
         benefitTitle: "Das erwartet dich",
         benefits: [
             "Zwei geführte Meditationen: „Loslassen & Reinigen“ und „Wiedergeburt“",
@@ -92,8 +96,11 @@ const content = {
     },
     tr: {
         eyebrow: "Ücretsiz üye alanı",
+        campaignEyebrow: "0 € · abonelik yok · hemen erişim",
         title: "Ücretsiz Spirit Healing içerik alanın",
         intro: "E-posta adresin ve şifrenle giriş yap. Daha önce aldığın kişisel erişim bağlantısı varsa onu aynı şekilde kullanmaya devam edebilirsin.",
+        campaignIntro: "Ücretsiz hesabını şimdi oluştur. Onaydan sonra iki meditasyonu, seminer kaydının tamamını ve çalışma kitabını doğrudan açabilirsin.",
+        campaignTrust: "Erişimin ücretsiz kalır. İstediğin zaman geri dönüp kendi hızında devam edebilirsin.",
         benefitTitle: "Seni neler bekliyor?",
         benefits: [
             "İki rehberli meditasyon: “Bırakmak ve Arınmak” ve “Yeniden Doğuş”",
@@ -178,6 +185,13 @@ export const MemberArea = () => {
     const { language } = useLanguage();
     const copy = content[language];
     const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const campaignLanding = location.pathname === "/gratis-meditationen";
+    const attribution = useMemo(
+        () => readAttribution({ searchParams, pathname: location.pathname }),
+        [location.pathname, searchParams],
+    );
+    const registrationStarted = useRef(false);
     const [sessionState, setSessionState] = useState("loading");
     const [member, setMember] = useState(null);
     const [recordingAvailable, setRecordingAvailable] = useState(false);
@@ -192,17 +206,42 @@ export const MemberArea = () => {
     const [mode, setMode] = useState(() => {
         if (searchParams.get("reset")) return "reset";
         const requestedMode = searchParams.get("mode");
-        return ["login", "register", "forgot", "access"].includes(requestedMode) ? requestedMode : "login";
+        if (["login", "register", "forgot", "access"].includes(requestedMode)) return requestedMode;
+        return campaignLanding ? "register" : "login";
     });
 
     useEffect(() => {
+        trackFunnelEvent({
+            eventName: "landing_view",
+            eventKey: campaignLanding ? "gratis_meditationen" : "member_area",
+            attribution,
+            locale: language,
+        });
+    }, [attribution, campaignLanding, language]);
+
+    useEffect(() => {
         const robots = document.querySelector('meta[name="robots"]');
-        const previous = robots?.getAttribute("content");
-        robots?.setAttribute("content", "noindex, nofollow");
+        const description = document.querySelector('meta[name="description"]');
+        const previousRobots = robots?.getAttribute("content");
+        const previousDescription = description?.getAttribute("content");
+        const previousTitle = document.title;
+
+        robots?.setAttribute("content", campaignLanding ? "index, follow" : "noindex, nofollow");
+        if (campaignLanding) {
+            document.title = language === "tr"
+                ? "2 ücretsiz meditasyon, seminer ve çalışma kitabı | Spirit Healing"
+                : "2 kostenlose Meditationen, Vortrag & Workbook | Spirit Healing";
+            description?.setAttribute("content", language === "tr"
+                ? "İki rehberli meditasyona, Spirit Healing seminerine ve çalışma kitabına ücretsiz erişim oluştur."
+                : "Sichere dir kostenlosen Zugang zu zwei geführten Meditationen, dem Spirit-Healing-Vortrag und dem begleitenden Workbook.");
+        }
+
         return () => {
-            if (previous) robots?.setAttribute("content", previous);
+            if (previousRobots) robots?.setAttribute("content", previousRobots);
+            if (previousDescription) description?.setAttribute("content", previousDescription);
+            document.title = previousTitle;
         };
-    }, []);
+    }, [campaignLanding, language]);
 
     useEffect(() => {
         let active = true;
@@ -232,6 +271,15 @@ export const MemberArea = () => {
         setSubmitState("idle");
         setNewsletterStatus("not_requested");
         setErrorMessage("");
+        if (nextMode === "register") {
+            trackFunnelEvent({ eventName: "registration_start", eventKey: "member_area", attribution, locale: language });
+        }
+    };
+
+    const markRegistrationStart = () => {
+        if (registrationStarted.current) return;
+        registrationStarted.current = true;
+        trackFunnelEvent({ eventName: "registration_start", eventKey: "member_area", attribution, locale: language });
     };
 
     const handleAccessSubmit = async (event) => {
@@ -249,6 +297,7 @@ export const MemberArea = () => {
                 newsletterConsent: formData.get("newsletter") === "on",
                 company: formData.get("company"),
                 locale: language,
+                attribution,
             });
             setNewsletterStatus(result.newsletterStatus);
             setSubmitState("sent");
@@ -265,6 +314,7 @@ export const MemberArea = () => {
         setErrorMessage("");
         const form = event.currentTarget;
         const formData = new FormData(form);
+        await trackFunnelEvent({ eventName: "registration_submit", eventKey: "member_area", attribution, locale: language });
 
         try {
             const result = await submitForm("/api/members/register", {
@@ -275,6 +325,7 @@ export const MemberArea = () => {
                 newsletterConsent: formData.get("newsletter") === "on",
                 company: formData.get("company"),
                 locale: language,
+                attribution,
             });
             setNewsletterStatus(result.newsletterStatus);
             setSubmitState("sent");
@@ -387,13 +438,14 @@ export const MemberArea = () => {
             <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                 <section className="lg:sticky lg:top-28">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary"><LockKeyhole className="h-7 w-7" /></div>
-                    <p className="mt-6 text-sm font-bold uppercase tracking-[0.18em] text-primary">{copy.eyebrow}</p>
+                    <p className="mt-6 text-sm font-bold uppercase tracking-[0.18em] text-primary">{campaignLanding ? copy.campaignEyebrow : copy.eyebrow}</p>
                     <h1 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">{copy.title}</h1>
-                    <p className="mt-5 text-lg leading-8 text-white/80">{copy.intro}</p>
+                    <p className="mt-5 text-lg leading-8 text-white/80">{campaignLanding ? copy.campaignIntro : copy.intro}</p>
                     <h2 className="mt-8 text-xl font-bold">{copy.benefitTitle}</h2>
                     <div className="mt-4 space-y-3">
                         {copy.benefits.map((benefit) => <p key={benefit} className="flex gap-3 text-white/80"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" />{benefit}</p>)}
                     </div>
+                    {campaignLanding && <p className="mt-6 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm font-semibold leading-6 text-white/85">{copy.campaignTrust}</p>}
                 </section>
 
                 <section className="rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
@@ -433,7 +485,7 @@ export const MemberArea = () => {
                             {mode === "register" && (
                                 <>
                                     <h2 className="text-3xl font-bold">{copy.registerTitle}</h2>
-                                    <form onSubmit={handleRegistration} className="mt-6">
+                                    <form onSubmit={handleRegistration} onFocusCapture={markRegistrationStart} className="mt-6">
                                         <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label></div>
                                         <label className="block text-sm font-semibold">{copy.name} *<input className={fieldClass} name="name" type="text" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required /></label>
                                         <label className="mt-5 block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>

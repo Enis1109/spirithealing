@@ -29,6 +29,12 @@ import {
 } from "./server/newsletter.js";
 import { prepareMemberMeditations, prepareMemberRecording, prepareMemberWorkbook } from "./server/recording.js";
 import {
+    getFunnelSummary,
+    normalizeAttribution,
+    normalizeFunnelEvent,
+    recordFunnelEvent,
+} from "./server/funnel.js";
+import {
     ValidationError,
     validateContact,
     validateMemberAccess,
@@ -94,6 +100,14 @@ const submissionLimiter = rateLimit({
 const authenticationLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 12,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { ok: false, error: "rate_limit" },
+});
+
+const analyticsLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 120,
     standardHeaders: "draft-8",
     legacyHeaders: false,
     message: { ok: false, error: "rate_limit" },
@@ -221,11 +235,24 @@ app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, resp
 app.post("/api/members/register", submissionLimiter, sameOriginOnly, async (request, response) => {
     try {
         const form = validateMemberRegistration(request.body);
+        const attribution = normalizeAttribution(form.attribution);
         let newsletterStatus = form.newsletterConsent ? "pending" : "not_requested";
         const accessUrl = await createMemberRegistration({
             ...form,
+            attribution,
             privacyConsentVersion: memberPrivacyConsentVersion,
         });
+
+        try {
+            await recordFunnelEvent({
+                eventName: "registration_created",
+                eventKey: "member_registration",
+                attribution,
+                locale: form.locale,
+            });
+        } catch (error) {
+            console.error("Registration attribution could not be recorded", error);
+        }
 
         if (form.newsletterConsent) {
             try {
@@ -328,9 +355,11 @@ app.post("/api/members/password/reset", authenticationLimiter, sameOriginOnly, a
 app.post("/api/members/request-access", submissionLimiter, sameOriginOnly, async (request, response) => {
     try {
         const form = validateMemberAccess(request.body);
+        const attribution = normalizeAttribution(form.attribution);
         let newsletterStatus = form.newsletterConsent ? "pending" : "not_requested";
         const accessUrl = await createMemberAccessRequest({
             ...form,
+            attribution,
             privacyConsentVersion: memberPrivacyConsentVersion,
         });
 
@@ -381,6 +410,26 @@ app.get("/api/members/access", async (request, response) => {
         const access = await activateMemberAccess(String(request.query.token || ""));
         if (!access) return response.redirect(303, "/mitglieder?state=invalid");
 
+        try {
+            await recordFunnelEvent({
+                eventName: "registration_activated",
+                eventKey: "member_email_confirmation",
+                attribution: {
+                    funnelSessionId: access.member.acquisition_session_id,
+                    source: access.member.acquisition_source,
+                    medium: access.member.acquisition_medium,
+                    campaign: access.member.acquisition_campaign,
+                    content: access.member.acquisition_content,
+                    term: access.member.acquisition_term,
+                    landingPath: access.member.acquisition_landing_path,
+                    referrerHost: access.member.acquisition_referrer_host,
+                },
+                locale: access.member.locale,
+            });
+        } catch (error) {
+            console.error("Member activation attribution could not be recorded", error);
+        }
+
         setMemberSessionCookie(response, access.sessionToken);
         return response.redirect(303, "/mitglieder?state=verified");
     } catch (error) {
@@ -415,6 +464,33 @@ app.get("/api/members/session", async (request, response) => {
             wiedergeburtAvailable: await wiedergeburtIsAvailable(),
         },
     });
+});
+
+app.post("/api/analytics/funnel", analyticsLimiter, sameOriginOnly, async (request, response) => {
+    const event = normalizeFunnelEvent(request.body);
+    if (!event) return response.status(400).json({ ok: false, error: "validation" });
+
+    try {
+        await recordFunnelEvent(event);
+        response.set("Cache-Control", "no-store");
+        return response.status(202).json({ ok: true });
+    } catch (error) {
+        console.error("Funnel event could not be recorded", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/admin/funnel-summary", async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "no-store");
+    if (!member || member.role !== "admin") return response.status(403).json({ ok: false, error: "forbidden" });
+
+    try {
+        return response.json({ ok: true, summary: await getFunnelSummary(request.query.days) });
+    } catch (error) {
+        console.error("Funnel summary could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
 });
 
 app.post("/api/members/content-state", sameOriginOnly, async (request, response) => {

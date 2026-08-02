@@ -45,7 +45,9 @@ const PrivacyPage = () => {
 
 function App() {
   const location = useLocation();
-  const isMemberApp = location.pathname.startsWith("/mitglieder");
+  const isCampaignLanding = location.pathname === "/gratis-meditationen";
+  const isMemberApp = location.pathname.startsWith("/mitglieder")
+    || isCampaignLanding;
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
@@ -68,10 +70,15 @@ function App() {
             <MemberArea/>
           </Suspense>
         }/>
+        <Route path="/gratis-meditationen" element={
+          <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#edf8f6] font-bold text-[#168e91]">Spirit Healing wird geladen …</main>}>
+            <MemberArea/>
+          </Suspense>
+        }/>
         <Route path="/impressum" element={<Imp/>}/>
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
       </Routes>
-      <WebsiteAssistant/>
+      {!isCampaignLanding && <WebsiteAssistant/>}
     </div>
   )
 }

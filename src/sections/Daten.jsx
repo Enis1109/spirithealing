@@ -345,6 +345,20 @@ export const Daten = () => {
                             nach 30 Tagen ab. Eine Nutzung Ihrer Daten für den Newsletter erfolgt nur nach einer gesonderten,<br/>
                             freiwilligen Auswahl oder einem eindeutigen Klick auf den Newsletter-Button in der Zugangs-E-Mail.<br/>
                         </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Eigene Erfolgsmessung für den kostenlosen Mitgliederbereich
+                        </h3>
+                        <p className="text-md">
+                            Damit wir erkennen können, welche eigenen Beiträge und Kanäle Menschen zu unseren kostenlosen<br/>
+                            Inhalten führen, erfassen wir auf unserem Hostinger-System die aufgerufene Einstiegsseite, freiwillig im<br/>
+                            Link enthaltene Kampagnenangaben (z. B. Instagram, Facebook oder YouTube), die verweisende Domain,<br/>
+                            Sprache, Zeitpunkt und die erreichten Schritte bis zur Registrierung und Aktivierung. Hierfür wird pro<br/>
+                            Seitenaufruf eine zufällige Kennung erzeugt. Für diese Messung werden keine Analyse-Cookies gesetzt und<br/>
+                            keine Daten an Meta, Google oder andere Analyseanbieter übermittelt. Die anonymen Messereignisse werden<br/>
+                            nach spätestens 180 Tagen automatisch gelöscht. Bei einer Registrierung wird die Kampagnenherkunft dem<br/>
+                            Mitgliedskonto zugeordnet, damit wir die Wirksamkeit unserer Inhalte auswerten können. Grundlage ist unser<br/>
+                            berechtigtes Interesse an einer sparsamen, datenschutzfreundlichen Erfolgsmessung und Verbesserung unseres<br/>
+                            Angebots (Art. 6 Abs. 1 lit. f DSGVO). Sie können dieser Verarbeitung jederzeit widersprechen.<br/>
+                        </p>
                         <h3 className="text-lg md:text-xl leading-tight  font-bold text-primary">Anfrage per E-Mail, Telefon oder Telefax
                         </h3>
                         <p className="text-md">

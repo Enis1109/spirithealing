@@ -123,6 +123,16 @@ const appCopy = {
         adminTitle: "Inhalte verwalten",
         adminText: "Du hast einen Verwaltungszugang. Neue Vorträge kannst du im Vimeo-Bereich hochladen. Danach können sie geschützt in die Mediathek übernommen werden.",
         openVimeo: "Vimeo öffnen",
+        funnelTitle: "Gratis-Funnel der letzten 7 Tage",
+        funnelText: "So viele Menschen haben die Kampagnenseite gesehen und die einzelnen Schritte bis zum bestätigten Zugang abgeschlossen.",
+        funnelLanding: "Seitenaufrufe",
+        funnelStarted: "Registrierung begonnen",
+        funnelRegistered: "Konten angelegt",
+        funnelActivated: "Zugänge bestätigt",
+        funnelRate: "Anmelderate",
+        funnelSources: "Herkunft der Aufrufe",
+        funnelSourceLegend: "Aufrufe · Konten · bestätigt",
+        funnelEmpty: "Noch keine Kampagnendaten vorhanden.",
     },
     tr: {
         nav: {
@@ -210,6 +220,16 @@ const appCopy = {
         adminTitle: "İçerikleri yönet",
         adminText: "Yönetim erişimin var. Yeni seminerleri Vimeo alanına yükleyebilir, ardından korumalı biçimde içerik alanına ekleyebilirsin.",
         openVimeo: "Vimeo'yu aç",
+        funnelTitle: "Son 7 günün ücretsiz içerik hunisi",
+        funnelText: "Kampanya sayfasını kaç kişinin gördüğünü ve doğrulanmış erişime kadar hangi adımları tamamladığını gösterir.",
+        funnelLanding: "Sayfa görüntüleme",
+        funnelStarted: "Kayda başladı",
+        funnelRegistered: "Hesap oluşturdu",
+        funnelActivated: "Erişimi doğruladı",
+        funnelRate: "Kayıt oranı",
+        funnelSources: "Görüntüleme kaynakları",
+        funnelSourceLegend: "Görüntüleme · hesap · doğrulama",
+        funnelEmpty: "Henüz kampanya verisi yok.",
     },
 };
 
@@ -415,6 +435,7 @@ export const MemberApp = ({
     const [activeFilter, setActiveFilter] = useState("all");
     const [activeItem, setActiveItem] = useState(null);
     const [installPrompt, setInstallPrompt] = useState(null);
+    const [funnelSummary, setFunnelSummary] = useState(null);
     const [contentState, setContentState] = useState(() => Object.fromEntries(
         (initialContentState || []).map((entry) => [entry.contentKey, entry]),
     ));
@@ -428,6 +449,16 @@ export const MemberApp = ({
         window.addEventListener("beforeinstallprompt", handleInstallPrompt);
         return () => window.removeEventListener("beforeinstallprompt", handleInstallPrompt);
     }, []);
+
+    useEffect(() => {
+        if (member?.role !== "admin") return undefined;
+        let active = true;
+        fetch("/api/admin/funnel-summary?days=7", { headers: { Accept: "application/json" } })
+            .then((response) => response.ok ? response.json() : null)
+            .then((result) => active && result?.ok && setFunnelSummary(result.summary))
+            .catch(() => undefined);
+        return () => { active = false; };
+    }, [member?.role]);
 
     const items = useMemo(() => ([
         { ...contentDefinitions.talk, available: recordingAvailable, mediaUrl: recordingEmbedUrl || "/api/members/recording" },
@@ -910,6 +941,44 @@ export const MemberApp = ({
                         <h2 className="mt-4 font-serif text-2xl font-bold text-[#123e3d]">{copy.adminTitle}</h2>
                         <p className="mt-3 max-w-3xl leading-7 text-[#5d706d]">{copy.adminText}</p>
                         <a href="https://vimeo.com/manage/videos" target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#123e3d] px-5 py-2.5 font-bold text-white">{copy.openVimeo}<ExternalLink className="h-4 w-4" /></a>
+
+                        <div className="mt-8 border-t border-[#d8bf74]/55 pt-7">
+                            <h3 className="font-serif text-2xl font-bold text-[#123e3d]">{copy.funnelTitle}</h3>
+                            <p className="mt-2 max-w-3xl leading-7 text-[#5d706d]">{copy.funnelText}</p>
+                            {funnelSummary ? (
+                                <>
+                                    <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                                        {[
+                                            [copy.funnelLanding, funnelSummary.landingViews],
+                                            [copy.funnelStarted, funnelSummary.registrationStarts],
+                                            [copy.funnelRegistered, funnelSummary.registrations],
+                                            [copy.funnelActivated, funnelSummary.activations],
+                                            [copy.funnelRate, funnelSummary.registrationRate === null ? "–" : `${funnelSummary.registrationRate} %`],
+                                        ].map(([label, value]) => (
+                                            <div key={label} className="rounded-2xl bg-white/80 p-4 shadow-sm">
+                                                <p className="text-2xl font-bold text-[#08777a]">{value}</p>
+                                                <p className="mt-1 text-xs font-semibold leading-5 text-[#5d706d]">{label}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-5 rounded-2xl bg-white/70 p-4">
+                                        <p className="text-sm font-bold text-[#123e3d]">{copy.funnelSources}</p>
+                                        {funnelSummary.sources?.length ? (
+                                            <>
+                                                <p className="mt-2 text-xs text-[#6a7b78]">{copy.funnelSourceLegend}</p>
+                                                <div className="mt-3 flex flex-wrap gap-2">
+                                                    {funnelSummary.sources.map((source) => (
+                                                        <span key={source.source} className="rounded-full border border-[#b8d9d4] bg-[#edf8f6] px-3 py-1.5 text-xs font-semibold text-[#315b58]">
+                                                            {source.source}: {source.landingViews} · {source.registrations} · {source.activations}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        ) : <p className="mt-2 text-sm text-[#5d706d]">{copy.funnelEmpty}</p>}
+                                    </div>
+                                </>
+                            ) : <p className="mt-5 text-sm text-[#5d706d]">{copy.funnelEmpty}</p>}
+                        </div>
                     </article>
                 )}
             </section>

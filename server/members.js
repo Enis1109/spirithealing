@@ -45,17 +45,32 @@ export const createMemberAccessRequest = async ({
     email,
     locale,
     privacyConsentVersion,
+    attribution = {},
 }) => {
     await database.execute(
         `INSERT INTO members (
-            name, email, locale, status, privacy_consent_version, privacy_consent_at
-        ) VALUES (?, ?, ?, 'pending', ?, NOW())
+            name, email, locale, status, privacy_consent_version, privacy_consent_at,
+            acquisition_source, acquisition_medium, acquisition_campaign, acquisition_content,
+            acquisition_term, acquisition_landing_path, acquisition_referrer_host, acquisition_session_id
+        ) VALUES (?, ?, ?, 'pending', ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             name = VALUES(name),
             locale = VALUES(locale),
             privacy_consent_version = VALUES(privacy_consent_version),
-            privacy_consent_at = NOW()`,
-        [name, email, locale, privacyConsentVersion],
+            privacy_consent_at = NOW(),
+            acquisition_source = COALESCE(acquisition_source, VALUES(acquisition_source)),
+            acquisition_medium = COALESCE(acquisition_medium, VALUES(acquisition_medium)),
+            acquisition_campaign = COALESCE(acquisition_campaign, VALUES(acquisition_campaign)),
+            acquisition_content = COALESCE(acquisition_content, VALUES(acquisition_content)),
+            acquisition_term = COALESCE(acquisition_term, VALUES(acquisition_term)),
+            acquisition_landing_path = COALESCE(acquisition_landing_path, VALUES(acquisition_landing_path)),
+            acquisition_referrer_host = COALESCE(acquisition_referrer_host, VALUES(acquisition_referrer_host)),
+            acquisition_session_id = COALESCE(acquisition_session_id, VALUES(acquisition_session_id))`,
+        [
+            name, email, locale, privacyConsentVersion,
+            attribution.source, attribution.medium, attribution.campaign, attribution.content,
+            attribution.term, attribution.landingPath, attribution.referrerHost, attribution.funnelSessionId,
+        ],
     );
 
     const [memberRows] = await database.execute(
@@ -80,6 +95,7 @@ export const createMemberRegistration = async ({
     password,
     locale,
     privacyConsentVersion,
+    attribution = {},
 }) => {
     const pendingPasswordHash = await hashPassword(password);
     const connection = await database.getConnection();
@@ -88,14 +104,28 @@ export const createMemberRegistration = async ({
         await connection.beginTransaction();
         await connection.execute(
             `INSERT INTO members (
-                name, email, locale, status, privacy_consent_version, privacy_consent_at
-            ) VALUES (?, ?, ?, 'pending', ?, NOW())
+                name, email, locale, status, privacy_consent_version, privacy_consent_at,
+                acquisition_source, acquisition_medium, acquisition_campaign, acquisition_content,
+                acquisition_term, acquisition_landing_path, acquisition_referrer_host, acquisition_session_id
+            ) VALUES (?, ?, ?, 'pending', ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 name = VALUES(name),
                 locale = VALUES(locale),
                 privacy_consent_version = VALUES(privacy_consent_version),
-                privacy_consent_at = NOW()`,
-            [name, email, locale, privacyConsentVersion],
+                privacy_consent_at = NOW(),
+                acquisition_source = COALESCE(acquisition_source, VALUES(acquisition_source)),
+                acquisition_medium = COALESCE(acquisition_medium, VALUES(acquisition_medium)),
+                acquisition_campaign = COALESCE(acquisition_campaign, VALUES(acquisition_campaign)),
+                acquisition_content = COALESCE(acquisition_content, VALUES(acquisition_content)),
+                acquisition_term = COALESCE(acquisition_term, VALUES(acquisition_term)),
+                acquisition_landing_path = COALESCE(acquisition_landing_path, VALUES(acquisition_landing_path)),
+                acquisition_referrer_host = COALESCE(acquisition_referrer_host, VALUES(acquisition_referrer_host)),
+                acquisition_session_id = COALESCE(acquisition_session_id, VALUES(acquisition_session_id))`,
+            [
+                name, email, locale, privacyConsentVersion,
+                attribution.source, attribution.medium, attribution.campaign, attribution.content,
+                attribution.term, attribution.landingPath, attribution.referrerHost, attribution.funnelSessionId,
+            ],
         );
 
         const [memberRows] = await connection.execute(
@@ -129,7 +159,11 @@ export const activateMemberAccess = async (token) => {
         await connection.beginTransaction();
         const [rows] = await connection.execute(
             `SELECT access_tokens.id AS access_token_id, members.id AS member_id,
-                    access_tokens.pending_password_hash, members.name, members.email, members.locale
+                    access_tokens.pending_password_hash, members.name, members.email, members.locale,
+                    members.acquisition_source, members.acquisition_medium,
+                    members.acquisition_campaign, members.acquisition_content,
+                    members.acquisition_term, members.acquisition_landing_path,
+                    members.acquisition_referrer_host, members.acquisition_session_id
              FROM member_access_tokens AS access_tokens
              INNER JOIN members ON members.id = access_tokens.member_id
              WHERE access_tokens.token_hash = ?

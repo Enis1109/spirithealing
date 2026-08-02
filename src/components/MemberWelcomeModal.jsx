@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, CheckCircle2, Headphones, LoaderCircle, LockKeyhole, PlayCircle, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { submitForm } from "@/lib/submissions";
+import { readAttribution, trackFunnelEvent } from "@/lib/funnelTracking";
 
 const fieldClass = "mt-1.5 min-h-11 w-full rounded-xl border border-[#55aeb0]/45 bg-white px-4 py-2.5 text-base text-[#143f40] outline-none transition placeholder:text-[#5c7777]/55 focus:border-[#168e91] focus:ring-2 focus:ring-[#55aeb0]/25";
 
@@ -65,12 +66,26 @@ const modalCopy = {
 export const MemberWelcomeModal = ({ language, open, onClose }) => {
     const copy = modalCopy[language] || modalCopy.de;
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
+    const attribution = useMemo(
+        () => readAttribution({ searchParams, pathname: location.pathname }),
+        [location.pathname, searchParams],
+    );
     const closeButtonRef = useRef(null);
+    const registrationStarted = useRef(false);
     const [status, setStatus] = useState("idle");
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         if (!open) return undefined;
+
+        trackFunnelEvent({
+            eventName: "landing_view",
+            eventKey: "homepage_modal",
+            attribution,
+            locale: language,
+        });
 
         const previousOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -85,7 +100,7 @@ export const MemberWelcomeModal = ({ language, open, onClose }) => {
             document.body.style.overflow = previousOverflow;
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [onClose, open]);
+    }, [attribution, language, onClose, open]);
 
     if (!open) return null;
 
@@ -95,6 +110,7 @@ export const MemberWelcomeModal = ({ language, open, onClose }) => {
         setErrorMessage("");
         const form = event.currentTarget;
         const formData = new FormData(form);
+        await trackFunnelEvent({ eventName: "registration_submit", eventKey: "homepage_modal", attribution, locale: language });
 
         try {
             await submitForm("/api/members/register", {
@@ -105,6 +121,7 @@ export const MemberWelcomeModal = ({ language, open, onClose }) => {
                 newsletterConsent: formData.get("newsletter") === "on",
                 company: formData.get("company"),
                 locale: language,
+                attribution,
             });
             setStatus("sent");
             form.reset();
@@ -112,6 +129,12 @@ export const MemberWelcomeModal = ({ language, open, onClose }) => {
             setErrorMessage(error.code === "rate_limit" ? copy.rateError : copy.error);
             setStatus("error");
         }
+    };
+
+    const markRegistrationStart = () => {
+        if (registrationStarted.current) return;
+        registrationStarted.current = true;
+        trackFunnelEvent({ eventName: "registration_start", eventKey: "homepage_modal", attribution, locale: language });
     };
 
     const goToLogin = () => {
@@ -160,7 +183,7 @@ export const MemberWelcomeModal = ({ language, open, onClose }) => {
                                 <button type="button" onClick={goToLogin} className="mt-7 rounded-full bg-[#d4af37] px-6 py-3 font-bold text-[#074f52] transition hover:bg-[#e3c75f]">{copy.successButton}</button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit} onFocusCapture={markRegistrationStart}>
                                 <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label></div>
                                 <label className="block text-sm font-semibold">{copy.name} *<input className={fieldClass} name="name" type="text" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required /></label>
                                 <label className="mt-4 block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="name@email.de" required /></label>
