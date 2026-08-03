@@ -235,7 +235,7 @@ export const authenticateMember = async ({ email, password }) => {
     }
 };
 
-export const createMemberPasswordReset = async ({ email }) => {
+export const createMemberPasswordReset = async ({ email, returnTo = "" }) => {
     const [rows] = await database.execute(
         "SELECT id, name, email, locale FROM members WHERE email = ? LIMIT 1",
         [email],
@@ -256,7 +256,7 @@ export const createMemberPasswordReset = async ({ email }) => {
 
     return {
         member,
-        resetUrl: `${baseUrl()}/mitglieder?reset=${encodeURIComponent(token)}`,
+        resetUrl: `${baseUrl()}/mitglieder?reset=${encodeURIComponent(token)}${returnTo === "/admin" ? "&returnTo=%2Fadmin" : ""}`,
     };
 };
 
