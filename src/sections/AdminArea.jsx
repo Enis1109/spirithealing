@@ -122,7 +122,7 @@ const AdminLogin = ({ onSignedIn }) => {
                 <p className="mt-3 leading-7 text-[#4e6d6e]">Melde dich mit deinem freigegebenen Spirit-Healing-Konto an, um Texte und Bot-Antworten zu bearbeiten.</p>
                 <form className="mt-7 space-y-5" onSubmit={submit}>
                     <label className="block text-sm font-bold">E-Mail-Adresse
-                        <input name="email" type="email" autoComplete="username" required className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/30 bg-white px-4 outline-none focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
+                        <input name="email" type="email" autoComplete="username" defaultValue="info@spirit-healing.tr" required className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/30 bg-white px-4 outline-none focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
                     </label>
                     <label className="block text-sm font-bold">Passwort
                         <input name="password" type="password" autoComplete="current-password" minLength={10} required className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/30 bg-white px-4 outline-none focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
@@ -133,7 +133,7 @@ const AdminLogin = ({ onSignedIn }) => {
                     </button>
                 </form>
                 <div className="mt-6 flex flex-wrap justify-between gap-3 text-sm">
-                    <Link to="/mitglieder?mode=forgot" className="font-semibold text-[#0f8b8d] hover:underline">Passwort vergessen?</Link>
+                    <Link to={"/mitglieder?mode=forgot&email=info%40spirit-healing.tr&returnTo=%2Fadmin"} className="font-semibold text-[#0f8b8d] hover:underline">Passwort vergessen?</Link>
                     <Link to="/" className="text-[#4e6d6e] hover:underline">Zur Homepage</Link>
                 </div>
             </section>

@@ -60,6 +60,9 @@ const content = {
         forgotSubmit: "Link per E-Mail senden",
         forgotSentTitle: "Schau bitte in dein E-Mail-Postfach",
         forgotSentText: "Wenn unter dieser Adresse ein Konto besteht, haben wir dir einen Link zum Festlegen eines neuen Passworts geschickt.",
+        adminRecoveryEyebrow: "Admin-Zugang",
+        adminRecoveryTitle: "Passwort für den Admin-Bereich zurücksetzen",
+        adminRecoveryIntro: "Die freigegebene Admin-Adresse ist bereits eingetragen. Fordere den Link an und lege anschließend dein neues Passwort fest.",
         resetTitle: "Neues Passwort festlegen",
         resetSubmit: "Passwort speichern",
         resetSuccess: "Dein neues Passwort ist gespeichert. Du kannst dich jetzt anmelden.",
@@ -145,6 +148,9 @@ const content = {
         forgotSubmit: "Bağlantıyı e-postayla gönder",
         forgotSentTitle: "Lütfen e-posta kutunu kontrol et",
         forgotSentText: "Bu adrese ait bir hesap varsa yeni şifre belirleme bağlantısını gönderdik.",
+        adminRecoveryEyebrow: "Yönetici erişimi",
+        adminRecoveryTitle: "Yönetici alanı şifresini yenile",
+        adminRecoveryIntro: "Yetkili yönetici e-posta adresi hazır. Bağlantıyı iste ve ardından yeni şifreni belirle.",
         resetTitle: "Yeni şifre belirle",
         resetSubmit: "Şifreyi kaydet",
         resetSuccess: "Yeni şifren kaydedildi. Şimdi giriş yapabilirsin.",
@@ -187,6 +193,8 @@ export const MemberArea = () => {
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const campaignLanding = location.pathname === "/gratis-meditationen";
+    const recoveryEmail = searchParams.get("email") || "";
+    const returnTo = searchParams.get("returnTo") === "/admin" ? "/admin" : "";
     const attribution = useMemo(
         () => readAttribution({ searchParams, pathname: location.pathname }),
         [location.pathname, searchParams],
@@ -364,6 +372,7 @@ export const MemberArea = () => {
             await submitForm("/api/members/password/forgot", {
                 email: formData.get("email"),
                 locale: language,
+                returnTo,
             });
             setSubmitState("sent");
         } catch (error) {
@@ -390,9 +399,13 @@ export const MemberArea = () => {
                 token: searchParams.get("reset"),
                 password,
             });
-            window.history.replaceState({}, "", "/mitglieder?mode=login");
-            setMode("login");
-            setSubmitState("reset_complete");
+            if (returnTo) {
+                window.location.assign(returnTo);
+            } else {
+                window.history.replaceState({}, "", "/mitglieder?mode=login");
+                setMode("login");
+                setSubmitState("reset_complete");
+            }
         } catch (error) {
             setErrorMessage(error.code === "invalid_reset_token" ? copy.resetInvalid : (error.code === "rate_limit" ? copy.rateError : copy.authError));
             setSubmitState("error");
@@ -408,7 +421,9 @@ export const MemberArea = () => {
     if (sessionState === "loading") {
         return <main className="flex min-h-screen items-center justify-center bg-card text-primary"><LoaderCircle className="h-10 w-10 animate-spin" aria-label="Loading" /></main>;
     }
-    if (sessionState === "member") {
+    const credentialFlow = mode === "forgot" || mode === "reset";
+
+    if (sessionState === "member" && !credentialFlow) {
         return (
             <MemberApp
                 language={language}
@@ -438,14 +453,18 @@ export const MemberArea = () => {
             <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                 <section className="lg:sticky lg:top-28">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary"><LockKeyhole className="h-7 w-7" /></div>
-                    <p className="mt-6 text-sm font-bold uppercase tracking-[0.18em] text-primary">{campaignLanding ? copy.campaignEyebrow : copy.eyebrow}</p>
-                    <h1 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">{copy.title}</h1>
-                    <p className="mt-5 text-lg leading-8 text-white/80">{campaignLanding ? copy.campaignIntro : copy.intro}</p>
-                    <h2 className="mt-8 text-xl font-bold">{copy.benefitTitle}</h2>
-                    <div className="mt-4 space-y-3">
-                        {copy.benefits.map((benefit) => <p key={benefit} className="flex gap-3 text-white/80"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" />{benefit}</p>)}
-                    </div>
-                    {campaignLanding && <p className="mt-6 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm font-semibold leading-6 text-white/85">{copy.campaignTrust}</p>}
+                    <p className="mt-6 text-sm font-bold uppercase tracking-[0.18em] text-primary">{returnTo ? copy.adminRecoveryEyebrow : campaignLanding ? copy.campaignEyebrow : copy.eyebrow}</p>
+                    <h1 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">{returnTo ? copy.adminRecoveryTitle : copy.title}</h1>
+                    <p className="mt-5 text-lg leading-8 text-white/80">{returnTo ? copy.adminRecoveryIntro : campaignLanding ? copy.campaignIntro : copy.intro}</p>
+                    {!returnTo && (
+                        <>
+                            <h2 className="mt-8 text-xl font-bold">{copy.benefitTitle}</h2>
+                            <div className="mt-4 space-y-3">
+                                {copy.benefits.map((benefit) => <p key={benefit} className="flex gap-3 text-white/80"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" />{benefit}</p>)}
+                            </div>
+                            {campaignLanding && <p className="mt-6 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm font-semibold leading-6 text-white/85">{copy.campaignTrust}</p>}
+                        </>
+                    )}
                 </section>
 
                 <section className="rounded-[2rem] bg-[#f7f1e7] p-6 text-muted-foreground shadow-2xl sm:p-9">
@@ -473,7 +492,7 @@ export const MemberArea = () => {
                                     <h2 className="text-3xl font-bold">{copy.loginTitle}</h2>
                                     {submitState === "reset_complete" && <p className="mt-4 rounded-2xl bg-emerald-50 p-4 text-sm leading-6 text-emerald-800">{copy.resetSuccess}</p>}
                                     <form onSubmit={handleLogin} className="mt-6">
-                                        <label className="block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>
+                                        <label className="block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} defaultValue={recoveryEmail} required /></label>
                                         <label className="mt-5 block text-sm font-semibold">{copy.password} *<input className={fieldClass} name="password" type="password" autoComplete="current-password" minLength={10} maxLength={128} required /></label>
                                         {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-400/40 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
                                         <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface disabled:cursor-wait disabled:opacity-65">{submitState === "submitting" && <LoaderCircle className="h-5 w-5 animate-spin" />}{copy.loginSubmit}</button>
@@ -503,7 +522,7 @@ export const MemberArea = () => {
                                     <h2 className="text-3xl font-bold">{copy.forgotTitle}</h2>
                                     <p className="mt-3 leading-7 text-muted-foreground/70">{copy.forgotText}</p>
                                     <form onSubmit={handleForgotPassword} className="mt-6">
-                                        <label className="block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} required /></label>
+                                        <label className="block text-sm font-semibold">{copy.email} *<input className={fieldClass} name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={copy.emailPlaceholder} defaultValue={recoveryEmail} required /></label>
                                         {errorMessage && <p role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">{errorMessage}</p>}
                                         <button type="submit" disabled={submitState === "submitting"} className="mt-7 min-h-12 w-full rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-65">{submitState === "submitting" ? copy.submitting : copy.forgotSubmit}</button>
                                         <button type="button" onClick={() => changeMode("login")} className="mt-4 w-full text-center text-sm font-bold text-primary underline underline-offset-4">{copy.backToLogin}</button>

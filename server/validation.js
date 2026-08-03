@@ -115,6 +115,7 @@ export const validateMemberLogin = (body) => ({
 export const validateMemberPasswordRequest = (body) => ({
     email: normalizeEmail(body.email),
     locale: normalizeLocale(body.locale),
+    returnTo: body.returnTo === "/admin" ? "/admin" : "",
 });
 
 export const validateMemberPasswordReset = (body) => ({
