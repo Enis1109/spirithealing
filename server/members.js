@@ -6,8 +6,10 @@ const sessionLifetimeDays = 30;
 const sessionCookieName = "spirit_member_session";
 const contentProgressStates = new Set(["new", "started", "completed"]);
 const ownerEmails = new Set(
-    String(process.env.MEMBER_ADMIN_EMAILS || "info@spirit-healing.tr,selcan1975@gmx.de")
-        .split(",")
+    [
+        ...String(process.env.MEMBER_ADMIN_EMAILS || "info@spirit-healing.tr,selcan1975@gmx.de").split(","),
+        "enisrespondek@icloud.com",
+    ]
         .map((email) => email.trim().toLowerCase())
         .filter(Boolean),
 );
