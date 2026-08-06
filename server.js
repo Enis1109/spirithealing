@@ -53,6 +53,25 @@ import {
     normalizeRevisionRequest,
 } from "./server/contentValidation.js";
 import {
+    getAdminProgram,
+    getMemberProgram,
+    getProgramsForMember,
+    initializeDefaultPrograms,
+    publishProgramWeek,
+    saveProgramSettings,
+    saveProgramWeekDraft,
+    setProgramEnrollment,
+    updateProgramTask,
+} from "./server/programs.js";
+import {
+    normalizeProgramEnrollment,
+    normalizeProgramSettings,
+    normalizeProgramSlug,
+    normalizeProgramTaskUpdate,
+    normalizeProgramWeek,
+    ProgramValidationError,
+} from "./server/programValidation.js";
+import {
     ValidationError,
     validateContact,
     validateMemberAccess,
@@ -588,6 +607,7 @@ app.get("/api/members/session", async (request, response) => {
             loslassenAvailable: await loslassenIsAvailable(),
             wiedergeburtAvailable: await wiedergeburtIsAvailable(),
         },
+        programs: await getProgramsForMember(member),
     });
 });
 
@@ -690,6 +710,143 @@ app.get("/api/admin/funnel-summary", async (request, response) => {
         return response.json({ ok: true, summary: await getFunnelSummary(request.query.days) });
     } catch (error) {
         console.error("Funnel summary could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/members/programs/:slug", async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "no-store");
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const program = await getMemberProgram({ slug, member });
+        if (program === false) return response.status(403).json({ ok: false, error: "forbidden" });
+        if (!program) return response.status(404).json({ ok: false, error: "not_found" });
+        return response.json({ ok: true, program });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Member program could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/members/programs/:slug/tasks", sameOriginOnly, async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "no-store");
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const task = normalizeProgramTaskUpdate(request.body);
+        const program = await updateProgramTask({ slug, member, ...task });
+        if (program === null) return response.status(404).json({ ok: false, error: "not_found" });
+        if (program === false) return response.status(403).json({ ok: false, error: "forbidden" });
+        return response.json({ ok: true, program });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program task could not be updated", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/admin/programs/:slug", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const program = await getAdminProgram(slug);
+        if (!program) return response.status(404).json({ ok: false, error: "not_found" });
+        return response.json({ ok: true, program });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Admin program could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/programs/:slug", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const settings = normalizeProgramSettings(request.body);
+        if (!await saveProgramSettings({ slug, settings })) {
+            return response.status(404).json({ ok: false, error: "not_found" });
+        }
+        return response.json({ ok: true, program: await getAdminProgram(slug) });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program settings could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/programs/:slug/weeks/:weekNumber", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const week = normalizeProgramWeek(request.body, request.params.weekNumber);
+        if (!await saveProgramWeekDraft({ slug, week })) {
+            return response.status(404).json({ ok: false, error: "not_found" });
+        }
+        return response.json({ ok: true, program: await getAdminProgram(slug) });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program week draft could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/programs/:slug/weeks/:weekNumber/publish", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const weekNumber = Number(request.params.weekNumber);
+        if (!Number.isInteger(weekNumber) || weekNumber < 1 || weekNumber > 24) {
+            throw new ProgramValidationError("weekNumber");
+        }
+        if (!await publishProgramWeek({ slug, weekNumber, memberId: member.id })) {
+            return response.status(404).json({ ok: false, error: "not_found" });
+        }
+        return response.json({ ok: true, program: await getAdminProgram(slug) });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program week could not be published", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/programs/:slug/enrollments", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const enrollment = normalizeProgramEnrollment(request.body);
+        const updated = await setProgramEnrollment({ slug, ...enrollment, memberId: member.id });
+        if (updated === null) return response.status(404).json({ ok: false, error: "not_found" });
+        if (updated === false) return response.status(404).json({ ok: false, error: "member_not_found" });
+        return response.json({ ok: true, program: await getAdminProgram(slug) });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program enrollment could not be updated", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
@@ -919,6 +1076,7 @@ const initializeServices = async () => {
     memberLoslassenPath = meditations.loslassen;
     memberWiedergeburtPath = meditations.wiedergeburt;
     await initializeDatabase();
+    await initializeDefaultPrograms();
 };
 
 startupPromise = initializeServices().catch((error) => {

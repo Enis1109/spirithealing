@@ -46,6 +46,11 @@ const appCopy = {
             account: "Konto",
         },
         greeting: "Schön, dass du da bist",
+        programEyebrow: "Dein geschützter Programmraum",
+        programStart: "Start",
+        programProgress: "Fortschritt",
+        programOpen: "Programm öffnen",
+        programPreview: "Admin-Vorschau",
         freePlan: "Kostenloser Zugang",
         premiumPlan: "Premium-Mitgliedschaft",
         heroEyebrow: "Dein nächster Schritt",
@@ -143,6 +148,11 @@ const appCopy = {
             account: "Hesap",
         },
         greeting: "Burada olman ne güzel",
+        programEyebrow: "Korumalı program alanın",
+        programStart: "Başlangıç",
+        programProgress: "İlerleme",
+        programOpen: "Programı aç",
+        programPreview: "Yönetici önizlemesi",
         freePlan: "Ücretsiz erişim",
         premiumPlan: "Premium üyelik",
         heroEyebrow: "Bir sonraki adımın",
@@ -337,6 +347,9 @@ const typeLabels = (copy) => ({
 });
 
 const localized = (value, language) => typeof value === "string" ? value : value[language];
+const formatProgramDate = (value, language) => value
+    ? new Intl.DateTimeFormat(language === "tr" ? "tr-TR" : "de-DE", { dateStyle: "long" }).format(new Date(`${value}T12:00:00`))
+    : "–";
 
 const AppLogo = ({ compact = false }) => (
     <Link to="/" className="inline-flex items-center gap-3" aria-label="Spirit Healing">
@@ -426,6 +439,7 @@ export const MemberApp = ({
     meditations,
     initialContentState,
     premiumCheckoutUrl,
+    programs = [],
     onLogout,
 }) => {
     const copy = appCopy[language];
@@ -440,6 +454,7 @@ export const MemberApp = ({
         (initialContentState || []).map((entry) => [entry.contentKey, entry]),
     ));
     const isPremiumMember = member?.membershipTier === "premium";
+    const activeProgram = programs[0] || null;
 
     useEffect(() => {
         const handleInstallPrompt = (event) => {
@@ -603,6 +618,24 @@ export const MemberApp = ({
                     <CircleUserRound className="h-4 w-4" />{copy.nav.account}
                 </button>
             </section>
+
+            {activeProgram && (
+                <section className="mt-8 overflow-hidden rounded-[2rem] border border-[#d7bd66]/50 bg-[radial-gradient(circle_at_90%_10%,rgba(241,210,119,0.32),transparent_30%),linear-gradient(135deg,#123e3d,#176f6d)] text-white shadow-[0_24px_70px_rgba(18,62,61,0.2)]">
+                    <div className="grid gap-6 p-7 sm:p-9 lg:grid-cols-[1fr_auto] lg:items-end">
+                        <div>
+                            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#f1d277]">{copy.programEyebrow}</p>
+                            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">{activeProgram.title}</h2>
+                            <p className="mt-3 max-w-2xl leading-7 text-white/76">{activeProgram.subtitle}</p>
+                            <div className="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-white/82">
+                                <span className="rounded-full bg-white/10 px-3 py-1.5"><CalendarDays className="mr-1.5 inline h-4 w-4" />{copy.programStart}: {formatProgramDate(activeProgram.startDate, language)}</span>
+                                <span className="rounded-full bg-white/10 px-3 py-1.5"><CheckCircle2 className="mr-1.5 inline h-4 w-4" />{copy.programProgress}: {activeProgram.progress.percent} %</span>
+                                {activeProgram.adminPreview && <span className="rounded-full bg-[#f1d277] px-3 py-1.5 font-bold text-[#123e3d]">{copy.programPreview}</span>}
+                            </div>
+                        </div>
+                        <Link to="/mitglieder/programme/zepter" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d277] px-6 py-3 font-bold text-[#123e3d] transition hover:bg-white">{copy.programOpen}<ArrowRight className="h-5 w-5" /></Link>
+                    </div>
+                </section>
+            )}
 
             <section className="mt-8 overflow-hidden rounded-[2rem] bg-[linear-gradient(125deg,#114845_0%,#168e91_62%,#6fc1b7_130%)] text-white shadow-[0_28px_80px_rgba(18,82,78,0.22)]">
                 <div className="grid lg:grid-cols-[1fr_0.68fr]">

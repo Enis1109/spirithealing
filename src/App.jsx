@@ -68,7 +68,7 @@ function App() {
         <Route path="/vortraege-seminare" element={<Events/>}/>
         <Route path="/kontakt" element={<Contact/>}/>
         <Route path="/newsletter/status" element={<NewsletterStatus/>}/>
-        <Route path="/mitglieder" element={
+        <Route path="/mitglieder/*" element={
           <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#edf8f6] font-bold text-[#168e91]">Spirit Healing wird geladen …</main>}>
             <MemberArea/>
           </Suspense>

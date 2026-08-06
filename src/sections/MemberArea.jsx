@@ -4,6 +4,7 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { submitForm } from "@/lib/submissions";
 import { MemberApp } from "@/sections/MemberApp";
+import { ProgramArea } from "@/sections/ProgramArea";
 import { readAttribution, trackFunnelEvent } from "@/lib/funnelTracking";
 
 const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-white/90 px-4 py-3 text-base text-muted-foreground outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-2 focus:ring-primary/25";
@@ -208,6 +209,7 @@ export const MemberArea = () => {
     const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false });
     const [contentState, setContentState] = useState([]);
     const [premiumCheckoutUrl, setPremiumCheckoutUrl] = useState("");
+    const [programs, setPrograms] = useState([]);
     const [submitState, setSubmitState] = useState("idle");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
     const [errorMessage, setErrorMessage] = useState("");
@@ -265,6 +267,7 @@ export const MemberArea = () => {
                     setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false });
                     setContentState(result.contentState || []);
                     setPremiumCheckoutUrl(result.premiumCheckoutUrl || "");
+                    setPrograms(result.programs || []);
                     setSessionState("member");
                 } else {
                     setSessionState("guest");
@@ -424,6 +427,9 @@ export const MemberArea = () => {
     const credentialFlow = mode === "forgot" || mode === "reset";
 
     if (sessionState === "member" && !credentialFlow) {
+        if (location.pathname.startsWith("/mitglieder/programme/zepter")) {
+            return <ProgramArea member={member} />;
+        }
         return (
             <MemberApp
                 language={language}
@@ -434,6 +440,7 @@ export const MemberArea = () => {
                 meditations={meditations}
                 initialContentState={contentState}
                 premiumCheckoutUrl={premiumCheckoutUrl}
+                programs={programs}
                 onLogout={logout}
             />
         );
