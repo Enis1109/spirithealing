@@ -68,6 +68,17 @@ const testimonialCopy = {
                 ],
                 author: "Annette Sch.",
             },
+            {
+                session: "Rückmeldung nach einem gemeinsamen Coaching",
+                paragraphs: [
+                    "Hallo, ihr zwei wundervollen Seelen,",
+                    "ich bin mit dem Gedanken ins Coaching gegangen: Ein paar Glaubenssätze aufräumen – dann läuft das schon. Tja, mein Unterbewusstsein hatte da offensichtlich ganz andere Pläne.",
+                    "Dank Selcans schamanischer Begleitung und Sabines Gabe, in mich hineinzuschauen und zu spüren, durfte ich erkennen, dass hinter meinem Thema viel tiefere Muster steckten. So tief hätte ich selbst nie mit mir arbeiten können – denn es gibt sie: die blinden Flecken. Ich bin sehr dankbar, denn nun verstehe ich meine Verhaltensweisen und kann handeln. Diese Selbstermächtigung fühlt sich wunderbar an.",
+                    "Ihr seid ein richtig starkes Team – jede auf ihre eigene wundervolle Art. Danke für eure wertvolle und gehaltene Begleitung.",
+                    "Danke, eure Karin",
+                ],
+                author: "Karin",
+            },
         ],
     },
     tr: {
@@ -112,6 +123,17 @@ const testimonialCopy = {
                     "Elimizde ne kadar harika bir yöntem var. Teşekkür ederim Sabine ve Selcan.",
                 ],
                 author: "Annette Sch.",
+            },
+            {
+                session: "Birlikte yürütülen bir koçluk sonrası geri bildirim",
+                paragraphs: [
+                    "Merhaba, siz iki harika ruh,",
+                    "Koçluğa şu düşünceyle girdim: Birkaç inanç kalıbını temizlerim, sonra her şey yoluna girer. Eh, bilinçaltımın belli ki bambaşka planları varmış.",
+                    "Selcan'ın şamanik eşliği ve Sabine'nin içime bakıp hissetme yeteneği sayesinde, konumun ardında çok daha derin kalıplar olduğunu fark etmeme izin verildi. Kendi başıma kendimle bu kadar derin çalışamazdım; çünkü kör noktalar gerçekten var. Çok minnettarım, çünkü artık davranış biçimlerimi anlıyor ve harekete geçebiliyorum. Bu öz güçlenme hissi harika.",
+                    "Siz gerçekten çok güçlü bir ekipsiniz – her biriniz kendinize özgü harika biçiminizle. Değerli ve güvenle tutulan eşliğiniz için teşekkür ederim.",
+                    "Teşekkür ederim, Karin",
+                ],
+                author: "Karin",
             },
         ],
     },
