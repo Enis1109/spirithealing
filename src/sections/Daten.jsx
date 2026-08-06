@@ -359,10 +359,10 @@ export const Daten = () => {
                             berechtigtes Interesse an einer sparsamen, datenschutzfreundlichen Erfolgsmessung und Verbesserung unseres<br/>
                             Angebots (Art. 6 Abs. 1 lit. f DSGVO). Sie können dieser Verarbeitung jederzeit widersprechen.<br/>
                         </p>
-                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Startfragebogen der Zepter-Pilotbegleitung
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Startfragebogen der 8-Wochen-Begleitung
                         </h3>
                         <p className="text-md">
-                            Wenn Sie an der Zepter-Pilotbegleitung teilnehmen und den Startfragebogen ausfüllen, verarbeiten wir Ihre<br/>
+                            Wenn Sie an der 8-Wochen-Begleitung teilnehmen und den Startfragebogen ausfüllen, verarbeiten wir Ihre<br/>
                             Kontaktangaben, Ihre freiwillig beschriebenen persönlichen Themen, Ziele, Erfahrungen, Ressourcen und<br/>
                             Ausgangswerte. Abhängig von Ihren Antworten können darunter auch besondere Kategorien<br/>
                             personenbezogener Daten, insbesondere Angaben mit Gesundheitsbezug, sein. Die Angaben dienen der<br/>
