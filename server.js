@@ -9,6 +9,8 @@ import {
     sendContactNotification,
     sendMemberAccessEmail,
     sendMemberPasswordResetEmail,
+    sendOnboardingConfirmation,
+    sendOnboardingNotification,
     sendZepterBankTransferConfirmation,
 } from "./server/mailer.js";
 import {
@@ -71,6 +73,17 @@ import {
     normalizeProgramWeek,
     ProgramValidationError,
 } from "./server/programValidation.js";
+import {
+    createOnboardingSubmission,
+    getAdminOnboardingSubmissions,
+    setOnboardingDeliveryStatus,
+    updateOnboardingReview,
+} from "./server/onboarding.js";
+import {
+    normalizeOnboardingReview,
+    normalizeOnboardingSubmission,
+    OnboardingValidationError,
+} from "./server/onboardingValidation.js";
 import {
     ValidationError,
     validateContact,
@@ -372,6 +385,37 @@ app.post("/api/zepter/bank-transfer", submissionLimiter, zepterLandingOnly, asyn
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Zepter bank transfer booking failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/zepter/onboarding", submissionLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const form = normalizeOnboardingSubmission(request.body);
+        const submission = await createOnboardingSubmission(form);
+
+        try {
+            await sendOnboardingConfirmation({ ...form, reference: submission.reference });
+            await setOnboardingDeliveryStatus({ id: submission.id, confirmationStatus: "sent" });
+        } catch (error) {
+            console.error("Onboarding confirmation could not be sent", error);
+            await setOnboardingDeliveryStatus({ id: submission.id, confirmationStatus: "failed" });
+        }
+
+        try {
+            await sendOnboardingNotification({ ...form, reference: submission.reference });
+            await setOnboardingDeliveryStatus({ id: submission.id, notificationStatus: "sent" });
+        } catch (error) {
+            console.error("Onboarding notification could not be sent", error);
+            await setOnboardingDeliveryStatus({ id: submission.id, notificationStatus: "failed" });
+        }
+
+        return response.status(201).json({ ok: true, reference: submission.reference });
+    } catch (error) {
+        if (error instanceof OnboardingValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Onboarding submission failed", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
@@ -714,6 +758,38 @@ app.get("/api/admin/funnel-summary", async (request, response) => {
     }
 });
 
+app.get("/api/admin/onboarding", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        return response.json({ ok: true, submissions: await getAdminOnboardingSubmissions() });
+    } catch (error) {
+        console.error("Admin onboarding submissions could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/onboarding/:id", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const id = Number(request.params.id);
+        if (!Number.isSafeInteger(id) || id < 1) throw new OnboardingValidationError("id");
+        const review = normalizeOnboardingReview(request.body);
+        const updated = await updateOnboardingReview({ id, ...review, memberId: member.id });
+        if (!updated) return response.status(404).json({ ok: false, error: "not_found" });
+        return response.json({ ok: true, submissions: await getAdminOnboardingSubmissions() });
+    } catch (error) {
+        if (error instanceof OnboardingValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Onboarding review could not be updated", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
 app.get("/api/members/programs/:slug", async (request, response) => {
     const member = await getMemberFromRequest(request);
     response.set("Cache-Control", "no-store");
@@ -1047,7 +1123,9 @@ app.use(express.static(distDirectory, {
 app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith("/api/")) return next();
     try {
-        if (request.path.startsWith("/admin")) response.set("X-Robots-Tag", "noindex, nofollow");
+        if (request.path.startsWith("/admin") || request.path.startsWith("/startfragebogen")) {
+            response.set("X-Robots-Tag", "noindex, nofollow");
+        }
         return response
             .type("html")
             .send(fs.readFileSync(path.join(distDirectory, "index.html"), "utf8"));
