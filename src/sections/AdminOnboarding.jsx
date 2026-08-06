@@ -249,7 +249,7 @@ export const AdminOnboarding = ({ requestJson, setNotice }) => {
         <div className="space-y-6">
             <section className="rounded-[2rem] bg-[#075f62] p-7 text-white shadow-xl sm:p-9">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[#e8ca67]">Zepter-Pilot</p><h1 className="mt-2 text-4xl font-bold">Startfragebögen</h1><p className="mt-3 max-w-2xl leading-7 text-white/75">Vertrauliche Vorbereitung für eure gemeinsamen Startgespräche. Hinweise ersetzen keine persönliche Einschätzung.</p></div>
+                    <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[#e8ca67]">8 Wochen Begleitung</p><h1 className="mt-2 text-4xl font-bold">Startfragebögen</h1><p className="mt-3 max-w-2xl leading-7 text-white/75">Vertrauliche Vorbereitung für eure gemeinsamen Startgespräche. Hinweise ersetzen keine persönliche Einschätzung.</p></div>
                     <button type="button" onClick={load} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/30 px-5 font-bold text-white hover:bg-white/10"><RefreshCw className="h-4 w-4" /> Aktualisieren</button>
                 </div>
             </section>
