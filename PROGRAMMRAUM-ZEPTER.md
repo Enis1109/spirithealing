@@ -28,24 +28,17 @@ Unter `/admin` gibt es den Bereich **Programme**. Dort kann ein Administrator:
 
 Das Speichern einer Woche überschreibt keine ungespeicherten Änderungen in anderen Wochen.
 
-## Zahlung und Freischaltung
+## Zugang und Freischaltung
 
-Der bestätigte Gesamtpreis beträgt **690 Euro**. Kleinere Raten bleiben möglich.
+Die organisatorische Abwicklung erfolgt vollständig außerhalb der Homepage per E-Mail. Im Programmraum selbst werden dazu keine Hinweise angezeigt.
 
-Die Zahlungsart ist technisch bewusst vom Programmzugang getrennt. Dadurch kann Spirit Healing zunächst ohne zusätzliche Zahlungsintegration arbeiten:
-
-1. Rechnung oder Ratenvereinbarung an die Teilnehmerin senden.
-2. Zahlungseingang beziehungsweise verbindliche Vereinbarung prüfen.
-3. Sicherstellen, dass unter derselben E-Mail-Adresse ein Mitgliederkonto besteht.
-4. Im Admin-Bereich unter **Programme → Teilnehmerzugänge** die E-Mail-Adresse freischalten.
-
-Stripe kann später zusätzlich angebunden werden, ohne den Programmraum neu zu bauen. Eine automatische Freischaltung nach Stripe-Zahlung ist in dieser ersten Fassung nicht enthalten.
+1. Sicherstellen, dass unter der vereinbarten E-Mail-Adresse ein Mitgliederkonto besteht.
+2. Im Admin-Bereich unter **Programme → Teilnehmerzugänge** die E-Mail-Adresse freischalten.
 
 ## Technische Grenzen der ersten Fassung
 
 - Dateien werden über sichere Links oder Pfade eingebunden; ein eigener Datei-Upload im Browser ist noch nicht enthalten.
-- Rechnungserstellung, Zahlungseingangsprüfung und Mahnwesen erfolgen außerhalb der Homepage.
-- Eine automatische Sperre bei ausbleibenden Raten ist nicht vorgesehen; Zugänge werden bewusst manuell verwaltet.
+- Die organisatorische Abwicklung erfolgt außerhalb der Homepage; Zugänge werden bewusst manuell verwaltet.
 - Die Inhalte sind durch Anmeldung und Programmfreigabe geschützt. Externe Medienanbieter müssen ihre Links beziehungsweise Einbettungen zusätzlich passend absichern.
 
 ## Veröffentlichungsstand

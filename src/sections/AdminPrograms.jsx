@@ -187,10 +187,9 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
             <section className="overflow-hidden rounded-[2rem] bg-[radial-gradient(circle_at_90%_10%,rgba(232,202,103,0.28),transparent_30%),linear-gradient(135deg,#123e3d,#0f7775)] p-7 text-white shadow-xl sm:p-9">
                 <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-[#e8ca67]"><UsersRound className="h-5 w-5" /> Geschlossener Programmraum</p>
                 <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Das Zepter – 8 Wochen</h1>
-                <p className="mt-4 max-w-3xl text-lg leading-8 text-white/78">Teilnehmer freischalten, Wochen vorbereiten und jeden Inhalt bewusst veröffentlichen. Die Zahlungsart bleibt davon unabhängig.</p>
+                <p className="mt-4 max-w-3xl text-lg leading-8 text-white/78">Teilnehmer freischalten, Wochen vorbereiten und jeden Inhalt bewusst veröffentlichen.</p>
                 <div className="mt-6 flex flex-wrap gap-3">
                     <span className="rounded-full bg-white/12 px-4 py-2 text-sm font-bold">{activeCount} freigeschaltete Teilnehmer</span>
-                    <span className="rounded-full bg-white/12 px-4 py-2 text-sm font-bold">690 € gesamt · kleinere Raten möglich</span>
                     <Link to="/mitglieder/programme/zepter" className="inline-flex items-center gap-2 rounded-full bg-[#e8ca67] px-4 py-2 text-sm font-bold text-[#123e3d]">Vorschau öffnen<ExternalLink className="h-4 w-4" /></Link>
                 </div>
             </section>
@@ -207,7 +206,7 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
             </form>
 
             <section className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
-                <div className="flex items-start gap-3"><UserCheck className="mt-1 h-6 w-6 text-[#0f8b8d]" /><div><h2 className="text-2xl font-bold">Teilnehmerzugänge</h2><p className="mt-1 text-[#6b8585]">Nach Zahlung oder Rechnungsvereinbarung gezielt freischalten.</p></div></div>
+                <div className="flex items-start gap-3"><UserCheck className="mt-1 h-6 w-6 text-[#0f8b8d]" /><div><h2 className="text-2xl font-bold">Teilnehmerzugänge</h2><p className="mt-1 text-[#6b8585]">Bestehende Mitgliederkonten gezielt für das Programm freischalten.</p></div></div>
                 <form className="mt-6 flex flex-col gap-3 sm:flex-row" onSubmit={(event) => { event.preventDefault(); updateEnrollment(enrollmentEmail, true); }}>
                     <input type="email" required value={enrollmentEmail} onChange={(event) => setEnrollmentEmail(event.target.value)} placeholder="E-Mail-Adresse des Mitgliederkontos" className="min-h-12 flex-1 rounded-full border border-[#0f8b8d]/25 bg-white px-5 outline-none focus:border-[#0f8b8d]" />
                     <button type="submit" disabled={!enrollmentEmail || Boolean(busyKey)} className="min-h-12 rounded-full bg-[#0f8b8d] px-6 font-bold text-white disabled:opacity-60">Zugang freischalten</button>
