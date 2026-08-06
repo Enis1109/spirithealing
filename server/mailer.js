@@ -381,3 +381,73 @@ export const sendNewsletterConfirmation = async ({ name, email, locale, confirma
         `,
     });
 };
+
+export const sendOnboardingConfirmation = async ({ name, email, reference }) => {
+    const subject = "Dein Startfragebogen ist bei uns angekommen";
+    const greeting = `Hallo ${name},`;
+    const intro = "vielen Dank, dass du dir die Zeit für deinen Startfragebogen genommen hast. Deine Antworten sind sicher bei uns angekommen und helfen uns, euer gemeinsames Startgespräch gut vorzubereiten.";
+    const next = "Du musst jetzt nichts weiter tun. Sabine und Selcan schauen sich deine Angaben vor eurem Termin in Ruhe an.";
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: email,
+        replyTo: notificationRecipient,
+        subject,
+        text: [
+            greeting,
+            "",
+            intro,
+            "",
+            next,
+            "",
+            `Deine Referenz: ${reference}`,
+            "",
+            "Von Herzen",
+            "Sabine & Selcan",
+            "Spirit Healing",
+        ].join("\n"),
+        html: `
+            <div style="margin:0;background:#eaf3f1;padding:30px 12px;font-family:Arial,sans-serif;color:#163f41">
+                <div style="max-width:640px;margin:0 auto;overflow:hidden;border-radius:28px;background:#fffaf2;box-shadow:0 16px 44px rgba(1,47,49,.16)">
+                    <div style="background:linear-gradient(145deg,#054e51,#087478);padding:36px 28px;text-align:center;color:#fff">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#e8ca67">Spirit Healing</div>
+                        <h1 style="margin:14px auto 0;max-width:520px;font-size:29px;line-height:1.22">Danke für dein Vertrauen</h1>
+                    </div>
+                    <div style="padding:34px 28px;line-height:1.65">
+                        <p style="margin:0 0 14px;font-size:18px">${escapeHtml(greeting)}</p>
+                        <p style="margin:0 0 15px">${escapeHtml(intro)}</p>
+                        <p style="margin:0 0 24px">${escapeHtml(next)}</p>
+                        <div style="border:1px solid #d8bd60;border-radius:18px;background:#f8f0d6;padding:18px">
+                            <span style="font-size:13px;color:#6d5b20">Deine Referenz</span><br>
+                            <strong style="font-size:18px;color:#075f62">${escapeHtml(reference)}</strong>
+                        </div>
+                        <p style="margin:26px 0 0;color:#557072">Von Herzen<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
+                        <p style="margin:24px 0 0;border-top:1px solid #d8e3df;padding-top:18px;font-size:13px;color:#607779">Du erhältst diese E-Mail als Eingangsbestätigung für deinen Spirit-Healing-Startfragebogen.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+    });
+};
+
+export const sendOnboardingNotification = async ({ name, email, reference, stability, crisisContact }) => {
+    const requiresAttention = stability !== "ja" || crisisContact !== "ja";
+    const adminUrl = `${String(process.env.PUBLIC_BASE_URL || "https://www.spirit-healing.tr").replace(/\/$/u, "")}/admin`;
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: notificationRecipient,
+        replyTo: email,
+        subject: `${requiresAttention ? "Bitte prüfen: " : ""}Neuer Zepter-Startfragebogen von ${name}`,
+        text: [
+            `Neuer Startfragebogen: ${reference}`,
+            "",
+            `Name: ${name}`,
+            `E-Mail: ${email}`,
+            `Stabilität für den Gruppenprozess: ${stability}`,
+            `Ansprechperson in einer Krise vorhanden: ${crisisContact}`,
+            "",
+            "Die vollständigen vertraulichen Antworten liegen ausschließlich im geschützten Admin-Bereich:",
+            adminUrl,
+        ].join("\n"),
+    });
+};

@@ -359,6 +359,26 @@ export const Daten = () => {
                             berechtigtes Interesse an einer sparsamen, datenschutzfreundlichen Erfolgsmessung und Verbesserung unseres<br/>
                             Angebots (Art. 6 Abs. 1 lit. f DSGVO). Sie können dieser Verarbeitung jederzeit widersprechen.<br/>
                         </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Startfragebogen der Zepter-Pilotbegleitung
+                        </h3>
+                        <p className="text-md">
+                            Wenn Sie an der Zepter-Pilotbegleitung teilnehmen und den Startfragebogen ausfüllen, verarbeiten wir Ihre<br/>
+                            Kontaktangaben, Ihre freiwillig beschriebenen persönlichen Themen, Ziele, Erfahrungen, Ressourcen und<br/>
+                            Ausgangswerte. Abhängig von Ihren Antworten können darunter auch besondere Kategorien<br/>
+                            personenbezogener Daten, insbesondere Angaben mit Gesundheitsbezug, sein. Die Angaben dienen der<br/>
+                            Vorbereitung und Durchführung des persönlichen Startgesprächs sowie der individuellen Begleitung und<br/>
+                            der vereinbarten Vorher-Nachher-Auswertung.<br/><br/>
+                            Die Verarbeitung erfolgt nur nach Ihrer ausdrücklichen Einwilligung gemäß Art. 6 Abs. 1 lit. a und – soweit<br/>
+                            besondere Kategorien personenbezogener Daten betroffen sind – Art. 9 Abs. 2 lit. a DSGVO. Die Antworten<br/>
+                            werden verschlüsselt übertragen, in der MySQL-Datenbank unseres Hostings gespeichert und sind nur über<br/>
+                            geschützte, berechtigte Administrationszugänge einsehbar. In den Benachrichtigungs-E-Mails werden keine<br/>
+                            vollständigen Antworten versendet.<br/><br/>
+                            Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Die personenbezogenen<br/>
+                            Fragebogendaten werden gelöscht, wenn sie für die Begleitung und die vereinbarte Auswertung nicht mehr<br/>
+                            benötigt werden, sofern keine gesetzlichen Pflichten einer Löschung entgegenstehen. Eine zusätzliche<br/>
+                            Einwilligung in eine zusammengefasste Auswertung ohne Namens- oder Kontaktbezug ist freiwillig und hat<br/>
+                            keinen Einfluss auf Ihre Teilnahme.<br/>
+                        </p>
                         <h3 className="text-lg md:text-xl leading-tight  font-bold text-primary">Anfrage per E-Mail, Telefon oder Telefax
                         </h3>
                         <p className="text-md">
