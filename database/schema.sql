@@ -195,3 +195,69 @@ CREATE TABLE IF NOT EXISTS cms_content_revisions (
     CONSTRAINT cms_revision_content_fk FOREIGN KEY (content_key) REFERENCES cms_content_entries(content_key) ON DELETE CASCADE,
     CONSTRAINT cms_revision_member_fk FOREIGN KEY (published_by) REFERENCES members(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS programs (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    slug VARCHAR(80) NOT NULL,
+    title VARCHAR(160) NOT NULL,
+    subtitle VARCHAR(600) NOT NULL,
+    start_date DATE NOT NULL,
+    duration_weeks SMALLINT UNSIGNED NOT NULL DEFAULT 8,
+    status VARCHAR(24) NOT NULL DEFAULT 'draft',
+    whatsapp_url VARCHAR(500) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY programs_slug_unique (slug),
+    INDEX programs_status_idx (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS program_weeks (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    program_id BIGINT UNSIGNED NOT NULL,
+    week_number SMALLINT UNSIGNED NOT NULL,
+    draft_content LONGTEXT NOT NULL,
+    published_content LONGTEXT NULL,
+    published_by BIGINT UNSIGNED NULL,
+    published_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY program_week_unique (program_id, week_number),
+    INDEX program_week_published_idx (program_id, published_at),
+    CONSTRAINT program_week_program_fk FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
+    CONSTRAINT program_week_published_member_fk FOREIGN KEY (published_by) REFERENCES members(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS program_enrollments (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    program_id BIGINT UNSIGNED NOT NULL,
+    member_id BIGINT UNSIGNED NOT NULL,
+    status VARCHAR(24) NOT NULL DEFAULT 'active',
+    access_ends_at DATETIME NULL,
+    granted_by BIGINT UNSIGNED NULL,
+    granted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY program_enrollment_unique (program_id, member_id),
+    INDEX program_enrollment_member_idx (member_id, status),
+    CONSTRAINT program_enrollment_program_fk FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
+    CONSTRAINT program_enrollment_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    CONSTRAINT program_enrollment_granted_member_fk FOREIGN KEY (granted_by) REFERENCES members(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS program_task_state (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    member_id BIGINT UNSIGNED NOT NULL,
+    program_week_id BIGINT UNSIGNED NOT NULL,
+    task_key VARCHAR(60) NOT NULL,
+    completed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY program_task_state_unique (member_id, program_week_id, task_key),
+    INDEX program_task_state_member_idx (member_id, updated_at),
+    CONSTRAINT program_task_state_member_fk FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    CONSTRAINT program_task_state_week_fk FOREIGN KEY (program_week_id) REFERENCES program_weeks(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

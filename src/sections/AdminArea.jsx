@@ -13,6 +13,7 @@ import {
     Send,
     ShieldCheck,
     Sparkles,
+    UsersRound,
 } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -21,6 +22,7 @@ import {
     assistantContentCatalog,
     pageContentCatalog,
 } from "@/content/adminCatalog";
+import { AdminPrograms } from "@/sections/AdminPrograms";
 
 const emptySnapshot = { entries: [], revisions: [] };
 
@@ -384,6 +386,7 @@ export const AdminArea = () => {
         { id: "overview", label: "Übersicht", icon: LayoutDashboard },
         { id: "pages", label: "Homepage-Texte", icon: FileText },
         { id: "assistant", label: "Fragebot", icon: Bot },
+        { id: "programs", label: "Programme", icon: UsersRound },
     ];
 
     return (
@@ -403,7 +406,7 @@ export const AdminArea = () => {
 
             <div className="mx-auto grid w-full max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:px-8">
                 <aside className="h-fit rounded-3xl bg-[#fffaf2] p-3 shadow-sm lg:sticky lg:top-6">
-                    <nav className="grid grid-cols-3 gap-2 lg:grid-cols-1">
+                    <nav className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-1">
                         {navItems.map(({ id, label, icon }) => (
                             <button key={id} type="button" onClick={() => { setActiveTab(id); setSearch(""); }} className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-bold transition lg:justify-start ${activeTab === id ? "bg-[#0f8b8d] text-white" : "text-[#4e6d6e] hover:bg-[#eaf4f1]"}`}>{createElement(icon, { className: "h-5 w-5" })}<span>{label}</span></button>
                         ))}
@@ -423,7 +426,7 @@ export const AdminArea = () => {
                             <section className="overflow-hidden rounded-[2rem] bg-[#075f62] p-7 text-white shadow-xl sm:p-10">
                                 <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-[#e8ca67]"><Sparkles className="h-4 w-4" /> Admin-Bereich</p>
                                 <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">Gezielt ändern, in Ruhe prüfen, sicher veröffentlichen.</h1>
-                                <p className="mt-5 max-w-3xl text-lg leading-8 text-white/80">Hier können Homepage-Texte, FAQ-Antworten und die Wissensbasis des Fragebots bearbeitet werden. Technische Funktionen und das Design bleiben geschützt.</p>
+                                <p className="mt-5 max-w-3xl text-lg leading-8 text-white/80">Hier können Homepage-Texte, FAQ-Antworten, die Wissensbasis des Fragebots und geschlossene Programme verwaltet werden. Technische Funktionen und das Design bleiben geschützt.</p>
                             </section>
                             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                                 {[
@@ -445,7 +448,7 @@ export const AdminArea = () => {
                         </div>
                     )}
 
-                    {contentState === "ready" && activeTab !== "overview" && (
+                    {contentState === "ready" && ["pages", "assistant"].includes(activeTab) && (
                         <div>
                             <div className="mb-5 flex flex-col gap-4 rounded-3xl bg-[#fffaf2] p-5 sm:flex-row sm:items-center sm:justify-between">
                                 <div><h1 className="text-3xl font-bold">{activeTab === "pages" ? "Homepage-Texte" : "Fragebot-Wissen"}</h1><p className="mt-1 text-[#6b8585]">{activeTab === "pages" ? "Einzelne Passagen bearbeiten, ohne die Seite neu zu bauen." : "Antworten und alternative Frageformulierungen auf Deutsch und Türkisch pflegen."}</p></div>
@@ -506,6 +509,10 @@ export const AdminArea = () => {
                                 </div>
                             )}
                         </div>
+                    )}
+
+                    {contentState === "ready" && activeTab === "programs" && (
+                        <AdminPrograms requestJson={requestJson} setNotice={setNotice} />
                     )}
                 </section>
             </div>
