@@ -32,6 +32,10 @@ const optionalText = (value, field, maxLength) => {
     return cleaned;
 };
 
+const installmentNumber = (value) => Number(cleanText(value)
+    .replace(/\s+/gu, "")
+    .replace(",", "."));
+
 const requiredEmail = (value) => {
     const email = requiredText(value, "email", 254).toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)) throw new ScheduleSurveyValidationError("email");
@@ -69,7 +73,7 @@ export const normalizeScheduleSurveySubmission = (body = {}) => {
 
     let desiredInstallment = null;
     if (paymentChoice === "custom_installment") {
-        desiredInstallment = Number(body.desiredInstallment);
+        desiredInstallment = installmentNumber(body.desiredInstallment);
         if (!Number.isInteger(desiredInstallment) || desiredInstallment < 90 || desiredInstallment > 690) {
             throw new ScheduleSurveyValidationError("desiredInstallment");
         }

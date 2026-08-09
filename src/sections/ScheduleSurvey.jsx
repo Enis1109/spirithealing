@@ -46,6 +46,11 @@ const initialForm = {
     company: "",
 };
 
+const parseInstallment = (value) => Number(String(value ?? "")
+    .trim()
+    .replace(/\s+/gu, "")
+    .replace(",", "."));
+
 export const ScheduleSurvey = () => {
     const [form, setForm] = useState(initialForm);
     const [status, setStatus] = useState("idle");
@@ -100,7 +105,7 @@ export const ScheduleSurvey = () => {
             return;
         }
         if (form.paymentChoice === "custom_installment") {
-            const installment = Number(form.desiredInstallment);
+            const installment = parseInstallment(form.desiredInstallment);
             if (!Number.isInteger(installment) || installment < 90 || installment > 690) {
                 setError("Bitte trage für deine individuelle Monatsrate einen Betrag zwischen 90 € und 690 € ein.");
                 return;
@@ -249,7 +254,7 @@ export const ScheduleSurvey = () => {
                                 <label className="mt-4 block rounded-2xl border border-[#d4af37]/40 bg-[#fff8df] p-4 text-sm font-bold">
                                     Gewünschte monatliche Rate in Euro<span className="ml-1 text-[#a05a35]" aria-hidden="true">*</span>
                                     <span className="mt-1 block font-normal leading-6 text-[#74663d]">Bitte nenne die Rate, die du zuverlässig und möglichst hoch leisten kannst – mindestens 90 €.</span>
-                                    <div className="relative mt-3 max-w-xs"><input type="number" name="desiredInstallment" value={form.desiredInstallment} onChange={(event) => setForm((current) => ({ ...current, desiredInstallment: event.target.value }))} required min="90" max="690" step="1" inputMode="numeric" className="min-h-12 w-full rounded-2xl border border-[#d4af37]/50 bg-white px-4 py-3 pr-12 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" /><span className="pointer-events-none absolute right-4 top-3.5 text-[#74663d]">€</span></div>
+                                    <div className="relative mt-3 max-w-xs"><input type="text" name="desiredInstallment" value={form.desiredInstallment} onChange={(event) => setForm((current) => ({ ...current, desiredInstallment: event.target.value }))} required inputMode="decimal" autoComplete="off" placeholder="zum Beispiel 240" className="min-h-12 w-full rounded-2xl border border-[#d4af37]/50 bg-white px-4 py-3 pr-12 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" /><span className="pointer-events-none absolute right-4 top-3.5 text-[#74663d]">€</span></div>
                                 </label>
                             )}
                         </fieldset>
