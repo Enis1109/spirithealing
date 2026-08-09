@@ -14,13 +14,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const slots = [
-    { id: "mo_1000", day: "Montag", time: "10:00 Uhr", istanbul: "11:00 Uhr Istanbul" },
-    { id: "mo_1930", day: "Montag", time: "19:30 Uhr", istanbul: "20:30 Uhr Istanbul" },
-    { id: "mi_1000", day: "Mittwoch", time: "10:00 Uhr", istanbul: "11:00 Uhr Istanbul" },
-    { id: "mi_1930", day: "Mittwoch", time: "19:30 Uhr", istanbul: "20:30 Uhr Istanbul" },
-    { id: "fr_1930", day: "Freitag", time: "19:30 Uhr", istanbul: "20:30 Uhr Istanbul" },
-    { id: "sa_1100", day: "Samstag", time: "11:00 Uhr", istanbul: "12:00 Uhr Istanbul" },
-    { id: "so_1100", day: "Sonntag", time: "11:00 Uhr", istanbul: "12:00 Uhr Istanbul" },
+    { id: "mo_1000", day: "Montag", time: "10:00 Uhr" },
+    { id: "mo_1930", day: "Montag", time: "19:30 Uhr" },
+    { id: "mi_1000", day: "Mittwoch", time: "10:00 Uhr" },
+    { id: "mi_1930", day: "Mittwoch", time: "19:30 Uhr" },
+    { id: "fr_1930", day: "Freitag", time: "19:30 Uhr" },
+    { id: "sa_1100", day: "Samstag", time: "11:00 Uhr" },
+    { id: "so_1100", day: "Sonntag", time: "11:00 Uhr" },
 ];
 
 const initialForm = {
@@ -139,7 +139,7 @@ export const ScheduleSurvey = () => {
                         <p className="flex items-start gap-3"><CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-[#e8ca67]" /><span><strong className="block text-white">Ein fester Wochentag</strong>für alle acht Wochen</span></p>
                         <p className="flex items-start gap-3"><HeartHandshake className="mt-0.5 h-5 w-5 shrink-0 text-[#e8ca67]" /><span><strong className="block text-white">Aufzeichnung inklusive</strong>falls du einmal fehlst</span></p>
                     </div>
-                    <p className="mt-5 rounded-2xl bg-white/10 p-4 text-sm leading-6 text-white/80">Alle Hauptzeiten sind deutsche Zeit. Für Istanbul ist die passende Uhrzeit jeweils direkt angegeben.</p>
+                    <p className="mt-5 rounded-2xl bg-white/10 p-4 text-sm leading-6 text-white/80">Alle angegebenen Uhrzeiten sind deutsche Zeit.</p>
                 </aside>
 
                 <form onSubmit={submit} className="rounded-[1.75rem] bg-[#fffaf2] p-6 shadow-xl shadow-[#173f40]/8 sm:p-9 lg:p-11">
@@ -168,7 +168,7 @@ export const ScheduleSurvey = () => {
                                         <label key={slot.id} className={`flex min-h-20 cursor-pointer items-center gap-4 rounded-2xl border p-4 transition ${selected ? "border-[#0f8b8d] bg-[#e4f2ef] shadow-sm" : "border-[#0f8b8d]/18 bg-white hover:border-[#0f8b8d]/50"}`}>
                                             <input type="checkbox" checked={selected} onChange={() => toggleSlot(slot.id)} className="sr-only" />
                                             <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border ${selected ? "border-[#0f8b8d] bg-[#0f8b8d] text-white" : "border-[#0f8b8d]/40"}`}>{selected && <Check className="h-4 w-4" />}</span>
-                                            <span><strong className="block text-[#173f40]">{slot.day}, {slot.time}</strong><span className="mt-0.5 block text-xs text-[#648082]">{slot.istanbul}</span></span>
+                                            <strong className="block text-[#173f40]">{slot.day}, {slot.time}</strong>
                                         </label>
                                     );
                                 })}
