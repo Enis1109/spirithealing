@@ -114,7 +114,7 @@ export const AdminScheduleSurvey = ({ requestJson }) => {
                                 return (
                                     <article key={slot.id} className={`rounded-2xl border p-4 sm:p-5 ${index === 0 ? "border-[#d4af37]/60 bg-[#fff8df]" : "border-[#0f8b8d]/12 bg-white"}`}>
                                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                            <div className="flex items-center gap-3"><span className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${index === 0 ? "bg-[#d4af37] text-[#173f40]" : "bg-[#e4f2ef] text-[#0f8b8d]"}`}>{index + 1}</span><div><h3 className="font-bold">{slot.label}</h3><p className="text-xs text-[#648082]">{slot.istanbul}</p></div></div>
+                                            <div className="flex items-center gap-3"><span className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${index === 0 ? "bg-[#d4af37] text-[#173f40]" : "bg-[#e4f2ef] text-[#0f8b8d]"}`}>{index + 1}</span><h3 className="font-bold">{slot.label}</h3></div>
                                             <p className="text-sm font-semibold text-[#315658]"><strong className="text-xl text-[#075f62]">{slot.availableCount}/{data.total}</strong> möglich · <strong>{slot.preferredCount}</strong> Favorit{slot.preferredCount === 1 ? "" : "en"}</p>
                                         </div>
                                         <div className="mt-4 h-3 overflow-hidden rounded-full bg-[#e4eeec]" aria-label={`${percentage} Prozent können teilnehmen`}><div className="h-full rounded-full bg-[#0f8b8d]" style={{ width: `${percentage}%` }} /></div>

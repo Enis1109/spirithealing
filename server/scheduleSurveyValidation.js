@@ -1,11 +1,11 @@
 export const scheduleSlots = Object.freeze([
-    { id: "mo_1000", label: "Montag, 10:00 Uhr", istanbul: "11:00 Uhr Istanbul" },
-    { id: "mo_1930", label: "Montag, 19:30 Uhr", istanbul: "20:30 Uhr Istanbul" },
-    { id: "mi_1000", label: "Mittwoch, 10:00 Uhr", istanbul: "11:00 Uhr Istanbul" },
-    { id: "mi_1930", label: "Mittwoch, 19:30 Uhr", istanbul: "20:30 Uhr Istanbul" },
-    { id: "fr_1930", label: "Freitag, 19:30 Uhr", istanbul: "20:30 Uhr Istanbul" },
-    { id: "sa_1100", label: "Samstag, 11:00 Uhr", istanbul: "12:00 Uhr Istanbul" },
-    { id: "so_1100", label: "Sonntag, 11:00 Uhr", istanbul: "12:00 Uhr Istanbul" },
+    { id: "mo_1000", label: "Montag, 10:00 Uhr" },
+    { id: "mo_1930", label: "Montag, 19:30 Uhr" },
+    { id: "mi_1000", label: "Mittwoch, 10:00 Uhr" },
+    { id: "mi_1930", label: "Mittwoch, 19:30 Uhr" },
+    { id: "fr_1930", label: "Freitag, 19:30 Uhr" },
+    { id: "sa_1100", label: "Samstag, 11:00 Uhr" },
+    { id: "so_1100", label: "Sonntag, 11:00 Uhr" },
 ]);
 
 const allowedSlots = new Set(scheduleSlots.map((slot) => slot.id));
