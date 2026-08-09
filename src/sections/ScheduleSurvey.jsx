@@ -5,10 +5,13 @@ import {
     Clock3,
     HeartHandshake,
     LockKeyhole,
+    Mail,
+    MapPin,
     RefreshCw,
     ShieldCheck,
     Sparkles,
     Star,
+    WalletCards,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -23,11 +26,22 @@ const slots = [
     { id: "so_1100", day: "Sonntag", time: "11:00 Uhr" },
 ];
 
+const paymentChoices = [
+    { id: "already_paid", label: "Ich habe bereits bezahlt", detail: "Danke – wir ordnen deine Zahlung deiner Anmeldung zu." },
+    { id: "full", label: "Einmalzahlung – 690 €", detail: "Du erhältst eine Rechnung über den Gesamtbetrag." },
+    { id: "two_installments", label: "Zwei Raten à 355 €", detail: "Gesamtbetrag 710 € · die zweite Rate wird 30 Tage später fällig." },
+    { id: "custom_installment", label: "Individuelle monatliche Rate", detail: "Trage darunter den Betrag ein, den du zuverlässig und möglichst hoch leisten kannst." },
+];
+
 const initialForm = {
     name: "",
+    email: "",
+    invoiceAddress: "",
     availableSlots: [],
     preferredSlot: "",
     knownExceptions: "",
+    paymentChoice: "",
+    desiredInstallment: "",
     privacyConsent: false,
     company: "",
 };
@@ -81,6 +95,17 @@ export const ScheduleSurvey = () => {
             setError("Bitte wähle unter deinen möglichen Terminen noch deinen Favoriten aus.");
             return;
         }
+        if (!form.paymentChoice) {
+            setError("Bitte wähle aus, wie du bezahlen möchtest oder ob du bereits bezahlt hast.");
+            return;
+        }
+        if (form.paymentChoice === "custom_installment") {
+            const installment = Number(form.desiredInstallment);
+            if (!Number.isInteger(installment) || installment < 90 || installment > 690) {
+                setError("Bitte trage für deine individuelle Monatsrate einen Betrag zwischen 90 € und 690 € ein.");
+                return;
+            }
+        }
         setStatus("submitting");
         try {
             const response = await fetch("/api/zepter/schedule-survey", {
@@ -109,8 +134,8 @@ export const ScheduleSurvey = () => {
                     <h1 className="mt-3 text-4xl font-bold">Danke, {form.name}.</h1>
                 </div>
                 <div className="p-7 text-center sm:p-10">
-                    <p className="text-lg leading-8 text-[#4e6d6e]">{wasUpdated ? "Deine bisherige Antwort wurde mit dieser Auswahl aktualisiert." : "Deine möglichen Zeiten und dein Wunschtermin sind bei uns angekommen."}</p>
-                    <p className="mt-4 text-sm leading-6 text-[#648082]">Sobald alle Rückmeldungen da sind, teilen wir euch den festen wöchentlichen Termin mit.</p>
+                    <p className="text-lg leading-8 text-[#4e6d6e]">{wasUpdated ? "Deine bisherigen Angaben wurden mit dieser Auswahl aktualisiert." : "Deine Terminauswahl und Zahlungsweise sind bei uns angekommen."}</p>
+                    <p className="mt-4 text-sm leading-6 text-[#648082]">Sobald alle Rückmeldungen da sind, teilen wir euch den festen wöchentlichen Termin mit und bereiten die passende Rechnung vor.</p>
                     <button type="button" onClick={() => { setStatus("idle"); setWasUpdated(false); }} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#0f8b8d]/35 px-6 font-bold text-[#0f8b8d] transition hover:bg-[#e4f2ef]"><RefreshCw className="h-4 w-4" /> Auswahl noch einmal ändern</button>
                 </div>
             </section>
@@ -146,9 +171,9 @@ export const ScheduleSurvey = () => {
                     <div className="flex items-start gap-3">
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#e4f2ef] text-[#0f8b8d]"><Sparkles className="h-5 w-5" /></span>
                         <div>
-                            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#0f8b8d]">Dauert etwa 2 Minuten</p>
-                            <h2 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">Deine Terminauswahl</h2>
-                            <p className="mt-3 max-w-3xl leading-7 text-[#5d797b]">Wähle zuerst alle Zeiten, die du grundsätzlich regelmäßig möglich machen kannst. Danach markierst du daraus deinen persönlichen Favoriten.</p>
+                            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#0f8b8d]">Dauert etwa 4 Minuten</p>
+                            <h2 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">Deine Termin- und Zahlungsangaben</h2>
+                            <p className="mt-3 max-w-3xl leading-7 text-[#5d797b]">Wähle zuerst alle Zeiten, die du grundsätzlich regelmäßig möglich machen kannst. Anschließend teilst du uns deine gewünschte Zahlungsweise mit.</p>
                         </div>
                     </div>
 
@@ -157,6 +182,17 @@ export const ScheduleSurvey = () => {
                             Vor- und Nachname<span className="ml-1 text-[#a05a35]" aria-hidden="true">*</span>
                             <input name="name" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} required autoComplete="name" maxLength={100} className="mt-2 min-h-12 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
                         </label>
+
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <label className="block text-sm font-bold">
+                                <span className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#0f8b8d]" />E-Mail-Adresse<span className="text-[#a05a35]" aria-hidden="true">*</span></span>
+                                <input type="email" name="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} required autoComplete="email" maxLength={254} className="mt-2 min-h-12 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
+                            </label>
+                            <label className="block text-sm font-bold">
+                                <span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#0f8b8d]" />Rechnungsanschrift<span className="text-[#a05a35]" aria-hidden="true">*</span></span>
+                                <textarea name="invoiceAddress" value={form.invoiceAddress} onChange={(event) => setForm((current) => ({ ...current, invoiceAddress: event.target.value }))} required rows={3} maxLength={500} placeholder="Straße und Hausnummer, PLZ und Ort, Land" className="mt-2 w-full resize-y rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
+                            </label>
+                        </div>
 
                         <fieldset>
                             <legend className="text-lg font-bold">1. Wann könntest du regelmäßig teilnehmen?<span className="ml-1 text-[#a05a35]" aria-hidden="true">*</span></legend>
@@ -198,9 +234,29 @@ export const ScheduleSurvey = () => {
                             <textarea name="knownExceptions" value={form.knownExceptions} onChange={(event) => setForm((current) => ({ ...current, knownExceptions: event.target.value }))} rows={3} maxLength={800} className="mt-2 w-full resize-y rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" />
                         </label>
 
+                        <fieldset className="rounded-3xl border border-[#0f8b8d]/22 bg-[#eaf4f1] p-5 sm:p-6">
+                            <legend className="px-2 text-lg font-bold">3. Wie möchtest du bezahlen?<span className="ml-1 text-[#a05a35]" aria-hidden="true">*</span></legend>
+                            <p className="mt-1 text-sm leading-6 text-[#527173]">Wähle bitte die Zahlungsweise, die für dich gut tragbar ist. So können wir die passende Rechnung vorbereiten.</p>
+                            <div className="mt-4 grid gap-3">
+                                {paymentChoices.map((choice) => (
+                                    <label key={choice.id} className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition ${form.paymentChoice === choice.id ? "border-[#0f8b8d] bg-white shadow-sm" : "border-[#0f8b8d]/18 bg-white/65 hover:border-[#0f8b8d]/45"}`}>
+                                        <input type="radio" name="paymentChoice" value={choice.id} checked={form.paymentChoice === choice.id} onChange={(event) => setForm((current) => ({ ...current, paymentChoice: event.target.value, desiredInstallment: event.target.value === "custom_installment" ? current.desiredInstallment : "" }))} required className="mt-1 h-4 w-4 shrink-0 accent-[#0f8b8d]" />
+                                        <span><strong className="flex items-center gap-2 text-[#173f40]"><WalletCards className="h-4 w-4 text-[#0f8b8d]" />{choice.label}</strong><span className="mt-1 block text-sm leading-6 text-[#5d797b]">{choice.detail}</span></span>
+                                    </label>
+                                ))}
+                            </div>
+                            {form.paymentChoice === "custom_installment" && (
+                                <label className="mt-4 block rounded-2xl border border-[#d4af37]/40 bg-[#fff8df] p-4 text-sm font-bold">
+                                    Gewünschte monatliche Rate in Euro<span className="ml-1 text-[#a05a35]" aria-hidden="true">*</span>
+                                    <span className="mt-1 block font-normal leading-6 text-[#74663d]">Bitte nenne die Rate, die du zuverlässig und möglichst hoch leisten kannst – mindestens 90 €.</span>
+                                    <div className="relative mt-3 max-w-xs"><input type="number" name="desiredInstallment" value={form.desiredInstallment} onChange={(event) => setForm((current) => ({ ...current, desiredInstallment: event.target.value }))} required min="90" max="690" step="1" inputMode="numeric" className="min-h-12 w-full rounded-2xl border border-[#d4af37]/50 bg-white px-4 py-3 pr-12 outline-none transition focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" /><span className="pointer-events-none absolute right-4 top-3.5 text-[#74663d]">€</span></div>
+                                </label>
+                            )}
+                        </fieldset>
+
                         <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#0f8b8d]/18 bg-white p-4 text-sm leading-6 text-[#426466]">
                             <input type="checkbox" checked={form.privacyConsent} onChange={(event) => setForm((current) => ({ ...current, privacyConsent: event.target.checked }))} required className="mt-1 h-4 w-4 shrink-0 accent-[#0f8b8d]" />
-                            <span>Ich bin damit einverstanden, dass mein Name und meine Terminauswahl zur Planung der 8‑Wochen‑Begleitung gespeichert und von Sabine und Selcan ausgewertet werden. Hinweise dazu stehen im <Link to="/datenschutz" target="_blank" className="font-bold text-[#0f8b8d] underline">Datenschutz</Link>.</span>
+                            <span>Ich bin damit einverstanden, dass meine Termin-, Kontakt- und Zahlungsangaben zur Planung und Abrechnung der 8‑Wochen‑Begleitung gespeichert und von Sabine und Selcan ausgewertet werden. Hinweise dazu stehen im <Link to="/datenschutz" target="_blank" className="font-bold text-[#0f8b8d] underline">Datenschutz</Link>.</span>
                         </label>
 
                         <label className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">Firma<input name="company" tabIndex={-1} autoComplete="off" value={form.company} onChange={(event) => setForm((current) => ({ ...current, company: event.target.value }))} /></label>
@@ -210,7 +266,7 @@ export const ScheduleSurvey = () => {
                         <div className="flex flex-col gap-3 border-t border-[#0f8b8d]/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
                             <p className="flex items-center gap-2 text-sm text-[#648082]"><ShieldCheck className="h-4 w-4 text-[#0f8b8d]" /> Deine Auswahl ist nur im geschützten Adminbereich sichtbar.</p>
                             <button type="submit" disabled={status === "submitting"} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-7 font-bold text-white transition hover:bg-[#0a6f71] disabled:cursor-wait disabled:opacity-60">
-                                <CheckCircle2 className="h-5 w-5" /> {status === "submitting" ? "Wird gespeichert …" : "Auswahl verbindlich senden"}
+                                <CheckCircle2 className="h-5 w-5" /> {status === "submitting" ? "Wird gespeichert …" : "Angaben verbindlich senden"}
                             </button>
                         </div>
                     </div>

@@ -9,6 +9,7 @@ export const scheduleSlots = Object.freeze([
 ]);
 
 const allowedSlots = new Set(scheduleSlots.map((slot) => slot.id));
+const allowedPaymentChoices = new Set(["already_paid", "full", "two_installments", "custom_installment"]);
 
 const cleanText = (value) => Array.from(String(value ?? ""))
     .filter((character) => {
@@ -31,6 +32,12 @@ const optionalText = (value, field, maxLength) => {
     return cleaned;
 };
 
+const requiredEmail = (value) => {
+    const email = requiredText(value, "email", 254).toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)) throw new ScheduleSurveyValidationError("email");
+    return email;
+};
+
 export class ScheduleSurveyValidationError extends Error {
     constructor(field) {
         super(`Invalid schedule survey field: ${field}`);
@@ -39,7 +46,7 @@ export class ScheduleSurveyValidationError extends Error {
     }
 }
 
-export const scheduleSurveyConsentVersion = "schedule-survey-2026-08-v1";
+export const scheduleSurveyConsentVersion = "schedule-survey-2026-08-v2";
 
 export const normalizeScheduleSurveySubmission = (body = {}) => {
     if (body.company) throw new ScheduleSurveyValidationError("form");
@@ -57,11 +64,26 @@ export const normalizeScheduleSurveySubmission = (body = {}) => {
         throw new ScheduleSurveyValidationError("preferredSlot");
     }
 
+    const paymentChoice = requiredText(body.paymentChoice, "paymentChoice", 32);
+    if (!allowedPaymentChoices.has(paymentChoice)) throw new ScheduleSurveyValidationError("paymentChoice");
+
+    let desiredInstallment = null;
+    if (paymentChoice === "custom_installment") {
+        desiredInstallment = Number(body.desiredInstallment);
+        if (!Number.isInteger(desiredInstallment) || desiredInstallment < 90 || desiredInstallment > 690) {
+            throw new ScheduleSurveyValidationError("desiredInstallment");
+        }
+    }
+
     return {
         name: requiredText(body.name, "name", 100),
+        email: requiredEmail(body.email),
+        invoiceAddress: requiredText(body.invoiceAddress, "invoiceAddress", 500),
         availableSlots,
         preferredSlot,
         knownExceptions: optionalText(body.knownExceptions, "knownExceptions", 800),
+        paymentChoice,
+        desiredInstallment,
         consentVersion: scheduleSurveyConsentVersion,
     };
 };

@@ -66,9 +66,9 @@ const getZepterBankDetails = () => {
 export const sendZepterBankTransferConfirmation = async ({ name, email, paymentPlan }) => {
     const bank = getZepterBankDetails();
     const isInstallmentPlan = paymentPlan === "installments";
-    const paymentLabel = isInstallmentPlan ? "Erste Rate: 360 €" : "Einmalzahlung: 690 €";
+    const paymentLabel = isInstallmentPlan ? "Erste Rate: 355 €" : "Einmalzahlung: 690 €";
     const installmentNote = isInstallmentPlan
-        ? "Die zweite und letzte Rate über 360 € wird 30 Tage nach der ersten Zahlung fällig."
+        ? "Die zweite und letzte Rate über 355 € wird 30 Tage nach der ersten Zahlung fällig."
         : "Mit dieser Überweisung ist dein Teilnahmebeitrag vollständig bezahlt.";
     const subject = "Schön, dass du mit uns auf den Weg gehst – deine Überweisungsdaten";
     const reference = `ZEPTER – ${name}`;

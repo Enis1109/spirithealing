@@ -25,6 +25,10 @@ const mapSubmission = (row) => ({
     availableSlots: parseSlots(row.available_slots),
     preferredSlot: row.preferred_slot,
     knownExceptions: row.known_exceptions,
+    email: row.email,
+    invoiceAddress: row.invoice_address,
+    paymentChoice: row.payment_choice,
+    desiredInstallment: row.desired_installment === null ? null : Number(row.desired_installment),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
 });
@@ -35,14 +39,19 @@ export const saveScheduleSurveySubmission = async (form) => {
     const [result] = await database.execute(
         `INSERT INTO zepter_schedule_surveys (
             participant_key, reference_code, name, available_slots, preferred_slot,
-            known_exceptions, consent_version
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            known_exceptions, email, invoice_address, payment_choice, desired_installment,
+            consent_version
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             id = LAST_INSERT_ID(id),
             name = VALUES(name),
             available_slots = VALUES(available_slots),
             preferred_slot = VALUES(preferred_slot),
             known_exceptions = VALUES(known_exceptions),
+            email = VALUES(email),
+            invoice_address = VALUES(invoice_address),
+            payment_choice = VALUES(payment_choice),
+            desired_installment = VALUES(desired_installment),
             consent_version = VALUES(consent_version),
             consent_at = UTC_TIMESTAMP(),
             updated_at = UTC_TIMESTAMP()`,
@@ -53,6 +62,10 @@ export const saveScheduleSurveySubmission = async (form) => {
             JSON.stringify(form.availableSlots),
             form.preferredSlot,
             form.knownExceptions,
+            form.email,
+            form.invoiceAddress,
+            form.paymentChoice,
+            form.desiredInstallment,
             form.consentVersion,
         ],
     );
@@ -62,7 +75,8 @@ export const saveScheduleSurveySubmission = async (form) => {
 export const getAdminScheduleSurvey = async () => {
     const [rows] = await database.execute(
         `SELECT id, reference_code, name, available_slots, preferred_slot,
-                known_exceptions, created_at, updated_at
+                known_exceptions, email, invoice_address, payment_choice, desired_installment,
+                created_at, updated_at
          FROM zepter_schedule_surveys
          ORDER BY updated_at DESC
          LIMIT 500`,

@@ -2,6 +2,9 @@ import {
     CalendarCheck2,
     CheckCircle2,
     Clock3,
+    CreditCard,
+    Mail,
+    MapPin,
     MessageSquareText,
     RefreshCw,
     Star,
@@ -12,6 +15,13 @@ import {
 import { createElement, useEffect, useMemo, useState } from "react";
 
 const slotOrder = ["mo_1000", "mo_1930", "mi_1000", "mi_1930", "fr_1930", "sa_1100", "so_1100"];
+
+const paymentLabels = {
+    already_paid: "Bereits bezahlt",
+    full: "Einmalzahlung · 690 €",
+    two_installments: "2 Raten à 355 €",
+    custom_installment: "Individuelle Monatsrate",
+};
 
 const formatDate = (value) => value
     ? new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value))
@@ -51,6 +61,10 @@ export const AdminScheduleSurvey = ({ requestJson }) => {
     )), [data.summary]);
     const leadingSlot = ranked[0];
     const answeredWithNotes = data.submissions.filter((item) => item.knownExceptions).length;
+    const paymentCounts = data.submissions.reduce((counts, item) => {
+        const key = item.paymentChoice || "not_answered";
+        return { ...counts, [key]: (counts[key] || 0) + 1 };
+    }, {});
     const latestUpdate = data.submissions.reduce((latest, item) => {
         const timestamp = new Date(item.updatedAt).getTime();
         return timestamp > latest ? timestamp : latest;
@@ -129,6 +143,26 @@ export const AdminScheduleSurvey = ({ requestJson }) => {
                     </section>
 
                     <section className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
+                        <h2 className="text-2xl font-bold">Zahlungsübersicht</h2>
+                        <p className="mt-1 text-sm text-[#648082]">Damit ihr Rechnungen und Zahlungsstände direkt zuordnen könnt.</p>
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            {[
+                                ["already_paid", "Bereits bezahlt"],
+                                ["full", "Einmalzahlung · 690 €"],
+                                ["two_installments", "2 Raten à 355 €"],
+                                ["custom_installment", "Individuelle Rate"],
+                            ].map(([key, label]) => (
+                                <article key={key} className="rounded-2xl border border-[#0f8b8d]/12 bg-white p-4">
+                                    <CreditCard className="h-5 w-5 text-[#0f8b8d]" />
+                                    <strong className="mt-3 block text-2xl text-[#075f62]">{paymentCounts[key] || 0}</strong>
+                                    <span className="mt-1 block text-sm text-[#648082]">{label}</span>
+                                </article>
+                            ))}
+                        </div>
+                        {paymentCounts.not_answered > 0 && <p className="mt-4 text-sm text-[#74663d]">{paymentCounts.not_answered} ältere Rückmeldung{paymentCounts.not_answered === 1 ? " enthält" : "en enthalten"} noch keine Zahlungsangabe.</p>}
+                    </section>
+
+                    <section className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
                         <h2 className="text-2xl font-bold">Einzelne Rückmeldungen</h2>
                         <p className="mt-1 text-sm text-[#648082]">Eine erneute Abgabe mit demselben Namen ersetzt automatisch die frühere Auswahl.</p>
                         <div className="mt-5 grid gap-3">
@@ -147,6 +181,11 @@ export const AdminScheduleSurvey = ({ requestJson }) => {
                                         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(240px,0.7fr)]">
                                             <div className="rounded-xl bg-[#eaf4f1] px-4 py-3 text-sm leading-6"><strong className="flex items-center gap-2 text-[#075f62]"><CheckCircle2 className="h-4 w-4" /> Alle möglichen Termine</strong><span className="mt-1 block text-[#426466]">{available.join(" · ")}</span></div>
                                             <div className="rounded-xl bg-[#f7f4ed] px-4 py-3 text-sm leading-6"><strong className="flex items-center gap-2 text-[#675f4d]"><Clock3 className="h-4 w-4" /> Bekannte Ausnahme</strong><span className="mt-1 block whitespace-pre-wrap text-[#6d685d]">{submission.knownExceptions || "keine angegeben"}</span></div>
+                                        </div>
+                                        <div className="mt-3 grid gap-3 lg:grid-cols-3">
+                                            <div className="rounded-xl bg-[#eaf4f1] px-4 py-3 text-sm leading-6"><strong className="flex items-center gap-2 text-[#075f62]"><CreditCard className="h-4 w-4" /> Zahlungsweise</strong><span className="mt-1 block text-[#426466]">{paymentLabels[submission.paymentChoice] || "noch nicht angegeben"}{submission.paymentChoice === "custom_installment" && submission.desiredInstallment ? ` · ${submission.desiredInstallment} € monatlich` : ""}</span></div>
+                                            <div className="rounded-xl bg-[#f7f4ed] px-4 py-3 text-sm leading-6"><strong className="flex items-center gap-2 text-[#675f4d]"><Mail className="h-4 w-4" /> E-Mail</strong><span className="mt-1 block break-all text-[#6d685d]">{submission.email || "noch nicht angegeben"}</span></div>
+                                            <div className="rounded-xl bg-[#f7f4ed] px-4 py-3 text-sm leading-6"><strong className="flex items-center gap-2 text-[#675f4d]"><MapPin className="h-4 w-4" /> Rechnungsanschrift</strong><span className="mt-1 block whitespace-pre-wrap text-[#6d685d]">{submission.invoiceAddress || "noch nicht angegeben"}</span></div>
                                         </div>
                                     </article>
                                 );

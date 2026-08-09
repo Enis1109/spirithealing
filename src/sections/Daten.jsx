@@ -382,12 +382,13 @@ export const Daten = () => {
                         <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Terminabfrage der 8-Wochen-Begleitung
                         </h3>
                         <p className="text-md">
-                            Zur Festlegung des gemeinsamen wöchentlichen Live-Termins verarbeiten wir Ihren Namen, die von Ihnen<br/>
-                            ausgewählten regelmäßig möglichen Zeiten, Ihren Wunschtermin und freiwillige Hinweise zu bereits<br/>
-                            bekannten Ausnahmen. Die Angaben werden verschlüsselt übertragen, in der MySQL-Datenbank unseres<br/>
-                            Hostings gespeichert und ausschließlich Sabine und Selcan im geschützten Administrationsbereich zur<br/>
-                            Terminplanung angezeigt.<br/><br/>
-                            Die Verarbeitung erfolgt auf Grundlage Ihrer Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO. Sie können<br/>
+                            Zur Festlegung des gemeinsamen wöchentlichen Live-Termins und zur Vorbereitung der Abrechnung<br/>
+                            verarbeiten wir Ihren Namen, Ihre E-Mail-Adresse, Rechnungsanschrift, die ausgewählten möglichen Zeiten,<br/>
+                            Ihren Wunschtermin, Ihre gewünschte Zahlungsweise und freiwillige Hinweise zu bekannten Ausnahmen.<br/>
+                            Die Angaben werden verschlüsselt übertragen, in der MySQL-Datenbank unseres Hostings gespeichert und<br/>
+                            ausschließlich Sabine und Selcan im geschützten Administrationsbereich angezeigt.<br/><br/>
+                            Die Verarbeitung erfolgt zur Durchführung vorvertraglicher beziehungsweise vertraglicher Maßnahmen<br/>
+                            gemäß Art. 6 Abs. 1 lit. b DSGVO sowie auf Grundlage Ihrer Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO. Sie können<br/>
                             Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Die Angaben werden gelöscht, sobald<br/>
                             sie für die Terminplanung und Durchführung der 8-Wochen-Begleitung nicht mehr benötigt werden, sofern<br/>
                             keine gesetzlichen Pflichten einer Löschung entgegenstehen.<br/>
