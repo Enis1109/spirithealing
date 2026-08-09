@@ -50,6 +50,12 @@ test("validates payment choice and an individual installment from 90 euros", () 
         desiredInstallment: "125",
     });
     assert.equal(result.desiredInstallment, 125);
+    const localizedResult = normalizeScheduleSurveySubmission({
+        ...completeSubmission,
+        paymentChoice: "custom_installment",
+        desiredInstallment: "240,00",
+    });
+    assert.equal(localizedResult.desiredInstallment, 240);
     assert.throws(() => normalizeScheduleSurveySubmission({ ...completeSubmission, paymentChoice: "unknown" }), ScheduleSurveyValidationError);
     assert.throws(() => normalizeScheduleSurveySubmission({ ...completeSubmission, paymentChoice: "custom_installment", desiredInstallment: 89 }), ScheduleSurveyValidationError);
 });
