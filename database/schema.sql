@@ -333,3 +333,22 @@ CREATE TABLE IF NOT EXISTS zepter_onboarding_submissions (
     CONSTRAINT zepter_onboarding_b02_check CHECK (b02 <= 10),
     CONSTRAINT zepter_onboarding_b03_check CHECK (b03 <= 10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS zepter_schedule_surveys (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    participant_key CHAR(64) NOT NULL,
+    reference_code VARCHAR(32) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    available_slots TEXT NOT NULL,
+    preferred_slot VARCHAR(32) NOT NULL,
+    known_exceptions VARCHAR(800) NULL,
+    consent_version VARCHAR(48) NOT NULL,
+    consent_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY zepter_schedule_participant_unique (participant_key),
+    UNIQUE KEY zepter_schedule_reference_unique (reference_code),
+    INDEX zepter_schedule_preferred_idx (preferred_slot),
+    INDEX zepter_schedule_updated_idx (updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -21,6 +21,7 @@ import { WebsiteAssistant } from "@/components/WebsiteAssistant"
 const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
 const AdminArea = lazy(() => import("@/sections/AdminArea").then((module) => ({ default: module.AdminArea })));
 const OnboardingQuestionnaire = lazy(() => import("@/sections/OnboardingQuestionnaire").then((module) => ({ default: module.OnboardingQuestionnaire })));
+const ScheduleSurvey = lazy(() => import("@/sections/ScheduleSurvey").then((module) => ({ default: module.ScheduleSurvey })));
 
 const PrivacyPage = () => {
   const { language } = useLanguage();
@@ -50,9 +51,10 @@ function App() {
   const isCampaignLanding = location.pathname === "/gratis-meditationen";
   const isAdminApp = location.pathname.startsWith("/admin");
   const isOnboardingApp = location.pathname.startsWith("/startfragebogen");
+  const isScheduleSurveyApp = location.pathname.startsWith("/terminumfrage");
   const isMemberApp = location.pathname.startsWith("/mitglieder")
     || isCampaignLanding;
-  const isStandaloneApp = isMemberApp || isAdminApp || isOnboardingApp;
+  const isStandaloneApp = isMemberApp || isAdminApp || isOnboardingApp || isScheduleSurveyApp;
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
@@ -88,6 +90,11 @@ function App() {
         <Route path="/startfragebogen" element={
           <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#eaf4f1] font-bold text-[#0f8b8d]">Startfragebogen wird geladen …</main>}>
             <OnboardingQuestionnaire/>
+          </Suspense>
+        }/>
+        <Route path="/terminumfrage" element={
+          <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#eaf4f1] font-bold text-[#0f8b8d]">Terminabfrage wird geladen …</main>}>
+            <ScheduleSurvey/>
           </Suspense>
         }/>
         <Route path="/impressum" element={<Imp/>}/>

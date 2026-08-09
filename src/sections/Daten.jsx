@@ -379,6 +379,19 @@ export const Daten = () => {
                             Einwilligung in eine zusammengefasste Auswertung ohne Namens- oder Kontaktbezug ist freiwillig und hat<br/>
                             keinen Einfluss auf Ihre Teilnahme.<br/>
                         </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Terminabfrage der 8-Wochen-Begleitung
+                        </h3>
+                        <p className="text-md">
+                            Zur Festlegung des gemeinsamen wöchentlichen Live-Termins verarbeiten wir Ihren Namen, die von Ihnen<br/>
+                            ausgewählten regelmäßig möglichen Zeiten, Ihren Wunschtermin und freiwillige Hinweise zu bereits<br/>
+                            bekannten Ausnahmen. Die Angaben werden verschlüsselt übertragen, in der MySQL-Datenbank unseres<br/>
+                            Hostings gespeichert und ausschließlich Sabine und Selcan im geschützten Administrationsbereich zur<br/>
+                            Terminplanung angezeigt.<br/><br/>
+                            Die Verarbeitung erfolgt auf Grundlage Ihrer Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO. Sie können<br/>
+                            Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Die Angaben werden gelöscht, sobald<br/>
+                            sie für die Terminplanung und Durchführung der 8-Wochen-Begleitung nicht mehr benötigt werden, sofern<br/>
+                            keine gesetzlichen Pflichten einer Löschung entgegenstehen.<br/>
+                        </p>
                         <h3 className="text-lg md:text-xl leading-tight  font-bold text-primary">Anfrage per E-Mail, Telefon oder Telefax
                         </h3>
                         <p className="text-md">

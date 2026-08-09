@@ -1,5 +1,6 @@
 import {
     Bot,
+    CalendarCheck2,
     CheckCircle2,
     ClipboardList,
     Clock3,
@@ -25,6 +26,7 @@ import {
 } from "@/content/adminCatalog";
 import { AdminPrograms } from "@/sections/AdminPrograms";
 import { AdminOnboarding } from "@/sections/AdminOnboarding";
+import { AdminScheduleSurvey } from "@/sections/AdminScheduleSurvey";
 
 const emptySnapshot = { entries: [], revisions: [] };
 
@@ -390,6 +392,7 @@ export const AdminArea = () => {
         { id: "assistant", label: "Fragebot", icon: Bot },
         { id: "programs", label: "Programme", icon: UsersRound },
         { id: "onboarding", label: "Startfragebögen", icon: ClipboardList },
+        { id: "schedule", label: "Terminabfrage", icon: CalendarCheck2 },
     ];
 
     return (
@@ -409,7 +412,7 @@ export const AdminArea = () => {
 
             <div className="mx-auto grid w-full max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:px-8">
                 <aside className="h-fit rounded-3xl bg-[#fffaf2] p-3 shadow-sm lg:sticky lg:top-6">
-                    <nav className="grid grid-cols-2 gap-2 sm:grid-cols-5 lg:grid-cols-1">
+                    <nav className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1">
                         {navItems.map(({ id, label, icon }) => (
                             <button key={id} type="button" onClick={() => { setActiveTab(id); setSearch(""); }} className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-bold transition lg:justify-start ${activeTab === id ? "bg-[#0f8b8d] text-white" : "text-[#4e6d6e] hover:bg-[#eaf4f1]"}`}>{createElement(icon, { className: "h-5 w-5" })}<span>{label}</span></button>
                         ))}
@@ -520,6 +523,10 @@ export const AdminArea = () => {
 
                     {contentState === "ready" && activeTab === "onboarding" && (
                         <AdminOnboarding requestJson={requestJson} setNotice={setNotice} />
+                    )}
+
+                    {contentState === "ready" && activeTab === "schedule" && (
+                        <AdminScheduleSurvey requestJson={requestJson} />
                     )}
                 </section>
             </div>
