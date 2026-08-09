@@ -352,6 +352,10 @@ const schemaStatements = [
         available_slots TEXT NOT NULL,
         preferred_slot VARCHAR(32) NOT NULL,
         known_exceptions VARCHAR(800) NULL,
+        email VARCHAR(254) NULL,
+        invoice_address VARCHAR(500) NULL,
+        payment_choice VARCHAR(32) NULL,
+        desired_installment DECIMAL(10,2) NULL,
         consent_version VARCHAR(48) NOT NULL,
         consent_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -379,6 +383,10 @@ const additiveColumns = [
     { table: "members", column: "acquisition_referrer_host", definition: "VARCHAR(160) NULL AFTER acquisition_landing_path" },
     { table: "members", column: "acquisition_session_id", definition: "CHAR(36) NULL AFTER acquisition_referrer_host" },
     { table: "member_access_tokens", column: "pending_password_hash", definition: "VARCHAR(255) NULL AFTER token_hash" },
+    { table: "zepter_schedule_surveys", column: "email", definition: "VARCHAR(254) NULL AFTER known_exceptions" },
+    { table: "zepter_schedule_surveys", column: "invoice_address", definition: "VARCHAR(500) NULL AFTER email" },
+    { table: "zepter_schedule_surveys", column: "payment_choice", definition: "VARCHAR(32) NULL AFTER invoice_address" },
+    { table: "zepter_schedule_surveys", column: "desired_installment", definition: "DECIMAL(10,2) NULL AFTER payment_choice" },
 ];
 
 const ensureColumn = async ({ table, column, definition }) => {
