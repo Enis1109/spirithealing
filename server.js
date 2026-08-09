@@ -85,6 +85,14 @@ import {
     OnboardingValidationError,
 } from "./server/onboardingValidation.js";
 import {
+    getAdminScheduleSurvey,
+    saveScheduleSurveySubmission,
+} from "./server/scheduleSurvey.js";
+import {
+    normalizeScheduleSurveySubmission,
+    ScheduleSurveyValidationError,
+} from "./server/scheduleSurveyValidation.js";
+import {
     ValidationError,
     validateContact,
     validateMemberAccess,
@@ -416,6 +424,20 @@ app.post("/api/zepter/onboarding", submissionLimiter, sameOriginOnly, async (req
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Onboarding submission failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/zepter/schedule-survey", submissionLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const form = normalizeScheduleSurveySubmission(request.body);
+        const submission = await saveScheduleSurveySubmission(form);
+        return response.status(submission.updated ? 200 : 201).json({ ok: true, updated: submission.updated });
+    } catch (error) {
+        if (error instanceof ScheduleSurveyValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Schedule survey submission failed", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
@@ -766,6 +788,18 @@ app.get("/api/admin/onboarding", async (request, response) => {
         return response.json({ ok: true, submissions: await getAdminOnboardingSubmissions() });
     } catch (error) {
         console.error("Admin onboarding submissions could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/admin/schedule-surveys", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        return response.json({ ok: true, ...(await getAdminScheduleSurvey()) });
+    } catch (error) {
+        console.error("Admin schedule survey could not be prepared", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
@@ -1123,7 +1157,7 @@ app.use(express.static(distDirectory, {
 app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith("/api/")) return next();
     try {
-        if (request.path.startsWith("/admin") || request.path.startsWith("/startfragebogen")) {
+        if (request.path.startsWith("/admin") || request.path.startsWith("/startfragebogen") || request.path.startsWith("/terminumfrage")) {
             response.set("X-Robots-Tag", "noindex, nofollow");
         }
         return response
