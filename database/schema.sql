@@ -356,3 +356,68 @@ CREATE TABLE IF NOT EXISTS zepter_schedule_surveys (
     INDEX zepter_schedule_preferred_idx (preferred_slot),
     INDEX zepter_schedule_updated_idx (updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ai_command_center_settings (
+    id TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    monthly_budget_usd DECIMAL(10,2) NOT NULL DEFAULT 15.00,
+    per_run_budget_usd DECIMAL(10,2) NOT NULL DEFAULT 2.00,
+    external_actions_enabled TINYINT(1) NOT NULL DEFAULT 0,
+    updated_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    CONSTRAINT ai_settings_member_fk FOREIGN KEY (updated_by) REFERENCES members(id) ON DELETE SET NULL,
+    CONSTRAINT ai_settings_single_row_check CHECK (id = 1)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ai_pilot_weeks (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    week_number TINYINT UNSIGNED NOT NULL,
+    participant_count SMALLINT UNSIGNED NOT NULL,
+    planned_focus VARCHAR(800) NOT NULL,
+    actual_focus VARCHAR(800) NOT NULL,
+    common_questions LONGTEXT NULL,
+    helpful_exercises LONGTEXT NULL,
+    challenges LONGTEXT NULL,
+    observed_changes LONGTEXT NULL,
+    professional_insights LONGTEXT NULL,
+    next_adjustments LONGTEXT NULL,
+    anonymization_confirmed TINYINT(1) NOT NULL DEFAULT 0,
+    created_by BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY ai_pilot_week_number_unique (week_number),
+    INDEX ai_pilot_updated_idx (updated_at),
+    CONSTRAINT ai_pilot_member_fk FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE RESTRICT,
+    CONSTRAINT ai_pilot_week_number_check CHECK (week_number BETWEEN 1 AND 8)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ai_workflow_runs (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    workflow_id VARCHAR(80) NOT NULL,
+    workflow_name VARCHAR(160) NOT NULL,
+    execution_mode VARCHAR(24) NOT NULL DEFAULT 'mock',
+    status VARCHAR(24) NOT NULL DEFAULT 'completed',
+    source_pilot_week_id BIGINT UNSIGNED NULL,
+    input_json LONGTEXT NOT NULL,
+    steps_json LONGTEXT NOT NULL,
+    result_json LONGTEXT NOT NULL,
+    usage_json LONGTEXT NULL,
+    estimated_cost_usd DECIMAL(10,4) NOT NULL DEFAULT 0,
+    actual_cost_usd DECIMAL(10,4) NOT NULL DEFAULT 0,
+    approval_status VARCHAR(24) NOT NULL DEFAULT 'pending',
+    error_message VARCHAR(500) NULL,
+    decision_note TEXT NULL,
+    decided_by BIGINT UNSIGNED NULL,
+    decided_at DATETIME NULL,
+    created_by BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX ai_run_created_idx (created_at),
+    INDEX ai_run_approval_idx (approval_status, created_at),
+    CONSTRAINT ai_run_pilot_week_fk FOREIGN KEY (source_pilot_week_id) REFERENCES ai_pilot_weeks(id) ON DELETE SET NULL,
+    CONSTRAINT ai_run_creator_fk FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE RESTRICT,
+    CONSTRAINT ai_run_decider_fk FOREIGN KEY (decided_by) REFERENCES members(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

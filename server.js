@@ -93,6 +93,21 @@ import {
     ScheduleSurveyValidationError,
 } from "./server/scheduleSurveyValidation.js";
 import {
+    AiCommandCenterExecutionError,
+    decideAiWorkflowRun,
+    getAiCommandCenterSnapshot,
+    saveAiBudgetSettings,
+    savePilotWeekAndRun,
+    startAiWorkflow,
+} from "./server/aiCommandCenter.js";
+import {
+    AiCommandCenterValidationError,
+    normalizeBudgetSettings,
+    normalizePilotWeek,
+    normalizeRunDecision,
+    normalizeWorkflowRequest,
+} from "./server/aiCommandCenterValidation.js";
+import {
     ValidationError,
     validateContact,
     validateMemberAccess,
@@ -764,6 +779,111 @@ app.post("/api/admin/content/restore", adminSameOriginOnly, async (request, resp
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Content revision could not be restored", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+const sendAiExecutionError = (response, error, extra = {}) => {
+    if (!(error instanceof AiCommandCenterExecutionError)) return false;
+    if (["AI_RUN_BUDGET_EXCEEDED", "AI_MONTHLY_BUDGET_EXCEEDED"].includes(error.code)) {
+        response.status(409).json({ ok: false, error: "ai_budget_exceeded", ...extra });
+        return true;
+    }
+    if (error.code === "AI_NOT_CONFIGURED" || error.code === "AI_MODEL_NOT_PRICED") {
+        response.status(503).json({ ok: false, error: "ai_not_configured", ...extra });
+        return true;
+    }
+    if (String(error.code || "").startsWith("AI_PROVIDER_")) {
+        response.status(502).json({ ok: false, error: "ai_provider_unavailable", ...extra });
+        return true;
+    }
+    return false;
+};
+
+app.get("/api/admin/ai-command-center", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        return response.json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        console.error("AI command center could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/ai-command-center/pilot-weeks", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const pilotWeek = normalizePilotWeek(request.body);
+        await savePilotWeekAndRun({ pilotWeek, memberId: member.id });
+        return response.status(201).json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        if (sendAiExecutionError(response, error, { pilotWeekSaved: true })) return undefined;
+        console.error("Pilot week could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/ai-command-center/runs", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const { workflowId } = normalizeWorkflowRequest(request.body);
+        await startAiWorkflow({ workflowId, memberId: member.id });
+        return response.status(201).json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        if (error?.code === "PILOT_WEEKS_REQUIRED") {
+            return response.status(409).json({ ok: false, error: "pilot_weeks_required" });
+        }
+        if (sendAiExecutionError(response, error)) return undefined;
+        console.error("AI workflow could not be started", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/ai-command-center/runs/:id/decision", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const runId = Number(request.params.id);
+        if (!Number.isSafeInteger(runId) || runId < 1) throw new AiCommandCenterValidationError("id");
+        const decision = normalizeRunDecision(request.body);
+        const decided = await decideAiWorkflowRun({ runId, ...decision, memberId: member.id });
+        if (!decided) return response.status(409).json({ ok: false, error: "already_decided_or_missing" });
+        return response.json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        console.error("AI workflow decision could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/ai-command-center/settings", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const settings = normalizeBudgetSettings(request.body);
+        await saveAiBudgetSettings({ ...settings, memberId: member.id });
+        return response.json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        console.error("AI command center settings could not be saved", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
