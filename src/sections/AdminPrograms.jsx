@@ -13,6 +13,7 @@ import {
     UserCheck,
     UserMinus,
     UsersRound,
+    Upload,
     Video,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -94,6 +95,25 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
         }
     };
 
+    const handlePrepareProgram = async () => {
+        const confirmed = window.confirm("Die geprüfte Struktur ersetzt die acht aktuellen Entwürfe. Bereits veröffentlichte Fassungen und Teilnehmerzugänge bleiben unverändert. Fortfahren?");
+        if (!confirmed) return;
+        setBusyKey("prepare-program");
+        setNotice(null);
+        try {
+            const result = await requestJson(`/api/admin/programs/${programSlug}/prepare`, {
+                method: "POST",
+                body: JSON.stringify({}),
+            });
+            applyProgram(result.program);
+            setNotice({ type: "success", text: "Die geprüfte Acht-Wochen-Struktur wurde als Entwurf eingesetzt. Es wurde nichts veröffentlicht." });
+        } catch {
+            setNotice({ type: "error", text: "Die Acht-Wochen-Struktur konnte nicht vorbereitet werden." });
+        } finally {
+            setBusyKey("");
+        }
+    };
+
     const setWeekField = (weekNumber, field, value) => setWeeks((current) => ({
         ...current,
         [weekNumber]: { ...current[weekNumber], [field]: value },
@@ -161,6 +181,37 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
         }
     };
 
+    const uploadWeekAsset = async (weekNumber, kind, file) => {
+        if (!file) return;
+        const assetKey = `asset-${weekNumber}-${kind}`;
+        setBusyKey(assetKey);
+        setNotice(null);
+        try {
+            const response = await fetch(`/api/admin/programs/${programSlug}/weeks/${weekNumber}/assets/${kind}`, {
+                method: "PUT",
+                credentials: "same-origin",
+                headers: { "Content-Type": file.type },
+                body: file,
+            });
+            const uploadResult = await response.json().catch(() => ({}));
+            if (!response.ok || !uploadResult.ok) throw new Error(uploadResult.error || "upload_failed");
+            const field = kind === "workbook" ? "workbookUrl" : "meditationUrl";
+            const nextWeek = { ...weeks[weekNumber], [field]: uploadResult.asset.url };
+            setWeeks((current) => ({ ...current, [weekNumber]: nextWeek }));
+            const saveResult = await requestJson(`/api/admin/programs/${programSlug}/weeks/${weekNumber}`, {
+                method: "PUT",
+                body: JSON.stringify(nextWeek),
+            });
+            applyProgram(saveResult.program, { resetSettings: false });
+            setNotice({ type: "success", text: `${kind === "workbook" ? "Das Workbook" : "Die Meditation"} für Woche ${weekNumber} wurde geschützt hochgeladen und als Entwurf gespeichert. Es wurde nichts veröffentlicht.` });
+        } catch (error) {
+            const tooLarge = error.message === "asset_too_large";
+            setNotice({ type: "error", text: tooLarge ? "Die Datei ist zu groß." : "Die Datei konnte nicht geschützt hochgeladen werden." });
+        } finally {
+            setBusyKey("");
+        }
+    };
+
     const updateEnrollment = async (email, active) => {
         setBusyKey(`member-${email}`);
         setNotice(null);
@@ -202,7 +253,10 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                     <label className="font-bold lg:col-span-2">Untertitel<textarea rows="2" className={textAreaClass} value={settings.subtitle} onChange={(event) => setSettings((current) => ({ ...current, subtitle: event.target.value }))} /></label>
                     <label className="font-bold lg:col-span-2">WhatsApp-Community-Link<input type="url" className={fieldClass} placeholder="https://chat.whatsapp.com/…" value={settings.whatsappUrl} onChange={(event) => setSettings((current) => ({ ...current, whatsappUrl: event.target.value }))} /></label>
                 </div>
-                <button type="submit" disabled={busyKey === "settings"} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#0f8b8d] px-5 font-bold text-white disabled:opacity-60"><Save className="h-4 w-4" /> Einstellungen speichern</button>
+                <div className="mt-6 flex flex-wrap gap-3">
+                    <button type="submit" disabled={busyKey === "settings"} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#0f8b8d] px-5 font-bold text-white disabled:opacity-60"><Save className="h-4 w-4" /> Einstellungen speichern</button>
+                    <button type="button" disabled={Boolean(busyKey)} onClick={handlePrepareProgram} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#0f8b8d] px-5 font-bold text-[#0f8b8d] disabled:opacity-60">{busyKey === "prepare-program" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}Geprüfte 8-Wochen-Struktur als Entwurf einsetzen</button>
+                </div>
             </form>
 
             <section className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
@@ -252,9 +306,9 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                                     <label className="font-bold"><Clock3 className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Live-Termin<input type="datetime-local" className={fieldClass} value={week.liveAt} onChange={(event) => setWeekField(week.weekNumber, "liveAt", event.target.value)} /></label>
                                     <label className="font-bold"><MessageCircle className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Zoom-Link<input className={fieldClass} value={week.zoomUrl} onChange={(event) => setWeekField(week.weekNumber, "zoomUrl", event.target.value)} /></label>
                                     <label className="font-bold"><FileAudio className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Meditationstitel<input className={fieldClass} value={week.meditationTitle} onChange={(event) => setWeekField(week.weekNumber, "meditationTitle", event.target.value)} /></label>
-                                    <label className="font-bold">Meditationsdatei oder -link<input className={fieldClass} value={week.meditationUrl} onChange={(event) => setWeekField(week.weekNumber, "meditationUrl", event.target.value)} /></label>
+                                    <div className="font-bold">Meditationsdatei oder -link<input className={fieldClass} value={week.meditationUrl} onChange={(event) => setWeekField(week.weekNumber, "meditationUrl", event.target.value)} /><label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#0f8b8d] px-4 text-sm text-[#0f8b8d]"><Upload className="h-4 w-4" />{busyKey === `asset-${week.weekNumber}-meditation` ? "Wird hochgeladen …" : "Audiodatei geschützt hochladen"}<input type="file" className="sr-only" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav" disabled={Boolean(busyKey)} onChange={(event) => { uploadWeekAsset(week.weekNumber, "meditation", event.target.files?.[0]); event.target.value = ""; }} /></label></div>
                                     <label className="font-bold"><FileText className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Workbook-Bezeichnung<input className={fieldClass} value={week.workbookLabel} onChange={(event) => setWeekField(week.weekNumber, "workbookLabel", event.target.value)} /></label>
-                                    <label className="font-bold">Workbook-Datei oder -link<input className={fieldClass} value={week.workbookUrl} onChange={(event) => setWeekField(week.weekNumber, "workbookUrl", event.target.value)} /></label>
+                                    <div className="font-bold">Workbook-Datei oder -link<input className={fieldClass} value={week.workbookUrl} onChange={(event) => setWeekField(week.weekNumber, "workbookUrl", event.target.value)} /><label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#0f8b8d] px-4 text-sm text-[#0f8b8d]"><Upload className="h-4 w-4" />{busyKey === `asset-${week.weekNumber}-workbook` ? "Wird hochgeladen …" : "PDF geschützt hochladen"}<input type="file" className="sr-only" accept="application/pdf" disabled={Boolean(busyKey)} onChange={(event) => { uploadWeekAsset(week.weekNumber, "workbook", event.target.files?.[0]); event.target.value = ""; }} /></label></div>
                                     <label className="font-bold lg:col-span-2"><Video className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Aufzeichnungslink<input className={fieldClass} value={week.recordingUrl} onChange={(event) => setWeekField(week.weekNumber, "recordingUrl", event.target.value)} /></label>
                                     <label className="font-bold lg:col-span-2">Wochenaufgaben – eine Aufgabe pro Zeile<textarea rows="5" className={textAreaClass} value={week.tasks.map((task) => task.label).join("\n")} onChange={(event) => setWeekTasks(week.weekNumber, event.target.value)} /></label>
                                 </div>

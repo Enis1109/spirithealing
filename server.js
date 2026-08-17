@@ -59,12 +59,19 @@ import {
     getMemberProgram,
     getProgramsForMember,
     initializeDefaultPrograms,
+    prepareZepterProgramDraft,
     publishProgramWeek,
     saveProgramSettings,
     saveProgramWeekDraft,
     setProgramEnrollment,
     updateProgramTask,
 } from "./server/programs.js";
+import {
+    getProgramAsset,
+    getProgramAssetRule,
+    ProgramAssetError,
+    saveProgramAsset,
+} from "./server/programAssets.js";
 import {
     normalizeProgramEnrollment,
     normalizeProgramSettings,
@@ -1003,6 +1010,60 @@ app.get("/api/members/programs/:slug", async (request, response) => {
     }
 });
 
+app.get("/api/members/programs/:slug/assets/:weekNumber/:kind", async (request, response) => {
+    const member = await getMemberFromRequest(request);
+    response.set("Cache-Control", "private, max-age=3600");
+    if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const weekNumber = Number(request.params.weekNumber);
+        const kind = String(request.params.kind || "");
+        if (!Number.isSafeInteger(weekNumber) || weekNumber < 1 || !getProgramAssetRule(kind)) {
+            throw new ProgramValidationError("asset");
+        }
+        const program = await getMemberProgram({ slug, member });
+        if (program === false) return response.status(403).json({ ok: false, error: "forbidden" });
+        if (!program) return response.status(404).json({ ok: false, error: "not_found" });
+        const week = program.weeks.find((item) => item.weekNumber === weekNumber);
+        if (!week || week.locked) return response.status(403).json({ ok: false, error: "locked" });
+
+        const asset = await getProgramAsset({ slug, weekNumber, kind });
+        if (!asset) return response.status(404).json({ ok: false, error: "asset_processing" });
+        const disposition = `${asset.disposition}; filename="${asset.downloadName}"`;
+        response.set({
+            "Accept-Ranges": kind === "meditation" ? "bytes" : "none",
+            "Content-Type": asset.contentType,
+            "Content-Disposition": disposition,
+        });
+
+        const range = kind === "meditation" ? request.get("range") : "";
+        if (!range) {
+            response.set("Content-Length", String(asset.size));
+            return fs.createReadStream(asset.path).pipe(response);
+        }
+        const match = /^bytes=(\d+)-(\d*)$/u.exec(range);
+        if (!match) return response.status(416).end();
+        const start = Number(match[1]);
+        const requestedEnd = match[2] ? Number(match[2]) : asset.size - 1;
+        const end = Math.min(requestedEnd, asset.size - 1);
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || start > end) {
+            return response.status(416).end();
+        }
+        response.status(206).set({
+            "Content-Range": `bytes ${start}-${end}/${asset.size}`,
+            "Content-Length": String(end - start + 1),
+        });
+        return fs.createReadStream(asset.path, { start, end }).pipe(response);
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program asset could not be delivered", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
 app.post("/api/members/programs/:slug/tasks", sameOriginOnly, async (request, response) => {
     const member = await getMemberFromRequest(request);
     response.set("Cache-Control", "no-store");
@@ -1040,6 +1101,64 @@ app.get("/api/admin/programs/:slug", async (request, response) => {
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
+
+app.post("/api/admin/programs/:slug/prepare", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        if (slug !== "zepter-acht-wochen") return response.status(404).json({ ok: false, error: "not_found" });
+        const prepared = await prepareZepterProgramDraft();
+        if (!prepared) return response.status(404).json({ ok: false, error: "not_found" });
+        return response.json({ ok: true, program: await getAdminProgram(slug) });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Zepter program draft could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put(
+    "/api/admin/programs/:slug/weeks/:weekNumber/assets/:kind",
+    adminSameOriginOnly,
+    express.raw({ type: ["application/pdf", "audio/*"], limit: "40mb" }),
+    async (request, response) => {
+        const member = await getAdminMember(request, response);
+        if (!member) return undefined;
+        try {
+            const slug = normalizeProgramSlug(request.params.slug);
+            const weekNumber = Number(request.params.weekNumber);
+            const kind = String(request.params.kind || "");
+            if (!Number.isSafeInteger(weekNumber) || weekNumber < 1 || !getProgramAssetRule(kind)) {
+                throw new ProgramValidationError("asset");
+            }
+            const program = await getAdminProgram(slug);
+            if (!program?.weeks.some((week) => week.weekNumber === weekNumber)) {
+                return response.status(404).json({ ok: false, error: "not_found" });
+            }
+            const asset = await saveProgramAsset({
+                slug,
+                weekNumber,
+                kind,
+                contentType: String(request.get("content-type") || "").split(";", 1)[0].toLowerCase(),
+                buffer: request.body,
+            });
+            return response.status(201).json({ ok: true, asset: { url: asset.url, size: asset.size } });
+        } catch (error) {
+            if (error instanceof ProgramValidationError) {
+                return response.status(400).json({ ok: false, error: "validation", field: error.field });
+            }
+            if (error instanceof ProgramAssetError) {
+                const status = error.code === "asset_too_large" ? 413 : 400;
+                return response.status(status).json({ ok: false, error: error.code });
+            }
+            console.error("Program asset could not be uploaded", error);
+            return response.status(500).json({ ok: false, error: "server" });
+        }
+    },
+);
 
 app.put("/api/admin/programs/:slug", adminSameOriginOnly, async (request, response) => {
     const member = await getAdminMember(request, response);
