@@ -53,3 +53,22 @@ test("keeps pilot data, missing weeks and extension hypotheses visibly separate"
     assert.equal(run.result.programBlueprint[8].sourceStatus, "hypothesis");
     assert.deepEqual(run.result.sourceWeeks, [1]);
 });
+
+test("creates a content project with text and image handoff but no external action", () => {
+    const contentBrief = {
+        projectName: "Herbstprojekt",
+        goal: "Eine neue Gruppe vorstellen",
+        audience: "Interessierte Erwachsene",
+        coreMessage: "Kleine Schritte sind erlaubt.",
+        offer: "Informationsseite",
+        callToAction: "Mehr erfahren",
+        tone: "warm und klar",
+        constraints: "Keine Heilversprechen",
+        channels: ["instagram", "facebook"],
+    };
+    const run = buildMockWorkflowRun({ workflowId: "content-project", contentBrief });
+    assert.equal(run.result.contentPackage.pieces.length, 2);
+    assert.equal(run.result.contentPackage.imageBriefs.length, 1);
+    assert.deepEqual(run.result.externalActions, []);
+    assert.ok(run.steps.some((step) => step.agentId === "brand-review"));
+});

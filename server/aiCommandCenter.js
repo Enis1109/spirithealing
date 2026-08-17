@@ -6,6 +6,7 @@ import {
 } from "./aiCommandCenterEngine.js";
 import {
     estimateLiveWorkflowCostUsd,
+    generateOpenAiImageDraft,
     getAiRuntimeConfig,
     runLiveWorkflow,
 } from "./openAiCommandCenter.js";
@@ -68,6 +69,24 @@ const mapRun = (row) => ({
     completedAt: toIsoString(row.completed_at),
 });
 
+const mapAsset = (row) => ({
+    id: Number(row.id),
+    sourceRunId: Number(row.source_run_id),
+    briefIndex: Number(row.brief_index),
+    provider: row.provider,
+    model: row.model,
+    mimeType: row.mime_type,
+    size: row.image_size,
+    quality: row.image_quality,
+    status: row.status,
+    estimatedCostUsd: Number(row.estimated_cost_usd),
+    actualCostUsd: Number(row.actual_cost_usd),
+    errorMessage: row.error_message || "",
+    createdAt: toIsoString(row.created_at),
+    completedAt: toIsoString(row.completed_at),
+    imageUrl: row.status === "completed" ? `/api/admin/ai-command-center/assets/${row.id}/image` : "",
+});
+
 const getPilotWeeks = async () => {
     const [rows] = await database.execute(
         `SELECT id, week_number, participant_count, planned_focus, actual_focus,
@@ -96,6 +115,18 @@ const getRuns = async () => {
     return rows.map(mapRun);
 };
 
+const getAssets = async () => {
+    const [rows] = await database.execute(
+        `SELECT id, source_run_id, brief_index, provider, model, mime_type, image_size,
+                image_quality, status, estimated_cost_usd, actual_cost_usd, error_message,
+                created_at, completed_at
+         FROM ai_generated_assets
+         ORDER BY created_at DESC
+         LIMIT 60`,
+    );
+    return rows.map(mapAsset);
+};
+
 const getSettings = async () => {
     const [rows] = await database.execute(
         `SELECT monthly_budget_usd, per_run_budget_usd, external_actions_enabled, updated_at
@@ -109,10 +140,17 @@ const getSettings = async () => {
          FROM ai_workflow_runs
          WHERE created_at >= DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')`,
     );
+    const [assetCostRows] = await database.execute(
+        `SELECT
+            COALESCE(SUM(actual_cost_usd), 0) AS spent,
+            COALESCE(SUM(CASE WHEN status = 'running' THEN estimated_cost_usd ELSE 0 END), 0) AS reserved
+         FROM ai_generated_assets
+         WHERE created_at >= DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')`,
+    );
     const runtime = getAiRuntimeConfig();
     const monthlyBudgetUsd = Number(settings.monthly_budget_usd ?? 15);
-    const spentThisMonthUsd = Number(costRows[0]?.spent || 0);
-    const reservedThisMonthUsd = Number(costRows[0]?.reserved || 0);
+    const spentThisMonthUsd = Number(costRows[0]?.spent || 0) + Number(assetCostRows[0]?.spent || 0);
+    const reservedThisMonthUsd = Number(costRows[0]?.reserved || 0) + Number(assetCostRows[0]?.reserved || 0);
     return {
         mode: runtime.mode,
         configurationStatus: runtime.mode === "mock"
@@ -152,9 +190,10 @@ const getSettings = async () => {
 };
 
 export const getAiCommandCenterSnapshot = async () => {
-    const [pilotWeeks, runs, settings] = await Promise.all([
+    const [pilotWeeks, runs, assets, settings] = await Promise.all([
         getPilotWeeks(),
         getRuns(),
+        getAssets(),
         getSettings(),
     ]);
     return {
@@ -163,6 +202,7 @@ export const getAiCommandCenterSnapshot = async () => {
         settings,
         pilotWeeks,
         runs,
+        assets,
     };
 };
 
@@ -211,11 +251,19 @@ const reserveLiveRun = async ({ workflow, sourcePilotWeekId, input, estimatedCos
              WHERE created_at >= DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')`,
         );
         const committed = Number(costRows[0]?.committed || 0);
-        if (committed + estimatedCostUsd > monthlyBudgetUsd) {
+        const [assetCostRows] = await connection.execute(
+            `SELECT COALESCE(SUM(
+                CASE WHEN status = 'running' THEN estimated_cost_usd ELSE actual_cost_usd END
+             ), 0) AS committed
+             FROM ai_generated_assets
+             WHERE created_at >= DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')`,
+        );
+        const totalCommitted = committed + Number(assetCostRows[0]?.committed || 0);
+        if (totalCommitted + estimatedCostUsd > monthlyBudgetUsd) {
             throw new AiCommandCenterExecutionError("AI_MONTHLY_BUDGET_EXCEEDED", "Estimated run cost exceeds the monthly budget", {
                 estimatedCostUsd,
                 budgetUsd: monthlyBudgetUsd,
-                committedUsd: committed,
+                committedUsd: totalCommitted,
             });
         }
         const [result] = await connection.execute(
@@ -265,29 +313,32 @@ const failLiveRun = async ({ runId, error }) => {
     );
 };
 
-const executeWorkflow = async ({ workflowId, sourcePilotWeekId = null, pilotWeek = null, pilotWeeks = [], memberId }) => {
+const executeWorkflow = async ({ workflowId, sourcePilotWeekId = null, pilotWeek = null, pilotWeeks = [], contentBrief = null, memberId }) => {
     const runtime = getAiRuntimeConfig();
     const workflow = aiWorkflowRegistry.find((item) => item.id === workflowId);
     if (!workflow) throw new AiCommandCenterExecutionError("AI_WORKFLOW_UNKNOWN", `Unknown workflow: ${workflowId}`);
     const input = workflowId === "pilot-week-learning"
         ? { pilotWeekId: sourcePilotWeekId, weekNumber: pilotWeek.weekNumber }
-        : { pilotWeekIds: pilotWeeks.map((week) => week.id) };
+        : workflowId === "content-project"
+            ? { contentBrief }
+            : { pilotWeekIds: pilotWeeks.map((week) => week.id) };
 
     if (runtime.mode === "mock") {
-        const workflowRun = buildMockWorkflowRun({ workflowId, pilotWeek, pilotWeeks });
+        const workflowRun = buildMockWorkflowRun({ workflowId, pilotWeek, pilotWeeks, contentBrief });
         return insertMockRun({ workflowRun, sourcePilotWeekId, input, memberId });
     }
     if (!runtime.ready) {
         throw new AiCommandCenterExecutionError("AI_NOT_CONFIGURED", "A required AI provider key is missing");
     }
 
-    const estimatedCostUsd = estimateLiveWorkflowCostUsd({ workflowId, pilotWeek, pilotWeeks });
+    const estimatedCostUsd = estimateLiveWorkflowCostUsd({ workflowId, pilotWeek, pilotWeeks, contentBrief });
     const runId = await reserveLiveRun({ workflow, sourcePilotWeekId, input, estimatedCostUsd, memberId });
     try {
         const workflowRun = await runLiveWorkflow({
             workflowId,
             pilotWeek,
             pilotWeeks,
+            contentBrief,
             estimatedCostUsd,
         });
         await completeLiveRun({ runId, workflowRun });
@@ -348,13 +399,109 @@ export const savePilotWeekAndRun = async ({ pilotWeek, memberId }) => {
     return { pilotWeekId, runId };
 };
 
-export const startAiWorkflow = async ({ workflowId, memberId }) => {
+export const startAiWorkflow = async ({ workflowId, contentBrief = null, memberId }) => {
+    if (workflowId === "content-project") {
+        return executeWorkflow({ workflowId, contentBrief, memberId });
+    }
     const pilotWeeks = await getPilotWeeks();
     if (pilotWeeks.length === 0) {
         const error = new AiCommandCenterExecutionError("PILOT_WEEKS_REQUIRED", "Pilot weeks are required");
         throw error;
     }
     return executeWorkflow({ workflowId, pilotWeeks, memberId });
+};
+
+export const createAiImageDraft = async ({ sourceRunId, briefIndex, memberId }) => {
+    const runtime = getAiRuntimeConfig();
+    if (!runtime.imageGenerationReady) {
+        throw new AiCommandCenterExecutionError("AI_IMAGE_NOT_CONFIGURED", "Image generation is not configured");
+    }
+    const connection = await database.getConnection();
+    let assetId;
+    let prompt;
+    const estimatedCostUsd = runtime.imageDraftOutputCostUsd;
+    try {
+        await connection.beginTransaction();
+        const [runRows] = await connection.execute(
+            `SELECT workflow_id, status, approval_status, result_json
+             FROM ai_workflow_runs WHERE id = ? FOR UPDATE`,
+            [sourceRunId],
+        );
+        const run = runRows[0];
+        if (!run || run.workflow_id !== "content-project" || run.status !== "completed") {
+            throw new AiCommandCenterExecutionError("AI_CONTENT_RUN_INVALID", "A completed content project is required");
+        }
+        if (run.approval_status !== "approved") {
+            throw new AiCommandCenterExecutionError("AI_CONTENT_APPROVAL_REQUIRED", "The content project must be approved first");
+        }
+        const result = parseJson(run.result_json, {});
+        prompt = result?.contentPackage?.imageBriefs?.[briefIndex]?.prompt;
+        if (!prompt) throw new AiCommandCenterExecutionError("AI_IMAGE_BRIEF_MISSING", "Image brief is missing");
+
+        const [settingsRows] = await connection.execute(
+            `SELECT monthly_budget_usd, per_run_budget_usd
+             FROM ai_command_center_settings WHERE id = 1 FOR UPDATE`,
+        );
+        const settings = settingsRows[0] || {};
+        if (estimatedCostUsd > Number(settings.per_run_budget_usd || 0)) {
+            throw new AiCommandCenterExecutionError("AI_RUN_BUDGET_EXCEEDED", "Estimated image cost exceeds the per-run budget");
+        }
+        const [runCostRows] = await connection.execute(
+            `SELECT COALESCE(SUM(CASE WHEN status = 'running' THEN estimated_cost_usd ELSE actual_cost_usd END), 0) AS committed
+             FROM ai_workflow_runs WHERE created_at >= DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')`,
+        );
+        const [assetCostRows] = await connection.execute(
+            `SELECT COALESCE(SUM(CASE WHEN status = 'running' THEN estimated_cost_usd ELSE actual_cost_usd END), 0) AS committed
+             FROM ai_generated_assets WHERE created_at >= DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')`,
+        );
+        const committed = Number(runCostRows[0]?.committed || 0) + Number(assetCostRows[0]?.committed || 0);
+        if (committed + estimatedCostUsd > Number(settings.monthly_budget_usd || 0)) {
+            throw new AiCommandCenterExecutionError("AI_MONTHLY_BUDGET_EXCEEDED", "Estimated image cost exceeds the monthly budget");
+        }
+        const [insertResult] = await connection.execute(
+            `INSERT INTO ai_generated_assets (
+                source_run_id, brief_index, model, prompt, image_size, image_quality,
+                status, estimated_cost_usd, created_by
+             ) VALUES (?, ?, ?, ?, ?, ?, 'running', ?, ?)`,
+            [sourceRunId, briefIndex, runtime.imageModel, prompt, runtime.imageSize, runtime.imageDraftQuality, estimatedCostUsd, memberId],
+        );
+        assetId = Number(insertResult.insertId);
+        await connection.commit();
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+
+    try {
+        const generated = await generateOpenAiImageDraft({ prompt });
+        await database.execute(
+            `UPDATE ai_generated_assets
+             SET status = 'completed', image_data = ?, mime_type = ?, model = ?, image_size = ?,
+                 image_quality = ?, actual_cost_usd = ?, completed_at = UTC_TIMESTAMP()
+             WHERE id = ? AND status = 'running'`,
+            [generated.image, generated.mimeType, generated.model, generated.size, generated.quality, generated.costUsd, assetId],
+        );
+        return assetId;
+    } catch (error) {
+        await database.execute(
+            `UPDATE ai_generated_assets
+             SET status = 'failed', error_message = ?, completed_at = UTC_TIMESTAMP()
+             WHERE id = ? AND status = 'running'`,
+            [String(error?.message || "Image generation failed").slice(0, 500), assetId],
+        );
+        throw new AiCommandCenterExecutionError(error?.code || "AI_PROVIDER_UNAVAILABLE", error?.message || "Image generation failed", { assetId });
+    }
+};
+
+export const getAiGeneratedAssetImage = async ({ assetId }) => {
+    const [rows] = await database.execute(
+        `SELECT mime_type, image_data FROM ai_generated_assets WHERE id = ? AND status = 'completed' LIMIT 1`,
+        [assetId],
+    );
+    if (!rows[0]?.image_data) return null;
+    return { mimeType: rows[0].mime_type, image: rows[0].image_data };
 };
 
 export const decideAiWorkflowRun = async ({ runId, approved, note, memberId }) => {

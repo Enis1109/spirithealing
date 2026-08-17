@@ -64,6 +64,22 @@ export const aiWorkflowRegistry = [
             "quality-controller",
         ],
     },
+    {
+        id: "content-project",
+        name: "Content-Projekt erstellen",
+        description: "Erstellt aus einem freigegebenen Briefing ein geprüftes Textpaket und Bildbriefings für die gesonderte Bildfreigabe.",
+        steps: [
+            "sh-director",
+            "strategy-growth",
+            "content-studio",
+            "social-growth",
+            "brand-review",
+            "research-fact-check",
+            "compliance-privacy",
+            "independent-review",
+            "quality-controller",
+        ],
+    },
 ];
 
 const workflowMap = new Map(aiWorkflowRegistry.map((workflow) => [workflow.id, workflow]));
@@ -161,15 +177,51 @@ const coreProductResult = (pilotWeeks) => {
     };
 };
 
-export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks = [] }) => {
+const contentProjectResult = (contentBrief) => ({
+    title: `Content-Paket: ${excerpt(contentBrief.projectName)}`,
+    executiveSummary: "Der interne Arbeitsstand enthält kanalspezifische Texte, Bildbriefings und eine Canva-Übergabe. Vor einer Außenwirkung folgt die menschliche Freigabe.",
+    signals: [`Ziel: ${excerpt(contentBrief.goal)}`, `Zielgruppe: ${excerpt(contentBrief.audience)}`],
+    recommendedAdjustments: ["Texte und Bildsprache vor der Verwendung gemeinsam prüfen."],
+    contentIdeas: contentBrief.channels.map((channel) => `${channel}: Beitrag zur Kernbotschaft „${excerpt(contentBrief.coreMessage)}“`),
+    reviewNotes: ["Keine Diagnose oder unbelegte Gesundheitswirkung verwenden.", "Dieser Mock-Entwurf wurde nicht veröffentlicht."],
+    openDecisions: ["Textpaket intern freigeben oder mit einer Prüfnotiz ablehnen."],
+    contentPackage: {
+        projectName: contentBrief.projectName,
+        campaignIdea: contentBrief.coreMessage,
+        audienceSummary: contentBrief.audience,
+        coreMessage: contentBrief.coreMessage,
+        pieces: contentBrief.channels.map((channel) => ({
+            channel,
+            format: channel === "newsletter" || channel === "blog" ? "Kurztext" : "Beitrag",
+            hook: contentBrief.coreMessage,
+            caption: `${contentBrief.coreMessage}\n\n${contentBrief.callToAction}`,
+            callToAction: contentBrief.callToAction,
+        })),
+        imageBriefs: [{
+            title: `Leitmotiv für ${contentBrief.projectName}`,
+            purpose: `Visueller Entwurf für ${contentBrief.channels.join(", ")}`,
+            prompt: `Ruhiges, professionelles Markenmotiv für Spirit Healing zum Thema ${contentBrief.coreMessage}. Keine Schrift im Bild, keine medizinischen Symbole, keine übertriebenen Wirkungsversprechen.`,
+        }],
+        canvaHandoff: ["Markenfarben und Logo nach der Bildfreigabe in Canva anwenden.", "Formate erst nach Auswahl des Motivs anlegen."],
+    },
+    programBlueprint: [],
+    sourceWeeks: [],
+    sources: [],
+    externalActions: [],
+});
+
+export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks = [], contentBrief = null }) => {
     const workflow = workflowMap.get(workflowId);
     if (!workflow) throw new Error(`Unknown workflow: ${workflowId}`);
     if (workflowId === "pilot-week-learning" && !pilotWeek) throw new Error("Pilot week is required");
     if (workflowId === "core-product-development" && pilotWeeks.length === 0) throw new Error("Pilot weeks are required");
+    if (workflowId === "content-project" && !contentBrief) throw new Error("Content brief is required");
 
     const contextLabel = workflowId === "pilot-week-learning"
         ? `Pilotwoche ${pilotWeek.weekNumber}`
-        : `${pilotWeeks.length} gespeicherte Pilotwochen`;
+        : workflowId === "content-project"
+            ? `Content-Projekt „${contentBrief.projectName}“`
+            : `${pilotWeeks.length} gespeicherte Pilotwochen`;
     const summaries = {
         "sh-director": `Auftrag und Freigabegrenzen für ${contextLabel} festgelegt.`,
         "knowledge-curator": "Eingaben als interne Quelle geordnet; keine fremden Quellen oder personenbezogenen Daten ergänzt.",
@@ -178,6 +230,8 @@ export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks 
         "editorial-teaching": "Langform, Lehrlogik und Erzählbogen als internen Arbeitsauftrag vorbereitet.",
         "research-fact-check": "Aussagen mit möglichem Quellen- oder Evidenzbedarf markiert.",
         "content-studio": "Mögliche Contentansätze vorbereitet; keine Veröffentlichung ausgelöst.",
+        "social-growth": "Kanalspezifische Textvarianten und Formate vorbereitet; keine Veröffentlichung ausgelöst.",
+        "brand-review": "Ton, Bildsprache und Markenbezug des Arbeitsstands geprüft.",
         "strategy-growth": "Angebotsbezug als interne Hypothese geprüft.",
         "compliance-privacy": "Datenschutz, sensible Aussagen und Außenwirkungsrisiken geprüft.",
         "independent-review": "Ergebnis unabhängig auf Widersprüche und unbelegte Schlussfolgerungen geprüft.",
@@ -193,6 +247,10 @@ export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks 
         actualCostUsd: 0,
         approvalStatus: "pending",
         steps: completedSteps(workflow, (agentId) => summaries[agentId] || "Arbeitsschritt abgeschlossen."),
-        result: workflowId === "pilot-week-learning" ? pilotResult(pilotWeek) : coreProductResult(pilotWeeks),
+        result: workflowId === "pilot-week-learning"
+            ? pilotResult(pilotWeek)
+            : workflowId === "content-project"
+                ? contentProjectResult(contentBrief)
+                : coreProductResult(pilotWeeks),
     };
 };

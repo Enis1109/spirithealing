@@ -94,7 +94,9 @@ import {
 } from "./server/scheduleSurveyValidation.js";
 import {
     AiCommandCenterExecutionError,
+    createAiImageDraft,
     decideAiWorkflowRun,
+    getAiGeneratedAssetImage,
     getAiCommandCenterSnapshot,
     saveAiBudgetSettings,
     savePilotWeekAndRun,
@@ -103,6 +105,7 @@ import {
 import {
     AiCommandCenterValidationError,
     normalizeBudgetSettings,
+    normalizeImageDraftRequest,
     normalizePilotWeek,
     normalizeRunDecision,
     normalizeWorkflowRequest,
@@ -789,7 +792,7 @@ const sendAiExecutionError = (response, error, extra = {}) => {
         response.status(409).json({ ok: false, error: "ai_budget_exceeded", ...extra });
         return true;
     }
-    if (error.code === "AI_NOT_CONFIGURED" || error.code === "AI_MODEL_NOT_PRICED") {
+    if (["AI_NOT_CONFIGURED", "AI_MODEL_NOT_PRICED", "AI_IMAGE_NOT_CONFIGURED"].includes(error.code)) {
         response.status(503).json({ ok: false, error: "ai_not_configured", ...extra });
         return true;
     }
@@ -835,8 +838,8 @@ app.post("/api/admin/ai-command-center/runs", adminSameOriginOnly, async (reques
     if (!member) return undefined;
 
     try {
-        const { workflowId } = normalizeWorkflowRequest(request.body);
-        await startAiWorkflow({ workflowId, memberId: member.id });
+        const { workflowId, contentBrief } = normalizeWorkflowRequest(request.body);
+        await startAiWorkflow({ workflowId, contentBrief, memberId: member.id });
         return response.status(201).json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
     } catch (error) {
         if (error instanceof AiCommandCenterValidationError) {
@@ -849,6 +852,42 @@ app.post("/api/admin/ai-command-center/runs", adminSameOriginOnly, async (reques
         console.error("AI workflow could not be started", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
+});
+
+app.post("/api/admin/ai-command-center/runs/:id/image-drafts", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const sourceRunId = Number(request.params.id);
+        if (!Number.isSafeInteger(sourceRunId) || sourceRunId < 1) throw new AiCommandCenterValidationError("id");
+        const { briefIndex } = normalizeImageDraftRequest(request.body);
+        await createAiImageDraft({ sourceRunId, briefIndex, memberId: member.id });
+        return response.status(201).json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        if (error instanceof AiCommandCenterExecutionError && ["AI_CONTENT_RUN_INVALID", "AI_CONTENT_APPROVAL_REQUIRED", "AI_IMAGE_BRIEF_MISSING"].includes(error.code)) {
+            return response.status(409).json({ ok: false, error: error.code.toLowerCase() });
+        }
+        if (sendAiExecutionError(response, error)) return undefined;
+        console.error("AI image draft could not be generated", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/admin/ai-command-center/assets/:id/image", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    const assetId = Number(request.params.id);
+    if (!Number.isSafeInteger(assetId) || assetId < 1) return response.status(400).end();
+    const asset = await getAiGeneratedAssetImage({ assetId });
+    if (!asset) return response.status(404).end();
+    response.set("Cache-Control", "private, max-age=3600");
+    response.type(asset.mimeType);
+    return response.send(asset.image);
 });
 
 app.put("/api/admin/ai-command-center/runs/:id/decision", adminSameOriginOnly, async (request, response) => {

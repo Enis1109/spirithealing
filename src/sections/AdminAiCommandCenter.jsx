@@ -7,6 +7,7 @@ import {
     CircleDashed,
     FileCheck2,
     FlaskConical,
+    Image,
     LockKeyhole,
     Play,
     Save,
@@ -31,6 +32,27 @@ const emptyPilotWeek = {
     anonymizationConfirmed: false,
 };
 
+const emptyContentBrief = {
+    projectName: "",
+    goal: "",
+    audience: "",
+    coreMessage: "",
+    offer: "",
+    callToAction: "",
+    tone: "warm, klar, respektvoll und bodenständig",
+    constraints: "Keine Diagnosen, Heilversprechen oder erfundenen Erfahrungsberichte.",
+    channels: ["instagram", "facebook"],
+    anonymizationConfirmed: false,
+};
+
+const contentChannels = [
+    ["instagram", "Instagram"],
+    ["facebook", "Facebook"],
+    ["linkedin", "LinkedIn"],
+    ["newsletter", "Newsletter"],
+    ["blog", "Blog"],
+];
+
 const fieldDefinitions = [
     ["plannedFocus", "Geplanter Schwerpunkt", "Was war für diese Woche vorgesehen?", true],
     ["actualFocus", "Tatsächlich bearbeiteter Schwerpunkt", "Was stand in der gemeinsamen Arbeit wirklich im Vordergrund?", true],
@@ -44,6 +66,7 @@ const fieldDefinitions = [
 
 const viewOptions = [
     ["overview", "Übersicht", BrainCircuit],
+    ["projects", "Projekte", Sparkles],
     ["pilot", "Pilotwochen", FileCheck2],
     ["runs", "Prüfläufe", CircleDashed],
     ["agents", "Agenten", Bot],
@@ -89,8 +112,49 @@ const resultSources = (sources) => Array.isArray(sources) && sources.length > 0 
     </section>
 ) : null;
 
-const RunResult = ({ result }) => (
+const RunResult = ({ result, run, assets, settings, onImageDraft, busy }) => (
     <div className="grid gap-5 lg:grid-cols-2">
+        {result.contentPackage && (
+            <section className="space-y-5 lg:col-span-2">
+                <div className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-5">
+                    <h4 className="text-xl font-bold text-[#173f40]">{result.contentPackage.projectName}</h4>
+                    <p className="mt-2 leading-7 text-[#4e6d6e]">{result.contentPackage.campaignIdea}</p>
+                    <p className="mt-3 text-sm leading-6 text-[#6b8585]"><strong>Zielgruppe:</strong> {result.contentPackage.audienceSummary}</p>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-2">
+                    {result.contentPackage.pieces?.map((piece, index) => (
+                        <article key={`${piece.channel}-${index}`} className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-5">
+                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#0f8b8d]">{piece.channel} · {piece.format}</p>
+                            <h5 className="mt-3 font-bold text-[#173f40]">{piece.hook}</h5>
+                            <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-[#4e6d6e]">{piece.caption}</p>
+                            <p className="mt-3 rounded-xl bg-[#eaf4f1] p-3 text-sm"><strong>Handlungsaufruf:</strong> {piece.callToAction}</p>
+                        </article>
+                    ))}
+                </div>
+                <div>
+                    <h4 className="font-bold text-[#173f40]">Bildentwürfe</h4>
+                    <div className="mt-3 grid gap-4 lg:grid-cols-2">
+                        {result.contentPackage.imageBriefs?.map((brief, index) => {
+                            const generated = assets.find((asset) => asset.sourceRunId === run.id && asset.briefIndex === index && asset.status === "completed");
+                            return (
+                                <article key={`${brief.title}-${index}`} className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-5">
+                                    {generated && <img src={generated.imageUrl} alt={brief.title} className="mb-4 aspect-[2/3] w-full rounded-2xl object-cover" />}
+                                    <h5 className="font-bold text-[#173f40]">{brief.title}</h5>
+                                    <p className="mt-2 text-sm leading-6 text-[#6b8585]">{brief.purpose}</p>
+                                    {!generated && run.approvalStatus === "approved" && (
+                                        <button type="button" onClick={() => onImageDraft(run.id, index)} disabled={busy === `image-${run.id}-${index}` || !settings.imageGenerationReady} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-5 font-bold text-white disabled:opacity-40">
+                                            <Image className="h-4 w-4" />{busy === `image-${run.id}-${index}` ? "Bild wird erstellt …" : `Bildentwurf erstellen (ca. ${preciseMoney(settings.imageDraftOutputCostUsd)})`}
+                                        </button>
+                                    )}
+                                    {!generated && run.approvalStatus !== "approved" && <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">Zuerst das Textpaket intern freigeben.</p>}
+                                </article>
+                            );
+                        })}
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-[#6b8585]">Nach der Bildauswahl ist das Paket für das Canva-Markenlayout vorbereitet. Dabei wird noch nichts veröffentlicht.</p>
+                </div>
+            </section>
+        )}
         {resultList("Beobachtungen", result.signals)}
         {resultList("Empfohlene Anpassungen", result.recommendedAdjustments)}
         {resultList("Interne Contentansätze", result.contentIdeas)}
@@ -122,6 +186,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
     const [commandCenter, setCommandCenter] = useState(null);
     const [activeView, setActiveView] = useState("overview");
     const [pilotWeek, setPilotWeek] = useState(emptyPilotWeek);
+    const [contentBrief, setContentBrief] = useState(emptyContentBrief);
     const [busy, setBusy] = useState("");
     const [decisionNotes, setDecisionNotes] = useState({});
     const [budget, setBudget] = useState({ monthlyBudgetUsd: "15", perRunBudgetUsd: "2" });
@@ -155,7 +220,48 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
         if (error.code === "ai_not_configured") return "Die Live-KI ist noch nicht vollständig aktiviert. Der noch fehlende Anbieter-Schlüssel muss zuerst sicher auf dem Server hinterlegt werden.";
         if (error.code === "ai_budget_exceeded") return "Der Auftrag würde eine gespeicherte Budgetgrenze überschreiten. Passe die Grenze erst nach bewusster Freigabe an.";
         if (error.code === "ai_provider_unavailable") return "Ein KI-Anbieter war nicht erreichbar oder hat den Auftrag nicht vollständig beantwortet. Ein möglicherweise angefallener Teilbetrag bleibt im Kostenprotokoll sichtbar.";
+        if (error.code === "ai_content_approval_required") return "Gib zuerst das Textpaket intern frei.";
         return "Der Auftrag konnte nicht gespeichert werden. Bitte prüfe die Eingaben.";
+    };
+
+    const submitContentProject = async (event) => {
+        event.preventDefault();
+        setBusy("content-project");
+        setNotice(null);
+        try {
+            const result = await requestJson("/api/admin/ai-command-center/runs", {
+                method: "POST",
+                body: JSON.stringify({ workflowId: "content-project", ...contentBrief }),
+            });
+            applySnapshot(result.commandCenter);
+            setContentBrief(emptyContentBrief);
+            setActiveView("runs");
+            const latestRun = result.commandCenter.runs[0];
+            setNotice({ type: "success", text: `Das Content-Paket wurde erstellt. Kosten: ${money(latestRun?.actualCostUsd)}. Es wartet auf deine Prüfung und wurde nicht veröffentlicht.` });
+        } catch (error) {
+            setNotice({ type: "error", text: describeError(error) });
+        } finally {
+            setBusy("");
+        }
+    };
+
+    const createImageDraft = async (runId, briefIndex) => {
+        const estimatedCost = preciseMoney(commandCenter.settings.imageDraftOutputCostUsd);
+        if (!window.confirm(`Diesen Bildentwurf jetzt mit GPT Image 2 erstellen? Die geschätzten API-Kosten betragen ${estimatedCost}.`)) return;
+        setBusy(`image-${runId}-${briefIndex}`);
+        setNotice(null);
+        try {
+            const result = await requestJson(`/api/admin/ai-command-center/runs/${runId}/image-drafts`, {
+                method: "POST",
+                body: JSON.stringify({ briefIndex, confirmCost: true }),
+            });
+            applySnapshot(result.commandCenter);
+            setNotice({ type: "success", text: `Der Bildentwurf wurde erstellt. Kosten: ${estimatedCost}. Er bleibt intern und ist für die Canva-Übergabe vorbereitet.` });
+        } catch (error) {
+            setNotice({ type: "error", text: describeError(error) });
+        } finally {
+            setBusy("");
+        }
     };
 
     const submitPilotWeek = async (event) => {
@@ -253,7 +359,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
     if (state === "loading") return <div className="rounded-3xl bg-[#fffaf2] p-8 font-bold text-[#0f8b8d]">KI-Zentrale wird geladen …</div>;
     if (state === "error") return <div className="rounded-3xl bg-red-50 p-8 font-bold text-red-800">Die KI-Zentrale konnte nicht geladen werden.</div>;
 
-    const { agents, workflows, settings, pilotWeeks, runs } = commandCenter;
+    const { agents, workflows, settings, pilotWeeks, runs, assets = [] } = commandCenter;
     const liveMode = settings.mode === "live";
     const liveReady = liveMode && settings.configurationStatus === "ready";
     const runCostLabel = `${money(settings.typicalRunCostUsd?.min)}–${money(settings.typicalRunCostUsd?.max)}`;
@@ -280,7 +386,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                 </div>
             </section>
 
-            <nav className="grid gap-2 rounded-3xl bg-[#fffaf2] p-3 shadow-sm sm:grid-cols-4">
+            <nav className="grid gap-2 rounded-3xl bg-[#fffaf2] p-3 shadow-sm sm:grid-cols-5">
                 {viewOptions.map(([id, label, icon]) => (
                     <button key={id} type="button" onClick={() => setActiveView(id)} className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl px-4 font-bold transition ${activeView === id ? "bg-[#0f8b8d] text-white" : "text-[#4e6d6e] hover:bg-[#eaf4f1]"}`}>{createElement(icon, { className: "h-5 w-5" })}{label}</button>
                 ))}
@@ -337,6 +443,41 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                 </div>
             )}
 
+            {activeView === "projects" && (
+                <form onSubmit={submitContentProject} className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm sm:p-8">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Content-Produktion</p>
+                            <h2 className="mt-2 text-3xl font-bold">Neues Projekt starten</h2>
+                            <p className="mt-2 max-w-3xl leading-7 text-[#6b8585]">Die Agenten erstellen vollständige Texte, Bildbriefings und eine Canva-Übergabe. Das Textpaket kostet typischerweise {runCostLabel}. Ein Bildentwurf wird später einzeln mit derzeit etwa {preciseMoney(settings.imageDraftOutputCostUsd)} bestätigt.</p>
+                        </div>
+                        <span className="rounded-full bg-[#eaf4f1] px-4 py-2 text-sm font-bold text-[#075f62]">Monatsrest: {money(settings.remainingThisMonthUsd)}</span>
+                    </div>
+                    <div className="mt-7 grid gap-5 lg:grid-cols-2">
+                        <label className="text-sm font-bold">Projektname *<input required maxLength={160} value={contentBrief.projectName} onChange={(event) => setContentBrief((current) => ({ ...current, projectName: event.target.value }))} placeholder="Zum Beispiel: Neue Gruppenrunde im Herbst" className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Ziel des Projekts *<textarea required rows={3} maxLength={1200} value={contentBrief.goal} onChange={(event) => setContentBrief((current) => ({ ...current, goal: event.target.value }))} placeholder="Was soll der Content konkret erreichen?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Zielgruppe *<textarea required rows={3} maxLength={1200} value={contentBrief.audience} onChange={(event) => setContentBrief((current) => ({ ...current, audience: event.target.value }))} placeholder="Für wen ist der Content gedacht?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Kernbotschaft *<textarea required rows={3} maxLength={2000} value={contentBrief.coreMessage} onChange={(event) => setContentBrief((current) => ({ ...current, coreMessage: event.target.value }))} placeholder="Was sollen Menschen verstehen oder mitnehmen?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Angebot oder Anlass<textarea rows={3} maxLength={1200} value={contentBrief.offer} onChange={(event) => setContentBrief((current) => ({ ...current, offer: event.target.value }))} placeholder="Welches Angebot darf genannt werden?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Gewünschter nächster Schritt *<textarea required rows={3} maxLength={800} value={contentBrief.callToAction} onChange={(event) => setContentBrief((current) => ({ ...current, callToAction: event.target.value }))} placeholder="Zum Beispiel: Mehr erfahren oder unverbindlich anfragen" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Ton und Sprache *<textarea required rows={3} maxLength={800} value={contentBrief.tone} onChange={(event) => setContentBrief((current) => ({ ...current, tone: event.target.value }))} className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Weitere Grenzen oder Vorgaben<textarea rows={3} maxLength={2000} value={contentBrief.constraints} onChange={(event) => setContentBrief((current) => ({ ...current, constraints: event.target.value }))} className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                    </div>
+                    <fieldset className="mt-6">
+                        <legend className="text-sm font-bold">Kanäle *</legend>
+                        <div className="mt-3 flex flex-wrap gap-3">
+                            {contentChannels.map(([id, label]) => (
+                                <label key={id} className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-bold ${contentBrief.channels.includes(id) ? "border-[#0f8b8d] bg-[#eaf4f1] text-[#075f62]" : "border-[#0f8b8d]/20 bg-white text-[#6b8585]"}`}>
+                                    <input type="checkbox" checked={contentBrief.channels.includes(id)} onChange={(event) => setContentBrief((current) => ({ ...current, channels: event.target.checked ? [...current.channels, id] : current.channels.filter((channel) => channel !== id) }))} className="h-4 w-4 accent-[#0f8b8d]" />{label}
+                                </label>
+                            ))}
+                        </div>
+                    </fieldset>
+                    <label className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><input type="checkbox" required checked={contentBrief.anonymizationConfirmed} onChange={(event) => setContentBrief((current) => ({ ...current, anonymizationConfirmed: event.target.checked }))} className="mt-1 h-5 w-5 shrink-0 accent-[#0f8b8d]" /><span><strong className="block">Eingaben geprüft</strong>Das Briefing enthält keine personenbezogenen Daten oder vertraulichen Geschichten realer Teilnehmender.</span></label>
+                    <button type="submit" disabled={busy === "content-project" || contentBrief.channels.length === 0 || (liveMode && !liveReady)} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-7 font-bold text-white hover:bg-[#0a6f71] disabled:opacity-50"><Play className="h-5 w-5" />{busy === "content-project" ? "Content-Paket wird erstellt …" : `Content-Paket erstellen (typisch ${runCostLabel})`}</button>
+                </form>
+            )}
+
             {activeView === "pilot" && (
                 <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
                     <form onSubmit={submitPilotWeek} className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm sm:p-8">
@@ -380,7 +521,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                             </details>
                             <details className="mt-3 rounded-2xl border border-[#0f8b8d]/15 bg-white p-4" open={run.approvalStatus === "pending"}>
                                 <summary className="cursor-pointer font-bold text-[#075f62]">Ergebnis prüfen</summary>
-                                <div className="mt-5"><RunResult result={run.result} /></div>
+                                <div className="mt-5"><RunResult result={run.result} run={run} assets={assets} settings={settings} onImageDraft={createImageDraft} busy={busy} /></div>
                             </details>
                             {run.status === "completed" && run.approvalStatus === "pending" ? (
                                 <div className="mt-5 rounded-2xl border border-amber-300 bg-amber-50 p-4">
