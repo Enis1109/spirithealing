@@ -115,17 +115,37 @@ const getSettings = async () => {
     const reservedThisMonthUsd = Number(costRows[0]?.reserved || 0);
     return {
         mode: runtime.mode,
-        configurationStatus: runtime.mode === "mock" ? "mock" : runtime.ready ? "ready" : "missing_api_key",
+        configurationStatus: runtime.mode === "mock"
+            ? "mock"
+            : runtime.ready
+                ? "ready"
+                : !runtime.apiKeyConfigured
+                    ? "missing_openai_key"
+                    : "missing_anthropic_key",
         provider: runtime.provider,
         routineModel: runtime.routineModel,
         reviewModel: runtime.reviewModel,
+        editorialModel: runtime.editorialModel,
+        editorialProvider: runtime.editorialProvider,
+        anthropicEnabled: runtime.anthropicEnabled,
+        anthropicConfigured: runtime.anthropicApiKeyConfigured,
+        canvaWorkflowMode: runtime.canvaWorkflowMode,
+        imageGenerationEnabled: runtime.imageGenerationEnabled,
+        imageGenerationReady: runtime.imageGenerationReady,
+        imageModel: runtime.imageModel,
+        imageSize: runtime.imageSize,
+        imageDraftQuality: runtime.imageDraftQuality,
+        imageFinalQuality: runtime.imageFinalQuality,
+        imageDraftOutputCostUsd: runtime.imageDraftOutputCostUsd,
+        imageFinalOutputCostUsd: runtime.imageFinalOutputCostUsd,
+        creativeWorkflowMode: runtime.creativeWorkflowMode,
         webSearchEnabled: runtime.webSearchEnabled,
         monthlyBudgetUsd,
         perRunBudgetUsd: Number(settings.per_run_budget_usd ?? 2),
         spentThisMonthUsd,
         reservedThisMonthUsd,
         remainingThisMonthUsd: Math.max(0, Math.round((monthlyBudgetUsd - spentThisMonthUsd - reservedThisMonthUsd) * 10000) / 10000),
-        typicalRunCostUsd: { min: 0.05, max: 0.5 },
+        typicalRunCostUsd: { min: 0.05, max: runtime.anthropicReady ? 0.7 : 0.5 },
         externalActionsEnabled: false,
         updatedAt: toIsoString(settings.updated_at),
     };
@@ -258,7 +278,7 @@ const executeWorkflow = async ({ workflowId, sourcePilotWeekId = null, pilotWeek
         return insertMockRun({ workflowRun, sourcePilotWeekId, input, memberId });
     }
     if (!runtime.ready) {
-        throw new AiCommandCenterExecutionError("AI_NOT_CONFIGURED", "OpenAI API key is missing");
+        throw new AiCommandCenterExecutionError("AI_NOT_CONFIGURED", "A required AI provider key is missing");
     }
 
     const estimatedCostUsd = estimateLiveWorkflowCostUsd({ workflowId, pilotWeek, pilotWeeks });

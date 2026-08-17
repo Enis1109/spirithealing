@@ -20,9 +20,17 @@ const pilotWeek = {
 };
 
 test("defines separate agent roles with explicit provider routes", () => {
-    assert.equal(aiAgentRegistry.length, 16);
-    assert.equal(new Set(aiAgentRegistry.map((agent) => agent.id)).size, 16);
-    assert.ok(aiAgentRegistry.every((agent) => agent.purpose && agent.provider));
+    assert.equal(aiAgentRegistry.length, 17);
+    assert.equal(new Set(aiAgentRegistry.map((agent) => agent.id)).size, 17);
+    assert.ok(aiAgentRegistry.every((agent) => agent.purpose
+        && agent.provider
+        && agent.providerRoute
+        && agent.capabilities.length > 0
+        && agent.access.length > 0
+        && agent.guardrail));
+    assert.equal(aiAgentRegistry.find((agent) => agent.id === "editorial-teaching")?.providerRoute, "anthropic-editorial");
+    assert.equal(aiAgentRegistry.find((agent) => agent.id === "visual-design")?.providerRoute, "openai-image-canva-handoff");
+    assert.ok(aiAgentRegistry.find((agent) => agent.id === "content-studio")?.capabilities.includes("Bildbriefings für GPT Image 2"));
 });
 
 test("runs the pilot workflow as an ordered, zero-cost mock chain", () => {
@@ -38,6 +46,7 @@ test("runs the pilot workflow as an ordered, zero-cost mock chain", () => {
 
 test("keeps pilot data, missing weeks and extension hypotheses visibly separate", () => {
     const run = buildMockWorkflowRun({ workflowId: "core-product-development", pilotWeeks: [pilotWeek] });
+    assert.equal(run.steps.find((step) => step.agentId === "editorial-teaching")?.provider, "Anthropic · Claude Sonnet 5");
     assert.equal(run.result.programBlueprint.length, 12);
     assert.equal(run.result.programBlueprint[0].sourceStatus, "pilot-data");
     assert.equal(run.result.programBlueprint[1].sourceStatus, "missing");

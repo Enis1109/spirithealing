@@ -1,20 +1,31 @@
+const internalAccess = ["anonymisierte Arbeitsdaten", "interne Arbeitsstände"];
+const humanApproval = "Menschliche Freigabe vor jeder Außenwirkung";
+
+const agent = ({ access = internalAccess, capabilities = ["interne Entwürfe", "Übergabe an Prüfung"], guardrail = humanApproval, ...profile }) => ({
+    ...profile,
+    access,
+    capabilities,
+    guardrail,
+});
+
 export const aiAgentRegistry = [
-    { id: "sh-director", name: "SH Director", area: "Steuerung", provider: "OpenAI", purpose: "Ordnet Aufträge, Übergaben und Freigabepunkte." },
-    { id: "knowledge-curator", name: "Knowledge Curator", area: "Wissen", provider: "OpenAI", purpose: "Ordnet freigegebene Beobachtungen und hält Herkunft und Version fest." },
-    { id: "program-development", name: "Program Development", area: "Kernprodukt", provider: "OpenAI", purpose: "Überführt Pilotlernen in einen prüfbaren Programmentwurf." },
-    { id: "research-fact-check", name: "Research & Fact Check", area: "Recherche", provider: "OpenAI", purpose: "Markiert Aussagen, die Quellen oder vorsichtige Formulierungen brauchen." },
-    { id: "content-studio", name: "Content Studio", area: "Content", provider: "OpenAI", purpose: "Leitet interne Contentansätze aus freigegebenem Wissen ab." },
-    { id: "strategy-growth", name: "Strategy & Growth", area: "Strategie", provider: "OpenAI", purpose: "Verbindet Angebote, Zielgruppen und messbare Ziele." },
-    { id: "social-growth", name: "Social Growth", area: "Social Media", provider: "OpenAI", purpose: "Plant Tests und wertet freigegebene Kennzahlen aus." },
-    { id: "sales-client-journey", name: "Sales & Client Journey", area: "Kundenreise", provider: "OpenAI", purpose: "Entwirft respektvolle Übergänge zwischen Angeboten." },
-    { id: "analytics-learning", name: "Analytics & Learning", area: "Auswertung", provider: "OpenAI", purpose: "Trennt Beobachtung, Hypothese und Messlücke." },
-    { id: "editorial-teaching", name: "Editorial & Teaching", area: "Langform", provider: "OpenAI", purpose: "Bearbeitet lange Skripte, Workbooks und Vorträge als interne Entwürfe." },
-    { id: "brand-review", name: "Brand Review", area: "Marke", provider: "OpenAI", purpose: "Prüft Ton und Spirit-Healing-Begriffe." },
-    { id: "technical-operations", name: "Website & Technical", area: "Technik", provider: "OpenAI", purpose: "Bereitet technische Änderungen vor; kein eigenständiges Live-Deployment." },
-    { id: "operations-manager", name: "Operations Manager", area: "Betrieb", provider: "OpenAI", purpose: "Ordnet Termine, Zuständigkeiten und offene Entscheidungen." },
-    { id: "compliance-privacy", name: "Compliance & Privacy", area: "Schutz", provider: "OpenAI", purpose: "Prüft Datenschutz, Rollen und Gesundheitsclaims." },
-    { id: "independent-review", name: "Independent Review", area: "Zweitprüfung", provider: "OpenAI", purpose: "Prüft wichtige Ergebnisse in einem getrennten Modelllauf unabhängig vom Erstentwurf." },
-    { id: "quality-controller", name: "Quality Controller", area: "Freigabereife", provider: "OpenAI", purpose: "Bündelt Restfragen und legt das Ergebnis Menschen zur Entscheidung vor." },
+    agent({ id: "sh-director", name: "SH Director", area: "Steuerung", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Ordnet Aufträge, Übergaben und Freigabepunkte.", access: ["Auftragsstatus", "Rollenprofile", ...internalAccess] }),
+    agent({ id: "knowledge-curator", name: "Knowledge Curator", area: "Wissen", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Ordnet freigegebene Beobachtungen und hält Herkunft und Version fest." }),
+    agent({ id: "program-development", name: "Program Development", area: "Kernprodukt", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Überführt Pilotlernen in einen prüfbaren Programmentwurf." }),
+    agent({ id: "research-fact-check", name: "Research & Fact Check", area: "Recherche", provider: "OpenAI · Websuche begrenzt", providerRoute: "openai-review", purpose: "Markiert Aussagen, die Quellen oder vorsichtige Formulierungen brauchen.", access: ["allgemeine fachliche Aussagen", "höchstens zwei Websuchen", "keine Pilotdaten in Suchanfragen"] }),
+    agent({ id: "content-studio", name: "Content Studio", area: "Content", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Leitet interne Contentansätze aus freigegebenem Wissen ab.", access: [...internalAccess, "freigegebenes Markenwissen"], capabilities: ["Content-Briefings", "Hooks und Textvarianten", "Bildbriefings für GPT Image 2", "Übergabe an Brand Review"] }),
+    agent({ id: "strategy-growth", name: "Strategy & Growth", area: "Strategie", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Verbindet Angebote, Zielgruppen und messbare Ziele.", access: ["freigegebene Angebotsdaten", "anonymisierte Kennzahlen", "interne Arbeitsstände"] }),
+    agent({ id: "social-growth", name: "Social Growth", area: "Social Media", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Plant Formate und Tests und wertet freigegebene Kennzahlen aus.", access: ["freigegebene Contententwürfe", "anonymisierte Kennzahlen"], capabilities: ["kanalspezifische Formate", "Caption- und Hook-Varianten", "Testhypothesen", "Lernschleife aus freigegebenen Kennzahlen"], guardrail: "Keine Planung oder Veröffentlichung auf einem Social-Media-Konto ohne gesonderte Freigabe" }),
+    agent({ id: "sales-client-journey", name: "Sales & Client Journey", area: "Kundenreise", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Entwirft respektvolle Übergänge zwischen Angeboten.", access: ["freigegebene Angebotsdaten", "anonymisierte Rückmeldungen"] }),
+    agent({ id: "analytics-learning", name: "Analytics & Learning", area: "Auswertung", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Trennt Beobachtung, Hypothese und Messlücke.", access: ["anonymisierte Pilotdaten", "freigegebene Kennzahlen"] }),
+    agent({ id: "editorial-teaching", name: "Editorial & Teaching", area: "Langform", provider: "Anthropic · Claude Sonnet 5", providerRoute: "anthropic-editorial", fallbackProvider: "OpenAI", purpose: "Bearbeitet lange Skripte, Workbooks und Erzähltexte als interne Entwürfe.", access: ["freigegebene Quellen", "anonymisierte Arbeitsdaten", "vorheriger Programmentwurf"], guardrail: "OpenAI-Zweitprüfung und menschliche Freigabe sind Pflicht" }),
+    agent({ id: "brand-review", name: "Brand Review", area: "Marke", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Prüft Ton, Bildbriefing und Spirit-Healing-Begriffe.", access: ["freigegebenes Markenwissen", "interne Text- und Bildbriefings"], capabilities: ["Tonprüfung", "Bildsprache und Motivgrenzen", "Gesundheitsclaim-Prüfung", "Freigabeempfehlung"] }),
+    agent({ id: "visual-design", name: "Visual Design & Canva", area: "Gestaltung", provider: "OpenAI · GPT Image 2 + Canva", providerRoute: "openai-image-canva-handoff", purpose: "Erzeugt oder bearbeitet ein Motiv und überführt es anschließend in ein freigegebenes Canva-Markenlayout.", access: ["intern freigegebene Texte", "freigegebene Bildbriefings", "ausgewählte Canva-Markenvorlagen"], capabilities: ["GPT Image 2 für Motive und Bildbearbeitung", "Entwurfsqualität für günstige Varianten", "Finalqualität für ausgewählte Motive", "Canva-Layout und Formatadaption"], guardrail: "Jede kostenpflichtige Bilderzeugung, Canva-Erstellung und Veröffentlichung braucht die dafür vorgesehene Bestätigung" }),
+    agent({ id: "technical-operations", name: "Website & Technical", area: "Technik", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Bereitet technische Änderungen vor; kein eigenständiges Live-Deployment.", access: ["Repository-Arbeitsbranch", "technische Protokolle"], guardrail: "Kein Merge oder Live-Deployment ohne gesonderte Freigabe" }),
+    agent({ id: "operations-manager", name: "Operations Manager", area: "Betrieb", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Ordnet Termine, Zuständigkeiten und offene Entscheidungen.", access: ["Auftragsstatus", "Zuständigkeiten", "interne Entscheidungen"] }),
+    agent({ id: "compliance-privacy", name: "Compliance & Privacy", area: "Schutz", provider: "OpenAI", providerRoute: "openai-review", purpose: "Prüft Datenschutz, Rollen und Gesundheitsclaims.", access: ["zu prüfende interne Ergebnisse", "Freigabegrenzen"] }),
+    agent({ id: "independent-review", name: "Independent Review", area: "Zweitprüfung", provider: "OpenAI", providerRoute: "openai-review", purpose: "Prüft wichtige Ergebnisse in einem getrennten Modelllauf unabhängig vom Erstentwurf.", access: ["Erstentwurf", "Claude-Langformentwurf", "anonymisierte Quellenbasis"] }),
+    agent({ id: "quality-controller", name: "Quality Controller", area: "Freigabereife", provider: "OpenAI", providerRoute: "openai-review", purpose: "Bündelt Restfragen und legt das Ergebnis Menschen zur Entscheidung vor.", access: ["Prüfprotokolle", "Kostenprotokoll", "interne Ergebnisse"] }),
 ];
 
 const agentMap = new Map(aiAgentRegistry.map((agent) => [agent.id, agent]));
@@ -45,6 +56,7 @@ export const aiWorkflowRegistry = [
             "knowledge-curator",
             "analytics-learning",
             "program-development",
+            "editorial-teaching",
             "research-fact-check",
             "strategy-growth",
             "compliance-privacy",
@@ -163,6 +175,7 @@ export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks 
         "knowledge-curator": "Eingaben als interne Quelle geordnet; keine fremden Quellen oder personenbezogenen Daten ergänzt.",
         "analytics-learning": "Beobachtungen, Deutungen und noch fehlende Messpunkte getrennt.",
         "program-development": "Aus den geordneten Eingaben einen Programmarbeitsstand abgeleitet.",
+        "editorial-teaching": "Langform, Lehrlogik und Erzählbogen als internen Arbeitsauftrag vorbereitet.",
         "research-fact-check": "Aussagen mit möglichem Quellen- oder Evidenzbedarf markiert.",
         "content-studio": "Mögliche Contentansätze vorbereitet; keine Veröffentlichung ausgelöst.",
         "strategy-growth": "Angebotsbezug als interne Hypothese geprüft.",

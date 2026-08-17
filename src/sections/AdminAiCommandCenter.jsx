@@ -59,6 +59,13 @@ const money = (value) => new Intl.NumberFormat("de-DE", {
     minimumFractionDigits: 2,
 }).format(Number(value || 0));
 
+const preciseMoney = (value) => new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+}).format(Number(value || 0));
+
 const resultList = (title, items) => Array.isArray(items) && items.length > 0 ? (
     <section>
         <h4 className="font-bold text-[#173f40]">{title}</h4>
@@ -145,9 +152,9 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
             return "Der Eintrag enthält offenbar eine E-Mail-Adresse, Telefonnummer oder IBAN. Bitte anonymisieren und erneut speichern.";
         }
         if (error.code === "pilot_weeks_required") return "Erfasse zuerst mindestens eine anonymisierte Pilotwoche.";
-        if (error.code === "ai_not_configured") return "Die Live-KI ist noch nicht aktiviert. Der OpenAI-Projektschlüssel muss zuerst sicher auf dem Server hinterlegt werden.";
+        if (error.code === "ai_not_configured") return "Die Live-KI ist noch nicht vollständig aktiviert. Der noch fehlende Anbieter-Schlüssel muss zuerst sicher auf dem Server hinterlegt werden.";
         if (error.code === "ai_budget_exceeded") return "Der Auftrag würde eine gespeicherte Budgetgrenze überschreiten. Passe die Grenze erst nach bewusster Freigabe an.";
-        if (error.code === "ai_provider_unavailable") return "OpenAI war nicht erreichbar oder hat den Auftrag nicht vollständig beantwortet. Ein möglicherweise angefallener Teilbetrag bleibt im Kostenprotokoll sichtbar.";
+        if (error.code === "ai_provider_unavailable") return "Ein KI-Anbieter war nicht erreichbar oder hat den Auftrag nicht vollständig beantwortet. Ein möglicherweise angefallener Teilbetrag bleibt im Kostenprotokoll sichtbar.";
         return "Der Auftrag konnte nicht gespeichert werden. Bitte prüfe die Eingaben.";
     };
 
@@ -261,9 +268,13 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                         <p className="mt-4 max-w-3xl leading-7 text-white/80">{liveReady ? "Die KI erstellt und prüft echte interne Arbeitsstände aus anonymisierten Angaben. Jede Ausgabe bleibt bis zu deiner Entscheidung intern." : "Diese Stufe arbeitet ausschließlich mit gespeicherten, anonymisierten Angaben. Sie veröffentlicht nichts, schreibt niemanden an und verändert keine Live-Seite."}</p>
                     </div>
                     <div className="shrink-0 rounded-2xl border border-white/20 bg-white/10 p-4 text-sm">
-                        <p className="flex items-center gap-2 font-bold text-[#e8ca67]">{liveReady ? <Sparkles className="h-5 w-5" /> : <FlaskConical className="h-5 w-5" />}{liveReady ? "Live-KI bereit" : liveMode ? "API-Schlüssel fehlt" : "Mock-Modus aktiv"}</p>
+                        <p className="flex items-center gap-2 font-bold text-[#e8ca67]">{liveReady ? <Sparkles className="h-5 w-5" /> : <FlaskConical className="h-5 w-5" />}{liveReady ? "Live-KI bereit" : liveMode ? settings.configurationStatus === "missing_anthropic_key" ? "Claude-Schlüssel fehlt" : "OpenAI-Schlüssel fehlt" : "Mock-Modus aktiv"}</p>
                         <p className="mt-2 text-white/75">Diesen Monat: {money(settings.spentThisMonthUsd)} von {money(settings.monthlyBudgetUsd)}</p>
                         <p className="text-white/75">Typischer Auftrag: {runCostLabel}</p>
+                        <p className="text-white/75">Langform: {settings.anthropicConfigured ? settings.editorialModel : "Claude vorbereitet"}</p>
+                        <p className="text-white/75">Bilder: {settings.imageGenerationReady ? settings.imageModel : `${settings.imageModel} vorbereitet`}</p>
+                        <p className="text-white/75">Bildausgabe: Entwurf {preciseMoney(settings.imageDraftOutputCostUsd)} · Final {preciseMoney(settings.imageFinalOutputCostUsd)}</p>
+                        <p className="text-white/75">Canva: Markenlayout mit Freigabe</p>
                         <p className="text-white/75">Außenaktionen: gesperrt</p>
                     </div>
                 </div>
@@ -308,7 +319,9 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                                 <li>Direkt erkennbare E-Mail-Adressen, internationale Telefonnummern und IBANs werden blockiert.</li>
                                 <li>Jeder Eintrag verlangt eine ausdrückliche Bestätigung der Anonymisierung.</li>
                                 <li>Ergebnisse bleiben intern und warten auf Freigabe oder Ablehnung.</li>
-                                <li>Website, E-Mail, Social Media, Canva, Metricool und Zahlungen sind nicht angeschlossen.</li>
+                                <li>Website, E-Mail, Social Media, Metricool und Zahlungen bleiben von der KI getrennt.</li>
+                                <li>GPT Image 2 ist für Motive vorbereitet. Jeder kostenpflichtige Bildlauf braucht eine eigene Bestätigung.</li>
+                                <li>Canva übernimmt danach Markenlayout und Formate. Ein Canva-Entwurf oder eine Veröffentlichung braucht ebenfalls eine eigene Bestätigung.</li>
                             </ul>
                         </div>
                         <form onSubmit={saveBudget} className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm">
@@ -383,9 +396,9 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
 
             {activeView === "agents" && (
                 <div>
-                    <div className="rounded-3xl bg-[#fffaf2] p-6"><h2 className="text-3xl font-bold">Agenten und Grenzen</h2><p className="mt-2 leading-7 text-[#6b8585]">{liveReady ? `Routinearbeiten laufen über ${settings.routineModel}; Prüfung, Datenschutz und Qualitätskontrolle über ${settings.reviewModel}.` : "Im aktuellen Mock-Modus werden die Rollen ohne kostenpflichtige Modellaufrufe ausgeführt."}</p></div>
+                    <div className="rounded-3xl bg-[#fffaf2] p-6"><h2 className="text-3xl font-bold">Agenten, Zugänge und Grenzen</h2><p className="mt-2 leading-7 text-[#6b8585]">{liveReady ? `Routinearbeiten laufen über ${settings.routineModel}; Langform über ${settings.editorialProvider === "Anthropic" ? settings.editorialModel : `${settings.routineModel} als Rückfallroute`}; Prüfung, Datenschutz und Qualitätskontrolle über ${settings.reviewModel}. Bilder laufen nach Einzelbestätigung über ${settings.imageModel} und anschließend durch das Canva-Markenlayout.` : `Im aktuellen Mock-Modus werden Rollen und Übergaben ohne kostenpflichtige Modellaufrufe geprüft. Claude, ${settings.imageModel} und Canva bleiben bis zur gesonderten Aktivierung geschützt.`}</p></div>
                     <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        {agents.map((agent) => <article key={agent.id} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf4f1] text-[#0f8b8d]"><UsersRound className="h-5 w-5" /></span><span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#6b8585]">{agent.provider}</span></div><p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#0f8b8d]">{agent.area}</p><h3 className="mt-1 text-xl font-bold">{agent.name}</h3><p className="mt-2 leading-7 text-[#6b8585]">{agent.purpose}</p></article>)}
+                        {agents.map((agent) => <article key={agent.id} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf4f1] text-[#0f8b8d]"><UsersRound className="h-5 w-5" /></span><span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#6b8585]">{agent.provider}</span></div><p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#0f8b8d]">{agent.area}</p><h3 className="mt-1 text-xl font-bold">{agent.name}</h3><p className="mt-2 leading-7 text-[#6b8585]">{agent.purpose}</p><div className="mt-4 rounded-2xl border border-[#0f8b8d]/10 bg-white p-4 text-sm leading-6"><strong className="text-[#075f62]">Möglichkeiten</strong><p className="mt-1 text-[#6b8585]">{agent.capabilities.join(" · ")}</p><strong className="mt-3 block text-[#075f62]">Zugriff</strong><p className="mt-1 text-[#6b8585]">{agent.access.join(" · ")}</p><strong className="mt-3 block text-[#075f62]">Freigabegrenze</strong><p className="mt-1 text-[#6b8585]">{agent.guardrail}</p></div></article>)}
                     </div>
                 </div>
             )}
