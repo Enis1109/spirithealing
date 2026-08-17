@@ -68,6 +68,20 @@ const resultList = (title, items) => Array.isArray(items) && items.length > 0 ? 
     </section>
 ) : null;
 
+const resultSources = (sources) => Array.isArray(sources) && sources.length > 0 ? (
+    <section className="lg:col-span-2">
+        <h4 className="font-bold text-[#173f40]">Geprüfte Quellen</h4>
+        <div className="mt-2 grid gap-3 lg:grid-cols-2">
+            {sources.map((source) => (
+                <a key={source.url} href={source.url} target="_blank" rel="noreferrer" className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-4 text-sm hover:border-[#0f8b8d]/40">
+                    <strong className="text-[#075f62]">{source.title}</strong>
+                    <span className="mt-1 block leading-6 text-[#6b8585]">{source.note}</span>
+                </a>
+            ))}
+        </div>
+    </section>
+) : null;
+
 const RunResult = ({ result }) => (
     <div className="grid gap-5 lg:grid-cols-2">
         {resultList("Beobachtungen", result.signals)}
@@ -75,6 +89,7 @@ const RunResult = ({ result }) => (
         {resultList("Interne Contentansätze", result.contentIdeas)}
         {resultList("Prüfhinweise", result.reviewNotes)}
         {resultList("Offene Entscheidungen", result.openDecisions)}
+        {resultSources(result.sources)}
         {Array.isArray(result.programBlueprint) && (
             <section className="lg:col-span-2">
                 <h4 className="font-bold text-[#173f40]">12-Wochen-Arbeitsentwurf</h4>
@@ -130,6 +145,9 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
             return "Der Eintrag enthält offenbar eine E-Mail-Adresse, Telefonnummer oder IBAN. Bitte anonymisieren und erneut speichern.";
         }
         if (error.code === "pilot_weeks_required") return "Erfasse zuerst mindestens eine anonymisierte Pilotwoche.";
+        if (error.code === "ai_not_configured") return "Die Live-KI ist noch nicht aktiviert. Der OpenAI-Projektschlüssel muss zuerst sicher auf dem Server hinterlegt werden.";
+        if (error.code === "ai_budget_exceeded") return "Der Auftrag würde eine gespeicherte Budgetgrenze überschreiten. Passe die Grenze erst nach bewusster Freigabe an.";
+        if (error.code === "ai_provider_unavailable") return "OpenAI war nicht erreichbar oder hat den Auftrag nicht vollständig beantwortet. Ein möglicherweise angefallener Teilbetrag bleibt im Kostenprotokoll sichtbar.";
         return "Der Auftrag konnte nicht gespeichert werden. Bitte prüfe die Eingaben.";
     };
 
@@ -149,7 +167,10 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
             applySnapshot(result.commandCenter);
             setPilotWeek((current) => ({ ...emptyPilotWeek, weekNumber: current.weekNumber }));
             setActiveView("runs");
-            setNotice({ type: "success", text: "Die anonymisierte Pilotwoche wurde gespeichert und im Mock-Modus durch die Prüfkette geführt. Nichts wurde veröffentlicht." });
+            const latestRun = result.commandCenter.runs[0];
+            setNotice({ type: "success", text: latestRun?.mode === "live"
+                ? `Die Pilotwoche wurde gespeichert und von der Live-KI geprüft. Kosten: ${money(latestRun.actualCostUsd)}. Nichts wurde veröffentlicht.`
+                : "Die anonymisierte Pilotwoche wurde gespeichert und im Mock-Modus durch die Prüfkette geführt. Nichts wurde veröffentlicht." });
         } catch (error) {
             setNotice({ type: "error", text: describeError(error) });
         } finally {
@@ -173,7 +194,8 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
             });
             applySnapshot(result.commandCenter);
             setActiveView("runs");
-            setNotice({ type: "success", text: "Der interne 12-Wochen-Arbeitsentwurf wurde erstellt. Er wartet auf menschliche Prüfung und wurde nicht veröffentlicht." });
+            const latestRun = result.commandCenter.runs[0];
+            setNotice({ type: "success", text: `Der interne 12-Wochen-Arbeitsentwurf wurde erstellt. Kosten: ${money(latestRun?.actualCostUsd)}. Er wartet auf menschliche Prüfung und wurde nicht veröffentlicht.` });
         } catch (error) {
             setNotice({ type: "error", text: describeError(error) });
         } finally {
@@ -211,7 +233,9 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                 }),
             });
             applySnapshot(result.commandCenter);
-            setNotice({ type: "success", text: "Die Budgetgrenzen wurden gespeichert. Der aktuelle Mock-Modus verursacht weiterhin keine Modellkosten." });
+            setNotice({ type: "success", text: result.commandCenter.settings.mode === "live"
+                ? "Die Budgetgrenzen wurden gespeichert und gelten vor jedem kostenpflichtigen Auftrag."
+                : "Die Budgetgrenzen wurden gespeichert. Der aktuelle Mock-Modus verursacht weiterhin keine Modellkosten." });
         } catch {
             setNotice({ type: "error", text: "Die Budgetgrenzen sind ungültig oder konnten nicht gespeichert werden." });
         } finally {
@@ -223,6 +247,9 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
     if (state === "error") return <div className="rounded-3xl bg-red-50 p-8 font-bold text-red-800">Die KI-Zentrale konnte nicht geladen werden.</div>;
 
     const { agents, workflows, settings, pilotWeeks, runs } = commandCenter;
+    const liveMode = settings.mode === "live";
+    const liveReady = liveMode && settings.configurationStatus === "ready";
+    const runCostLabel = `${money(settings.typicalRunCostUsd?.min)}–${money(settings.typicalRunCostUsd?.max)}`;
 
     return (
         <div className="space-y-6">
@@ -231,11 +258,12 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                     <div>
                         <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-[#e8ca67]"><Sparkles className="h-4 w-4" /> Spirit Healing AI Command Center</p>
                         <h1 className="mt-3 max-w-4xl text-4xl font-bold leading-tight">Interne Arbeitsaufträge mit fester Prüfung und menschlicher Entscheidung.</h1>
-                        <p className="mt-4 max-w-3xl leading-7 text-white/80">Diese erste Stufe arbeitet ausschließlich mit gespeicherten, anonymisierten Angaben. Sie veröffentlicht nichts, schreibt niemanden an und verändert keine Live-Seite.</p>
+                        <p className="mt-4 max-w-3xl leading-7 text-white/80">{liveReady ? "Die KI erstellt und prüft echte interne Arbeitsstände aus anonymisierten Angaben. Jede Ausgabe bleibt bis zu deiner Entscheidung intern." : "Diese Stufe arbeitet ausschließlich mit gespeicherten, anonymisierten Angaben. Sie veröffentlicht nichts, schreibt niemanden an und verändert keine Live-Seite."}</p>
                     </div>
                     <div className="shrink-0 rounded-2xl border border-white/20 bg-white/10 p-4 text-sm">
-                        <p className="flex items-center gap-2 font-bold text-[#e8ca67]"><FlaskConical className="h-5 w-5" /> Mock-Modus aktiv</p>
-                        <p className="mt-2 text-white/75">Modellkosten: {money(settings.spentThisMonthUsd)}</p>
+                        <p className="flex items-center gap-2 font-bold text-[#e8ca67]">{liveReady ? <Sparkles className="h-5 w-5" /> : <FlaskConical className="h-5 w-5" />}{liveReady ? "Live-KI bereit" : liveMode ? "API-Schlüssel fehlt" : "Mock-Modus aktiv"}</p>
+                        <p className="mt-2 text-white/75">Diesen Monat: {money(settings.spentThisMonthUsd)} von {money(settings.monthlyBudgetUsd)}</p>
+                        <p className="text-white/75">Typischer Auftrag: {runCostLabel}</p>
                         <p className="text-white/75">Außenaktionen: gesperrt</p>
                     </div>
                 </div>
@@ -263,7 +291,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                     <section className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                             <div><h2 className="text-2xl font-bold">12-Wochen-Kernprodukt</h2><p className="mt-2 max-w-3xl leading-7 text-[#6b8585]">Aus allen gespeicherten Pilotwochen entsteht ein interner Arbeitsentwurf. Fehlende Wochen und reine Hypothesen bleiben sichtbar gekennzeichnet.</p></div>
-                            <button type="button" onClick={startCoreProduct} disabled={busy === "core-product" || pilotWeeks.length === 0} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-6 font-bold text-white hover:bg-[#0a6f71] disabled:cursor-not-allowed disabled:opacity-40"><Play className="h-5 w-5" />{busy === "core-product" ? "Arbeitsentwurf läuft …" : "Arbeitsentwurf erstellen"}</button>
+                            <button type="button" onClick={startCoreProduct} disabled={busy === "core-product" || pilotWeeks.length === 0 || (liveMode && !liveReady)} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-6 font-bold text-white hover:bg-[#0a6f71] disabled:cursor-not-allowed disabled:opacity-40"><Play className="h-5 w-5" />{busy === "core-product" ? "Arbeitsentwurf läuft …" : liveReady ? `Live-Entwurf starten (typisch ${runCostLabel})` : "Arbeitsentwurf erstellen"}</button>
                         </div>
                         <div className="mt-6 flex flex-wrap items-center gap-2">
                             {workflows.find((workflow) => workflow.id === "core-product-development")?.steps.map((agentId, index) => {
@@ -285,7 +313,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                         </div>
                         <form onSubmit={saveBudget} className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm">
                             <h2 className="flex items-center gap-2 text-xl font-bold"><BadgeDollarSign className="h-6 w-6 text-[#0f8b8d]" /> Budgetbremse</h2>
-                            <p className="mt-2 text-sm leading-6 text-[#6b8585]">Die Grenzen sind für eine spätere Live-Anbindung vorbereitet. Im Mock-Modus bleiben tatsächliche Modellkosten bei 0.</p>
+                            <p className="mt-2 text-sm leading-6 text-[#6b8585]">{liveMode ? `Vor jedem Auftrag wird ein Betrag reserviert. Erwartet werden meist ${runCostLabel}; die harte Grenze gilt trotzdem.` : "Die Grenzen sind für die Live-Anbindung vorbereitet. Im Mock-Modus bleiben tatsächliche Modellkosten bei 0."}</p>
                             <div className="mt-5 grid gap-4 sm:grid-cols-2">
                                 <label className="text-sm font-bold">Monatliches Maximum (USD)<input type="number" min="0" max="5000" step="0.01" value={budget.monthlyBudgetUsd} onChange={(event) => setBudget((current) => ({ ...current, monthlyBudgetUsd: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
                                 <label className="text-sm font-bold">Maximum pro Auftrag (USD)<input type="number" min="0" max="500" step="0.01" value={budget.perRunBudgetUsd} onChange={(event) => setBudget((current) => ({ ...current, perRunBudgetUsd: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
@@ -299,7 +327,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
             {activeView === "pilot" && (
                 <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
                     <form onSubmit={submitPilotWeek} className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm sm:p-8">
-                        <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Lernschleife</p><h2 className="mt-2 text-3xl font-bold">Pilotwoche erfassen</h2><p className="mt-2 leading-7 text-[#6b8585]">Der Speichervorgang startet automatisch die interne Prüfkette im Mock-Modus.</p></div>
+                        <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Lernschleife</p><h2 className="mt-2 text-3xl font-bold">Pilotwoche erfassen</h2><p className="mt-2 leading-7 text-[#6b8585]">Der Speichervorgang startet die interne Prüfkette. {liveReady ? `Mit dem Klick bestätigst du einen kostenpflichtigen KI-Auftrag innerhalb der Grenze von ${money(settings.perRunBudgetUsd)}.` : "Im Mock-Modus entstehen keine Modellkosten."}</p></div>
                         <div className="mt-7 grid gap-5 sm:grid-cols-2">
                             <label className="text-sm font-bold">Woche<select value={pilotWeek.weekNumber} onChange={(event) => setPilotWeek((current) => ({ ...current, weekNumber: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]">{Array.from({ length: 8 }, (_item, index) => <option key={index + 1} value={index + 1}>Woche {index + 1}</option>)}</select></label>
                             <label className="text-sm font-bold">Teilnehmerzahl<input type="number" min="1" max="500" required value={pilotWeek.participantCount} onChange={(event) => setPilotWeek((current) => ({ ...current, participantCount: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
@@ -310,7 +338,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                             ))}
                         </div>
                         <label className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><input type="checkbox" required checked={pilotWeek.anonymizationConfirmed} onChange={(event) => setPilotWeek((current) => ({ ...current, anonymizationConfirmed: event.target.checked }))} className="mt-1 h-5 w-5 shrink-0 accent-[#0f8b8d]" /><span><strong className="block">Anonymisierung bestätigt</strong>Der Eintrag enthält keine Namen, E-Mail-Adressen, Telefonnummern, Adressen, Kontodaten oder andere Angaben, durch die Teilnehmende erkennbar werden.</span></label>
-                        <button type="submit" disabled={busy === "pilot"} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-7 font-bold text-white hover:bg-[#0a6f71] disabled:opacity-50"><Play className="h-5 w-5" />{busy === "pilot" ? "Speichern und prüfen …" : "Speichern und Prüfkette starten"}</button>
+                        <button type="submit" disabled={busy === "pilot" || (liveMode && !liveReady)} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-7 font-bold text-white hover:bg-[#0a6f71] disabled:opacity-50"><Play className="h-5 w-5" />{busy === "pilot" ? "Speichern und prüfen …" : liveReady ? `Speichern und Live-Prüfung starten (typisch ${runCostLabel})` : "Speichern und Prüfkette starten"}</button>
                     </form>
                     <aside className="h-fit rounded-3xl bg-white p-5 shadow-sm 2xl:sticky 2xl:top-6">
                         <h3 className="font-bold">Gespeicherte Wochen</h3>
@@ -328,8 +356,8 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                     {runs.map((run) => (
                         <article key={run.id} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                                <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Auftrag #{run.id} · {run.mode === "mock" ? "Mock-Modus" : run.mode}</p><h3 className="mt-2 text-2xl font-bold">{run.result.title || run.workflowName}</h3><p className="mt-2 max-w-4xl leading-7 text-[#6b8585]">{run.result.executiveSummary}</p><p className="mt-2 text-xs text-[#789091]">Abgeschlossen {dateTime(run.completedAt)} · Kosten {money(run.actualCostUsd)}</p></div>
-                                <span className={`inline-flex w-fit items-center gap-2 rounded-full px-3 py-2 text-xs font-bold ${run.approvalStatus === "approved" ? "bg-emerald-100 text-emerald-800" : run.approvalStatus === "rejected" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>{run.approvalStatus === "approved" ? <CheckCircle2 className="h-4 w-4" /> : run.approvalStatus === "rejected" ? <XCircle className="h-4 w-4" /> : <CircleDashed className="h-4 w-4" />}{run.approvalStatus === "approved" ? "intern freigegeben" : run.approvalStatus === "rejected" ? "abgelehnt" : "Prüfung offen"}</span>
+                                <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Auftrag #{run.id} · {run.mode === "mock" ? "Mock-Modus" : "Live-KI"}</p><h3 className="mt-2 text-2xl font-bold">{run.result.title || run.workflowName}</h3><p className="mt-2 max-w-4xl leading-7 text-[#6b8585]">{run.result.executiveSummary}</p><p className="mt-2 text-xs text-[#789091]">Abgeschlossen {dateTime(run.completedAt)} · geschätzt {money(run.estimatedCostUsd)} · tatsächlich {money(run.actualCostUsd)}</p>{run.status === "failed" && <p className="mt-2 text-sm font-semibold text-red-800">Der Auftrag wurde nicht vollständig abgeschlossen. Bitte später erneut starten.</p>}</div>
+                                <span className={`inline-flex w-fit items-center gap-2 rounded-full px-3 py-2 text-xs font-bold ${run.status === "failed" ? "bg-red-100 text-red-800" : run.approvalStatus === "approved" ? "bg-emerald-100 text-emerald-800" : run.approvalStatus === "rejected" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>{run.status === "failed" || run.approvalStatus === "rejected" ? <XCircle className="h-4 w-4" /> : run.approvalStatus === "approved" ? <CheckCircle2 className="h-4 w-4" /> : <CircleDashed className="h-4 w-4" />}{run.status === "failed" ? "nicht abgeschlossen" : run.approvalStatus === "approved" ? "intern freigegeben" : run.approvalStatus === "rejected" ? "abgelehnt" : "Prüfung offen"}</span>
                             </div>
                             <details className="mt-6 rounded-2xl border border-[#0f8b8d]/15 bg-white p-4">
                                 <summary className="cursor-pointer font-bold text-[#075f62]">Agentenkette anzeigen ({run.steps.length} Schritte)</summary>
@@ -341,7 +369,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                                 <summary className="cursor-pointer font-bold text-[#075f62]">Ergebnis prüfen</summary>
                                 <div className="mt-5"><RunResult result={run.result} /></div>
                             </details>
-                            {run.approvalStatus === "pending" ? (
+                            {run.status === "completed" && run.approvalStatus === "pending" ? (
                                 <div className="mt-5 rounded-2xl border border-amber-300 bg-amber-50 p-4">
                                     <label className="block text-sm font-bold text-amber-950">Prüfnotiz<textarea rows={2} maxLength={2000} value={decisionNotes[run.id] || ""} onChange={(event) => setDecisionNotes((current) => ({ ...current, [run.id]: event.target.value }))} placeholder="Bei Ablehnung bitte kurz begründen." className="mt-2 w-full rounded-xl border border-amber-300 bg-white px-4 py-3 font-normal outline-none focus:border-[#0f8b8d]" /></label>
                                     <div className="mt-3 flex flex-col gap-2 sm:flex-row"><button type="button" onClick={() => decideRun(run.id, true)} disabled={busy === `decision-${run.id}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-5 font-bold text-white disabled:opacity-50"><CheckCircle2 className="h-4 w-4" /> Intern freigeben</button><button type="button" onClick={() => decideRun(run.id, false)} disabled={busy === `decision-${run.id}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-red-300 bg-white px-5 font-bold text-red-800 disabled:opacity-50"><XCircle className="h-4 w-4" /> Ablehnen</button></div>
@@ -355,7 +383,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
 
             {activeView === "agents" && (
                 <div>
-                    <div className="rounded-3xl bg-[#fffaf2] p-6"><h2 className="text-3xl font-bold">Agenten und Grenzen</h2><p className="mt-2 leading-7 text-[#6b8585]">Die Anbieterangabe beschreibt die vorgesehene spätere Modellroute. Im aktuellen Stand werden alle Schritte deterministisch im Mock-Modus ausgeführt.</p></div>
+                    <div className="rounded-3xl bg-[#fffaf2] p-6"><h2 className="text-3xl font-bold">Agenten und Grenzen</h2><p className="mt-2 leading-7 text-[#6b8585]">{liveReady ? `Routinearbeiten laufen über ${settings.routineModel}; Prüfung, Datenschutz und Qualitätskontrolle über ${settings.reviewModel}.` : "Im aktuellen Mock-Modus werden die Rollen ohne kostenpflichtige Modellaufrufe ausgeführt."}</p></div>
                     <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {agents.map((agent) => <article key={agent.id} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf4f1] text-[#0f8b8d]"><UsersRound className="h-5 w-5" /></span><span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#6b8585]">{agent.provider}</span></div><p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#0f8b8d]">{agent.area}</p><h3 className="mt-1 text-xl font-bold">{agent.name}</h3><p className="mt-2 leading-7 text-[#6b8585]">{agent.purpose}</p></article>)}
                     </div>

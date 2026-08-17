@@ -410,9 +410,11 @@ const schemaStatements = [
         input_json LONGTEXT NOT NULL,
         steps_json LONGTEXT NOT NULL,
         result_json LONGTEXT NOT NULL,
+        usage_json LONGTEXT NULL,
         estimated_cost_usd DECIMAL(10,4) NOT NULL DEFAULT 0,
         actual_cost_usd DECIMAL(10,4) NOT NULL DEFAULT 0,
         approval_status VARCHAR(24) NOT NULL DEFAULT 'pending',
+        error_message VARCHAR(500) NULL,
         decision_note TEXT NULL,
         decided_by BIGINT UNSIGNED NULL,
         decided_at DATETIME NULL,
@@ -447,6 +449,8 @@ const additiveColumns = [
     { table: "zepter_schedule_surveys", column: "invoice_address", definition: "VARCHAR(500) NULL AFTER email" },
     { table: "zepter_schedule_surveys", column: "payment_choice", definition: "VARCHAR(32) NULL AFTER invoice_address" },
     { table: "zepter_schedule_surveys", column: "desired_installment", definition: "DECIMAL(10,2) NULL AFTER payment_choice" },
+    { table: "ai_workflow_runs", column: "usage_json", definition: "LONGTEXT NULL AFTER result_json" },
+    { table: "ai_workflow_runs", column: "error_message", definition: "VARCHAR(500) NULL AFTER approval_status" },
 ];
 
 const ensureColumn = async ({ table, column, definition }) => {

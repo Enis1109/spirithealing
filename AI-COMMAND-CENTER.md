@@ -1,44 +1,50 @@
 # Spirit Healing AI Command Center
 
-Die erste Ausbaustufe ist in den vorhandenen, geschützten Adminbereich unter `/admin` eingebaut. Sie verwendet das bestehende Mitgliederkonto mit Adminrolle und kein zweites Login.
+Die KI-Zentrale ist in den geschützten Adminbereich unter `/admin` eingebaut. Sie verwendet das bestehende Mitgliederkonto mit Adminrolle und kein zweites Login.
 
-## Aktueller Betriebsmodus
+## Betriebsarten
 
-Das Command Center läuft ausschließlich im **Mock-Modus**. Die Agentenkette wird technisch mit festen Übergaben ausgeführt und protokolliert, verwendet aber noch keine kostenpflichtige Modell-API. Deshalb kann diese Version:
+Ohne ausdrückliche Serverkonfiguration läuft die KI-Zentrale im Mock-Modus. Für den Live-Betrieb müssen `AI_COMMAND_CENTER_MODE=live` und ein gültiger `OPENAI_API_KEY` ausschließlich in der Serverumgebung hinterlegt sein. Ein fehlender Schlüssel führt nicht zu einem unbemerkten Rückfall auf Mock-Ergebnisse; kostenpflichtige Aufträge bleiben dann gesperrt.
 
-- anonymisierte Pilotwochen speichern,
-- daraus eine nachvollziehbare interne Auswertung erzeugen,
-- aus allen erfassten Pilotwochen einen gekennzeichneten 12-Wochen-Arbeitsentwurf bilden,
-- jeden Arbeitsschritt mit zuständigem Agenten und Übergabe anzeigen,
-- Ergebnisse zur menschlichen Freigabe oder Ablehnung vorlegen,
-- Budgetgrenzen für eine spätere Live-Anbindung speichern.
+Im Live-Modus verwendet jeder Auftrag zwei getrennte Modellläufe:
 
-Sie kann nicht veröffentlichen, E-Mails versenden, Social-Media-Posts einstellen, Canva oder Metricool bedienen, Zahlungen auslösen oder die Live-Website verändern.
+- `gpt-5.6-luna` erstellt den ersten Arbeitsstand für die Routine-Rollen.
+- `gpt-5.6-terra` prüft Fakten, Datenschutz, Widersprüche und Freigabereife in einem getrennten Lauf.
 
-## Datenschutz
+Für allgemeine fachliche Aussagen darf der Prüflauf höchstens zwei Websuchen verwenden. Pilotdaten, Teilnehmerzahlen und Beobachtungen dürfen nicht als Suchanfrage gesendet werden. Die Modelle können über `OPENAI_ROUTINE_MODEL` und `OPENAI_REVIEW_MODEL` nur auf eine im Code hinterlegte, bepreiste Modellroute umgestellt werden.
 
-Vor dem Speichern muss die Anonymisierung bestätigt werden. Das System blockiert zusätzlich direkt erkennbare E-Mail-Adressen, internationale Telefonnummern und IBANs. Diese technische Prüfung erkennt nicht jeden Namen oder jede indirekte Identifizierung. Die inhaltliche Anonymisierung bleibt deshalb eine Pflicht der eingebenden Person.
+## Kostenkontrolle
+
+Vor jedem Live-Auftrag berechnet der Server eine konservative Schätzung. In einer Datenbanktransaktion wird geprüft, ob die Grenze pro Auftrag und das Monatsbudget noch ausreichen. Laufende Aufträge reservieren ihren Schätzbetrag, damit parallele Starts das Budget nicht umgehen.
+
+Nach dem Auftrag werden Eingabe-, Cache- und Ausgabetokens sowie Websuchen gespeichert und mit den hinterlegten OpenAI-Preisen berechnet. Teilkosten eines abgebrochenen zweiten Modelllaufs bleiben im Protokoll. Die Standardgrenzen in einer neuen Datenbank sind 15 USD pro Monat und 2 USD pro Auftrag. Sie können im Adminbereich geändert werden.
+
+## Datenschutz und Freigabe
+
+Vor dem Speichern muss die Anonymisierung bestätigt werden. Das System blockiert zusätzlich direkt erkennbare E-Mail-Adressen, Telefonnummern und IBANs. Diese technische Prüfung erkennt nicht jeden Namen oder jede indirekte Identifizierung. Die inhaltliche Anonymisierung bleibt deshalb Pflicht der eingebenden Person.
+
+OpenAI-Aufträge werden mit `store: false` gesendet. Ergebnisse, Tokenverbrauch, Kosten und die verwendeten Modellrouten werden in der eigenen Datenbank protokolliert. Jede Ausgabe wartet auf menschliche Freigabe oder Ablehnung.
+
+Website, E-Mail, Social Media, Canva, Metricool und Zahlungen bleiben getrennt. Eine interne Freigabe löst keine Außenaktion aus.
 
 ## Arbeitsabläufe
 
 ### Pilotwoche auswerten
 
-Eine gespeicherte Woche läuft durch Director, Wissensordnung, Auswertung, Programmentwicklung, Faktenprüfung, Contententwurf, Datenschutzprüfung, unabhängige Zweitprüfung und Qualitätskontrolle. Das Ergebnis bleibt anschließend im Status „Prüfung offen“.
+Eine gespeicherte Woche läuft durch Director, Wissensordnung, Auswertung, Programmentwicklung, Faktenprüfung, Contententwurf, Datenschutzprüfung, getrennte Zweitprüfung und Qualitätskontrolle.
 
 ### 12-Wochen-Kernprodukt entwickeln
 
-Der Lauf nutzt alle gespeicherten Pilotwochen. Vorhandene Pilotdaten, fehlende Wochen und Hypothesen für Woche 9 bis 12 werden getrennt gekennzeichnet. Der Entwurf ist keine automatische fachliche Freigabe.
+Der Lauf nutzt alle gespeicherten Pilotwochen. Vorhandene Pilotdaten, fehlende Wochen und Hypothesen für Woche 9 bis 12 werden serverseitig getrennt gekennzeichnet. Das Modell kann diese Herkunftsmarkierung nicht aufheben.
 
-## Datenbank
+## Serverkonfiguration
 
-Beim Serverstart werden drei Tabellen angelegt:
+```text
+AI_COMMAND_CENTER_MODE=live
+OPENAI_API_KEY=<serverseitiger Projektschlüssel>
+OPENAI_ROUTINE_MODEL=gpt-5.6-luna
+OPENAI_REVIEW_MODEL=gpt-5.6-terra
+AI_COMMAND_CENTER_WEB_SEARCH=true
+```
 
-- `ai_command_center_settings`
-- `ai_pilot_weeks`
-- `ai_workflow_runs`
-
-Die gleichen Definitionen stehen in `database/schema.sql` für eine kontrollierte manuelle Einrichtung.
-
-## Vor einer späteren Live-KI-Anbindung
-
-Nötig sind mindestens eine getrennte Provider-Konfiguration, verschlüsselte Schlüsselverwaltung, echte Token- und Kostenmessung, Zeitlimits, Wiederholungsregeln, Quellenprotokolle, Löschfristen und Tests mit einer separaten Datenbank. Außenaktionen sollten weiterhin eigene, einzeln freizugebende Schnittstellen bleiben.
+Der Schlüssel darf weder im Repository noch im Browser-Code gespeichert werden. Nach der Einrichtung sollte zuerst ein anonymisierter Testauftrag mit einer niedrigen Monatsgrenze ausgeführt und das Kostenprotokoll mit dem OpenAI-Nutzungsdashboard verglichen werden.

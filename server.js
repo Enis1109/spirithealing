@@ -93,6 +93,7 @@ import {
     ScheduleSurveyValidationError,
 } from "./server/scheduleSurveyValidation.js";
 import {
+    AiCommandCenterExecutionError,
     decideAiWorkflowRun,
     getAiCommandCenterSnapshot,
     saveAiBudgetSettings,
@@ -782,6 +783,23 @@ app.post("/api/admin/content/restore", adminSameOriginOnly, async (request, resp
     }
 });
 
+const sendAiExecutionError = (response, error, extra = {}) => {
+    if (!(error instanceof AiCommandCenterExecutionError)) return false;
+    if (["AI_RUN_BUDGET_EXCEEDED", "AI_MONTHLY_BUDGET_EXCEEDED"].includes(error.code)) {
+        response.status(409).json({ ok: false, error: "ai_budget_exceeded", ...extra });
+        return true;
+    }
+    if (error.code === "AI_NOT_CONFIGURED" || error.code === "AI_MODEL_NOT_PRICED") {
+        response.status(503).json({ ok: false, error: "ai_not_configured", ...extra });
+        return true;
+    }
+    if (String(error.code || "").startsWith("AI_PROVIDER_")) {
+        response.status(502).json({ ok: false, error: "ai_provider_unavailable", ...extra });
+        return true;
+    }
+    return false;
+};
+
 app.get("/api/admin/ai-command-center", async (request, response) => {
     const member = await getAdminMember(request, response);
     if (!member) return undefined;
@@ -806,6 +824,7 @@ app.post("/api/admin/ai-command-center/pilot-weeks", adminSameOriginOnly, async 
         if (error instanceof AiCommandCenterValidationError) {
             return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
         }
+        if (sendAiExecutionError(response, error, { pilotWeekSaved: true })) return undefined;
         console.error("Pilot week could not be saved", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
@@ -826,6 +845,7 @@ app.post("/api/admin/ai-command-center/runs", adminSameOriginOnly, async (reques
         if (error?.code === "PILOT_WEEKS_REQUIRED") {
             return response.status(409).json({ ok: false, error: "pilot_weeks_required" });
         }
+        if (sendAiExecutionError(response, error)) return undefined;
         console.error("AI workflow could not be started", error);
         return response.status(500).json({ ok: false, error: "server" });
     }

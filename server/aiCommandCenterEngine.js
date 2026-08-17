@@ -8,12 +8,12 @@ export const aiAgentRegistry = [
     { id: "social-growth", name: "Social Growth", area: "Social Media", provider: "OpenAI", purpose: "Plant Tests und wertet freigegebene Kennzahlen aus." },
     { id: "sales-client-journey", name: "Sales & Client Journey", area: "Kundenreise", provider: "OpenAI", purpose: "Entwirft respektvolle Übergänge zwischen Angeboten." },
     { id: "analytics-learning", name: "Analytics & Learning", area: "Auswertung", provider: "OpenAI", purpose: "Trennt Beobachtung, Hypothese und Messlücke." },
-    { id: "editorial-teaching", name: "Editorial & Teaching", area: "Langform", provider: "Claude", purpose: "Bearbeitet später lange Skripte, Workbooks und Vorträge." },
+    { id: "editorial-teaching", name: "Editorial & Teaching", area: "Langform", provider: "OpenAI", purpose: "Bearbeitet lange Skripte, Workbooks und Vorträge als interne Entwürfe." },
     { id: "brand-review", name: "Brand Review", area: "Marke", provider: "OpenAI", purpose: "Prüft Ton und Spirit-Healing-Begriffe." },
-    { id: "technical-operations", name: "Website & Technical", area: "Technik", provider: "Codex", purpose: "Bereitet technische Änderungen vor; kein eigenständiges Live-Deployment." },
+    { id: "technical-operations", name: "Website & Technical", area: "Technik", provider: "OpenAI", purpose: "Bereitet technische Änderungen vor; kein eigenständiges Live-Deployment." },
     { id: "operations-manager", name: "Operations Manager", area: "Betrieb", provider: "OpenAI", purpose: "Ordnet Termine, Zuständigkeiten und offene Entscheidungen." },
     { id: "compliance-privacy", name: "Compliance & Privacy", area: "Schutz", provider: "OpenAI", purpose: "Prüft Datenschutz, Rollen und Gesundheitsclaims." },
-    { id: "independent-review", name: "Independent Review", area: "Zweitprüfung", provider: "Claude", purpose: "Prüft wichtige Ergebnisse unabhängig vom Erstentwurf." },
+    { id: "independent-review", name: "Independent Review", area: "Zweitprüfung", provider: "OpenAI", purpose: "Prüft wichtige Ergebnisse in einem getrennten Modelllauf unabhängig vom Erstentwurf." },
     { id: "quality-controller", name: "Quality Controller", area: "Freigabereife", provider: "OpenAI", purpose: "Bündelt Restfragen und legt das Ergebnis Menschen zur Entscheidung vor." },
 ];
 
