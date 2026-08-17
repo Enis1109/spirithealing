@@ -23,6 +23,8 @@ Vor jedem Live-Auftrag berechnet der Server eine konservative Schätzung. In ein
 
 Nach dem Auftrag werden Anbieter, Modell, Eingabe-, Cache- und Ausgabetokens sowie Websuchen gespeichert und mit den hinterlegten Anbieterpreisen berechnet. Teilkosten eines abgebrochenen Modelllaufs bleiben im Protokoll. Das gemeinsame Monatsbudget gilt für OpenAI und Anthropic zusammen. Die Standardgrenzen in einer neuen Datenbank sind 15 USD pro Monat und 2 USD pro Auftrag. Sie können im Adminbereich geändert werden.
 
+Für `claude-sonnet-5` berücksichtigt die Kostenberechnung den Einführungspreis bis einschließlich 31. August 2026 und wechselt danach automatisch auf den regulären Preis.
+
 ## Datenschutz und Freigabe
 
 Vor dem Speichern muss die Anonymisierung bestätigt werden. Das System blockiert zusätzlich direkt erkennbare E-Mail-Adressen, Telefonnummern und IBANs. Diese technische Prüfung erkennt nicht jeden Namen oder jede indirekte Identifizierung. Die inhaltliche Anonymisierung bleibt deshalb Pflicht der eingebenden Person.

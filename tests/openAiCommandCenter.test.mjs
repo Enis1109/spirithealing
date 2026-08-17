@@ -67,7 +67,19 @@ test("calculates Anthropic input, cache and output costs from recorded usage", (
         cacheWriteTokens: 2_000,
         cacheReadTokens: 1_000,
         outputTokens: 5_000,
+        pricedAt: "2026-08-17T00:00:00Z",
     }), 0.0752);
+});
+
+test("uses Claude Sonnet 5 standard pricing after the launch promotion", () => {
+    assert.equal(calculateAnthropicCostUsd({
+        model: "claude-sonnet-5",
+        inputTokens: 10_000,
+        cacheWriteTokens: 2_000,
+        cacheReadTokens: 1_000,
+        outputTokens: 5_000,
+        pricedAt: "2026-09-01T00:00:00Z",
+    }), 0.1128);
 });
 
 test("calculates token, cache and web-search costs from recorded usage", () => {

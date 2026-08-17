@@ -10,8 +10,15 @@ const modelPricesUsdPerMillion = {
 };
 
 const anthropicModelPricesUsdPerMillion = {
-    "claude-sonnet-5": { input: 2, cacheWrite: 2.5, cacheRead: 0.2, output: 10 },
+    "claude-sonnet-5": { input: 3, cacheWrite: 3.75, cacheRead: 0.3, output: 15 },
     "claude-opus-5": { input: 5, cacheWrite: 6.25, cacheRead: 0.5, output: 25 },
+};
+
+const anthropicPromotionalPrices = {
+    "claude-sonnet-5": {
+        expiresAt: Date.parse("2026-09-01T00:00:00Z"),
+        prices: { input: 2, cacheWrite: 2.5, cacheRead: 0.2, output: 10 },
+    },
 };
 
 const openAiImageOutputPricesUsd = {
@@ -117,10 +124,15 @@ const pricingForModel = (model) => {
     return modelPricesUsdPerMillion[alias];
 };
 
-const anthropicPricingForModel = (model) => {
+const anthropicPricingForModel = (model, pricedAt = Date.now()) => {
     const alias = Object.keys(anthropicModelPricesUsdPerMillion)
         .find((name) => model === name || model.startsWith(`${name}-`));
     if (!alias) throw new AiProviderError("AI_MODEL_NOT_PRICED", `Missing Anthropic price for model: ${model}`);
+    const promotion = anthropicPromotionalPrices[alias];
+    const pricedAtMs = new Date(pricedAt).getTime();
+    if (promotion && Number.isFinite(pricedAtMs) && pricedAtMs < promotion.expiresAt) {
+        return promotion.prices;
+    }
     return anthropicModelPricesUsdPerMillion[alias];
 };
 
@@ -148,8 +160,9 @@ export const calculateAnthropicCostUsd = ({
     cacheWriteTokens = 0,
     cacheReadTokens = 0,
     outputTokens = 0,
+    pricedAt = Date.now(),
 }) => {
-    const price = anthropicPricingForModel(model);
+    const price = anthropicPricingForModel(model, pricedAt);
     return roundCost((
         Math.max(Number(inputTokens) || 0, 0) * price.input
         + Math.max(Number(cacheWriteTokens) || 0, 0) * price.cacheWrite
