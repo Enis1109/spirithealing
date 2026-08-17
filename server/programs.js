@@ -2,15 +2,18 @@ import { database } from "./database.js";
 
 export const zepterProgramSlug = "zepter-acht-wochen";
 
-const defaultWeeks = [
-    ["Wahrnehmen", "Den eigenen Ausgangspunkt und automatische Reaktionen früher erkennen."],
-    ["Muster erkennen", "Auslöser, Wiederholungen und vertraute Reaktionswege sichtbar machen."],
-    ["Schutz verstehen", "Die Schutzabsicht würdigen, ohne ihr weiter die Führung zu überlassen."],
-    ["Die eigene Position", "Bedürfnisse, Grenzen und Entscheidungen in klare Worte übersetzen."],
-    ["Anders handeln", "Neue Reaktionen im Alltag bewusst ausprobieren und wiederholen."],
-    ["Widerstände begleiten", "Rückfälle und innere Gegenbewegungen verstehen und halten lernen."],
-    ["Veränderung stabilisieren", "Das Neue verkörpern und im Alltag verlässlich verankern."],
-    ["Integration", "Den gemeinsamen Weg abschließen und die nächsten 90 Tage ausrichten."],
+export const zepterProgramStartDate = "2026-08-19";
+export const zepterFirstReleaseDate = "2026-08-20";
+
+export const zepterWeeks = [
+    ["Wurzel - Ich darf da sein", "Existenz, Sicherheit, Versorgung und Zugehörigkeit"],
+    ["Sakral - Ich darf fühlen und brauchen", "Kindheit, Gefühle, Bedürfnisse und Lebendigkeit"],
+    ["Solarplexus - Ich darf mich zeigen und begrenzen", "Selbstwert, Autonomie, Grenzen und Sichtbarkeit"],
+    ["Herz - Ich darf mir selbst begegnen", "Selbstliebe, Vergebung und Rückkehr zum Selbst"],
+    ["Hals - Ich darf meine Wahrheit ausdrücken", "Ausdruck, Wahrheit, Entscheidung und Handlung"],
+    ["Drittes Auge - Ich darf klarer sehen", "Perspektive, Beobachtung und das Verstehen von Mustern"],
+    ["Krone - Ich darf vertrauen", "Vertrauen, Sinn, Bewusstsein und spirituelle Verbindung"],
+    ["Achtes Zentrum - Ich verkörpere meinen Weg", "Verkörperung, Seelenverbindung und gemeinsames Feld"],
 ];
 
 const addDays = (dateValue, days) => {
@@ -19,20 +22,27 @@ const addDays = (dateValue, days) => {
     return date.toISOString().slice(0, 10);
 };
 
-const defaultWeekContent = (weekNumber, title, focus) => ({
+export const defaultWeekContent = (weekNumber, title, focus) => ({
     weekNumber,
     title,
     focus,
-    intro: `In Woche ${weekNumber} entsteht hier der gemeinsame Wochenimpuls von Sabine und Selcan. Die Inhalte werden vor der Freigabe fachlich geprüft und anschließend gezielt veröffentlicht.`,
-    releaseOn: addDays("2026-08-16", (weekNumber - 1) * 7),
-    liveAt: "",
+    intro: weekNumber === 1
+        ? "In dieser Woche geht es um deinen heutigen inneren Boden: Was gibt dir Halt, wie zeigt sich dein Schutzsystem und was verändert sich, wenn du deinen eigenen Platz nicht erst verdienen musst?"
+        : "Diese Woche wird vor ihrer Freigabe mit dem Live-Impuls, der Meditation, dem Workbook und den passenden Alltagsschritten ergänzt.",
+    releaseOn: addDays(zepterFirstReleaseDate, (weekNumber - 1) * 7),
+    liveAt: weekNumber === 1 ? "2026-08-19T17:30:00.000Z" : "",
     zoomUrl: "",
-    meditationTitle: `Meditation für Woche ${weekNumber}`,
+    meditationTitle: weekNumber === 1 ? "Meditation: Ich darf da sein" : `Meditation für Woche ${weekNumber}`,
     meditationUrl: "",
-    workbookLabel: `Workbook – Woche ${weekNumber}`,
-    workbookUrl: "",
+    workbookLabel: weekNumber === 1 ? "Workbook Woche 1: Wurzel - Ich darf da sein" : `Workbook - Woche ${weekNumber}`,
+    workbookUrl: weekNumber === 1 ? `/api/members/programs/${zepterProgramSlug}/assets/1/workbook` : "",
     recordingUrl: "",
-    tasks: [
+    tasks: weekNumber === 1 ? [
+        { key: "live", label: "Am ersten Live teilnehmen oder später die Aufzeichnung ansehen" },
+        { key: "meditation", label: "Die Meditation Ich darf da sein erleben" },
+        { key: "workbook", label: "Die Übungen aus Woche 1 in meinem Tempo bearbeiten" },
+        { key: "alltag", label: "Sieben Tage lang einen kleinen Schritt für mehr inneren Boden üben" },
+    ] : [
         { key: "meditation", label: "Meditation der Woche anhören" },
         { key: "workbook", label: "Workbook-Übung bearbeiten" },
         { key: "live", label: "Live-Termin oder Aufzeichnung ansehen" },
@@ -88,17 +98,17 @@ export const initializeDefaultPrograms = async () => {
         [
             zepterProgramSlug,
             "Das Zepter wieder übernehmen",
-            "Acht Wochen vom Erkennen zur gelebten Veränderung",
-            "2026-08-16",
+            "Acht Wochen durch die Energiezentren - von innerem Halt zu gelebter Verkörperung",
+            zepterProgramStartDate,
         ],
     );
     const [programRows] = await database.execute("SELECT id FROM programs WHERE slug = ? LIMIT 1", [zepterProgramSlug]);
     const programId = programRows[0]?.id;
     if (!programId) throw new Error("Default program could not be initialized");
 
-    for (let index = 0; index < defaultWeeks.length; index += 1) {
+    for (let index = 0; index < zepterWeeks.length; index += 1) {
         const weekNumber = index + 1;
-        const content = defaultWeekContent(weekNumber, ...defaultWeeks[index]);
+        const content = defaultWeekContent(weekNumber, ...zepterWeeks[index]);
         const serialized = JSON.stringify(content);
         await database.execute(
             `INSERT INTO program_weeks (program_id, week_number, draft_content, published_content, published_at)
@@ -106,6 +116,54 @@ export const initializeDefaultPrograms = async () => {
              ON DUPLICATE KEY UPDATE program_id = VALUES(program_id)`,
             [programId, weekNumber, serialized, serialized],
         );
+    }
+};
+
+export const prepareZepterProgramDraft = async () => {
+    const connection = await database.getConnection();
+    try {
+        await connection.beginTransaction();
+        await connection.execute(
+            `UPDATE programs
+             SET title = ?, subtitle = ?, start_date = ?, updated_at = UTC_TIMESTAMP()
+             WHERE slug = ?`,
+            [
+                "Das Zepter wieder übernehmen",
+                "Acht Wochen durch die Energiezentren - von innerem Halt zu gelebter Verkörperung",
+                zepterProgramStartDate,
+                zepterProgramSlug,
+            ],
+        );
+        const [programRows] = await connection.execute(
+            "SELECT id FROM programs WHERE slug = ? LIMIT 1",
+            [zepterProgramSlug],
+        );
+        if (!programRows[0]?.id) {
+            await connection.rollback();
+            return false;
+        }
+
+        for (let index = 0; index < zepterWeeks.length; index += 1) {
+            const weekNumber = index + 1;
+            const content = defaultWeekContent(weekNumber, ...zepterWeeks[index]);
+            const [weekResult] = await connection.execute(
+                `UPDATE program_weeks
+                 SET draft_content = ?, updated_at = UTC_TIMESTAMP()
+                 WHERE program_id = ? AND week_number = ?`,
+                [JSON.stringify(content), programRows[0].id, weekNumber],
+            );
+            if (!weekResult.affectedRows) {
+                await connection.rollback();
+                return false;
+            }
+        }
+        await connection.commit();
+        return true;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
     }
 };
 
