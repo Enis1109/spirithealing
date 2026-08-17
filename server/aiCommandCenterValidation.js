@@ -1,4 +1,5 @@
-const workflowIds = new Set(["core-product-development"]);
+const workflowIds = new Set(["core-product-development", "content-project"]);
+const contentChannels = new Set(["instagram", "facebook", "linkedin", "newsletter", "blog"]);
 
 const directIdentifierPatterns = [
     { type: "email", pattern: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/iu },
@@ -68,7 +69,39 @@ export const normalizePilotWeek = (body = {}) => {
 export const normalizeWorkflowRequest = (body = {}) => {
     const workflowId = String(body.workflowId || "").trim().toLowerCase();
     if (!workflowIds.has(workflowId)) throw new AiCommandCenterValidationError("workflowId");
-    return { workflowId };
+    if (workflowId !== "content-project") return { workflowId };
+
+    if (body.anonymizationConfirmed !== true) {
+        throw new AiCommandCenterValidationError("anonymizationConfirmed", "required");
+    }
+    const channels = [...new Set((Array.isArray(body.channels) ? body.channels : [])
+        .map((channel) => String(channel || "").trim().toLowerCase()))];
+    if (channels.length < 1 || channels.length > 5 || channels.some((channel) => !contentChannels.has(channel))) {
+        throw new AiCommandCenterValidationError("channels");
+    }
+    const contentBrief = {
+        projectName: textValue(body.projectName, "projectName", { required: true, maxLength: 160 }),
+        goal: textValue(body.goal, "goal", { required: true, maxLength: 1200 }),
+        audience: textValue(body.audience, "audience", { required: true, maxLength: 1200 }),
+        coreMessage: textValue(body.coreMessage, "coreMessage", { required: true, maxLength: 2000 }),
+        offer: textValue(body.offer, "offer", { maxLength: 1200 }),
+        callToAction: textValue(body.callToAction, "callToAction", { required: true, maxLength: 800 }),
+        tone: textValue(body.tone, "tone", { required: true, maxLength: 800 }),
+        constraints: textValue(body.constraints, "constraints", { maxLength: 2000 }),
+        channels,
+        anonymizationConfirmed: true,
+    };
+    assertAnonymized(contentBrief);
+    return { workflowId, contentBrief };
+};
+
+export const normalizeImageDraftRequest = (body = {}) => {
+    const briefIndex = Number(body.briefIndex);
+    if (!Number.isInteger(briefIndex) || briefIndex < 0 || briefIndex > 5) {
+        throw new AiCommandCenterValidationError("briefIndex");
+    }
+    if (body.confirmCost !== true) throw new AiCommandCenterValidationError("confirmCost", "required");
+    return { briefIndex, confirmCost: true };
 };
 
 export const normalizeRunDecision = (body = {}) => {

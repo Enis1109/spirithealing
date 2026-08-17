@@ -3,8 +3,10 @@ import test from "node:test";
 import {
     AiCommandCenterValidationError,
     normalizeBudgetSettings,
+    normalizeImageDraftRequest,
     normalizePilotWeek,
     normalizeRunDecision,
+    normalizeWorkflowRequest,
 } from "../server/aiCommandCenterValidation.js";
 
 const validPilotWeek = {
@@ -60,4 +62,33 @@ test("validates budget limits and requires a note for rejection", () => {
     assert.throws(() => normalizeBudgetSettings({ monthlyBudgetUsd: 10, perRunBudgetUsd: 11 }), AiCommandCenterValidationError);
     assert.throws(() => normalizeRunDecision({ approved: false, note: "" }), AiCommandCenterValidationError);
     assert.deepEqual(normalizeRunDecision({ approved: true }), { approved: true, note: "" });
+});
+
+test("normalizes a content project and blocks direct identifiers", () => {
+    const input = {
+        workflowId: "content-project",
+        projectName: "Herbstprojekt",
+        goal: "Eine neue Gruppe verständlich vorstellen",
+        audience: "Erwachsene, die sich über das Angebot informieren möchten",
+        coreMessage: "Veränderung darf in kleinen Schritten beginnen.",
+        offer: "Unverbindliches Erstgespräch",
+        callToAction: "Mehr über die Gruppe erfahren",
+        tone: "warm und klar",
+        constraints: "Keine Heilversprechen",
+        channels: ["instagram", "facebook", "instagram"],
+        anonymizationConfirmed: true,
+    };
+    const normalized = normalizeWorkflowRequest(input);
+    assert.equal(normalized.workflowId, "content-project");
+    assert.deepEqual(normalized.contentBrief.channels, ["instagram", "facebook"]);
+    assert.throws(
+        () => normalizeWorkflowRequest({ ...input, coreMessage: "Bitte an person@example.com senden" }),
+        (error) => error instanceof AiCommandCenterValidationError && error.reason === "personal_data_email",
+    );
+});
+
+test("requires a bounded image brief and explicit cost confirmation", () => {
+    assert.deepEqual(normalizeImageDraftRequest({ briefIndex: "2", confirmCost: true }), { briefIndex: 2, confirmCost: true });
+    assert.throws(() => normalizeImageDraftRequest({ briefIndex: 0, confirmCost: false }), AiCommandCenterValidationError);
+    assert.throws(() => normalizeImageDraftRequest({ briefIndex: 8, confirmCost: true }), AiCommandCenterValidationError);
 });

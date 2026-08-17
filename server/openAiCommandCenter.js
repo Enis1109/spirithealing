@@ -186,13 +186,15 @@ const estimateAnthropicCallCost = ({ model, inputText, maxOutputTokens }) => cal
     outputTokens: maxOutputTokens,
 });
 
-const sourcePayload = ({ workflowId, pilotWeek, pilotWeeks }) => workflowId === "pilot-week-learning"
+const sourcePayload = ({ workflowId, pilotWeek, pilotWeeks, contentBrief }) => workflowId === "pilot-week-learning"
     ? { workflowId, pilotWeek }
-    : { workflowId, pilotWeeks };
+    : workflowId === "content-project"
+        ? { workflowId, contentBrief }
+        : { workflowId, pilotWeeks };
 
-export const estimateLiveWorkflowCostUsd = ({ workflowId, pilotWeek = null, pilotWeeks = [] }) => {
+export const estimateLiveWorkflowCostUsd = ({ workflowId, pilotWeek = null, pilotWeeks = [], contentBrief = null }) => {
     const config = getAiRuntimeConfig();
-    const source = JSON.stringify(sourcePayload({ workflowId, pilotWeek, pilotWeeks }));
+    const source = JSON.stringify(sourcePayload({ workflowId, pilotWeek, pilotWeeks, contentBrief }));
     const draftMaxOutputTokens = 3200;
     const reviewMaxOutputTokens = 4800;
     const draftCost = estimateCallCost({
@@ -235,6 +237,46 @@ const resultSchema = {
         contentIdeas: { type: "array", items: { type: "string" } },
         reviewNotes: { type: "array", items: { type: "string" } },
         openDecisions: { type: "array", items: { type: "string" } },
+        contentPackage: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+                projectName: { type: "string" },
+                campaignIdea: { type: "string" },
+                audienceSummary: { type: "string" },
+                coreMessage: { type: "string" },
+                pieces: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                            channel: { type: "string" },
+                            format: { type: "string" },
+                            hook: { type: "string" },
+                            caption: { type: "string" },
+                            callToAction: { type: "string" },
+                        },
+                        required: ["channel", "format", "hook", "caption", "callToAction"],
+                    },
+                },
+                imageBriefs: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                            title: { type: "string" },
+                            purpose: { type: "string" },
+                            prompt: { type: "string" },
+                        },
+                        required: ["title", "purpose", "prompt"],
+                    },
+                },
+                canvaHandoff: { type: "array", items: { type: "string" } },
+            },
+            required: ["projectName", "campaignIdea", "audienceSummary", "coreMessage", "pieces", "imageBriefs", "canvaHandoff"],
+        },
         programBlueprint: {
             type: "array",
             items: {
@@ -273,6 +315,7 @@ const resultSchema = {
         "contentIdeas",
         "reviewNotes",
         "openDecisions",
+        "contentPackage",
         "programBlueprint",
         "sourceWeeks",
         "sources",
@@ -540,7 +583,27 @@ const safeSources = (sources) => Array.isArray(sources) ? sources.flatMap((sourc
     }
 }).slice(0, 10) : [];
 
-const normalizedResult = ({ workflowId, pilotWeek, pilotWeeks, result }) => {
+const normalizedContentPackage = (contentPackage, contentBrief) => ({
+    projectName: clippedText(contentPackage?.projectName, contentBrief?.projectName || "Content-Projekt", 160),
+    campaignIdea: clippedText(contentPackage?.campaignIdea, "Interne Kampagnenidee zur Prüfung.", 1600),
+    audienceSummary: clippedText(contentPackage?.audienceSummary, contentBrief?.audience || "", 1200),
+    coreMessage: clippedText(contentPackage?.coreMessage, contentBrief?.coreMessage || "", 1600),
+    pieces: (Array.isArray(contentPackage?.pieces) ? contentPackage.pieces : []).slice(0, 10).map((piece) => ({
+        channel: clippedText(piece?.channel, "Kanal", 80),
+        format: clippedText(piece?.format, "Beitrag", 120),
+        hook: clippedText(piece?.hook, "", 500),
+        caption: clippedText(piece?.caption, "", 5000),
+        callToAction: clippedText(piece?.callToAction, contentBrief?.callToAction || "", 800),
+    })),
+    imageBriefs: (Array.isArray(contentPackage?.imageBriefs) ? contentPackage.imageBriefs : []).slice(0, 6).map((brief) => ({
+        title: clippedText(brief?.title, "Bildentwurf", 200),
+        purpose: clippedText(brief?.purpose, "Markenmotiv zum Content-Paket", 600),
+        prompt: clippedText(brief?.prompt, "Ruhiges, professionelles Markenmotiv für Spirit Healing ohne Schrift im Bild.", 3000),
+    })),
+    canvaHandoff: clippedList(contentPackage?.canvaHandoff, 8),
+});
+
+const normalizedResult = ({ workflowId, pilotWeek, pilotWeeks, contentBrief, result }) => {
     const common = {
         title: clippedText(result?.title, workflowId === "pilot-week-learning" ? "Interne Pilot-Auswertung" : "Interner 12-Wochen-Arbeitsentwurf"),
         executiveSummary: clippedText(result?.executiveSummary, "Der KI-Arbeitsstand wartet auf menschliche Prüfung.", 2000),
@@ -552,6 +615,15 @@ const normalizedResult = ({ workflowId, pilotWeek, pilotWeeks, result }) => {
         sources: safeSources(result?.sources),
         externalActions: [],
     };
+
+    if (workflowId === "content-project") {
+        return {
+            ...common,
+            contentPackage: normalizedContentPackage(result?.contentPackage, contentBrief),
+            programBlueprint: [],
+            sourceWeeks: [],
+        };
+    }
 
     if (workflowId === "pilot-week-learning") {
         return {
@@ -614,6 +686,7 @@ export const runLiveWorkflow = async ({
     workflowId,
     pilotWeek = null,
     pilotWeeks = [],
+    contentBrief = null,
     estimatedCostUsd,
     fetchImpl = globalThis.fetch,
 }) => {
@@ -631,11 +704,14 @@ export const runLiveWorkflow = async ({
         ? workflow.steps.filter((agentId) => editorialAgentIds.has(agentId))
         : [];
     const reviewAgentIdsForWorkflow = workflow.steps.filter((agentId) => reviewAgentIds.has(agentId));
-    const source = sourcePayload({ workflowId, pilotWeek, pilotWeeks });
+    const source = sourcePayload({ workflowId, pilotWeek, pilotWeeks, contentBrief });
+    const workflowInstructions = workflowId === "content-project"
+        ? "Erstelle ein direkt nutzbares internes Content-Paket für alle angegebenen Kanäle. Liefere pro Kanal mindestens einen vollständigen Text. Bildprompts dürfen keine Schrift im Bild, keine medizinische Symbolik und keine Wirkungsversprechen verlangen. Die Canva-Übergabe beschreibt Layout und Formate, löst aber keine Canva-Aktion aus."
+        : "";
     const draft = await requestOpenAi({
         apiKey: process.env.OPENAI_API_KEY,
         model: config.routineModel,
-        instructions: `${commonInstructions}\nErstelle den ersten Arbeitsentwurf für die Rollen ${draftAgentIds.join(", ")}.`,
+        instructions: `${commonInstructions}\n${workflowInstructions}\nErstelle den ersten Arbeitsentwurf für die Rollen ${draftAgentIds.join(", ")}.`,
         input: JSON.stringify({ workflow: workflow.name, source }),
         schema: responseSchema(draftAgentIds),
         maxOutputTokens: 3200,
@@ -669,7 +745,7 @@ Erhalte die dokumentierte Bedeutung. Erfinde keine Geschichten über reale Teiln
         review = await requestOpenAi({
             apiKey: process.env.OPENAI_API_KEY,
             model: config.reviewModel,
-            instructions: `${commonInstructions}\nPrüfe den OpenAI-Erstentwurf und einen vorhandenen Claude-Langformentwurf unabhängig für die Rollen ${reviewAgentIdsForWorkflow.join(", ")}.
+            instructions: `${commonInstructions}\n${workflowInstructions}\nPrüfe den OpenAI-Erstentwurf und einen vorhandenen Claude-Langformentwurf unabhängig für die Rollen ${reviewAgentIdsForWorkflow.join(", ")}.
 Übernimm aus dem Claude-Entwurf nur Inhalte, die durch die Quellenbasis getragen und für den internen Arbeitsstand geeignet sind.
 Nutze höchstens zwei Websuchen und nur für allgemeine fachliche Aussagen. Sende niemals Pilotdaten, Teilnehmerzahlen oder Beobachtungen als Suchanfrage. Quellen müssen direkt zur geprüften Aussage passen.`,
             input: JSON.stringify({
@@ -717,8 +793,56 @@ Nutze höchstens zwei Websuchen und nur für allgemeine fachliche Aussagen. Send
             workflowId,
             pilotWeek,
             pilotWeeks,
+            contentBrief,
             result: { ...review.data.result, sources: review.sources },
         }),
         usage,
     };
+};
+
+export const generateOpenAiImageDraft = async ({ prompt, fetchImpl = globalThis.fetch }) => {
+    const config = getAiRuntimeConfig();
+    if (!config.imageGenerationReady || !config.apiKeyConfigured) {
+        throw new AiProviderError("AI_IMAGE_NOT_CONFIGURED", "Image generation is not configured");
+    }
+    if (typeof fetchImpl !== "function") throw new AiProviderError("AI_PROVIDER_UNAVAILABLE", "Fetch is unavailable");
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120_000);
+    try {
+        const response = await fetchImpl("https://api.openai.com/v1/images/generations", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                model: config.imageModel,
+                prompt: `${clippedText(prompt, "", 3000)}\n\nKeine Schrift, Buchstaben, Logos oder Wasserzeichen im Bild. Keine medizinische Symbolik und keine Darstellung garantierter Heilung.`,
+                size: config.imageSize,
+                quality: config.imageDraftQuality,
+                n: 1,
+            }),
+            signal: controller.signal,
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new AiProviderError("AI_PROVIDER_UNAVAILABLE", String(payload?.error?.message || `OpenAI image request failed with ${response.status}`).slice(0, 300));
+        }
+        const base64 = String(payload?.data?.[0]?.b64_json || "");
+        if (!base64) throw new AiProviderError("AI_PROVIDER_INVALID_RESPONSE", "OpenAI returned no image data");
+        return {
+            image: Buffer.from(base64, "base64"),
+            mimeType: "image/png",
+            model: config.imageModel,
+            size: config.imageSize,
+            quality: config.imageDraftQuality,
+            costUsd: config.imageDraftOutputCostUsd,
+        };
+    } catch (error) {
+        if (error instanceof AiProviderError) throw error;
+        if (error?.name === "AbortError") throw new AiProviderError("AI_PROVIDER_TIMEOUT", "OpenAI image request timed out");
+        throw new AiProviderError("AI_PROVIDER_UNAVAILABLE", String(error?.message || error).slice(0, 300));
+    } finally {
+        clearTimeout(timeout);
+    }
 };

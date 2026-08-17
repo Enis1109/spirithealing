@@ -5,12 +5,50 @@ import {
     calculateOpenAiImageOutputCostUsd,
     calculateOpenAiCostUsd,
     estimateLiveWorkflowCostUsd,
+    generateOpenAiImageDraft,
     runLiveWorkflow,
 } from "../server/openAiCommandCenter.js";
 
 test("prices image drafts and finals before activation", () => {
     assert.equal(calculateOpenAiImageOutputCostUsd({ model: "gpt-image-2", size: "1024x1536", quality: "low" }), 0.005);
     assert.equal(calculateOpenAiImageOutputCostUsd({ model: "gpt-image-2", size: "1024x1536", quality: "medium", count: 3 }), 0.123);
+});
+
+test("generates one low-cost image draft only when image access is enabled", async () => {
+    const previous = Object.fromEntries([
+        "AI_COMMAND_CENTER_MODE",
+        "OPENAI_API_KEY",
+        "OPENAI_IMAGE_ENABLED",
+        "OPENAI_IMAGE_MODEL",
+        "OPENAI_IMAGE_SIZE",
+        "OPENAI_IMAGE_DRAFT_QUALITY",
+    ].map((key) => [key, process.env[key]]));
+    process.env.AI_COMMAND_CENTER_MODE = "live";
+    process.env.OPENAI_API_KEY = "test-key";
+    process.env.OPENAI_IMAGE_ENABLED = "true";
+    process.env.OPENAI_IMAGE_MODEL = "gpt-image-2";
+    process.env.OPENAI_IMAGE_SIZE = "1024x1536";
+    process.env.OPENAI_IMAGE_DRAFT_QUALITY = "low";
+    let request;
+    try {
+        const generated = await generateOpenAiImageDraft({
+            prompt: "Ein ruhiges abstraktes Motiv",
+            fetchImpl: async (_url, options) => {
+                request = JSON.parse(options.body);
+                return { ok: true, json: async () => ({ data: [{ b64_json: Buffer.from("image").toString("base64") }] }) };
+            },
+        });
+        assert.equal(request.model, "gpt-image-2");
+        assert.equal(request.quality, "low");
+        assert.equal(request.n, 1);
+        assert.equal(generated.image.toString(), "image");
+        assert.equal(generated.costUsd, 0.005);
+    } finally {
+        for (const [key, value] of Object.entries(previous)) {
+            if (value === undefined) delete process.env[key];
+            else process.env[key] = value;
+        }
+    }
 });
 
 const pilotWeek = {

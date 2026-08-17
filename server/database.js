@@ -428,6 +428,30 @@ const schemaStatements = [
         CONSTRAINT ai_run_creator_fk FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE RESTRICT,
         CONSTRAINT ai_run_decider_fk FOREIGN KEY (decided_by) REFERENCES members(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+    `CREATE TABLE IF NOT EXISTS ai_generated_assets (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        source_run_id BIGINT UNSIGNED NOT NULL,
+        brief_index TINYINT UNSIGNED NOT NULL,
+        provider VARCHAR(40) NOT NULL DEFAULT 'OpenAI',
+        model VARCHAR(80) NOT NULL,
+        prompt TEXT NOT NULL,
+        mime_type VARCHAR(80) NOT NULL DEFAULT 'image/png',
+        image_data LONGBLOB NULL,
+        image_size VARCHAR(40) NOT NULL,
+        image_quality VARCHAR(24) NOT NULL,
+        status VARCHAR(24) NOT NULL DEFAULT 'running',
+        estimated_cost_usd DECIMAL(10,4) NOT NULL DEFAULT 0,
+        actual_cost_usd DECIMAL(10,4) NOT NULL DEFAULT 0,
+        error_message VARCHAR(500) NULL,
+        created_by BIGINT UNSIGNED NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        completed_at DATETIME NULL,
+        PRIMARY KEY (id),
+        INDEX ai_asset_source_idx (source_run_id, created_at),
+        INDEX ai_asset_created_idx (created_at),
+        CONSTRAINT ai_asset_run_fk FOREIGN KEY (source_run_id) REFERENCES ai_workflow_runs(id) ON DELETE CASCADE,
+        CONSTRAINT ai_asset_creator_fk FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE RESTRICT
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 ];
 
 const additiveColumns = [
