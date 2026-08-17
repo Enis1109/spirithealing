@@ -1,5 +1,6 @@
 import {
     Bot,
+    BrainCircuit,
     CalendarCheck2,
     CheckCircle2,
     ClipboardList,
@@ -27,6 +28,7 @@ import {
 import { AdminPrograms } from "@/sections/AdminPrograms";
 import { AdminOnboarding } from "@/sections/AdminOnboarding";
 import { AdminScheduleSurvey } from "@/sections/AdminScheduleSurvey";
+import { AdminAiCommandCenter } from "@/sections/AdminAiCommandCenter";
 
 const emptySnapshot = { entries: [], revisions: [] };
 
@@ -46,6 +48,8 @@ const requestJson = async (url, options = {}) => {
         const error = new Error(result.error || "request_failed");
         error.code = result.error || "request_failed";
         error.status = response.status;
+        error.field = result.field;
+        error.reason = result.reason;
         throw error;
     }
     return result;
@@ -393,6 +397,7 @@ export const AdminArea = () => {
         { id: "programs", label: "Programme", icon: UsersRound },
         { id: "onboarding", label: "Startfragebögen", icon: ClipboardList },
         { id: "schedule", label: "Terminabfrage", icon: CalendarCheck2 },
+        { id: "ai", label: "KI-Zentrale", icon: BrainCircuit },
     ];
 
     return (
@@ -401,7 +406,7 @@ export const AdminArea = () => {
                 <div className="mx-auto flex w-full max-w-[1500px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3">
                         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0f8b8d] font-bold text-white">SH</span>
-                        <div><strong className="block">Spirit Healing</strong><span className="text-sm text-[#6b8585]">Inhalte verwalten</span></div>
+                        <div><strong className="block">Spirit Healing</strong><span className="text-sm text-[#6b8585]">Inhalte und KI-Aufträge verwalten</span></div>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="hidden text-right text-sm sm:block"><strong className="block">{member?.name}</strong><span className="text-[#6b8585]">Administrator</span></span>
@@ -418,7 +423,7 @@ export const AdminArea = () => {
                         ))}
                     </nav>
                     <div className="mt-3 hidden rounded-2xl bg-[#eaf4f1] p-4 text-sm leading-6 text-[#4e6d6e] lg:block">
-                        <ShieldCheck className="mb-2 h-5 w-5 text-[#0f8b8d]" /> Änderungen bleiben als Entwurf unsichtbar, bis „Veröffentlichen“ gewählt wird.
+                        <ShieldCheck className="mb-2 h-5 w-5 text-[#0f8b8d]" /> {activeTab === "ai" ? "KI-Ergebnisse bleiben intern. Außenaktionen sind gesperrt." : "Änderungen bleiben als Entwurf unsichtbar, bis „Veröffentlichen“ gewählt wird."}
                     </div>
                 </aside>
 
@@ -527,6 +532,10 @@ export const AdminArea = () => {
 
                     {contentState === "ready" && activeTab === "schedule" && (
                         <AdminScheduleSurvey requestJson={requestJson} />
+                    )}
+
+                    {contentState === "ready" && activeTab === "ai" && (
+                        <AdminAiCommandCenter requestJson={requestJson} setNotice={setNotice} />
                     )}
                 </section>
             </div>
