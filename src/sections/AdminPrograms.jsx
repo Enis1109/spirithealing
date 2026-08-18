@@ -76,6 +76,20 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
     }, [memberSearch, program?.members]);
 
     const activeCount = program?.members.filter((member) => member.enrollmentStatus === "active").length || 0;
+    const cohortReadiness = program?.cohortReadiness || {
+        total: 0,
+        readyCount: 0,
+        activeCount: 0,
+        confirmationPendingCount: 0,
+        missingAccountCount: 0,
+        participants: [],
+    };
+    const readinessLabel = {
+        ready: "Bestätigt, noch nicht freigeschaltet",
+        active: "Bereits freigeschaltet",
+        confirmation_pending: "Konto noch nicht bestätigt",
+        missing_account: "Kein passendes Mitgliederkonto",
+    };
 
     const saveSettings = async (event) => {
         event.preventDefault();
@@ -261,6 +275,33 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
 
             <section className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
                 <div className="flex items-start gap-3"><UserCheck className="mt-1 h-6 w-6 text-[#0f8b8d]" /><div><h2 className="text-2xl font-bold">Teilnehmerzugänge</h2><p className="mt-1 text-[#6b8585]">Bestehende Mitgliederkonten gezielt für das Programm freischalten.</p></div></div>
+                <div className="mt-6 rounded-2xl border border-[#d6e6e3] bg-white p-5">
+                    <div className="flex items-start gap-3">
+                        <UsersRound className="mt-1 h-5 w-5 text-[#0f8b8d]" />
+                        <div>
+                            <h3 className="text-lg font-bold">Gruppe aus der Terminabfrage</h3>
+                            <p className="mt-1 text-sm leading-6 text-[#6b8585]">Diese Übersicht ist nur eine Vorbereitung. Sie verändert keine Zugänge.</p>
+                        </div>
+                    </div>
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="rounded-xl bg-[#eaf4f1] p-3"><strong className="text-xl text-[#0f8b8d]">{cohortReadiness.readyCount}</strong><p className="text-xs text-[#547875]">bereit</p></div>
+                        <div className="rounded-xl bg-[#eef8f6] p-3"><strong className="text-xl text-[#0f8b8d]">{cohortReadiness.activeCount}</strong><p className="text-xs text-[#547875]">bereits freigeschaltet</p></div>
+                        <div className="rounded-xl bg-amber-50 p-3"><strong className="text-xl text-amber-800">{cohortReadiness.confirmationPendingCount}</strong><p className="text-xs text-amber-800">Bestätigung offen</p></div>
+                        <div className="rounded-xl bg-[#fff0ec] p-3"><strong className="text-xl text-[#a33f2f]">{cohortReadiness.missingAccountCount}</strong><p className="text-xs text-[#a33f2f]">kein passendes Konto</p></div>
+                    </div>
+                    <details className="mt-4">
+                        <summary className="cursor-pointer text-sm font-bold text-[#0f8b8d]">Alle {cohortReadiness.total} Teilnehmenden prüfen</summary>
+                        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                            {cohortReadiness.participants.map((participant) => (
+                                <div key={`${participant.email}-${participant.name}`} className="rounded-xl border border-[#d6e6e3] p-3 text-sm">
+                                    <strong>{participant.name}</strong>
+                                    <p className="mt-1 break-all text-xs text-[#6b8585]">{participant.email}</p>
+                                    <p className={`mt-2 text-xs font-bold ${participant.readiness === "ready" || participant.readiness === "active" ? "text-[#0f8b8d]" : "text-amber-800"}`}>{readinessLabel[participant.readiness]}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </details>
+                </div>
                 <form className="mt-6 flex flex-col gap-3 sm:flex-row" onSubmit={(event) => { event.preventDefault(); updateEnrollment(enrollmentEmail, true); }}>
                     <input type="email" required value={enrollmentEmail} onChange={(event) => setEnrollmentEmail(event.target.value)} placeholder="E-Mail-Adresse des Mitgliederkontos" className="min-h-12 flex-1 rounded-full border border-[#0f8b8d]/25 bg-white px-5 outline-none focus:border-[#0f8b8d]" />
                     <button type="submit" disabled={!enrollmentEmail || Boolean(busyKey)} className="min-h-12 rounded-full bg-[#0f8b8d] px-6 font-bold text-white disabled:opacity-60">Zugang freischalten</button>
