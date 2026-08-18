@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Der geschützte Programmraum begleitet die Teilnehmenden durch das achtwöchige Angebot „Das Zepter wieder übernehmen“. Er nutzt die bestehende Mitglieder-Anmeldung und benötigt kein zweites Konto.
+Der geschützte Programmraum begleitet die Teilnehmenden durch das achtwöchige Angebot „Das Zepter übernehmen“. Er nutzt die bestehende Mitglieder-Anmeldung und benötigt kein zweites Konto.
 
 ## Aufbau für Teilnehmende
 

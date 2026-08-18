@@ -4,9 +4,10 @@ export const zepterProgramSlug = "zepter-acht-wochen";
 
 export const zepterProgramStartDate = "2026-08-19";
 export const zepterFirstReleaseDate = "2026-08-20";
+export const zepterFirstLiveAt = "2026-08-19T16:30:00.000Z";
 
 export const zepterWeeks = [
-    ["Wurzel - Ich darf da sein", "Existenz, Sicherheit, Versorgung und Zugehörigkeit"],
+    ["Ich darf sein", "Ankommen, wahrnehmen und den gemeinsamen Weg beginnen"],
     ["Sakral - Ich darf fühlen und brauchen", "Kindheit, Gefühle, Bedürfnisse und Lebendigkeit"],
     ["Solarplexus - Ich darf mich zeigen und begrenzen", "Selbstwert, Autonomie, Grenzen und Sichtbarkeit"],
     ["Herz - Ich darf mir selbst begegnen", "Selbstliebe, Vergebung und Rückkehr zum Selbst"],
@@ -27,19 +28,19 @@ export const defaultWeekContent = (weekNumber, title, focus) => ({
     title,
     focus,
     intro: weekNumber === 1
-        ? "In dieser Woche geht es um deinen heutigen inneren Boden: Was gibt dir Halt, wie zeigt sich dein Schutzsystem und was verändert sich, wenn du deinen eigenen Platz nicht erst verdienen musst?"
+        ? "Nimm dir für diese Woche Zeit, die bereitgestellten Inhalte in deinem eigenen Tempo zu erleben. Du musst nichts vorwegnehmen und kannst das festhalten, was für dich persönlich wichtig ist."
         : "Diese Woche wird vor ihrer Freigabe mit dem Live-Impuls, der Meditation, dem Workbook und den passenden Alltagsschritten ergänzt.",
     releaseOn: addDays(zepterFirstReleaseDate, (weekNumber - 1) * 7),
-    liveAt: weekNumber === 1 ? "2026-08-19T17:30:00.000Z" : "",
+    liveAt: weekNumber === 1 ? zepterFirstLiveAt : "",
     zoomUrl: "",
-    meditationTitle: weekNumber === 1 ? "Meditation: Ich darf da sein" : `Meditation für Woche ${weekNumber}`,
+    meditationTitle: weekNumber === 1 ? "Meditation: Ich darf sein" : `Meditation für Woche ${weekNumber}`,
     meditationUrl: "",
-    workbookLabel: weekNumber === 1 ? "Workbook Woche 1: Wurzel - Ich darf da sein" : `Workbook - Woche ${weekNumber}`,
+    workbookLabel: weekNumber === 1 ? "Workbook Woche 1: Ich darf sein" : `Workbook - Woche ${weekNumber}`,
     workbookUrl: weekNumber === 1 ? `/api/members/programs/${zepterProgramSlug}/assets/1/workbook` : "",
     recordingUrl: "",
     tasks: weekNumber === 1 ? [
         { key: "live", label: "Am ersten Live teilnehmen oder später die Aufzeichnung ansehen" },
-        { key: "meditation", label: "Die Meditation Ich darf da sein erleben" },
+        { key: "meditation", label: "Die Meditation Ich darf sein erleben" },
         { key: "workbook", label: "Die Übungen aus Woche 1 in meinem Tempo bearbeiten" },
         { key: "alltag", label: "Sieben Tage lang einen kleinen Schritt für mehr inneren Boden üben" },
     ] : [
@@ -97,7 +98,7 @@ export const initializeDefaultPrograms = async () => {
          ON DUPLICATE KEY UPDATE slug = VALUES(slug)`,
         [
             zepterProgramSlug,
-            "Das Zepter wieder übernehmen",
+            "Das Zepter übernehmen",
             "Acht Wochen durch die Energiezentren - von innerem Halt zu gelebter Verkörperung",
             zepterProgramStartDate,
         ],
@@ -128,7 +129,7 @@ export const prepareZepterProgramDraft = async () => {
              SET title = ?, subtitle = ?, start_date = ?, updated_at = UTC_TIMESTAMP()
              WHERE slug = ?`,
             [
-                "Das Zepter wieder übernehmen",
+                "Das Zepter übernehmen",
                 "Acht Wochen durch die Energiezentren - von innerem Halt zu gelebter Verkörperung",
                 zepterProgramStartDate,
                 zepterProgramSlug,
@@ -234,7 +235,7 @@ export const getMemberProgram = async ({ slug, member }) => {
             title: content.title || `Woche ${weekRow.week_number}`,
             focus: content.focus || "",
             releaseOn,
-            liveAt: locked ? "" : (content.liveAt || ""),
+            liveAt: locked ? "" : (content.liveAt || (Number(weekRow.week_number) === 1 ? zepterFirstLiveAt : "")),
             locked,
             published: Boolean(published),
             publishedAt: toIsoString(weekRow.published_at),

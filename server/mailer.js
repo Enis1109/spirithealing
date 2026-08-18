@@ -73,7 +73,7 @@ export const sendZepterBankTransferConfirmation = async ({ name, email, paymentP
     const subject = "Schön, dass du mit uns auf den Weg gehst – deine Überweisungsdaten";
     const reference = `ZEPTER – ${name}`;
     const greeting = `Hallo ${name},`;
-    const welcome = "wie schön, dass du dich mit uns auf den Weg machen möchtest und bei „Das Zepter wieder übernehmen“ dabei sein willst.";
+    const welcome = "wie schön, dass du dich mit uns auf den Weg machen möchtest und bei „Das Zepter übernehmen“ dabei sein willst.";
     const nextStep = "Bitte überweise den unten genannten Betrag. Sobald deine Zahlung bei uns eingegangen ist, ist dein Platz verbindlich gebucht.";
     const closing = "Wir freuen uns sehr auf diese gemeinsame Reise mit dir.";
 
