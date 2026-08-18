@@ -1,4 +1,5 @@
 import { database } from "./database.js";
+import { summarizeZepterCohortReadiness } from "./programCohort.js";
 
 export const zepterProgramSlug = "zepter-acht-wochen";
 
@@ -317,7 +318,7 @@ export const updateProgramTask = async ({ slug, member, weekNumber, taskKey, com
 export const getAdminProgram = async (slug) => {
     const row = await getProgramRow(slug);
     if (!row) return null;
-    const [weekRows, memberRows] = await Promise.all([
+    const [weekRows, memberRows, cohortRows] = await Promise.all([
         database.execute(
             `SELECT week_number, draft_content, published_content, published_at
              FROM program_weeks WHERE program_id = ? ORDER BY week_number`,
@@ -330,6 +331,18 @@ export const getAdminProgram = async (slug) => {
              LEFT JOIN program_enrollments AS enrollments
                ON enrollments.member_id = members.id AND enrollments.program_id = ?
              ORDER BY enrollments.status = 'active' DESC, members.name, members.email`,
+            [row.id],
+        ),
+        database.execute(
+            `SELECT surveys.name AS survey_name, surveys.email AS survey_email,
+                    members.email AS member_email, members.status AS member_status,
+                    enrollments.status AS enrollment_status
+             FROM zepter_schedule_surveys AS surveys
+             LEFT JOIN members
+               ON LOWER(TRIM(members.email)) = LOWER(TRIM(surveys.email))
+             LEFT JOIN program_enrollments AS enrollments
+               ON enrollments.member_id = members.id AND enrollments.program_id = ?
+             ORDER BY surveys.name, surveys.email`,
             [row.id],
         ),
     ]);
@@ -350,6 +363,7 @@ export const getAdminProgram = async (slug) => {
             grantedAt: toIsoString(member.granted_at),
             accessEndsAt: toIsoString(member.access_ends_at),
         })),
+        cohortReadiness: summarizeZepterCohortReadiness(cohortRows[0]),
     };
 };
 
