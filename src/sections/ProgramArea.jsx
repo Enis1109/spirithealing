@@ -191,9 +191,12 @@ export const ProgramArea = ({ member }) => {
                                 >
                                     <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${week.locked ? "bg-white/70" : active ? "bg-[#f1d277] text-[#123e3d]" : "bg-[#e2f4f0] text-[#168e91]"}`}>{week.locked ? <LockKeyhole className="h-4 w-4" /> : completed ? <Check className="h-5 w-5" /> : week.weekNumber}</span>
                                     <p className={`mt-5 text-xs font-bold uppercase tracking-[0.14em] ${active ? "text-[#f1d277]" : "text-[#168e91]"}`}>Woche {week.weekNumber}</p>
-                                    <h3 className="mt-1 text-xl font-bold">{week.title}</h3>
-                                    <p className={`mt-2 text-sm leading-6 ${active ? "text-white/72" : "text-[#668681]"}`}>{week.focus}</p>
-                                    {week.locked && <p className="mt-3 text-xs font-bold">ab {formatDate(week.releaseOn)}</p>}
+                                    {!week.locked && (
+                                        <>
+                                            <h3 className="mt-1 text-xl font-bold">{week.title}</h3>
+                                            <p className={`mt-2 text-sm leading-6 ${active ? "text-white/72" : "text-[#668681]"}`}>{week.focus}</p>
+                                        </>
+                                    )}
                                 </button>
                             );
                         })}
