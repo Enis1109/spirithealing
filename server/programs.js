@@ -235,7 +235,7 @@ export const getMemberProgram = async ({ slug, member }) => {
             title: content.title || `Woche ${weekRow.week_number}`,
             focus: content.focus || "",
             releaseOn,
-            liveAt: locked ? "" : (content.liveAt || (Number(weekRow.week_number) === 1 ? zepterFirstLiveAt : "")),
+            liveAt: locked ? "" : (Number(weekRow.week_number) === 1 ? zepterFirstLiveAt : (content.liveAt || "")),
             locked,
             published: Boolean(published),
             publishedAt: toIsoString(weekRow.published_at),
