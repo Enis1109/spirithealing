@@ -286,19 +286,6 @@ const contentDefinitions = {
         image: "/images/meditations/wiedergeburt.png?v=20260730",
         icon: Headphones,
     },
-    ichBinLicht: {
-        key: "meditation-ich-bin-licht",
-        type: "meditation",
-        access: "free",
-        title: { de: "Ich bin Licht", tr: "Ben Işığım" },
-        description: {
-            de: "Eine geführte Meditation, die dich mit deiner eigenen Lichtquelle, deinem zukünftigen Selbst und deiner inneren Kraft verbindet.",
-            tr: "Seni kendi ışık kaynağınla, gelecekteki benliğinle ve içsel gücünle buluşturan rehberli bir meditasyon.",
-        },
-        meta: { de: "Geführte Meditation · 35 Min.", tr: "Rehberli meditasyon · 35 dk." },
-        image: "/images/meditations/ich-bin-licht.png?v=20260819",
-        icon: Headphones,
-    },
     workbook: {
         key: "workbook-wer-entscheidet-dein-leben",
         type: "workbook",
@@ -492,7 +479,6 @@ export const MemberApp = ({
         { ...contentDefinitions.talk, available: recordingAvailable, mediaUrl: recordingEmbedUrl || "/api/members/recording" },
         { ...contentDefinitions.loslassen, available: meditations.loslassenAvailable, mediaUrl: "/api/members/meditations/loslassen", downloadUrl: "/api/members/meditations/loslassen?download=1" },
         { ...contentDefinitions.wiedergeburt, available: meditations.wiedergeburtAvailable, mediaUrl: "/api/members/meditations/wiedergeburt", downloadUrl: "/api/members/meditations/wiedergeburt?download=1" },
-        { ...contentDefinitions.ichBinLicht, available: meditations.ichBinLichtAvailable, mediaUrl: "/api/members/meditations/ich-bin-licht", downloadUrl: "/api/members/meditations/ich-bin-licht?download=1" },
         { ...contentDefinitions.workbook, available: workbookAvailable, downloadUrl: "/api/members/workbook" },
         { ...contentDefinitions.premiumMeditations, available: false },
         { ...contentDefinitions.premiumTalks, available: false },

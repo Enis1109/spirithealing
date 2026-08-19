@@ -213,7 +213,22 @@ export const ProgramArea = ({ member }) => {
 
                         <div className="grid gap-5 p-6 sm:p-8 lg:grid-cols-2">
                             {selectedWeek.meditationUrl ? (
-                                <article className="rounded-3xl bg-[#f3faf8] p-5"><Headphones className="h-6 w-6 text-[#168e91]" /><h3 className="mt-3 text-xl font-bold">{selectedWeek.meditationTitle}</h3><audio className="mt-5 w-full" controls preload="metadata" src={selectedWeek.meditationUrl} /></article>
+                                <article className="overflow-hidden rounded-3xl bg-[#f3faf8] p-5">
+                                    <div className={selectedWeek.meditationImage ? "grid gap-5 sm:grid-cols-[9rem_1fr] sm:items-center" : ""}>
+                                        {selectedWeek.meditationImage && (
+                                            <img
+                                                src={selectedWeek.meditationImage}
+                                                alt={`Cover ${selectedWeek.meditationTitle}`}
+                                                className="aspect-square w-full rounded-2xl object-cover shadow-md"
+                                            />
+                                        )}
+                                        <div>
+                                            <Headphones className="h-6 w-6 text-[#168e91]" />
+                                            <h3 className="mt-3 text-xl font-bold">{selectedWeek.meditationTitle}</h3>
+                                            <audio className="mt-5 w-full" controls preload="metadata" src={selectedWeek.meditationUrl} />
+                                        </div>
+                                    </div>
+                                </article>
                             ) : <EmptyAsset icon={Headphones} title={selectedWeek.meditationTitle || "Meditation"} text="Die Meditation wird vorbereitet und erscheint hier nach ihrer Freigabe." />}
 
                             {selectedWeek.workbookUrl ? (
