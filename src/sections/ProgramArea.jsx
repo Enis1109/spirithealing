@@ -237,6 +237,25 @@ export const ProgramArea = ({ member }) => {
                                 </div>
                             </article>
                         </div>
+
+                        {selectedWeek.summary && (
+                            <article className="border-t border-[#d4e6e3] bg-[#fbf7ed] p-6 sm:p-8">
+                                <div className="max-w-4xl">
+                                    <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#168e91]">Zusammenfassung</p>
+                                    <h3 className="mt-2 font-serif text-3xl font-bold">{selectedWeek.summary.title}</h3>
+                                    <p className="mt-4 text-lg leading-8 text-[#547875]">{selectedWeek.summary.intro}</p>
+                                    <div className="mt-7 grid gap-4 md:grid-cols-2">
+                                        {selectedWeek.summary.sections.map((section) => (
+                                            <section key={section.title} className="rounded-3xl border border-[#c8dfdb] bg-white p-5">
+                                                <h4 className="text-lg font-bold text-[#123e3d]">{section.title}</h4>
+                                                <p className="mt-2 leading-7 text-[#547875]">{section.text}</p>
+                                            </section>
+                                        ))}
+                                    </div>
+                                    <p className="mt-6 rounded-3xl bg-[#e6f4f0] p-5 font-semibold leading-7 text-[#315b58]">{selectedWeek.summary.closing}</p>
+                                </div>
+                            </article>
+                        )}
                     </section>
                 )}
             </div>

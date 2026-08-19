@@ -1,11 +1,40 @@
 import { database } from "./database.js";
 import { summarizeZepterCohortReadiness } from "./programCohort.js";
+import { isProgramWeekLocked, zepterFirstReleaseAt } from "./programRelease.js";
 
 export const zepterProgramSlug = "zepter-acht-wochen";
 
 export const zepterProgramStartDate = "2026-08-19";
 export const zepterFirstReleaseDate = "2026-08-20";
 export const zepterFirstLiveAt = "2026-08-19T16:30:00.000Z";
+
+export const zepterWeekOneSummary = {
+    title: "Rückblick auf den ersten Abend",
+    intro: "Der erste gemeinsame Abend hat den Blick darauf geöffnet, wie Wahrnehmung, Bedeutung, Emotion und Handlung miteinander verbunden sind. Diese Zusammenfassung begleitet dich durch die erste Woche.",
+    sections: [
+        {
+            title: "Wahrnehmung ist persönlich",
+            text: "Was im Außen geschieht, erreicht uns durch viele Filter. Erfahrungen, übernommene Sichtweisen und frühere Erwartungen beeinflussen, worauf wir achten und welche Bedeutung wir einer Situation geben. Deshalb können zwei Menschen dasselbe erleben und dennoch etwas Unterschiedliches wahrnehmen.",
+        },
+        {
+            title: "Aus Bedeutung entsteht Emotion",
+            text: "Auf einen Reiz folgen Wahrnehmung und Deutung. Aus dieser Bedeutung entsteht eine Emotion, der Körper reagiert und ein Handlungsimpuls wird spürbar. Die Emotion muss nicht verschwinden. Sie kann dir zeigen, welche Bedeutung dein Inneres gerade erkannt hat.",
+        },
+        {
+            title: "Zwischen Impuls und Handlung entsteht Wahl",
+            text: "Wenn du den Ablauf bemerkst, kannst du Zeit hinzufügen. Du prüfst, was heute tatsächlich geschieht, erinnerst dich an dein heutiges Alter und deine Möglichkeiten und entscheidest dann, welche Handlung für dich jetzt stimmig ist.",
+        },
+        {
+            title: "Die eigenen Bedeutungen kennenlernen",
+            text: "Auch vertraute Wörter wie Liebe, Respekt, Dankbarkeit, Beziehung, Geld oder Fülle tragen persönliche Bilder in sich. In dieser Woche darfst du beobachten, was diese Begriffe für dich bedeuten, welche Rolle du anderen gibst und welche Rolle du selbst einnimmst.",
+        },
+        {
+            title: "Die Meditation des Abends",
+            text: "In der Meditation ging es um das Ankommen im Körper und im heutigen Leben, um die Verbindung zur eigenen Lichtquelle und um den Platz in der gemeinsamen Spirale. Die Begegnung mit deinem zukünftigen Ich durfte dir ein Wort, ein Zeichen oder eine Bewegung als Begleitung für deinen Weg mitgeben.",
+        },
+    ],
+    closing: "Für diese Woche reicht es, aufmerksam zu werden: morgens ausrichten, eine Alltagssituation bewusst beobachten und den Tag abends würdigen. Du bearbeitest das Workbook in deinem eigenen Tempo.",
+};
 
 export const zepterWeeks = [
     ["Ich darf sein", "Ankommen, wahrnehmen und den gemeinsamen Weg beginnen"],
@@ -32,6 +61,7 @@ export const defaultWeekContent = (weekNumber, title, focus) => ({
         ? "Nimm dir für diese Woche Zeit, die bereitgestellten Inhalte in deinem eigenen Tempo zu erleben. Du musst nichts vorwegnehmen und kannst das festhalten, was für dich persönlich wichtig ist."
         : "Diese Woche wird vor ihrer Freigabe mit dem Live-Impuls, der Meditation, dem Workbook und den passenden Alltagsschritten ergänzt.",
     releaseOn: addDays(zepterFirstReleaseDate, (weekNumber - 1) * 7),
+    releaseAt: weekNumber === 1 ? zepterFirstReleaseAt : "",
     liveAt: weekNumber === 1 ? zepterFirstLiveAt : "",
     zoomUrl: "",
     meditationTitle: weekNumber === 1 ? "Meditation: Ich darf sein" : `Meditation für Woche ${weekNumber}`,
@@ -69,17 +99,6 @@ const dateOnly = (value) => {
 };
 
 const toIsoString = (value) => value ? new Date(value).toISOString() : null;
-
-const todayInIstanbul = () => {
-    const parts = new Intl.DateTimeFormat("en", {
-        timeZone: "Europe/Istanbul",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).formatToParts(new Date());
-    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-    return `${values.year}-${values.month}-${values.day}`;
-};
 
 const mapProgram = (row) => ({
     id: Number(row.id),
@@ -212,7 +231,6 @@ export const getMemberProgram = async ({ slug, member }) => {
     ]);
 
     const completedTasks = new Set(stateRows[0].map((state) => `${state.week_number}:${state.task_key}`));
-    const today = todayInIstanbul();
     const isAdminPreview = member.role === "admin";
     let totalTaskCount = 0;
     let completedTaskCount = 0;
@@ -223,7 +241,11 @@ export const getMemberProgram = async ({ slug, member }) => {
         const published = parseContent(weekRow.published_content);
         const content = published || draft;
         const releaseOn = content.releaseOn || row.start_date;
-        const lockedForParticipant = !published || releaseOn > today;
+        const lockedForParticipant = isProgramWeekLocked({
+            published: Boolean(published),
+            weekNumber,
+            releaseOn,
+        });
         const locked = isAdminPreview
             ? weekNumber > 1 && lockedForParticipant
             : lockedForParticipant;
@@ -240,6 +262,7 @@ export const getMemberProgram = async ({ slug, member }) => {
             title: locked ? "" : (content.title || `Woche ${weekNumber}`),
             focus: locked ? "" : (content.focus || ""),
             releaseOn,
+            releaseAt: weekNumber === 1 ? zepterFirstReleaseAt : "",
             liveAt: locked ? "" : (weekNumber === 1 ? zepterFirstLiveAt : (content.liveAt || "")),
             locked,
             published: Boolean(published),
@@ -251,6 +274,7 @@ export const getMemberProgram = async ({ slug, member }) => {
             workbookLabel: locked ? "" : (content.workbookLabel || ""),
             workbookUrl: locked ? "" : (content.workbookUrl || ""),
             recordingUrl: locked ? "" : (content.recordingUrl || ""),
+            summary: locked ? null : (weekNumber === 1 ? zepterWeekOneSummary : (content.summary || null)),
             tasks: visibleTasks,
         };
     });
