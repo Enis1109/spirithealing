@@ -40,6 +40,12 @@ export const zepterWeekOneSummary = {
     closing: "Der Abend endete in Stille und mit zwei Sätzen, die den Beginn dieser Reise tragen: „Auch wenn ihr das Licht im Raum ausschaltet, bleibt es hell, weil ihr leuchtet.“ Und: „Es hat heute erst begonnen.“",
 };
 
+export const zepterWeekOneMeditation = {
+    title: "Meditation – Ich bin Licht",
+    url: "/api/members/meditations/ich-bin-licht",
+    image: "/images/meditations/ich-bin-licht.png?v=20260819",
+};
+
 export const zepterWeeks = [
     ["Ich darf sein", "Ankommen, wahrnehmen und den gemeinsamen Weg beginnen"],
     ["Sakral - Ich darf fühlen und brauchen", "Kindheit, Gefühle, Bedürfnisse und Lebendigkeit"],
@@ -68,14 +74,15 @@ export const defaultWeekContent = (weekNumber, title, focus) => ({
     releaseAt: weekNumber === 1 ? zepterFirstReleaseAt : "",
     liveAt: weekNumber === 1 ? zepterFirstLiveAt : "",
     zoomUrl: "",
-    meditationTitle: weekNumber === 1 ? "Meditation: Ich darf sein" : `Meditation für Woche ${weekNumber}`,
-    meditationUrl: "",
+    meditationTitle: weekNumber === 1 ? zepterWeekOneMeditation.title : `Meditation für Woche ${weekNumber}`,
+    meditationUrl: weekNumber === 1 ? zepterWeekOneMeditation.url : "",
+    meditationImage: weekNumber === 1 ? zepterWeekOneMeditation.image : "",
     workbookLabel: weekNumber === 1 ? "Workbook Woche 1: Ich darf sein" : `Workbook - Woche ${weekNumber}`,
     workbookUrl: weekNumber === 1 ? `/api/members/programs/${zepterProgramSlug}/assets/1/workbook` : "",
     recordingUrl: "",
     tasks: weekNumber === 1 ? [
         { key: "live", label: "Am ersten Live teilnehmen oder später die Aufzeichnung ansehen" },
-        { key: "meditation", label: "Die Meditation Ich darf sein erleben" },
+        { key: "meditation", label: "Meditation – Ich bin Licht anhören" },
         { key: "workbook", label: "Die Übungen aus Woche 1 in meinem Tempo bearbeiten" },
         { key: "alltag", label: "Sieben Tage lang einen kleinen Schritt für mehr inneren Boden üben" },
     ] : [
@@ -253,7 +260,12 @@ export const getMemberProgram = async ({ slug, member }) => {
         const locked = isAdminPreview
             ? weekNumber > 1 && lockedForParticipant
             : lockedForParticipant;
-        const tasks = Array.isArray(content.tasks) ? content.tasks : [];
+        const isZepterWeekOne = row.slug === zepterProgramSlug && weekNumber === 1;
+        const tasks = (Array.isArray(content.tasks) ? content.tasks : []).map((task) => (
+            isZepterWeekOne && task.key === "meditation"
+                ? { ...task, label: "Meditation – Ich bin Licht anhören" }
+                : task
+        ));
         if (!locked) totalTaskCount += tasks.length;
         const visibleTasks = locked ? [] : tasks.map((task) => {
             const completed = completedTasks.has(`${weekNumber}:${task.key}`);
@@ -273,8 +285,9 @@ export const getMemberProgram = async ({ slug, member }) => {
             publishedAt: toIsoString(weekRow.published_at),
             intro: locked ? "" : (content.intro || ""),
             zoomUrl: locked ? "" : (content.zoomUrl || ""),
-            meditationTitle: locked ? "" : (content.meditationTitle || ""),
-            meditationUrl: locked ? "" : (content.meditationUrl || ""),
+            meditationTitle: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.title : (content.meditationTitle || "")),
+            meditationUrl: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.url : (content.meditationUrl || "")),
+            meditationImage: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.image : (content.meditationImage || "")),
             workbookLabel: locked ? "" : (content.workbookLabel || ""),
             workbookUrl: locked ? "" : (content.workbookUrl || ""),
             recordingUrl: locked ? "" : (content.recordingUrl || ""),
