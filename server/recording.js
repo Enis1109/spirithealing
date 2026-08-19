@@ -93,6 +93,8 @@ const readMeditationKey = async () => {
     }
 };
 
+export const selectIchBinLichtKey = (environment = process.env) => environment.MEMBER_ICH_BIN_LICHT_KEY || "";
+
 export const prepareMemberRecording = async () => {
     if (process.env.MEMBER_RECORDING_PATH) return process.env.MEMBER_RECORDING_PATH;
     return prepareEncryptedAsset({
@@ -113,7 +115,7 @@ export const prepareMemberWorkbook = async () => {
 
 export const prepareMemberMeditations = async () => {
     const keyText = await readMeditationKey();
-    const ichBinLichtKeyText = process.env.MEMBER_ICH_BIN_LICHT_KEY || keyText;
+    const ichBinLichtKeyText = selectIchBinLichtKey();
     const [loslassen, wiedergeburt, ichBinLicht] = await Promise.all([
         keyText ? prepareEncryptedAsset({
             encryptedPath: encryptedLoslassenPath,
