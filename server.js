@@ -151,6 +151,7 @@ let memberRecordingEmbedUrl = "";
 let memberWorkbookPath = "";
 let memberLoslassenPath = "";
 let memberWiedergeburtPath = "";
+let memberIchBinLichtPath = "";
 let startupError = null;
 let startupPromise = Promise.resolve();
 
@@ -307,6 +308,7 @@ const recordingIsAvailable = () => memberRecordingEmbedUrl
 const workbookIsAvailable = () => protectedFileIsAvailable(memberWorkbookPath);
 const loslassenIsAvailable = () => protectedFileIsAvailable(memberLoslassenPath);
 const wiedergeburtIsAvailable = () => protectedFileIsAvailable(memberWiedergeburtPath);
+const ichBinLichtIsAvailable = () => protectedFileIsAvailable(memberIchBinLichtPath);
 
 app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, response) => {
     try {
@@ -700,6 +702,7 @@ app.get("/api/members/session", async (request, response) => {
         meditations: {
             loslassenAvailable: await loslassenIsAvailable(),
             wiedergeburtAvailable: await wiedergeburtIsAvailable(),
+            ichBinLichtAvailable: await ichBinLichtIsAvailable(),
         },
         programs: await getProgramsForMember(member),
     });
@@ -1382,6 +1385,14 @@ app.get("/api/members/meditations/wiedergeburt", (request, response) => streamMe
     available: wiedergeburtIsAvailable,
 }));
 
+app.get("/api/members/meditations/ich-bin-licht", (request, response) => streamMemberAudio({
+    request,
+    response,
+    filePath: memberIchBinLichtPath,
+    filename: "Spirit-Healing-Meditation-Ich-bin-Licht.mp3",
+    available: ichBinLichtIsAvailable,
+}));
+
 app.get("/api/newsletter/confirm", async (request, response) => {
     try {
         const confirmed = await confirmNewsletterSubscription(String(request.query.token || ""));
@@ -1473,6 +1484,7 @@ const initializeServices = async () => {
     memberWorkbookPath = workbookPath;
     memberLoslassenPath = meditations.loslassen;
     memberWiedergeburtPath = meditations.wiedergeburt;
+    memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
     await initializeDefaultPrograms();
 };

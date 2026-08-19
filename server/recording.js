@@ -27,6 +27,8 @@ const encryptedLoslassenPath = path.join(currentDirectory, "..", "private_assets
 const decryptedLoslassenPath = path.join(os.tmpdir(), "spirit-healing-meditation-loslassen-reinigen.mp3");
 const encryptedWiedergeburtPath = path.join(currentDirectory, "..", "private_assets", "meditation-wiedergeburt.enc");
 const decryptedWiedergeburtPath = path.join(os.tmpdir(), "spirit-healing-meditation-wiedergeburt.mp3");
+const encryptedIchBinLichtPath = path.join(currentDirectory, "..", "private_assets", "meditation-ich-bin-licht.enc");
+const decryptedIchBinLichtPath = path.join(os.tmpdir(), "spirit-healing-meditation-ich-bin-licht.mp3");
 
 const prepareEncryptedAsset = async ({ encryptedPath, decryptedPath, magicText, keyText = process.env.MEMBER_RECORDING_KEY }) => {
     if (!keyText) return "";
@@ -111,20 +113,26 @@ export const prepareMemberWorkbook = async () => {
 
 export const prepareMemberMeditations = async () => {
     const keyText = await readMeditationKey();
-    if (!keyText) return { loslassen: "", wiedergeburt: "" };
-    const [loslassen, wiedergeburt] = await Promise.all([
-        prepareEncryptedAsset({
+    const ichBinLichtKeyText = process.env.MEMBER_ICH_BIN_LICHT_KEY || keyText;
+    const [loslassen, wiedergeburt, ichBinLicht] = await Promise.all([
+        keyText ? prepareEncryptedAsset({
             encryptedPath: encryptedLoslassenPath,
             decryptedPath: decryptedLoslassenPath,
             magicText: "SPIRMED1",
             keyText,
-        }),
-        prepareEncryptedAsset({
+        }) : Promise.resolve(""),
+        keyText ? prepareEncryptedAsset({
             encryptedPath: encryptedWiedergeburtPath,
             decryptedPath: decryptedWiedergeburtPath,
             magicText: "SPIRMED1",
             keyText,
-        }),
+        }) : Promise.resolve(""),
+        ichBinLichtKeyText ? prepareEncryptedAsset({
+            encryptedPath: encryptedIchBinLichtPath,
+            decryptedPath: decryptedIchBinLichtPath,
+            magicText: "SPIRMED1",
+            keyText: ichBinLichtKeyText,
+        }) : Promise.resolve(""),
     ]);
-    return { loslassen, wiedergeburt };
+    return { loslassen, wiedergeburt, ichBinLicht };
 };
