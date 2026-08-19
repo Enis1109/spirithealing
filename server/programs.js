@@ -218,25 +218,29 @@ export const getMemberProgram = async ({ slug, member }) => {
     let completedTaskCount = 0;
 
     const weeks = weekRows[0].map((weekRow) => {
+        const weekNumber = Number(weekRow.week_number);
         const draft = parseContent(weekRow.draft_content) || {};
         const published = parseContent(weekRow.published_content);
         const content = published || draft;
         const releaseOn = content.releaseOn || row.start_date;
-        const locked = !isAdminPreview && (!published || releaseOn > today);
+        const lockedForParticipant = !published || releaseOn > today;
+        const locked = isAdminPreview
+            ? weekNumber > 1 && lockedForParticipant
+            : lockedForParticipant;
         const tasks = Array.isArray(content.tasks) ? content.tasks : [];
-        totalTaskCount += tasks.length;
+        if (!locked) totalTaskCount += tasks.length;
         const visibleTasks = locked ? [] : tasks.map((task) => {
-            const completed = completedTasks.has(`${weekRow.week_number}:${task.key}`);
+            const completed = completedTasks.has(`${weekNumber}:${task.key}`);
             if (completed) completedTaskCount += 1;
             return { ...task, completed };
         });
 
         return {
-            weekNumber: Number(weekRow.week_number),
-            title: content.title || `Woche ${weekRow.week_number}`,
-            focus: content.focus || "",
+            weekNumber,
+            title: locked ? "" : (content.title || `Woche ${weekNumber}`),
+            focus: locked ? "" : (content.focus || ""),
             releaseOn,
-            liveAt: locked ? "" : (Number(weekRow.week_number) === 1 ? zepterFirstLiveAt : (content.liveAt || "")),
+            liveAt: locked ? "" : (weekNumber === 1 ? zepterFirstLiveAt : (content.liveAt || "")),
             locked,
             published: Boolean(published),
             publishedAt: toIsoString(weekRow.published_at),

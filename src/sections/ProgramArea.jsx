@@ -146,7 +146,7 @@ export const ProgramArea = ({ member }) => {
                 {program.adminPreview && (
                     <div className="mb-5 flex items-start gap-3 rounded-2xl border border-[#d8b84e]/40 bg-[#fff7d6] p-4 text-sm text-[#5c4a15]">
                         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" />
-                        <p><strong>Admin-Vorschau:</strong> Du siehst alle acht Wochen. Teilnehmer sehen eine Woche erst ab ihrem Freigabedatum.</p>
+                        <p><strong>Admin-Vorschau:</strong> Zukünftige Wochen erscheinen hier genauso gesperrt wie für Teilnehmer. Bearbeiten kannst du sie weiterhin im Adminbereich.</p>
                     </div>
                 )}
 
