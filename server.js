@@ -65,6 +65,7 @@ import {
     saveProgramWeekDraft,
     setProgramEnrollment,
     updateProgramTask,
+    zepterProgramSlug,
 } from "./server/programs.js";
 import {
     getProgramAsset,
@@ -1339,9 +1340,10 @@ app.get("/api/members/workbook", async (request, response) => {
     return fs.createReadStream(memberWorkbookPath).pipe(response);
 });
 
-const streamMemberAudio = async ({ request, response, filePath, filename, available }) => {
+const streamMemberAudio = async ({ request, response, filePath, filename, available, authorize }) => {
     const member = await getMemberFromRequest(request);
     if (!member) return response.status(401).json({ ok: false, error: "unauthorized" });
+    if (authorize && !await authorize(member)) return response.status(403).json({ ok: false, error: "forbidden" });
     if (!await available()) return response.status(404).json({ ok: false, error: "meditation_processing" });
 
     const fileInfo = await fsPromises.stat(filePath);
@@ -1391,6 +1393,7 @@ app.get("/api/members/meditations/ich-bin-licht", (request, response) => streamM
     filePath: memberIchBinLichtPath,
     filename: "Spirit-Healing-Meditation-Ich-bin-Licht.mp3",
     available: ichBinLichtIsAvailable,
+    authorize: async (member) => Boolean(await getMemberProgram({ slug: zepterProgramSlug, member })),
 }));
 
 app.get("/api/newsletter/confirm", async (request, response) => {
