@@ -15,11 +15,11 @@ const content = {
         campaignEyebrow: "0 € · kein Abo · sofort verfügbar",
         title: "Deine kostenlose Spirit-Healing-Mediathek",
         intro: "Melde dich mit E-Mail-Adresse und Passwort an. Wenn du bereits einen persönlichen Direktlink von uns hast, kannst du ihn unverändert weiterverwenden.",
-        campaignIntro: "Erstelle jetzt dein kostenloses Konto. Nach der Bestätigung kannst du beide Meditationen, den vollständigen Vortrag und das Workbook direkt öffnen.",
+        campaignIntro: "Erstelle jetzt dein kostenloses Konto. Nach der Bestätigung kannst du drei Meditationen, den vollständigen Vortrag und das Workbook direkt öffnen.",
         campaignTrust: "Dein Zugang bleibt kostenlos. Du kannst jederzeit zurückkehren und in deinem eigenen Tempo weitergehen.",
         benefitTitle: "Das erwartet dich",
         benefits: [
-            "Zwei geführte Meditationen: „Loslassen & Reinigen“ und „Wiedergeburt“",
+            "Drei geführte Meditationen: „Loslassen & Reinigen“, „Wiedergeburt“ und „Ich bin Licht“",
             "Die Aufzeichnung des Vortrags „Wer entscheidet eigentlich dein Leben?“",
             "Das Workbook zum Vortrag mit Reflexionsfragen und Übungen",
             "Ein persönliches Konto – bestehende Direktlinks bleiben dauerhaft gültig",
@@ -85,13 +85,13 @@ const content = {
         workbookDownload: "Workbook herunterladen",
         meditationEyebrow: "Spirit Healing Meditationen",
         meditationTitle: "Geführte Meditationen für deinen Prozess",
-        meditationIntro: "Nimm dir einen geschützten Moment für dich. Du kannst beide Meditationen direkt anhören oder für später herunterladen.",
+        meditationIntro: "Nimm dir einen geschützten Moment für dich. Du kannst die Meditationen direkt anhören oder für später herunterladen.",
         loslassenTitle: "Loslassen & Reinigen",
         loslassenText: "Eine geführte Meditation zum bewussten Loslassen und inneren Reinigen.",
         wiedergeburtTitle: "Wiedergeburt",
         wiedergeburtText: "Eine geführte Meditation für Übergang, Neuausrichtung und einen neuen inneren Beginn.",
         meditationDownload: "MP3 herunterladen",
-        meditationProcessing: "Die beiden Meditationen werden gerade für die Wiedergabe vorbereitet. Sobald sie bereitstehen, erscheinen die Abspielknöpfe hier automatisch.",
+        meditationProcessing: "Die Meditationen werden gerade für die Wiedergabe vorbereitet. Sobald sie bereitstehen, erscheinen die Abspielknöpfe hier automatisch.",
         processingTitle: "Die Aufzeichnung wird gerade vorbereitet",
         processingText: "Wir schneiden die Wortbeiträge der Teilnehmenden und unnötige Pausen sorgfältig heraus. Sobald die fertige Fassung bereitsteht, erscheint sie hier automatisch.",
         socialTitle: "Auch nach dem Vortrag mit uns verbunden bleiben",
@@ -103,11 +103,11 @@ const content = {
         campaignEyebrow: "0 € · abonelik yok · hemen erişim",
         title: "Ücretsiz Spirit Healing içerik alanın",
         intro: "E-posta adresin ve şifrenle giriş yap. Daha önce aldığın kişisel erişim bağlantısı varsa onu aynı şekilde kullanmaya devam edebilirsin.",
-        campaignIntro: "Ücretsiz hesabını şimdi oluştur. Onaydan sonra iki meditasyonu, seminer kaydının tamamını ve çalışma kitabını doğrudan açabilirsin.",
+        campaignIntro: "Ücretsiz hesabını şimdi oluştur. Onaydan sonra üç meditasyonu, seminer kaydının tamamını ve çalışma kitabını doğrudan açabilirsin.",
         campaignTrust: "Erişimin ücretsiz kalır. İstediğin zaman geri dönüp kendi hızında devam edebilirsin.",
         benefitTitle: "Seni neler bekliyor?",
         benefits: [
-            "İki rehberli meditasyon: “Bırakmak ve Arınmak” ve “Yeniden Doğuş”",
+            "Üç rehberli meditasyon: “Bırakmak ve Arınmak”, “Yeniden Doğuş” ve “Ben Işığım”",
             "“Hayatına aslında kim karar veriyor?” seminerinin kaydı",
             "Seminere eşlik eden düşünme soruları ve egzersizlerden oluşan çalışma kitabı",
             "Kişisel hesabın – mevcut erişim bağlantıların kalıcı olarak geçerli kalır",
@@ -173,13 +173,13 @@ const content = {
         workbookDownload: "Çalışma kitabını indir",
         meditationEyebrow: "Spirit Healing Meditasyonları",
         meditationTitle: "Sürecin için rehberli meditasyonlar",
-        meditationIntro: "Kendine korunaklı bir an ayır. Her iki meditasyonu da doğrudan dinleyebilir veya daha sonrası için indirebilirsin.",
+        meditationIntro: "Kendine korunaklı bir an ayır. Meditasyonları doğrudan dinleyebilir veya daha sonrası için indirebilirsin.",
         loslassenTitle: "Bırakmak ve Arınmak",
         loslassenText: "Bilinçli bırakma ve içsel arınma için rehberli bir meditasyon.",
         wiedergeburtTitle: "Yeniden Doğuş",
         wiedergeburtText: "Geçiş, yeniden yönelme ve yeni bir içsel başlangıç için rehberli bir meditasyon.",
         meditationDownload: "MP3 indir",
-        meditationProcessing: "İki meditasyon şu anda dinlemeye hazırlanıyor. Hazır olduklarında oynatma düğmeleri burada otomatik olarak görünecek.",
+        meditationProcessing: "Meditasyonlar şu anda dinlemeye hazırlanıyor. Hazır olduklarında oynatma düğmeleri burada otomatik olarak görünecek.",
         processingTitle: "Kayıt hazırlanıyor",
         processingText: "Katılımcıların konuşmalarını ve gereksiz araları dikkatle çıkarıyoruz. Tamamlanan sürüm hazır olduğunda burada otomatik olarak görünecek.",
         socialTitle: "Seminerden sonra da bizimle bağlantıda kal",
@@ -206,7 +206,7 @@ export const MemberArea = () => {
     const [recordingAvailable, setRecordingAvailable] = useState(false);
     const [recordingEmbedUrl, setRecordingEmbedUrl] = useState("");
     const [workbookAvailable, setWorkbookAvailable] = useState(false);
-    const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false });
+    const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false, ichBinLichtAvailable: false });
     const [contentState, setContentState] = useState([]);
     const [premiumCheckoutUrl, setPremiumCheckoutUrl] = useState("");
     const [programs, setPrograms] = useState([]);
@@ -239,11 +239,11 @@ export const MemberArea = () => {
         robots?.setAttribute("content", campaignLanding ? "index, follow" : "noindex, nofollow");
         if (campaignLanding) {
             document.title = language === "tr"
-                ? "2 ücretsiz meditasyon, seminer ve çalışma kitabı | Spirit Healing"
-                : "2 kostenlose Meditationen, Vortrag & Workbook | Spirit Healing";
+                ? "3 ücretsiz meditasyon, seminer ve çalışma kitabı | Spirit Healing"
+                : "3 kostenlose Meditationen, Vortrag & Workbook | Spirit Healing";
             description?.setAttribute("content", language === "tr"
-                ? "İki rehberli meditasyona, Spirit Healing seminerine ve çalışma kitabına ücretsiz erişim oluştur."
-                : "Sichere dir kostenlosen Zugang zu zwei geführten Meditationen, dem Spirit-Healing-Vortrag und dem begleitenden Workbook.");
+                ? "Üç rehberli meditasyona, Spirit Healing seminerine ve çalışma kitabına ücretsiz erişim oluştur."
+                : "Sichere dir kostenlosen Zugang zu drei geführten Meditationen, dem Spirit-Healing-Vortrag und dem begleitenden Workbook.");
         }
 
         return () => {
@@ -264,7 +264,7 @@ export const MemberArea = () => {
                     setRecordingAvailable(result.recordingAvailable);
                     setRecordingEmbedUrl(result.recordingEmbedUrl || "");
                     setWorkbookAvailable(result.workbookAvailable);
-                    setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false });
+                    setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false, ichBinLichtAvailable: false });
                     setContentState(result.contentState || []);
                     setPremiumCheckoutUrl(result.premiumCheckoutUrl || "");
                     setPrograms(result.programs || []);

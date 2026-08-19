@@ -69,7 +69,7 @@ const intents = [
         priority: 60,
         terms: ["mitgliederbereich", "mediathek", "was ist enthalten", "was finde ich", "kostenloser zugang", "kostenlose inhalte", "aufzeichnung", "workbook", "meditationen"],
         answer: {
-            text: "Im kostenlosen Mitgliederbereich findest du zwei geführte Meditationen – „Loslassen & Reinigen“ und „Wiedergeburt“ –, die Aufzeichnung „Wer entscheidet eigentlich dein Leben?“ und das begleitende Workbook.",
+            text: "Im kostenlosen Mitgliederbereich findest du drei geführte Meditationen – „Loslassen & Reinigen“, „Wiedergeburt“ und „Ich bin Licht“ –, die Aufzeichnung „Wer entscheidet eigentlich dein Leben?“ und das begleitende Workbook.",
             links: [{ label: "Zur kostenlosen Mediathek", href: `${SITE}/mitglieder` }],
         },
     },
@@ -87,7 +87,7 @@ const intents = [
         priority: 68,
         terms: ["unterschied meditationen", "unterschied zwischen den meditationen", "welche meditation", "loslassen und reinigen", "wiedergeburt meditation", "meditation passt"],
         answer: {
-            text: "„Loslassen & Reinigen“ begleitet bewusstes Loslassen und inneres Reinigen. „Wiedergeburt“ ist für Übergänge, Neuausrichtung und einen neuen inneren Beginn gedacht. Beide geführten Meditationen sind im kostenlosen Mitgliederbereich verfügbar.",
+            text: "„Loslassen & Reinigen“ begleitet bewusstes Loslassen und inneres Reinigen. „Wiedergeburt“ ist für Übergänge und einen neuen inneren Beginn gedacht. „Ich bin Licht“ verbindet dich mit deiner eigenen Lichtquelle, deinem zukünftigen Selbst und deiner inneren Kraft. Alle drei Meditationen sind im kostenlosen Mitgliederbereich verfügbar.",
             links: [{ label: "Meditationen öffnen", href: `${SITE}/mitglieder` }],
         },
     },
@@ -620,7 +620,7 @@ const turkishContent = {
     },
     member_content: {
         terms: ["üye alanı", "uye alani", "üyelik alanı", "uyelik alani", "içinde ne var", "icinde ne var", "ücretsiz içerik", "ucretsiz icerik", "meditasyon", "kayıt", "kayit", "çalışma kitabı", "calisma kitabi"],
-        text: "Ücretsiz üye alanında “Bırakma ve Arınma” ile “Yeniden Doğuş” adlı iki rehberli meditasyon, “Hayatına aslında kim karar veriyor?” sunumunun kaydı ve ona eşlik eden çalışma kitabı bulunuyor.",
+        text: "Ücretsiz üye alanında “Bırakmak ve Arınmak”, “Yeniden Doğuş” ve “Ben Işığım” adlı üç rehberli meditasyon, “Hayatına aslında kim karar veriyor?” sunumunun kaydı ve ona eşlik eden çalışma kitabı bulunuyor.",
     },
     member_details: {
         terms: ["sunum ne kadar uzun", "sunum kaç dakika", "sunum kac dakika", "61 dakika", "kaç sayfa", "kac sayfa", "dokuz sayfa", "9 sayfa", "premium içerik", "premium icerik", "premium alan", "daha neler gelecek"],
@@ -628,11 +628,11 @@ const turkishContent = {
     },
     meditation_difference: {
         terms: ["meditasyonların farkı", "meditasyonlarin farki", "meditasyonun farkı", "meditasyonun farki", "hangi meditasyon", "bırakmak ve arınmak", "birakmak ve arinmak", "yeniden doğuş meditasyonu", "yeniden dogus meditasyonu"],
-        text: "“Bırakmak ve Arınmak” bilinçli bırakma ve içsel arınmaya eşlik eder. “Yeniden Doğuş” ise geçiş, yeniden yönelme ve yeni bir içsel başlangıç içindir. İki rehberli meditasyon da ücretsiz üye alanında bulunur.",
+        text: "“Bırakmak ve Arınmak” bilinçli bırakma ve içsel arınmaya eşlik eder. “Yeniden Doğuş” geçiş ve yeni bir içsel başlangıç içindir. “Ben Işığım” seni kendi ışık kaynağınla, gelecekteki benliğinle ve içsel gücünle buluşturur. Üç meditasyon da ücretsiz üye alanında bulunur.",
     },
     member_downloads: {
         terms: ["meditasyon indir", "mp3 indir", "mp3 olarak indir", "çalışma kitabını indir", "calisma kitabini indir", "indirme", "çevrimdışı", "cevrimdisi"],
-        text: "Giriş yaptıktan sonra çalışma kitabını üye alanından indirebilirsin. İki meditasyonu doğrudan dinlemek ve MP3 olarak kaydetmek de mümkündür.",
+        text: "Giriş yaptıktan sonra çalışma kitabını üye alanından indirebilirsin. Üç meditasyonu doğrudan dinlemek ve MP3 olarak kaydetmek de mümkündür.",
     },
     event_recording: {
         terms: ["hayatına kim karar", "hayatina kim karar", "sunum kaydı", "sunum kaydi", "konferans kaydı", "konferans kaydi", "sunumu izle", "canlı yayın", "canli yayin"],
