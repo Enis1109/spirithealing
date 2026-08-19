@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { database } from "./database.js";
 import { hashPassword, verifyPassword } from "./passwords.js";
+import { enrollZepterParticipantIfEligible } from "./programEnrollment.js";
 
 const sessionLifetimeDays = 30;
 const sessionCookieName = "spirit_member_session";
@@ -198,6 +199,11 @@ export const activateMemberAccess = async (token) => {
              WHERE id = ?`,
             [member.pending_password_hash, member.pending_password_hash, member.member_id],
         );
+        await enrollZepterParticipantIfEligible({
+            connection,
+            memberId: member.member_id,
+            email: member.email,
+        });
         await connection.commit();
 
         return { member, sessionToken };
