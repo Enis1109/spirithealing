@@ -70,8 +70,11 @@ import {
     getProgramAsset,
     getProgramAssetRule,
     ProgramAssetError,
-    saveProgramAsset,
 } from "./server/programAssets.js";
+import {
+    getDatabaseProgramAsset,
+    saveDatabaseProgramAsset,
+} from "./server/programAssetDatabase.js";
 import {
     normalizeProgramEnrollment,
     normalizeProgramSettings,
@@ -1028,7 +1031,8 @@ app.get("/api/members/programs/:slug/assets/:weekNumber/:kind", async (request, 
         const week = program.weeks.find((item) => item.weekNumber === weekNumber);
         if (!week || week.locked) return response.status(403).json({ ok: false, error: "locked" });
 
-        const asset = await getProgramAsset({ slug, weekNumber, kind });
+        const asset = await getDatabaseProgramAsset({ slug, weekNumber, kind, databaseClient: database })
+            || await getProgramAsset({ slug, weekNumber, kind });
         if (!asset) return response.status(404).json({ ok: false, error: "asset_processing" });
         const disposition = `${asset.disposition}; filename="${asset.downloadName}"`;
         response.set({
@@ -1040,6 +1044,7 @@ app.get("/api/members/programs/:slug/assets/:weekNumber/:kind", async (request, 
         const range = kind === "meditation" ? request.get("range") : "";
         if (!range) {
             response.set("Content-Length", String(asset.size));
+            if (asset.buffer) return response.end(asset.buffer);
             return fs.createReadStream(asset.path).pipe(response);
         }
         const match = /^bytes=(\d+)-(\d*)$/u.exec(range);
@@ -1054,6 +1059,7 @@ app.get("/api/members/programs/:slug/assets/:weekNumber/:kind", async (request, 
             "Content-Range": `bytes ${start}-${end}/${asset.size}`,
             "Content-Length": String(end - start + 1),
         });
+        if (asset.buffer) return response.end(asset.buffer.subarray(start, end + 1));
         return fs.createReadStream(asset.path, { start, end }).pipe(response);
     } catch (error) {
         if (error instanceof ProgramValidationError) {
@@ -1138,13 +1144,15 @@ app.put(
             if (!program?.weeks.some((week) => week.weekNumber === weekNumber)) {
                 return response.status(404).json({ ok: false, error: "not_found" });
             }
-            const asset = await saveProgramAsset({
+            const asset = await saveDatabaseProgramAsset({
                 slug,
                 weekNumber,
                 kind,
                 contentType: String(request.get("content-type") || "").split(";", 1)[0].toLowerCase(),
                 buffer: request.body,
+                databaseClient: database,
             });
+            if (!asset) return response.status(404).json({ ok: false, error: "not_found" });
             return response.status(201).json({ ok: true, asset: { url: asset.url, size: asset.size } });
         } catch (error) {
             if (error instanceof ProgramValidationError) {

@@ -50,13 +50,24 @@ export const getProgramAssetRule = (kind) => assetKinds[kind] || null;
 export const getProgramAssetUrl = ({ slug, weekNumber, kind }) =>
     `/api/members/programs/${slug}/assets/${weekNumber}/${kind}`;
 
-export const saveProgramAsset = async ({ slug, weekNumber, kind, contentType, buffer }) => {
+export const validateProgramAsset = ({ slug, weekNumber, kind, contentType, buffer }) => {
     const rule = getProgramAssetRule(kind);
     const directory = resolveAssetDirectory({ slug, weekNumber });
     const extension = rule?.extensions.get(contentType);
     if (!rule || !directory || !extension) throw new ProgramAssetError("unsupported_asset");
     if (!Buffer.isBuffer(buffer) || buffer.length === 0) throw new ProgramAssetError("empty_asset");
     if (buffer.length > rule.maxBytes) throw new ProgramAssetError("asset_too_large");
+    return { rule, directory, extension };
+};
+
+export const saveProgramAsset = async ({ slug, weekNumber, kind, contentType, buffer }) => {
+    const { rule, directory, extension } = validateProgramAsset({
+        slug,
+        weekNumber,
+        kind,
+        contentType,
+        buffer,
+    });
 
     await fsPromises.mkdir(directory, { recursive: true, mode: 0o700 });
     const storedName = `${kind}.${extension}`;

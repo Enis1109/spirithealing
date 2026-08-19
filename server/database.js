@@ -242,6 +242,21 @@ const schemaStatements = [
         CONSTRAINT program_week_program_fk FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
         CONSTRAINT program_week_published_member_fk FOREIGN KEY (published_by) REFERENCES members(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+    `CREATE TABLE IF NOT EXISTS program_assets (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        program_id BIGINT UNSIGNED NOT NULL,
+        week_number SMALLINT UNSIGNED NOT NULL,
+        asset_kind VARCHAR(24) NOT NULL,
+        stored_name VARCHAR(120) NOT NULL,
+        content_type VARCHAR(100) NOT NULL,
+        content_size INT UNSIGNED NOT NULL,
+        content LONGBLOB NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY program_asset_unique (program_id, week_number, asset_kind),
+        CONSTRAINT program_asset_program_fk FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
     `CREATE TABLE IF NOT EXISTS program_enrollments (
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
         program_id BIGINT UNSIGNED NOT NULL,
