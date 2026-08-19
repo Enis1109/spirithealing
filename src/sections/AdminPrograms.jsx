@@ -279,7 +279,7 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                     <div className="flex items-start gap-3">
                         <UsersRound className="mt-1 h-5 w-5 text-[#0f8b8d]" />
                         <div>
-                            <h3 className="text-lg font-bold">Gruppe aus der Terminabfrage</h3>
+                            <h3 className="text-lg font-bold">Gruppe aus den Startfragebögen</h3>
                             <p className="mt-1 text-sm leading-6 text-[#6b8585]">Diese Übersicht ist nur eine Vorbereitung. Sie verändert keine Zugänge.</p>
                         </div>
                     </div>

@@ -341,7 +341,7 @@ export const getAdminProgram = async (slug) => {
             `SELECT surveys.name AS survey_name, surveys.email AS survey_email,
                     members.email AS member_email, members.status AS member_status,
                     enrollments.status AS enrollment_status
-             FROM zepter_schedule_surveys AS surveys
+             FROM zepter_onboarding_submissions AS surveys
              LEFT JOIN members
                ON LOWER(TRIM(members.email)) = LOWER(TRIM(surveys.email))
              LEFT JOIN program_enrollments AS enrollments
