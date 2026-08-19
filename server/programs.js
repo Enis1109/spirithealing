@@ -9,31 +9,35 @@ export const zepterFirstReleaseDate = "2026-08-20";
 export const zepterFirstLiveAt = "2026-08-19T16:30:00.000Z";
 
 export const zepterWeekOneSummary = {
-    title: "Rückblick auf den ersten Abend",
-    intro: "Der erste gemeinsame Abend hat den Blick darauf geöffnet, wie Wahrnehmung, Bedeutung, Emotion und Handlung miteinander verbunden sind. Diese Zusammenfassung begleitet dich durch die erste Woche.",
+    title: "Unser erster Live-Abend · 19. August 2026",
+    intro: "Unser erster Abend begann so, wie ein gemeinsamer Weg manchmal beginnt: Einige suchten noch den richtigen Zugang, das Workbook war für Woche 1 versehentlich gesperrt und die Technik wollte mehr Aufmerksamkeit als geplant. Wir haben entschieden, uns davon nicht aus dem Abend tragen zu lassen. Das Workbook konnte warten. Jetzt ging es erst einmal darum, wirklich anzukommen.",
     sections: [
         {
-            title: "Wahrnehmung ist persönlich",
-            text: "Was im Außen geschieht, erreicht uns durch viele Filter. Erfahrungen, übernommene Sichtweisen und frühere Erwartungen beeinflussen, worauf wir achten und welche Bedeutung wir einer Situation geben. Deshalb können zwei Menschen dasselbe erleben und dennoch etwas Unterschiedliches wahrnehmen.",
+            title: "Ihr seid bis hierher gekommen",
+            text: "Sabine und Selcan begrüßten die Gruppe mit einem Glückwunsch: Ihr wart da, obwohl nach den Vorgesprächen bei manchen Zweifel, Angst vor einer erneuten Enttäuschung oder der Gedanke „Ich schaffe das nicht“ lauter geworden waren. Auch diese schützenden Stimmen wurden ausdrücklich mit in den Raum genommen. Sie sollten nichts leisten und nichts verändern, sondern den Abend zunächst beobachten dürfen.",
         },
         {
-            title: "Aus Bedeutung entsteht Emotion",
-            text: "Auf einen Reiz folgen Wahrnehmung und Deutung. Aus dieser Bedeutung entsteht eine Emotion, der Körper reagiert und ein Handlungsimpuls wird spürbar. Die Emotion muss nicht verschwinden. Sie kann dir zeigen, welche Bedeutung dein Inneres gerade erkannt hat.",
+            title: "Wie aus einem Satz ein ganzer Film wird",
+            text: "Sabine erklärte den Weg vom äußeren Reiz bis zur Handlung an einem anschaulichen Beispiel: Ein bekannter Mann bietet einem Kind bei starkem Regen an, es mit dem Auto zur Schule zu bringen. Was als freundliches Angebot gemeint sein kann, kann durch frühere Erfahrungen sofort wie Gefahr, Überrumpelung oder Entführung klingen. Noch bevor die erwachsene Gegenwart geprüft wurde, reagiert der Körper mit Angst und bereitet Flucht, Angriff oder Rückzug vor. An diesem Ablauf wollen wir in den kommenden Wochen immer wieder ansetzen.",
         },
         {
-            title: "Zwischen Impuls und Handlung entsteht Wahl",
-            text: "Wenn du den Ablauf bemerkst, kannst du Zeit hinzufügen. Du prüfst, was heute tatsächlich geschieht, erinnerst dich an dein heutiges Alter und deine Möglichkeiten und entscheidest dann, welche Handlung für dich jetzt stimmig ist.",
+            title: "Selcan über die ersten Filter unseres Lebens",
+            text: "Selcan führte den Gedanken bis an den Anfang des Lebens zurück. Ein Baby lernt sich zunächst durch die Augen der Mutter kennen und nimmt auch andere Menschen über ihre Reaktionen wahr. Später kommen Sätze und Deutungen von Eltern, Lehrern, Freunden und längst vergessenen Personen hinzu. Ihr Beispiel „Räum dein Zimmer vernünftig auf“ zeigte, wie selbstverständlich wir Wörter benutzen, deren Bedeutung nur in unserer eigenen Geschichte eindeutig ist. Ihre Kinder mussten erst fragen, was „vernünftig“ überhaupt heißen soll.",
         },
         {
-            title: "Die eigenen Bedeutungen kennenlernen",
-            text: "Auch vertraute Wörter wie Liebe, Respekt, Dankbarkeit, Beziehung, Geld oder Fülle tragen persönliche Bilder in sich. In dieser Woche darfst du beobachten, was diese Begriffe für dich bedeuten, welche Rolle du anderen gibst und welche Rolle du selbst einnimmst.",
+            title: "Liebe, Beziehung und das Pony am Strand",
+            text: "Besonders persönlich wurde es bei den Bedeutungen großer Wörter wie Liebe, Respekt, Demut, Dankbarkeit, Beziehung und Fülle. Sabine erzählte, wie sie sich als Kind ihre große Liebe ausgemalt hatte: die eine Seelenpartnerin, ein Pony am Strand und vollständige Sicherheit. Gleichzeitig wollte sie die Prinzessin als Superheldin retten und notfalls für sie sterben. Damit war unbewusst schon festgelegt, dass Liebe dramatisch und gefährlich sein musste. Der humorvolle Blick auf diese alte Geschichte machte sichtbar, wie sehr frühe Bilder spätere Beziehungen und die eigene Rolle darin mitgestalten können.",
         },
         {
-            title: "Die Meditation des Abends",
-            text: "In der Meditation ging es um das Ankommen im Körper und im heutigen Leben, um die Verbindung zur eigenen Lichtquelle und um den Platz in der gemeinsamen Spirale. Die Begegnung mit deinem zukünftigen Ich durfte dir ein Wort, ein Zeichen oder eine Bewegung als Begleitung für deinen Weg mitgeben.",
+            title: "Was wir aus dem Gespräch in die Woche mitnehmen",
+            text: "Aus dem Gespräch entstand eine konkrete Beobachtungsrichtung für diese Woche: Achte auf deine Sprache, auf wiederkehrende Wörter und auf die Sätze, die du zu dir oder zu anderen sagst. Wenn eine Emotion oder eine deutliche Körperreaktion auftaucht, kann die Frage lauten: Welche Bedeutung habe ich der Situation gerade gegeben? Wo es möglich ist, darf zwischen dem ersten Impuls und der Handlung etwas Zeit entstehen. Das Workbook greift diese Beobachtungen morgens, im Alltag und am Abend wieder auf.",
+        },
+        {
+            title: "Die gemeinsame Meditation",
+            text: "Nach einer kleinen Premiere mit der Musik wurde es still. Die Meditation führte zuerst zur Fläche unter dem Körper und in den gegenwärtigen Raum. Von dort ging die Reise zur eigenen Lichtquelle, zur Erfahrung von Verbundenheit und zum Weg des eigenen Lichtes in dieses Leben. In der weiten Spirale hatte jeder Mensch einen eigenen Platz und durfte Nähe, Tempo und nächsten Schritt selbst bestimmen. Zum Abschluss begegneten die Teilnehmenden einer zukünftigen Version ihres Selbst und konnten ein Wort, ein Zeichen oder eine Bewegung für ihren Weg empfangen.",
         },
     ],
-    closing: "Für diese Woche reicht es, aufmerksam zu werden: morgens ausrichten, eine Alltagssituation bewusst beobachten und den Tag abends würdigen. Du bearbeitest das Workbook in deinem eigenen Tempo.",
+    closing: "Der Abend endete in Stille und mit zwei Sätzen, die den Beginn dieser Reise tragen: „Auch wenn ihr das Licht im Raum ausschaltet, bleibt es hell, weil ihr leuchtet.“ Und: „Es hat heute erst begonnen.“",
 };
 
 export const zepterWeeks = [
