@@ -35,6 +35,36 @@ test("stores and resolves a protected workbook asset", async () => {
     assert.deepEqual(await fsPromises.readFile(resolved.path), content);
 });
 
+test("stores the additional meditation and its protected cover", async () => {
+    const audio = Buffer.from("protected meditation audio");
+    const cover = Buffer.from("protected meditation cover");
+    const savedAudio = await saveProgramAsset({
+        slug: "zepter-acht-wochen",
+        weekNumber: 1,
+        kind: "bonusmeditation",
+        contentType: "audio/mpeg",
+        buffer: audio,
+    });
+    const savedCover = await saveProgramAsset({
+        slug: "zepter-acht-wochen",
+        weekNumber: 1,
+        kind: "bonuscover",
+        contentType: "image/png",
+        buffer: cover,
+    });
+
+    assert.equal(savedAudio.url, "/api/members/programs/zepter-acht-wochen/assets/1/bonusmeditation");
+    assert.equal(savedCover.url, "/api/members/programs/zepter-acht-wochen/assets/1/bonuscover");
+    assert.deepEqual(
+        await fsPromises.readFile((await getProgramAsset({ slug: "zepter-acht-wochen", weekNumber: 1, kind: "bonusmeditation" })).path),
+        audio,
+    );
+    assert.deepEqual(
+        await fsPromises.readFile((await getProgramAsset({ slug: "zepter-acht-wochen", weekNumber: 1, kind: "bonuscover" })).path),
+        cover,
+    );
+});
+
 test("rejects unsupported or empty program files", async () => {
     await assert.rejects(() => saveProgramAsset({
         slug: "zepter-acht-wochen",

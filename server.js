@@ -1040,12 +1040,12 @@ app.get("/api/members/programs/:slug/assets/:weekNumber/:kind", async (request, 
         if (!asset) return response.status(404).json({ ok: false, error: "asset_processing" });
         const disposition = `${asset.disposition}; filename="${asset.downloadName}"`;
         response.set({
-            "Accept-Ranges": kind === "meditation" ? "bytes" : "none",
+            "Accept-Ranges": getProgramAssetRule(kind)?.rangeRequests ? "bytes" : "none",
             "Content-Type": asset.contentType,
             "Content-Disposition": disposition,
         });
 
-        const range = kind === "meditation" ? request.get("range") : "";
+        const range = getProgramAssetRule(kind)?.rangeRequests ? request.get("range") : "";
         if (!range) {
             response.set("Content-Length", String(asset.size));
             if (asset.buffer) return response.end(asset.buffer);
@@ -1133,7 +1133,7 @@ app.post("/api/admin/programs/:slug/prepare", adminSameOriginOnly, async (reques
 app.put(
     "/api/admin/programs/:slug/weeks/:weekNumber/assets/:kind",
     adminSameOriginOnly,
-    express.raw({ type: ["application/pdf", "audio/*"], limit: "40mb" }),
+    express.raw({ type: ["application/pdf", "audio/*", "image/jpeg", "image/png", "image/webp"], limit: "80mb" }),
     async (request, response) => {
         const member = await getAdminMember(request, response);
         if (!member) return undefined;
