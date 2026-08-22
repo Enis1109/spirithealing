@@ -278,9 +278,9 @@ export const ProgramArea = ({ member }) => {
                                     <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#168e91]">Zusammenfassung</p>
                                     <h3 className="mt-2 font-serif text-3xl font-bold">{selectedWeek.summary.title}</h3>
                                     <p className="mt-4 text-lg leading-8 text-[#547875]">{selectedWeek.summary.intro}</p>
-                                    <div className="mt-7 grid gap-4 md:grid-cols-2">
+                                    <div className="mt-7 space-y-6">
                                         {selectedWeek.summary.sections.map((section) => (
-                                            <section key={section.title} className="rounded-3xl border border-[#c8dfdb] bg-white p-5">
+                                            <section key={section.title} className="border-l-2 border-[#d8b437] pl-5">
                                                 <h4 className="text-lg font-bold text-[#123e3d]">{section.title}</h4>
                                                 <p className="mt-2 leading-7 text-[#547875]">{section.text}</p>
                                             </section>
