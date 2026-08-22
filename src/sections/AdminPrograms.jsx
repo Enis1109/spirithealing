@@ -209,7 +209,20 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
             });
             const uploadResult = await response.json().catch(() => ({}));
             if (!response.ok || !uploadResult.ok) throw new Error(uploadResult.error || "upload_failed");
-            const field = kind === "workbook" ? "workbookUrl" : "meditationUrl";
+            const uploadFields = {
+                workbook: "workbookUrl",
+                meditation: "meditationUrl",
+                bonusmeditation: "bonusMeditationUrl",
+                bonuscover: "bonusMeditationImage",
+            };
+            const uploadLabels = {
+                workbook: "Das Workbook",
+                meditation: "Die Meditation",
+                bonusmeditation: "Die zusätzliche Meditation",
+                bonuscover: "Das Cover der zusätzlichen Meditation",
+            };
+            const field = uploadFields[kind];
+            if (!field) throw new Error("unsupported_asset");
             const nextWeek = { ...weeks[weekNumber], [field]: uploadResult.asset.url };
             setWeeks((current) => ({ ...current, [weekNumber]: nextWeek }));
             const saveResult = await requestJson(`/api/admin/programs/${programSlug}/weeks/${weekNumber}`, {
@@ -217,7 +230,7 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                 body: JSON.stringify(nextWeek),
             });
             applyProgram(saveResult.program, { resetSettings: false });
-            setNotice({ type: "success", text: `${kind === "workbook" ? "Das Workbook" : "Die Meditation"} für Woche ${weekNumber} wurde geschützt hochgeladen und als Entwurf gespeichert. Es wurde nichts veröffentlicht.` });
+            setNotice({ type: "success", text: `${uploadLabels[kind]} für Woche ${weekNumber} wurde geschützt hochgeladen und als Entwurf gespeichert. Es wurde nichts veröffentlicht.` });
         } catch (error) {
             const tooLarge = error.message === "asset_too_large";
             setNotice({ type: "error", text: tooLarge ? "Die Datei ist zu groß." : "Die Datei konnte nicht geschützt hochgeladen werden." });
@@ -348,6 +361,9 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                                     <label className="font-bold"><MessageCircle className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Zoom-Link<input className={fieldClass} value={week.zoomUrl} onChange={(event) => setWeekField(week.weekNumber, "zoomUrl", event.target.value)} /></label>
                                     <label className="font-bold"><FileAudio className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Meditationstitel<input className={fieldClass} value={week.meditationTitle} onChange={(event) => setWeekField(week.weekNumber, "meditationTitle", event.target.value)} /></label>
                                     <div className="font-bold">Meditationsdatei oder -link<input className={fieldClass} value={week.meditationUrl} onChange={(event) => setWeekField(week.weekNumber, "meditationUrl", event.target.value)} /><label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#0f8b8d] px-4 text-sm text-[#0f8b8d]"><Upload className="h-4 w-4" />{busyKey === `asset-${week.weekNumber}-meditation` ? "Wird hochgeladen …" : "Audiodatei geschützt hochladen"}<input type="file" className="sr-only" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav" disabled={Boolean(busyKey)} onChange={(event) => { uploadWeekAsset(week.weekNumber, "meditation", event.target.files?.[0]); event.target.value = ""; }} /></label></div>
+                                    <label className="font-bold"><FileAudio className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Zusätzliche Meditation<input className={fieldClass} value={week.bonusMeditationTitle || ""} onChange={(event) => setWeekField(week.weekNumber, "bonusMeditationTitle", event.target.value)} /></label>
+                                    <div className="font-bold">Zusätzliche Meditationsdatei<input className={fieldClass} value={week.bonusMeditationUrl || ""} onChange={(event) => setWeekField(week.weekNumber, "bonusMeditationUrl", event.target.value)} /><label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#0f8b8d] px-4 text-sm text-[#0f8b8d]"><Upload className="h-4 w-4" />{busyKey === `asset-${week.weekNumber}-bonusmeditation` ? "Wird hochgeladen …" : "Zusätzliche Audiodatei geschützt hochladen"}<input type="file" className="sr-only" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav" disabled={Boolean(busyKey)} onChange={(event) => { uploadWeekAsset(week.weekNumber, "bonusmeditation", event.target.files?.[0]); event.target.value = ""; }} /></label></div>
+                                    <div className="font-bold lg:col-span-2">Cover der zusätzlichen Meditation<input className={fieldClass} value={week.bonusMeditationImage || ""} onChange={(event) => setWeekField(week.weekNumber, "bonusMeditationImage", event.target.value)} /><label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#0f8b8d] px-4 text-sm text-[#0f8b8d]"><Upload className="h-4 w-4" />{busyKey === `asset-${week.weekNumber}-bonuscover` ? "Wird hochgeladen …" : "Cover geschützt hochladen"}<input type="file" className="sr-only" accept="image/jpeg,image/png,image/webp" disabled={Boolean(busyKey)} onChange={(event) => { uploadWeekAsset(week.weekNumber, "bonuscover", event.target.files?.[0]); event.target.value = ""; }} /></label></div>
                                     <label className="font-bold"><FileText className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Workbook-Bezeichnung<input className={fieldClass} value={week.workbookLabel} onChange={(event) => setWeekField(week.weekNumber, "workbookLabel", event.target.value)} /></label>
                                     <div className="font-bold">Workbook-Datei oder -link<input className={fieldClass} value={week.workbookUrl} onChange={(event) => setWeekField(week.weekNumber, "workbookUrl", event.target.value)} /><label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#0f8b8d] px-4 text-sm text-[#0f8b8d]"><Upload className="h-4 w-4" />{busyKey === `asset-${week.weekNumber}-workbook` ? "Wird hochgeladen …" : "PDF geschützt hochladen"}<input type="file" className="sr-only" accept="application/pdf" disabled={Boolean(busyKey)} onChange={(event) => { uploadWeekAsset(week.weekNumber, "workbook", event.target.files?.[0]); event.target.value = ""; }} /></label></div>
                                     <label className="font-bold lg:col-span-2"><Video className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Aufzeichnungslink<input className={fieldClass} value={week.recordingUrl} onChange={(event) => setWeekField(week.weekNumber, "recordingUrl", event.target.value)} /></label>

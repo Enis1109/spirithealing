@@ -23,9 +23,34 @@ const assetKinds = {
             ["audio/wav", "wav"],
             ["audio/x-wav", "wav"],
         ]),
-        maxBytes: 40 * 1024 * 1024,
+        maxBytes: 80 * 1024 * 1024,
         disposition: "inline",
         downloadName: "Spirit-Healing-Meditation-Woche-1",
+        rangeRequests: true,
+    },
+    bonusmeditation: {
+        extensions: new Map([
+            ["audio/mpeg", "mp3"],
+            ["audio/mp4", "m4a"],
+            ["audio/x-m4a", "m4a"],
+            ["audio/aac", "aac"],
+            ["audio/wav", "wav"],
+            ["audio/x-wav", "wav"],
+        ]),
+        maxBytes: 80 * 1024 * 1024,
+        disposition: "inline",
+        downloadName: "Spirit-Healing-Wurzelchakra-Meditation",
+        rangeRequests: true,
+    },
+    bonuscover: {
+        extensions: new Map([
+            ["image/jpeg", "jpg"],
+            ["image/png", "png"],
+            ["image/webp", "webp"],
+        ]),
+        maxBytes: 8 * 1024 * 1024,
+        disposition: "inline",
+        downloadName: "Spirit-Healing-Wurzelchakra-Cover",
     },
 };
 
