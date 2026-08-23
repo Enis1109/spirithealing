@@ -264,11 +264,17 @@ export const getMemberProgram = async ({ slug, member }) => {
             ? weekNumber > 1 && lockedForParticipant
             : lockedForParticipant;
         const isZepterWeekOne = row.slug === zepterProgramSlug && weekNumber === 1;
+        const meditationTaskLabel = content.meditationTitle
+            ? `${content.meditationTitle} anhören`
+            : "Meditation anhören";
         const tasks = (Array.isArray(content.tasks) ? content.tasks : []).map((task) => (
             isZepterWeekOne && task.key === "meditation"
-                ? { ...task, label: "Meditation – Ich bin Licht anhören" }
+                ? { ...task, label: meditationTaskLabel }
                 : task
         ));
+        const usesCustomWeekOneMeditation = isZepterWeekOne
+            && content.meditationUrl
+            && content.meditationUrl !== zepterWeekOneMeditation.url;
         if (!locked) totalTaskCount += tasks.length;
         const visibleTasks = locked ? [] : tasks.map((task) => {
             const completed = completedTasks.has(`${weekNumber}:${task.key}`);
@@ -288,9 +294,13 @@ export const getMemberProgram = async ({ slug, member }) => {
             publishedAt: toIsoString(weekRow.published_at),
             intro: locked ? "" : (content.intro || ""),
             zoomUrl: locked ? "" : (content.zoomUrl || ""),
-            meditationTitle: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.title : (content.meditationTitle || "")),
-            meditationUrl: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.url : (content.meditationUrl || "")),
-            meditationImage: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.image : (content.meditationImage || "")),
+            meditationTitle: locked ? "" : (content.meditationTitle || (isZepterWeekOne ? zepterWeekOneMeditation.title : "")),
+            meditationUrl: locked ? "" : (content.meditationUrl || (isZepterWeekOne ? zepterWeekOneMeditation.url : "")),
+            meditationImage: locked ? "" : (
+                usesCustomWeekOneMeditation && content.meditationImage === zepterWeekOneMeditation.image
+                    ? ""
+                    : (content.meditationImage || (isZepterWeekOne ? zepterWeekOneMeditation.image : ""))
+            ),
             bonusMeditationTitle: locked ? "" : (content.bonusMeditationTitle || ""),
             bonusMeditationUrl: locked ? "" : (content.bonusMeditationUrl || ""),
             bonusMeditationImage: locked ? "" : (content.bonusMeditationImage || ""),
