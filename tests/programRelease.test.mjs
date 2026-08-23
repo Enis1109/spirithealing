@@ -42,3 +42,20 @@ test("continues to release later weeks by Istanbul calendar date", () => {
         now: new Date("2026-08-26T21:00:00.000Z"),
     }), false);
 });
+
+test("keeps later weeks locked until participant access is enabled", () => {
+    assert.equal(isProgramWeekLocked({
+        published: true,
+        weekNumber: 2,
+        releaseOn: "2026-08-20",
+        participantAccessEnabled: false,
+        now: new Date("2026-08-23T09:00:00.000Z"),
+    }), true);
+    assert.equal(isProgramWeekLocked({
+        published: true,
+        weekNumber: 2,
+        releaseOn: "2026-08-20",
+        participantAccessEnabled: true,
+        now: new Date("2026-08-23T09:00:00.000Z"),
+    }), false);
+});

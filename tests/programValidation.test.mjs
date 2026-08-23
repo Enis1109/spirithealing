@@ -10,6 +10,7 @@ import {
 } from "../server/programValidation.js";
 
 const validWeek = {
+    participantAccessEnabled: true,
     title: "Wahrnehmen",
     focus: "Den eigenen Ausgangspunkt erkennen.",
     intro: "Der gemeinsame Wochenimpuls.",

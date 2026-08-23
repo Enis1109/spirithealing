@@ -90,6 +90,7 @@ export const normalizeProgramWeek = (body, expectedWeekNumber) => {
 
     return {
         weekNumber,
+        participantAccessEnabled: weekNumber === 1 || body?.participantAccessEnabled === true,
         title: normalizeText(body?.title, "title", { maxLength: 160 }),
         focus: normalizeText(body?.focus, "focus", { maxLength: 280 }),
         intro: normalizeText(body?.intro, "intro", { maxLength: 4000 }),

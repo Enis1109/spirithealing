@@ -46,6 +46,8 @@ export const zepterWeekOneMeditation = {
     image: "/images/meditations/ich-bin-licht.png?v=20260819",
 };
 
+export const zepterWeekOneBonusMeditationImage = "/images/meditations/wurzelchakra-ich-bin-hier.png?v=20260823";
+
 export const zepterWeeks = [
     ["Ich darf sein", "Ankommen, wahrnehmen und den gemeinsamen Weg beginnen"],
     ["Sakral - Ich darf fühlen und brauchen", "Kindheit, Gefühle, Bedürfnisse und Lebendigkeit"],
@@ -65,6 +67,7 @@ const addDays = (dateValue, days) => {
 
 export const defaultWeekContent = (weekNumber, title, focus) => ({
     weekNumber,
+    participantAccessEnabled: weekNumber === 1,
     title,
     focus,
     intro: weekNumber === 1
@@ -259,6 +262,7 @@ export const getMemberProgram = async ({ slug, member }) => {
             published: Boolean(published),
             weekNumber,
             releaseOn,
+            participantAccessEnabled: weekNumber === 1 || content.participantAccessEnabled === true,
         });
         const locked = isAdminPreview
             ? weekNumber > 1 && lockedForParticipant
@@ -296,7 +300,11 @@ export const getMemberProgram = async ({ slug, member }) => {
             meditationImage: locked ? "" : (isZepterWeekOne ? zepterWeekOneMeditation.image : (content.meditationImage || "")),
             bonusMeditationTitle: locked ? "" : (content.bonusMeditationTitle || ""),
             bonusMeditationUrl: locked ? "" : (content.bonusMeditationUrl || ""),
-            bonusMeditationImage: locked ? "" : (content.bonusMeditationImage || ""),
+            bonusMeditationImage: locked ? "" : (
+                isZepterWeekOne && content.bonusMeditationUrl
+                    ? zepterWeekOneBonusMeditationImage
+                    : (content.bonusMeditationImage || "")
+            ),
             additionalMeditationTitle: locked || !hasAdditionalWeekOneMeditation ? "" : (content.meditationTitle || "Meditation"),
             additionalMeditationUrl: locked || !hasAdditionalWeekOneMeditation ? "" : content.meditationUrl,
             additionalMeditationImage: locked || !hasAdditionalWeekOneMeditation ? "" : "/images/meditations/leichtigkeit-darf-sein.png?v=20260823",

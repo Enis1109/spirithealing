@@ -30,6 +30,8 @@ const formatDate = (value) => value
 const normalizeWeekForEditor = (week) => ({
     weekNumber: week.weekNumber,
     ...(week.draft || week.published || {}),
+    participantAccessEnabled: week.weekNumber === 1
+        || (week.draft || week.published || {}).participantAccessEnabled === true,
     tasks: (week.draft?.tasks || week.published?.tasks || []).map((task) => ({ ...task })),
 });
 
@@ -355,6 +357,17 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                                 <div className="mt-6 grid gap-5 lg:grid-cols-2">
                                     <label className="font-bold">Titel<input className={fieldClass} value={week.title} onChange={(event) => setWeekField(week.weekNumber, "title", event.target.value)} /></label>
                                     <label className="font-bold">Freigabedatum<input type="date" className={fieldClass} value={week.releaseOn} onChange={(event) => setWeekField(week.weekNumber, "releaseOn", event.target.value)} /></label>
+                                    {week.weekNumber > 1 && (
+                                        <label className="flex min-h-14 items-center gap-3 rounded-2xl border border-[#0f8b8d]/20 bg-white px-4 font-bold lg:col-span-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={week.participantAccessEnabled === true}
+                                                onChange={(event) => setWeekField(week.weekNumber, "participantAccessEnabled", event.target.checked)}
+                                                className="h-5 w-5 accent-[#0f8b8d]"
+                                            />
+                                            Für Teilnehmer freigeben
+                                        </label>
+                                    )}
                                     <label className="font-bold lg:col-span-2">Fokus<textarea rows="2" className={textAreaClass} value={week.focus} onChange={(event) => setWeekField(week.weekNumber, "focus", event.target.value)} /></label>
                                     <label className="font-bold lg:col-span-2">Wochenimpuls<textarea rows="5" className={textAreaClass} value={week.intro} onChange={(event) => setWeekField(week.weekNumber, "intro", event.target.value)} /></label>
                                     <label className="font-bold"><Clock3 className="mr-2 inline h-4 w-4 text-[#0f8b8d]" />Live-Termin<input type="datetime-local" className={fieldClass} value={week.liveAt} onChange={(event) => setWeekField(week.weekNumber, "liveAt", event.target.value)} /></label>
