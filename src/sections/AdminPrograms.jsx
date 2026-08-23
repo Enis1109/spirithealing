@@ -2,10 +2,12 @@ import {
     CalendarDays,
     CheckCircle2,
     Clock3,
+    Copy,
     ExternalLink,
     FileAudio,
     FileText,
     LoaderCircle,
+    Link2,
     MessageCircle,
     Save,
     Search,
@@ -43,6 +45,7 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
     const [busyKey, setBusyKey] = useState("");
     const [memberSearch, setMemberSearch] = useState("");
     const [enrollmentEmail, setEnrollmentEmail] = useState("");
+    const [directAccess, setDirectAccess] = useState(null);
 
     const applyProgram = (nextProgram, { resetSettings = true, resetWeeks = true } = {}) => {
         setProgram(nextProgram);
@@ -259,6 +262,33 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
         }
     };
 
+    const createDirectAccess = async (email) => {
+        setBusyKey(`direct-${email}`);
+        setNotice(null);
+        try {
+            const result = await requestJson(`/api/admin/programs/${programSlug}/direct-access`, {
+                method: "POST",
+                body: JSON.stringify({ email }),
+            });
+            setDirectAccess({ email, url: result.accessUrl });
+            setNotice({ type: "success", text: `Der persönliche Direktlink für ${email} ist bereit.` });
+        } catch {
+            setNotice({ type: "error", text: "Der persönliche Direktlink konnte nicht erstellt werden." });
+        } finally {
+            setBusyKey("");
+        }
+    };
+
+    const copyDirectAccess = async () => {
+        if (!directAccess?.url) return;
+        try {
+            await navigator.clipboard.writeText(directAccess.url);
+            setNotice({ type: "success", text: "Der persönliche Direktlink wurde kopiert. Bitte nur an die betreffende Teilnehmerin weitergeben." });
+        } catch {
+            setNotice({ type: "error", text: "Der Link konnte nicht automatisch kopiert werden. Bitte markiere ihn im Feld und kopiere ihn manuell." });
+        }
+    };
+
     if (state === "loading") return <div className="flex min-h-64 items-center justify-center rounded-3xl bg-[#fffaf2] text-[#0f8b8d]"><LoaderCircle className="h-8 w-8 animate-spin" /></div>;
     if (state === "error") return <div className="rounded-3xl bg-red-50 p-8 font-bold text-red-800">Der Programmbereich konnte nicht geladen werden.</div>;
 
@@ -326,15 +356,34 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                     {filteredMembers.map((member) => {
                         const active = member.enrollmentStatus === "active";
                         return (
-                            <div key={member.email} className="flex flex-col gap-3 rounded-2xl border border-[#d6e6e3] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <strong>{member.name}</strong>
-                                    <p className="text-sm text-[#6b8585]">{member.email}</p>
-                                    {member.memberStatus !== "active" && <p className="mt-1 text-xs font-bold text-amber-700">Mitgliederkonto noch nicht bestätigt</p>}
+                            <div key={member.email} className="rounded-2xl border border-[#d6e6e3] bg-white p-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <strong>{member.name}</strong>
+                                        <p className="text-sm text-[#6b8585]">{member.email}</p>
+                                        {member.memberStatus !== "active" && <p className="mt-1 text-xs font-bold text-amber-700">Mitgliederkonto noch nicht bestätigt</p>}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {active && member.memberStatus === "active" && (
+                                            <button type="button" disabled={busyKey === `direct-${member.email}`} onClick={() => createDirectAccess(member.email)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[#eaf4f1] px-4 text-sm font-bold text-[#0f8b8d] disabled:opacity-60">
+                                                {busyKey === `direct-${member.email}` ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}Direktlink erstellen
+                                            </button>
+                                        )}
+                                        <button type="button" disabled={busyKey === `member-${member.email}`} onClick={() => updateEnrollment(member.email, !active)} className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold ${active ? "bg-[#fff0ec] text-[#a33f2f]" : "bg-[#eaf4f1] text-[#0f8b8d]"}`}>
+                                            {active ? <><UserMinus className="h-4 w-4" />Zugang beenden</> : <><UserCheck className="h-4 w-4" />Freischalten</>}
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="button" disabled={busyKey === `member-${member.email}`} onClick={() => updateEnrollment(member.email, !active)} className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold ${active ? "bg-[#fff0ec] text-[#a33f2f]" : "bg-[#eaf4f1] text-[#0f8b8d]"}`}>
-                                    {active ? <><UserMinus className="h-4 w-4" />Zugang beenden</> : <><UserCheck className="h-4 w-4" />Freischalten</>}
-                                </button>
+                                {directAccess?.email === member.email && (
+                                    <div className="mt-4 rounded-xl border border-[#0f8b8d]/20 bg-[#f5fbf9] p-3">
+                                        <p className="text-xs font-bold text-[#0f8b8d]">Persönlicher Zugang zum Zepter-Programm</p>
+                                        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                                            <input readOnly value={directAccess.url} aria-label={`Direktlink für ${member.email}`} className="min-h-10 min-w-0 flex-1 rounded-lg border border-[#0f8b8d]/20 bg-white px-3 text-xs" />
+                                            <button type="button" onClick={copyDirectAccess} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-4 text-sm font-bold text-white"><Copy className="h-4 w-4" />Link kopieren</button>
+                                        </div>
+                                        <p className="mt-2 text-xs text-[#6b8585]">Dieser Link meldet die Teilnehmerin ohne Passwort an. Bitte vertraulich behandeln.</p>
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
