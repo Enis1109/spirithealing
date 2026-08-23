@@ -250,6 +250,14 @@ export const ProgramArea = ({ member }) => {
                                 </article>
                             )}
 
+                            {selectedWeek.additionalMeditationUrl && (
+                                <article className="rounded-3xl bg-[#f3faf8] p-5">
+                                    <Headphones className="h-6 w-6 text-[#168e91]" />
+                                    <h3 className="mt-3 text-xl font-bold">{selectedWeek.additionalMeditationTitle}</h3>
+                                    <audio className="mt-5 w-full" controls preload="metadata" src={selectedWeek.additionalMeditationUrl} />
+                                </article>
+                            )}
+
                             {selectedWeek.workbookUrl ? (
                                 <article className="rounded-3xl bg-[#fff8e1] p-5"><BookOpenCheck className="h-6 w-6 text-[#9b7412]" /><h3 className="mt-3 text-xl font-bold">{selectedWeek.workbookLabel}</h3><a href={selectedWeek.workbookUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#f1d277] px-5 font-bold">Workbook öffnen<ExternalLink className="h-4 w-4" /></a></article>
                             ) : <EmptyAsset icon={BookOpenCheck} title={selectedWeek.workbookLabel || "Workbook"} text="Der passende Workbook-Abschnitt wird hier bereitgestellt." />}
