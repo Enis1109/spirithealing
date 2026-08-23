@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { database } from "./database.js";
+import { getProgramMemberPath } from "./memberAccessPaths.js";
 import { hashPassword, verifyPassword } from "./passwords.js";
 import { enrollZepterParticipantIfEligible } from "./programEnrollment.js";
 
@@ -90,6 +91,49 @@ export const createMemberAccessRequest = async ({
     );
 
     return `${baseUrl()}/api/members/access?token=${encodeURIComponent(token)}`;
+};
+
+export const createProgramDirectAccessLink = async ({ email, slug }) => {
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const targetPath = getProgramMemberPath(slug);
+    if (!normalizedEmail || !targetPath) return null;
+
+    const connection = await database.getConnection();
+    try {
+        await connection.beginTransaction();
+        const [rows] = await connection.execute(
+            `SELECT members.id
+             FROM members
+             INNER JOIN program_enrollments AS enrollments
+               ON enrollments.member_id = members.id AND enrollments.status = 'active'
+             INNER JOIN programs
+               ON programs.id = enrollments.program_id AND programs.slug = ?
+             WHERE LOWER(members.email) = ? AND members.status = 'active'
+             LIMIT 1 FOR UPDATE`,
+            [slug, normalizedEmail],
+        );
+        const member = rows[0];
+        if (!member) {
+            await connection.rollback();
+            return null;
+        }
+
+        const token = crypto.randomBytes(32).toString("base64url");
+        await connection.execute(
+            `INSERT INTO member_access_tokens (member_id, token_hash, expires_at)
+             VALUES (?, ?, '9999-12-31 23:59:59')`,
+            [member.id, hashToken(token)],
+        );
+        await connection.commit();
+
+        const query = new URLSearchParams({ token, next: targetPath });
+        return `${baseUrl()}/api/members/access?${query.toString()}`;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
 };
 
 export const createMemberRegistration = async ({

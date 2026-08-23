@@ -18,6 +18,7 @@ import {
     authenticateMember,
     clearMemberSessionCookie,
     createMemberAccessRequest,
+    createProgramDirectAccessLink,
     createMemberPasswordReset,
     createMemberRegistration,
     endMemberSession,
@@ -27,6 +28,7 @@ import {
     setMemberSessionCookie,
     updateMemberContentState,
 } from "./server/members.js";
+import { resolveMemberAccessRedirect } from "./server/memberAccessPaths.js";
 import {
     acceptNewsletterOffer,
     confirmNewsletterSubscription,
@@ -672,7 +674,7 @@ app.get("/api/members/access", async (request, response) => {
         }
 
         setMemberSessionCookie(response, access.sessionToken);
-        return response.redirect(303, "/mitglieder?state=verified");
+        return response.redirect(303, resolveMemberAccessRedirect(request.query.next));
     } catch (error) {
         console.error("Member access activation failed", error);
         return response.redirect(303, "/mitglieder?state=error");
@@ -1247,6 +1249,25 @@ app.put("/api/admin/programs/:slug/enrollments", adminSameOriginOnly, async (req
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Program enrollment could not be updated", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/programs/:slug/direct-access", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        const { email } = normalizeProgramEnrollment({ email: request.body?.email, active: true });
+        const accessUrl = await createProgramDirectAccessLink({ email, slug });
+        if (!accessUrl) return response.status(404).json({ ok: false, error: "active_enrollment_not_found" });
+        response.set("Cache-Control", "no-store");
+        return response.status(201).json({ ok: true, accessUrl });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Program direct access link could not be created", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
