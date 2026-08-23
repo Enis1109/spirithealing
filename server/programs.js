@@ -297,8 +297,12 @@ export const getMemberProgram = async ({ slug, member }) => {
             meditationTitle: locked ? "" : (content.meditationTitle || (isZepterWeekOne ? zepterWeekOneMeditation.title : "")),
             meditationUrl: locked ? "" : (content.meditationUrl || (isZepterWeekOne ? zepterWeekOneMeditation.url : "")),
             meditationImage: locked ? "" : (
-                usesCustomWeekOneMeditation && content.meditationImage === zepterWeekOneMeditation.image
-                    ? ""
+                usesCustomWeekOneMeditation
+                    ? (
+                        content.meditationImage && content.meditationImage !== zepterWeekOneMeditation.image
+                            ? content.meditationImage
+                            : ""
+                    )
                     : (content.meditationImage || (isZepterWeekOne ? zepterWeekOneMeditation.image : ""))
             ),
             bonusMeditationTitle: locked ? "" : (content.bonusMeditationTitle || ""),
