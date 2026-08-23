@@ -251,10 +251,21 @@ export const ProgramArea = ({ member }) => {
                             )}
 
                             {selectedWeek.additionalMeditationUrl && (
-                                <article className="rounded-3xl bg-[#f3faf8] p-5">
-                                    <Headphones className="h-6 w-6 text-[#168e91]" />
-                                    <h3 className="mt-3 text-xl font-bold">{selectedWeek.additionalMeditationTitle}</h3>
-                                    <audio className="mt-5 w-full" controls preload="metadata" src={selectedWeek.additionalMeditationUrl} />
+                                <article className="overflow-hidden rounded-3xl bg-[#f3faf8] p-5">
+                                    <div className={selectedWeek.additionalMeditationImage ? "grid gap-5 sm:grid-cols-[9rem_1fr] sm:items-center" : ""}>
+                                        {selectedWeek.additionalMeditationImage && (
+                                            <img
+                                                src={selectedWeek.additionalMeditationImage}
+                                                alt={`Cover ${selectedWeek.additionalMeditationTitle}`}
+                                                className="aspect-square w-full rounded-2xl object-cover shadow-md"
+                                            />
+                                        )}
+                                        <div>
+                                            <Headphones className="h-6 w-6 text-[#168e91]" />
+                                            <h3 className="mt-3 text-xl font-bold">{selectedWeek.additionalMeditationTitle}</h3>
+                                            <audio className="mt-5 w-full" controls preload="metadata" src={selectedWeek.additionalMeditationUrl} />
+                                        </div>
+                                    </div>
                                 </article>
                             )}
 

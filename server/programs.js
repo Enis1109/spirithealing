@@ -299,6 +299,7 @@ export const getMemberProgram = async ({ slug, member }) => {
             bonusMeditationImage: locked ? "" : (content.bonusMeditationImage || ""),
             additionalMeditationTitle: locked || !hasAdditionalWeekOneMeditation ? "" : (content.meditationTitle || "Meditation"),
             additionalMeditationUrl: locked || !hasAdditionalWeekOneMeditation ? "" : content.meditationUrl,
+            additionalMeditationImage: locked || !hasAdditionalWeekOneMeditation ? "" : "/images/meditations/leichtigkeit-darf-sein.png?v=20260823",
             workbookLabel: locked ? "" : (content.workbookLabel || ""),
             workbookUrl: locked ? "" : (content.workbookUrl || ""),
             recordingUrl: locked ? "" : (content.recordingUrl || ""),
