@@ -28,6 +28,16 @@ const assetKinds = {
         downloadName: "Spirit-Healing-Meditation-Woche-1",
         rangeRequests: true,
     },
+    meditationcover: {
+        extensions: new Map([
+            ["image/jpeg", "jpg"],
+            ["image/png", "png"],
+            ["image/webp", "webp"],
+        ]),
+        maxBytes: 8 * 1024 * 1024,
+        disposition: "inline",
+        downloadName: "Spirit-Healing-Meditation-Cover",
+    },
     bonusmeditation: {
         extensions: new Map([
             ["audio/mpeg", "mp3"],
