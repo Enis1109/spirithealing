@@ -214,12 +214,18 @@ export const ProgramArea = ({ member }) => {
                         <div className="grid gap-5 p-6 sm:p-8 lg:grid-cols-2">
                             {selectedWeek.meditationUrl ? (
                                 <article className="overflow-hidden rounded-3xl bg-[#f3faf8] p-5">
-                                    <div className={selectedWeek.meditationImage ? "grid gap-5 sm:grid-cols-[9rem_1fr] sm:items-center" : ""}>
+                                    <div className={selectedWeek.meditationImage
+                                        ? (selectedWeek.meditationImage.includes("/meditationcover")
+                                            ? "grid gap-5"
+                                            : "grid gap-5 sm:grid-cols-[9rem_1fr] sm:items-center")
+                                        : ""}>
                                         {selectedWeek.meditationImage && (
                                             <img
                                                 src={selectedWeek.meditationImage}
                                                 alt={`Cover ${selectedWeek.meditationTitle}`}
-                                                className="aspect-square w-full rounded-2xl object-cover shadow-md"
+                                                className={selectedWeek.meditationImage.includes("/meditationcover")
+                                                    ? "aspect-video w-full rounded-2xl object-cover shadow-md"
+                                                    : "aspect-square w-full rounded-2xl object-cover shadow-md"}
                                             />
                                         )}
                                         <div>
