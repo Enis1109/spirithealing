@@ -99,6 +99,7 @@ export const normalizeProgramWeek = (body, expectedWeekNumber) => {
         zoomUrl: normalizeUrl(body?.zoomUrl, "zoomUrl"),
         meditationTitle: normalizeText(body?.meditationTitle, "meditationTitle", { maxLength: 180 }),
         meditationUrl: normalizeUrl(body?.meditationUrl, "meditationUrl"),
+        meditationImage: normalizeUrl(body?.meditationImage, "meditationImage"),
         bonusMeditationTitle: normalizeText(body?.bonusMeditationTitle, "bonusMeditationTitle", { maxLength: 180, required: false }),
         bonusMeditationUrl: normalizeUrl(body?.bonusMeditationUrl, "bonusMeditationUrl"),
         bonusMeditationImage: normalizeUrl(body?.bonusMeditationImage, "bonusMeditationImage"),

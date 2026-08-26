@@ -19,6 +19,7 @@ const validWeek = {
     zoomUrl: "https://zoom.us/j/123",
     meditationTitle: "Meditation für Woche 1",
     meditationUrl: "/programme/zepter/meditation-1.mp3",
+    meditationImage: "/api/members/programs/zepter-acht-wochen/assets/1/meditationcover",
     bonusMeditationTitle: "Wurzelchakra – Ich bin hier. Ich bin getragen.",
     bonusMeditationUrl: "/api/members/programs/zepter-acht-wochen/assets/1/bonusmeditation",
     bonusMeditationImage: "/api/members/programs/zepter-acht-wochen/assets/1/bonuscover",

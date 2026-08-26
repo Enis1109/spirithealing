@@ -65,6 +65,23 @@ test("stores the additional meditation and its protected cover", async () => {
     );
 });
 
+test("stores the protected cover for the main meditation", async () => {
+    const cover = Buffer.from("protected main meditation cover");
+    const savedCover = await saveProgramAsset({
+        slug: "zepter-acht-wochen",
+        weekNumber: 2,
+        kind: "meditationcover",
+        contentType: "image/png",
+        buffer: cover,
+    });
+
+    assert.equal(savedCover.url, "/api/members/programs/zepter-acht-wochen/assets/2/meditationcover");
+    assert.deepEqual(
+        await fsPromises.readFile((await getProgramAsset({ slug: "zepter-acht-wochen", weekNumber: 2, kind: "meditationcover" })).path),
+        cover,
+    );
+});
+
 test("rejects unsupported or empty program files", async () => {
     await assert.rejects(() => saveProgramAsset({
         slug: "zepter-acht-wochen",
