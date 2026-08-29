@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import {
   ArrowDown,
   CalendarDays,
@@ -54,22 +53,6 @@ const Timeline = ({ entries }) => (
 )
 
 export const BerlinLive = () => {
-  useEffect(() => {
-    const previousTitle = document.title
-    const existingRobots = document.querySelector('meta[name="robots"]')
-    const robots = existingRobots || document.createElement("meta")
-
-    document.title = "Spirit Healing live in Berlin | Familienaufstellung"
-    robots.setAttribute("name", "robots")
-    robots.setAttribute("content", "noindex, nofollow")
-    if (!existingRobots) document.head.appendChild(robots)
-
-    return () => {
-      document.title = previousTitle
-      if (!existingRobots) robots.remove()
-    }
-  }, [])
-
   const scrollToTickets = () => {
     document.getElementById("tickets")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
@@ -102,11 +85,12 @@ export const BerlinLive = () => {
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
             <div className="relative z-10">
-              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">Spirit Healing live in Berlin</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">Familienaufstellung Berlin · 9.–10. Oktober 2026</p>
               <h1 className="mt-5 max-w-4xl text-4xl font-bold leading-[1.06] text-[#173c39] sm:text-5xl lg:text-7xl">
-                Was unbewusst mitwirkt, bekommt einen Platz.
+                Familienaufstellung live in Berlin
               </h1>
               <p className="mt-7 max-w-2xl text-xl leading-9 text-[#3f5d59]">
+                <span className="font-semibold text-[#244b47]">Was unbewusst mitwirkt, bekommt einen Platz.</span>{" "}
                 Zwei intensive Tage mit familiensystemischer Aufstellungsarbeit. Wir betrachten Bindungen, Rollen und wiederkehrende Dynamiken über Generationen hinweg und begleiten jede Aufstellung gemeinsam.
               </p>
 

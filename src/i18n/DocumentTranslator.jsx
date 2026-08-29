@@ -6,6 +6,9 @@ import { pageMeta, turkishTranslations, turkishTranslationsByPath } from "@/i18n
 const translatedAttributes = ["aria-label", "alt", "placeholder", "title"];
 const siteUrl = "https://spirit-healing.tr";
 const defaultSocialImage = `${siteUrl}/Logo-tuerkis.jpeg?v=20260730`;
+const socialImageFor = (meta) => meta.image
+    ? new URL(meta.image, siteUrl).href
+    : defaultSocialImage;
 
 const upsertMeta = (selector, attributes) => {
     let element = document.head.querySelector(selector);
@@ -29,6 +32,50 @@ const upsertLink = (rel, href) => {
 const structuredDataFor = (pathname, language, meta) => {
     const url = `${siteUrl}${pathname === "/" ? "" : pathname}`;
     const common = { "@context": "https://schema.org", inLanguage: language, url };
+
+    if (pathname === "/berlin-live") {
+        const breadcrumbId = `${url}#breadcrumb`;
+        return [
+            {
+                ...common,
+                "@type": "WebPage",
+                "@id": `${url}#webpage`,
+                name: meta.title,
+                headline: language === "tr"
+                    ? "Berlin'de aile dizimi çalışması"
+                    : "Familienaufstellung live in Berlin",
+                description: meta.description,
+                primaryImageOfPage: {
+                    "@type": "ImageObject",
+                    url: socialImageFor(meta),
+                    width: Number(meta.imageWidth),
+                    height: Number(meta.imageHeight),
+                },
+                isPartOf: { "@type": "WebSite", name: "Spirit Healing", url: siteUrl },
+                breadcrumb: { "@id": breadcrumbId },
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "@id": breadcrumbId,
+                itemListElement: [
+                    { "@type": "ListItem", position: 1, name: "Spirit Healing", item: siteUrl },
+                    {
+                        "@type": "ListItem",
+                        position: 2,
+                        name: language === "tr" ? "Seminerler & Eğitimler" : "Vorträge & Seminare",
+                        item: `${siteUrl}/vortraege-seminare`,
+                    },
+                    {
+                        "@type": "ListItem",
+                        position: 3,
+                        name: language === "tr" ? "Berlin Aile Dizimi" : "Familienaufstellung Berlin",
+                        item: url,
+                    },
+                ],
+            },
+        ];
+    }
 
     if (pathname === "/") return [
         { ...common, "@type": "WebSite", name: "Spirit Healing" },
@@ -183,6 +230,8 @@ export const DocumentTranslator = () => {
         if (routeMeta) {
             document.title = routeMeta.title;
             const canonicalUrl = `${siteUrl}${pathname === "/" ? "" : pathname}`;
+            const socialImage = socialImageFor(routeMeta);
+            const socialImageAlt = routeMeta.imageAlt || "Spirit Healing";
             document.documentElement.lang = language;
             upsertMeta('meta[name="description"]', { name: "description", content: routeMeta.description });
             upsertMeta('meta[name="robots"]', { name: "robots", content: routeMeta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large" });
@@ -190,12 +239,16 @@ export const DocumentTranslator = () => {
             upsertMeta('meta[property="og:description"]', { property: "og:description", content: routeMeta.description });
             upsertMeta('meta[property="og:type"]', { property: "og:type", content: "website" });
             upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
-            upsertMeta('meta[property="og:image"]', { property: "og:image", content: defaultSocialImage });
+            upsertMeta('meta[property="og:image"]', { property: "og:image", content: socialImage });
+            upsertMeta('meta[property="og:image:width"]', { property: "og:image:width", content: routeMeta.imageWidth || "1254" });
+            upsertMeta('meta[property="og:image:height"]', { property: "og:image:height", content: routeMeta.imageHeight || "1254" });
+            upsertMeta('meta[property="og:image:alt"]', { property: "og:image:alt", content: socialImageAlt });
             upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: language === "tr" ? "tr_TR" : "de_DE" });
             upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
             upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: routeMeta.title });
             upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: routeMeta.description });
-            upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: defaultSocialImage });
+            upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: socialImage });
+            upsertMeta('meta[name="twitter:image:alt"]', { name: "twitter:image:alt", content: socialImageAlt });
             upsertLink("canonical", canonicalUrl);
 
             let structuredData = document.head.querySelector('script[data-spirit-healing-seo="true"]');
