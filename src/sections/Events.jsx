@@ -8,7 +8,7 @@ const content = {
         berlin: {
             eyebrow: "Neu · Live in Berlin",
             title: "Familienaufstellung live in Berlin",
-            intro: "Am 9. und 10. Oktober 2026 begleiten wir eine kleine Gruppe durch zwei intensive Tage familiensystemischer Aufstellungsarbeit. Am Freitag beginnen wir mit einer fachlich-therapeutischen Einführung. Danach arbeiten wir mit den Anliegen und Dynamiken, die sich in der Gruppe zeigen.",
+            intro: "Am 9. und 10. Oktober 2026 begleiten wir eine kleine Gruppe durch zwei Tage familiensystemischer Aufstellungsarbeit. Nach einer fachlich-therapeutischen Einführung arbeiten wir mit eigenen Anliegen und als Stellvertretende in der Gruppe.",
             date: "9. und 10. Oktober 2026",
             time: "jeweils 10–19 Uhr",
             place: "Berlin · Raum folgt",
@@ -72,7 +72,7 @@ const content = {
         berlin: {
             eyebrow: "Yeni · Berlin'de yüz yüze",
             title: "Berlin'de aile dizimi çalışması",
-            intro: "9 ve 10 Ekim 2026 tarihlerinde küçük bir grupla iki günlük aile sistemi dizimi çalışması yapacağız. Cuma günü uzmanlık temelli terapötik bir girişle başlayacak, ardından grupta ortaya çıkan konular ve aile dinamikleriyle çalışacağız.",
+            intro: "9 ve 10 Ekim 2026 tarihlerinde küçük bir grupla iki günlük aile sistemi dizimi çalışması yapacağız. Uzmanlık temelli terapötik girişin ardından kişisel konularla ve grup içindeki temsilci rolleriyle çalışacağız.",
             date: "9 ve 10 Ekim 2026",
             time: "her iki gün 10:00–19:00",
             place: "Berlin · Mekân daha sonra açıklanacak",
@@ -151,39 +151,33 @@ export const Events = () => {
 
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
-            <section className="relative overflow-hidden border-b border-[#d7e4de] bg-[#f8f5ed] text-[#173c39]">
-                <div className="absolute -left-32 top-12 h-72 w-72 rounded-full bg-[#d8ebe3]/80 blur-3xl" aria-hidden="true" />
-                <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-[#f2dfb9]/70 blur-3xl" aria-hidden="true" />
-                <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-18 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8">
-                    <div>
-                        <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{copy.berlin.eyebrow}</p>
-                        <h1 className="mt-5 text-4xl font-bold leading-[1.06] sm:text-5xl lg:text-6xl">{copy.berlin.title}</h1>
-                        <p className="mt-6 max-w-2xl text-lg leading-8 text-[#49635f]">{copy.berlin.intro}</p>
-                        <div className="mt-7 flex flex-wrap gap-3">
+            <section className="border-b border-white/10 bg-card py-8 text-[#173c39] sm:py-10">
+                <article className="mx-auto grid w-[calc(100%-2rem)] max-w-6xl overflow-hidden rounded-[2rem] bg-[#f8f5ed] shadow-xl shadow-black/10 md:grid-cols-[1fr_18rem] lg:grid-cols-[1fr_21rem]">
+                    <div className="p-6 sm:p-8 lg:p-10">
+                        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{copy.berlin.eyebrow}</p>
+                        <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">{copy.berlin.title}</h2>
+                        <p className="mt-4 max-w-3xl leading-7 text-[#49635f]">{copy.berlin.intro}</p>
+                        <div className="mt-5 flex flex-wrap gap-2">
                             {berlinFacts.map(({ icon, value }) => {
                                 const FactIcon = icon;
                                 return (
-                                    <span key={value} className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#2c514d]">
+                                    <span key={value} className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-3.5 py-2 text-sm font-semibold text-[#2c514d]">
                                         <FactIcon className="h-4 w-4 text-[#0f7d79]" aria-hidden="true" />
                                         {value}
                                     </span>
                                 );
                             })}
                         </div>
-                        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <Link to="/berlin-live" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">
+                        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                            <Link to="/berlin-live" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white transition hover:bg-[#075a57]">
                                 {copy.berlin.action}
                                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
                             </Link>
                             <p className="text-sm font-semibold leading-6 text-[#5b706d]">{copy.berlin.places}</p>
                         </div>
                     </div>
-
-                    <div className="relative mx-auto w-full max-w-lg">
-                        <div className="absolute -inset-3 rotate-2 rounded-[2rem] border border-[#d8c08d]/60 bg-[#f4e8cf]" aria-hidden="true" />
-                        <img src="/familie/berlin.jpeg" alt="" className="relative h-[24rem] w-full rounded-[2rem] border-8 border-white object-cover object-center shadow-[0_24px_60px_rgba(31,75,70,0.18)]" />
-                    </div>
-                </div>
+                    <img src="/familie/berlin.jpeg" alt="" className="h-56 w-full object-cover object-center md:h-full" />
+                </article>
             </section>
 
             <section className="relative border-b border-white/10">
