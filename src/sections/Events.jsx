@@ -1,10 +1,20 @@
-import { ArrowRight, CalendarDays, Clock3, LockKeyhole, MailCheck, MonitorPlay, Sparkles, UsersRound } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3, LockKeyhole, MailCheck, MapPin, MonitorPlay, Sparkles, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const content = {
     de: {
         eyebrow: "Vorträge & Seminare",
+        berlin: {
+            eyebrow: "Neu · Live in Berlin",
+            title: "Familienaufstellung live in Berlin",
+            intro: "Am 9. und 10. Oktober 2026 begleiten wir eine kleine Gruppe durch zwei intensive Tage familiensystemischer Aufstellungsarbeit. Am Freitag beginnen wir mit einer fachlich-therapeutischen Einführung. Danach arbeiten wir mit den Anliegen und Dynamiken, die sich in der Gruppe zeigen.",
+            date: "9. und 10. Oktober 2026",
+            time: "jeweils 10–19 Uhr",
+            place: "Berlin · Raum folgt",
+            places: "20 Plätze insgesamt · davon 6 mit eigener Aufstellung",
+            action: "Alle Informationen und Tickets",
+        },
         live: "Aufzeichnung des Live-Vortrags",
         title: "Wer entscheidet eigentlich dein Leben?",
         subtitle: "Warum du oft gegen dein eigenes Gefühl handelst – und wie innere Anteile deine Entscheidungen beeinflussen.",
@@ -59,6 +69,16 @@ const content = {
     },
     tr: {
         eyebrow: "Seminerler & Eğitimler",
+        berlin: {
+            eyebrow: "Yeni · Berlin'de yüz yüze",
+            title: "Berlin'de aile dizimi çalışması",
+            intro: "9 ve 10 Ekim 2026 tarihlerinde küçük bir grupla iki günlük aile sistemi dizimi çalışması yapacağız. Cuma günü uzmanlık temelli terapötik bir girişle başlayacak, ardından grupta ortaya çıkan konular ve aile dinamikleriyle çalışacağız.",
+            date: "9 ve 10 Ekim 2026",
+            time: "her iki gün 10:00–19:00",
+            place: "Berlin · Mekân daha sonra açıklanacak",
+            places: "Toplam 20 kişilik yer · 6 kişiye kendi dizimi için ayrılmış yer",
+            action: "Tüm bilgiler ve biletler",
+        },
         live: "Canlı seminerin kaydı",
         title: "Hayatına aslında kim karar veriyor?",
         subtitle: "Neden bazen kendi hislerine karşı hareket ediyorsun ve içsel parçaların kararlarını nasıl etkiliyor?",
@@ -123,8 +143,49 @@ export const Events = () => {
         { icon: MonitorPlay, label: copy.formatLabel, value: copy.format },
     ];
 
+    const berlinFacts = [
+        { icon: CalendarDays, value: copy.berlin.date },
+        { icon: Clock3, value: copy.berlin.time },
+        { icon: MapPin, value: copy.berlin.place },
+    ];
+
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
+            <section className="relative overflow-hidden border-b border-[#d7e4de] bg-[#f8f5ed] text-[#173c39]">
+                <div className="absolute -left-32 top-12 h-72 w-72 rounded-full bg-[#d8ebe3]/80 blur-3xl" aria-hidden="true" />
+                <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-[#f2dfb9]/70 blur-3xl" aria-hidden="true" />
+                <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-18 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8">
+                    <div>
+                        <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{copy.berlin.eyebrow}</p>
+                        <h1 className="mt-5 text-4xl font-bold leading-[1.06] sm:text-5xl lg:text-6xl">{copy.berlin.title}</h1>
+                        <p className="mt-6 max-w-2xl text-lg leading-8 text-[#49635f]">{copy.berlin.intro}</p>
+                        <div className="mt-7 flex flex-wrap gap-3">
+                            {berlinFacts.map(({ icon, value }) => {
+                                const FactIcon = icon;
+                                return (
+                                    <span key={value} className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#2c514d]">
+                                        <FactIcon className="h-4 w-4 text-[#0f7d79]" aria-hidden="true" />
+                                        {value}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                            <Link to="/berlin-live" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">
+                                {copy.berlin.action}
+                                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                            </Link>
+                            <p className="text-sm font-semibold leading-6 text-[#5b706d]">{copy.berlin.places}</p>
+                        </div>
+                    </div>
+
+                    <div className="relative mx-auto w-full max-w-lg">
+                        <div className="absolute -inset-3 rotate-2 rounded-[2rem] border border-[#d8c08d]/60 bg-[#f4e8cf]" aria-hidden="true" />
+                        <img src="/familie/berlin.jpeg" alt="" className="relative h-[24rem] w-full rounded-[2rem] border-8 border-white object-cover object-center shadow-[0_24px_60px_rgba(31,75,70,0.18)]" />
+                    </div>
+                </div>
+            </section>
+
             <section className="relative border-b border-white/10">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_34%)]" aria-hidden="true" />
                 <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:px-8">
