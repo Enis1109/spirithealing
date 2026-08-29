@@ -10,6 +10,7 @@ import {
     LayoutDashboard,
     LockKeyhole,
     LogOut,
+    MapPin,
     RotateCcw,
     Save,
     Search,
@@ -373,7 +374,10 @@ export const AdminArea = () => {
     const dirtyCount = allKeys.filter(isDirty).length;
     const unpublishedCount = allKeys.filter(isUnpublished).length;
     const normalizedSearch = search.trim().toLowerCase();
-    const filteredPages = pageContentCatalog.filter((item) => !normalizedSearch || `${item.section} ${item.label} ${item.key}`.toLowerCase().includes(normalizedSearch));
+    const pageCatalogForTab = activeTab === "berlin"
+        ? pageContentCatalog.filter((item) => item.section === "Berlin Live")
+        : pageContentCatalog.filter((item) => item.section !== "Berlin Live");
+    const filteredPages = pageCatalogForTab.filter((item) => !normalizedSearch || `${item.section} ${item.group} ${item.label} ${item.key}`.toLowerCase().includes(normalizedSearch));
     const filteredTopics = assistantContentCatalog.filter((topic) => !normalizedSearch || `${topic.title} ${topic.id} ${topic.defaults.terms.de} ${topic.defaults.answer.de}`.toLowerCase().includes(normalizedSearch));
 
     if (sessionState === "loading") return <main className="flex min-h-screen items-center justify-center bg-[#eaf4f1] font-bold text-[#0f8b8d]">Admin-Bereich wird geladen …</main>;
@@ -393,6 +397,7 @@ export const AdminArea = () => {
     const navItems = [
         { id: "overview", label: "Übersicht", icon: LayoutDashboard },
         { id: "pages", label: "Homepage-Texte", icon: FileText },
+        { id: "berlin", label: "Berlin Live", icon: MapPin },
         { id: "assistant", label: "Fragebot", icon: Bot },
         { id: "programs", label: "Programme", icon: UsersRound },
         { id: "onboarding", label: "Startfragebögen", icon: ClipboardList },
@@ -459,28 +464,32 @@ export const AdminArea = () => {
                         </div>
                     )}
 
-                    {contentState === "ready" && ["pages", "assistant"].includes(activeTab) && (
+                    {contentState === "ready" && ["pages", "berlin", "assistant"].includes(activeTab) && (
                         <div>
                             <div className="mb-5 flex flex-col gap-4 rounded-3xl bg-[#fffaf2] p-5 sm:flex-row sm:items-center sm:justify-between">
-                                <div><h1 className="text-3xl font-bold">{activeTab === "pages" ? "Homepage-Texte" : "Fragebot-Wissen"}</h1><p className="mt-1 text-[#6b8585]">{activeTab === "pages" ? "Einzelne Passagen bearbeiten, ohne die Seite neu zu bauen." : "Antworten und alternative Frageformulierungen auf Deutsch und Türkisch pflegen."}</p></div>
+                                <div>
+                                    <h1 className="text-3xl font-bold">{activeTab === "pages" ? "Homepage-Texte" : activeTab === "berlin" ? "Berlin Live" : "Fragebot-Wissen"}</h1>
+                                    <p className="mt-1 text-[#6b8585]">{activeTab === "pages" ? "Einzelne Passagen bearbeiten, ohne die Seite neu zu bauen." : activeTab === "berlin" ? "Texte der Berliner Landingpage bearbeiten. Preise und Zahlungslinks bleiben technisch geschützt." : "Antworten und alternative Frageformulierungen auf Deutsch und Türkisch pflegen."}</p>
+                                    {activeTab === "berlin" && <a href="/berlin-live" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 font-bold text-[#0f8b8d] hover:underline"><MapPin className="h-4 w-4" /> Öffentliche Landingpage ansehen</a>}
+                                </div>
                                 <label className="relative block w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6b8585]" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Suchen …" className="min-h-12 w-full rounded-full border border-[#0f8b8d]/25 bg-white pl-12 pr-4 outline-none focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" /></label>
                             </div>
 
-                            {activeTab === "pages" && (
+                            {["pages", "berlin"].includes(activeTab) && (
                                 <div className="space-y-8">
-                                    {[...new Set(filteredPages.map((item) => item.section))].map((section) => (
-                                        <section key={section}>
-                                            <h2 className="mb-4 text-xl font-bold text-[#075f62]">{section}</h2>
+                                    {[...new Set(filteredPages.map((item) => item.group))].map((group) => (
+                                        <section key={group}>
+                                            <h2 className="mb-4 text-xl font-bold text-[#075f62]">{group}</h2>
                                             <div className="space-y-4">
-                                                {filteredPages.filter((item) => item.section === section).map((item) => {
+                                                {filteredPages.filter((item) => item.group === group).map((item) => {
                                                     const entry = entries.get(item.key);
                                                     const dirty = isDirty(item.key);
                                                     const unpublished = isUnpublished(item.key);
                                                     return (
                                                         <article key={item.key} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-6">
-                                                            <div><h3 className="text-lg font-bold">{item.label}</h3><code className="mt-1 block text-xs text-[#789091]">{item.key}</code></div>
-                                                            <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                                                                {(["de", "tr"]).map((language) => <LanguageEditor key={language} language={language} compact={item.compact} value={editorValue(item.key, language)} onChange={(value) => setEditorValue(item.key, language, value)} />)}
+                                                            <div><h3 className="text-lg font-bold">{item.label}</h3>{activeTab !== "berlin" && <code className="mt-1 block text-xs text-[#789091]">{item.key}</code>}</div>
+                                                            <div className={`mt-5 grid gap-5 ${item.languages.length > 1 ? "xl:grid-cols-2" : ""}`}>
+                                                                {item.languages.map((language) => <LanguageEditor key={language} language={language} compact={item.compact} value={editorValue(item.key, language)} onChange={(value) => setEditorValue(item.key, language, value)} />)}
                                                             </div>
                                                             <EditorActions dirty={dirty} unpublished={unpublished} busy={busyKey === item.key} publishedAt={entry?.publishedAt} onSave={() => handleSave([item.key], item.key)} onPublish={() => handlePublish([item.key], item.key)} />
                                                             <Revisions keys={[item.key]} revisions={snapshot.revisions} onRestore={handleRestore} />

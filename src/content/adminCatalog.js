@@ -3,12 +3,15 @@ import { aboutContent } from "@/sections/About";
 import { contactContent } from "@/sections/Contact";
 import { faqContent } from "@/sections/FAQ";
 import { homeHeroContent } from "@/sections/Herotest";
+import { berlinLiveContentFields } from "@/content/berlinLiveContent";
 
-const pageEntry = ({ key, section, label, de, tr, compact = false }) => ({
+const pageEntry = ({ key, section, group = section, label, de, tr, compact = false, languages = ["de", "tr"] }) => ({
     key,
     section,
+    group,
     label,
     compact,
+    languages,
     defaults: { de, tr },
 });
 
@@ -39,6 +42,19 @@ const pageEntries = [
     pageEntry({ key: "faq.still-question", section: "FAQ", label: "Abschluss – Überschrift", de: faqContent.de.stillQuestion, tr: faqContent.tr.stillQuestion }),
     pageEntry({ key: "faq.still-text", section: "FAQ", label: "Abschluss – Text", de: faqContent.de.stillText, tr: faqContent.tr.stillText }),
 ];
+
+berlinLiveContentFields.forEach((item) => {
+    pageEntries.push(pageEntry({
+        key: item.key,
+        section: "Berlin Live",
+        group: item.group,
+        label: item.label,
+        de: item.value,
+        tr: item.value,
+        compact: item.compact,
+        languages: ["de"],
+    }));
+});
 
 faqContent.de.groups.forEach((group, groupIndex) => {
     pageEntries.push(pageEntry({
