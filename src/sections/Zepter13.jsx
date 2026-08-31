@@ -1,15 +1,25 @@
-import { useState } from "react"
 import { Link } from "react-router-dom"
 import {
   ArrowDown,
+  ArrowRight,
   CalendarDays,
   Check,
   CheckCircle2,
   Clock3,
   HeartHandshake,
-  Send,
 } from "lucide-react"
-import { submitForm } from "@/lib/submissions"
+
+const checkoutLinks = {
+  gemeinsamEinmalig: import.meta.env.VITE_ZEPTER_GEMEINSAM_CHECKOUT_URL || "https://book.stripe.com/5kQbJ3b7Yf4NeVB4Jp83C0J",
+  gemeinsamZweiRaten: import.meta.env.VITE_ZEPTER_GEMEINSAM_ZWEI_RATEN_URL || "https://book.stripe.com/cNi28t6RI9Kt00H4Jp83C0F",
+  gemeinsamDreiRaten: import.meta.env.VITE_ZEPTER_GEMEINSAM_DREI_RATEN_URL || "https://book.stripe.com/dRmaEZcc2bSB4gXa3J83C0G",
+  vertieftEinmalig: import.meta.env.VITE_ZEPTER_VERTIEFT_CHECKOUT_URL || "https://book.stripe.com/14A28t3Fwe0JeVB8ZF83C0K",
+  vertieftZweiRaten: import.meta.env.VITE_ZEPTER_VERTIEFT_ZWEI_RATEN_URL || "https://book.stripe.com/eVq5kF2Bs2i1aFl2Bh83C0N",
+  vertieftDreiRaten: import.meta.env.VITE_ZEPTER_VERTIEFT_DREI_RATEN_URL || "https://book.stripe.com/bJedRb1xo4q900H3Fl83C0M",
+  persoenlichEinmalig: import.meta.env.VITE_ZEPTER_PERSOENLICH_CHECKOUT_URL || "https://book.stripe.com/cNi6oJdg63m59Bh4Jp83C0Q",
+  persoenlichZweiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_ZWEI_RATEN_URL || "https://book.stripe.com/3cIbJ3gsi8Gp7t93Fl83C0R",
+  persoenlichDreiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_DREI_RATEN_URL || "https://book.stripe.com/bJecN73Fwg8ReVB4Jp83C0S",
+}
 
 const recurringScenes = [
   "Du sagst Ja, obwohl in dir längst ein Nein lebt.",
@@ -40,7 +50,8 @@ const shifts = [
 
 const included = [
   "13 Wochen geführter Prozess mit einem wöchentlichen Live-Termin",
-  "Ein begleitetes Matrix-Gespräch, in dem dein unbewusstes Drehbuch sichtbar werden darf",
+  "Ein begleitetes Matrix-Gespräch zu Beginn, in dem dein unbewusstes Drehbuch sichtbar werden darf",
+  "Dein persönlicher Start- und Integrationsplan",
   "Tägliche energetische Begleitung mit Tagesimpuls und Meditationen, die aus dem aktuellen Gruppenprozess entstehen",
   "Aufzeichnungen der Live-Termine",
   "Begleitendes Workbook mit Übungen und Reflexionsfragen",
@@ -52,37 +63,55 @@ const included = [
 
 const tiers = [
   {
-    name: "Basis",
-    intro: "Der vollständige Gruppenprozess mit allen Inhalten und der gemeinsamen Wochenstruktur.",
+    name: "Gemeinsamer Weg",
+    price: "1.555 €",
+    intro: "Der vollständige Prozess im gemeinsamen Spirit-Healing-Raum.",
     items: [
       "Alle 13 wöchentlichen Live-Termine",
-      "Das begleitete Matrix-Gespräch",
+      "Matrix-Gespräch zu Beginn",
+      "Persönlicher Start- und Integrationsplan",
       "Tägliche energetische Begleitung mit Tagesimpuls und aus der Gruppe entstehenden Meditationen",
       "Aufzeichnungen, Workbook und Wochenimpulse",
-      "Community-Begleitung",
+      "Community-Begleitung; Fragen werden aufgegriffen, wenn sie für den Gruppenprozess relevant sind",
       "Vollständiges Rauhnachtsprogramm",
     ],
+    checkout: checkoutLinks.gemeinsamEinmalig,
+    twoInstallments: { label: "2 × 816 €", total: "1.632 €", checkout: checkoutLinks.gemeinsamZweiRaten },
+    threeInstallments: { label: "3 × 544 €", total: "1.632 €", checkout: checkoutLinks.gemeinsamDreiRaten },
   },
   {
-    name: "Premium",
-    intro: "Für Menschen, die ihren Prozess zusätzlich in einer kleineren Runde reflektieren möchten.",
+    name: "Vertiefter Weg",
+    price: "2.777 €",
+    intro: "Für dich, wenn du regelmäßig persönlich reflektieren und schriftlich nachvollziehen möchtest, was sich in dir verändert.",
     items: [
-      "Alles aus der Basis-Teilnahme",
-      "Drei zusätzliche Integrationsrunden in kleiner Gruppe",
-      "Persönliche Rückmeldung an drei Prozesspunkten",
-      "Mehr Raum für individuelle Fragen",
+      "Alles aus dem Gemeinsamen Weg",
+      "Schriftliche Ausarbeitung deines Matrix-Gesprächs",
+      "Sechs zusätzliche Kleingruppen-Calls im Zwei-Wochen-Rhythmus für persönliche Fragen und Integration",
+      "Ein gemeinsames Einzelsetting mit Sabine und Selcan vor den Rauhnächten",
+      "Persönliche schriftliche Prozessauswertung nach jeder vierwöchigen Phase",
+      "Abschließendes schriftliches Entwicklungsprotokoll",
+      "Freiwillige Peer-Räume zum Üben und für Erfahrungsaustausch in kleiner Runde",
     ],
     featured: true,
+    checkout: checkoutLinks.vertieftEinmalig,
+    twoInstallments: { label: "2 × 1.458 €", total: "2.916 €", checkout: checkoutLinks.vertieftZweiRaten },
+    threeInstallments: { label: "3 × 972 €", total: "2.916 €", checkout: checkoutLinks.vertieftDreiRaten },
   },
   {
-    name: "VIP",
-    intro: "Die engste Form der Begleitung mit persönlichen Terminen bei Sabine und Selcan.",
+    name: "Persönlicher Weg",
+    price: "4.444 €",
+    intro: "Die engste Begleitung für einen Prozess, der täglich auf deine persönliche Bewegung reagieren darf.",
     items: [
-      "Alles aus der Premium-Teilnahme",
-      "Drei persönliche Tandem-Termine mit Sabine und Selcan",
-      "Individueller Start- und Integrationsplan",
-      "Persönliche Begleitung zwischen vereinbarten Prozesspunkten",
+      "Alles aus dem Vertieften Weg",
+      "Insgesamt drei persönliche Tandem-Settings mit Sabine und Selcan",
+      "Wöchentliche persönliche schriftliche Prozessauswertung",
+      "Täglich ein individuell auf deinen Prozess zugeschnittener Impuls",
+      "Antwort auf jede persönliche Anfrage im vereinbarten privaten Nachrichtenrahmen, werktags innerhalb von 48 Stunden",
+      "Auf vier Plätze begrenzt",
     ],
+    checkout: checkoutLinks.persoenlichEinmalig,
+    twoInstallments: { label: "2 × 2.334 €", total: "4.668 €", checkout: checkoutLinks.persoenlichZweiRaten },
+    threeInstallments: { label: "3 × 1.556 €", total: "4.668 €", checkout: checkoutLinks.persoenlichDreiRaten },
   },
 ]
 
@@ -97,7 +126,11 @@ const questions = [
   },
   {
     title: "Was ist das Matrix-Gespräch?",
-    text: "An einem bewusst gewählten Punkt im Programm schauen wir gemeinsam auf eine wiederkehrende Situation aus deinem Leben. Wir machen sichtbar, welche Rollen vergeben sind, welche innere Regel wirkt und welcher Anteil bisher die Führung übernommen hat. Der genaue Rahmen wird vor der Buchung transparent beschrieben.",
+    text: "Zu Beginn des Programms schauen wir gemeinsam auf eine wiederkehrende Situation aus deinem Leben. Wir machen sichtbar, welche Rollen vergeben sind, welche innere Regel wirkt und welcher Anteil bisher die Führung übernommen hat. Aus dem Gespräch entsteht dein persönlicher Start- und Integrationsplan. Im Vertieften und Persönlichen Weg erhältst du zusätzlich eine schriftliche Matrix-Ausarbeitung.",
+  },
+  {
+    title: "Wie werden persönliche Fragen beantwortet?",
+    text: "Im Gemeinsamen Weg greifen wir Fragen auf, wenn sie für den Gruppenprozess relevant sind. Im Vertieften Weg gibt es dafür sechs zusätzliche Kleingruppen-Calls. Im Persönlichen Weg wird jede persönliche Anfrage im vereinbarten privaten Nachrichtenrahmen werktags innerhalb von 48 Stunden beantwortet. Dieser Rahmen ersetzt keine Akut- oder Krisenbegleitung.",
   },
   {
     title: "Was passiert, wenn ich an einem Live-Termin nicht teilnehmen kann?",
@@ -121,93 +154,9 @@ const SectionTitle = ({ eyebrow, title, intro, center = false, light = false }) 
   </header>
 )
 
-const InterestForm = () => {
-  const [submitState, setSubmitState] = useState("idle")
-  const [errorMessage, setErrorMessage] = useState("")
-
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setSubmitState("submitting")
-    setErrorMessage("")
-    const form = event.currentTarget
-    const formData = new FormData(form)
-    const tier = String(formData.get("tier") || "Noch unsicher")
-
-    try {
-      await submitForm("/api/contact", {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        phone: null,
-        topic: "13-Wochen-Programm – Vormerkung",
-        message: `Unverbindliche Vormerkung für das 13-Wochen-Programm. Interesse an: ${tier}.`,
-        privacyConsent: formData.get("privacy") === "on",
-        newsletterConsent: false,
-        company: formData.get("company"),
-        locale: "de",
-      })
-      setSubmitState("success")
-      form.reset()
-    } catch (error) {
-      setSubmitState("error")
-      setErrorMessage(error.code === "rate_limit"
-        ? "Es wurden zu viele Anfragen in kurzer Zeit gesendet. Bitte versuche es in einigen Minuten erneut."
-        : "Die Vormerkung konnte gerade nicht gesendet werden. Bitte schreibe uns an info@spirit-healing.tr.")
-    }
-  }
-
-  if (submitState === "success") {
-    return (
-      <div className="rounded-[2rem] bg-white p-8 text-center text-[#173c39] shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:p-10">
-        <CheckCircle2 className="mx-auto h-14 w-14 text-[#0f7d79]" aria-hidden="true" />
-        <h3 className="mt-5 font-serif text-3xl font-semibold">Deine Vormerkung ist angekommen.</h3>
-        <p className="mt-4 leading-7 text-[#526a66]">Wir melden uns mit den Preisen, den endgültigen Leistungen der drei Teilnahmeformen und dem Buchungsstart persönlich bei dir.</p>
-      </div>
-    )
-  }
-
-  const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-[#b7cec5] bg-white px-4 py-3 text-base text-[#173c39] outline-none transition placeholder:text-[#748783] focus:border-[#0f7d79] focus:ring-2 focus:ring-[#0f7d79]/20"
-
-  return (
-    <form onSubmit={handleSubmit} className="rounded-[2rem] bg-white p-7 text-[#173c39] shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:p-10">
-      <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
-        <label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label>
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block text-sm font-bold">
-          Vor- und Nachname *
-          <input className={fieldClass} type="text" name="name" autoComplete="name" maxLength={100} required />
-        </label>
-        <label className="block text-sm font-bold">
-          E-Mail-Adresse *
-          <input className={fieldClass} type="email" name="email" autoComplete="email" inputMode="email" maxLength={254} required />
-        </label>
-      </div>
-      <label className="mt-5 block text-sm font-bold">
-        Welche Begleitung interessiert dich im Moment?
-        <select className={fieldClass} name="tier" defaultValue="Noch unsicher">
-          <option>Noch unsicher</option>
-          <option>Basis</option>
-          <option>Premium</option>
-          <option>VIP</option>
-        </select>
-      </label>
-      <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6 text-[#4f6662]">
-        <input className="mt-1.5 h-4 w-4 shrink-0 accent-[#0f7d79]" type="checkbox" name="privacy" required />
-        <span>Ich habe die <Link to="/datenschutz" target="_blank" className="font-bold text-[#0f7d79] underline underline-offset-2">Datenschutzerklärung</Link> gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung dieser Vormerkung zu.</span>
-      </label>
-      {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
-      <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57] disabled:cursor-wait disabled:opacity-65">
-        {submitState === "submitting" ? "Vormerkung wird gesendet …" : "Unverbindlich vormerken"}
-        <Send size={18} aria-hidden="true" />
-      </button>
-      <p className="mt-4 text-center text-xs leading-5 text-[#71827f]">Die Vormerkung ist kostenfrei und noch keine Buchung.</p>
-    </form>
-  )
-}
-
 export const Zepter13 = () => {
-  const scrollToInterest = () => {
-    document.getElementById("vormerken")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  const scrollToBooking = () => {
+    document.getElementById("teilnahme")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   return (
@@ -222,8 +171,8 @@ export const Zepter13 = () => {
               <img src="/Logo-tuerkis.jpeg?v=20260730" alt="Spirit Healing" className="h-12 w-12 rounded-full object-cover shadow-sm" />
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
             </a>
-            <button type="button" onClick={scrollToInterest} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
-              Unverbindlich vormerken
+            <button type="button" onClick={scrollToBooking} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
+              Teilnahme wählen
             </button>
           </header>
 
@@ -238,7 +187,7 @@ export const Zepter13 = () => {
               </p>
 
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <button type="button" onClick={scrollToInterest} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
+                <button type="button" onClick={scrollToBooking} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
                   Das Zepter zurückholen <ArrowDown size={18} />
                 </button>
                 <a href="#ablauf" className="inline-flex items-center justify-center rounded-full border border-[#0f7d79]/35 bg-white/75 px-7 py-4 font-bold text-[#075a57] transition hover:bg-white">
@@ -337,9 +286,9 @@ export const Zepter13 = () => {
           />
           <div className="rounded-[2rem] border border-[#d9c69f] bg-[#f7edd9] p-7 shadow-[0_22px_55px_rgba(31,75,70,0.08)] sm:p-10">
             <p className="font-serif text-3xl font-semibold leading-tight text-[#173c39] sm:text-4xl">Eine wiederkehrende Szene. Die verteilten Rollen. Die verborgene Regel. Der Anteil, der das Zepter hält.</p>
-            <p className="mt-6 text-lg leading-8 text-[#506864]">An einem bewusst gewählten Punkt schauen wir mit dir auf eine Situation, die sich in deinem Leben immer wieder zeigt. Gemeinsam arbeiten wir heraus, was dein System erwartet, wovor es dich schützen möchte und welche Rolle du selbst und andere darin übernehmen.</p>
+            <p className="mt-6 text-lg leading-8 text-[#506864]">Zu Beginn des Programms schauen wir mit dir auf eine Situation, die sich in deinem Leben immer wieder zeigt. Gemeinsam arbeiten wir heraus, was dein System erwartet, wovor es dich schützen möchte und welche Rolle du selbst und andere darin übernehmen.</p>
             <p className="mt-5 text-lg leading-8 text-[#506864]">Du sollst danach nicht einfach nur mehr über dich wissen. Du sollst den Moment erkennen können, in dem der alte Film beginnt – und spüren, dass du heute eine andere Wahl hast.</p>
-            <button type="button" onClick={scrollToInterest} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Ich möchte meine Matrix erkennen</button>
+            <button type="button" onClick={scrollToBooking} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Ich möchte meine Matrix erkennen</button>
           </div>
         </div>
       </section>
@@ -390,19 +339,27 @@ export const Zepter13 = () => {
           <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
             {tiers.map((tier) => (
               <article key={tier.name} className={`relative flex flex-col rounded-[2rem] p-7 sm:p-9 ${tier.featured ? "border-2 border-[#0f7d79] bg-white shadow-[0_24px_60px_rgba(15,125,121,0.13)]" : "border border-[#d9c69f] bg-[#fffaf2]"}`}>
-                {tier.featured && <span className="absolute right-6 top-0 -translate-y-1/2 rounded-full bg-[#0f7d79] px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">Mehr Begleitung</span>}
+                {tier.featured && <span className="absolute right-6 top-0 -translate-y-1/2 rounded-full bg-[#0f7d79] px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">Empfohlene Vertiefung</span>}
                 <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{tier.name}</p>
+                <p className="mt-4 font-serif text-4xl font-semibold text-[#173c39]">{tier.price}</p>
+                <p className="mt-1 text-sm font-semibold text-[#6c7c78]">Einmalzahlung</p>
                 <p className="mt-5 min-h-24 text-lg leading-8 text-[#506864]">{tier.intro}</p>
                 <ul className="mt-7 flex-1 space-y-4 border-t border-[#d9e3de] pt-6">
                   {tier.items.map((item) => <li key={item} className="flex gap-3 leading-7 text-[#365653]"><Check size={19} className="mt-1 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>)}
                 </ul>
-                <button type="button" onClick={scrollToInterest} className={`mt-8 min-h-12 rounded-full px-6 py-3 font-bold transition ${tier.featured ? "bg-[#0f7d79] text-white hover:bg-[#075a57]" : "border border-[#0f7d79] bg-white text-[#0f7d79] hover:bg-[#edf5f1]"}`}>
-                  Für {tier.name} vormerken
-                </button>
+                <div className="mt-8 space-y-3">
+                  <a href={tier.checkout} target="_blank" rel="noopener noreferrer" className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition ${tier.featured ? "bg-[#0f7d79] text-white hover:bg-[#075a57]" : "bg-[#173c39] text-white hover:bg-[#0f7d79]"}`}>Einmalig {tier.price} buchen <ArrowRight size={18} /></a>
+                  <a href={tier.twoInstallments.checkout} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-[#0f7d79] bg-white px-6 py-3 font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">Mit {tier.twoInstallments.label} buchen <ArrowRight size={18} /></a>
+                  <a href={tier.threeInstallments.checkout} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#b9cfc7] bg-white px-6 py-3 font-bold text-[#31534f] transition hover:bg-[#edf5f1]">Mit {tier.threeInstallments.label} buchen <ArrowRight size={18} /></a>
+                  <p className="text-center text-xs leading-5 text-[#6d7e7a]">Raten-Gesamtpreis: {tier.threeInstallments.total}</p>
+                </div>
               </article>
             ))}
           </div>
-          <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-6 text-[#63736f]">Die Preise und die endgültige Zahl der Plätze werden vor dem Buchungsstart veröffentlicht. Mit der Vormerkung gehst du noch keine Zahlungsverpflichtung ein.</p>
+          <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-[#d9c69f] bg-white/70 px-6 py-5 text-center text-sm leading-6 text-[#63736f]">
+            <p>Bei zwei Raten ist die zweite Rate nach 30 Tagen fällig. Bei drei Raten folgen die weiteren Zahlungen nach 30 und 60 Tagen. Die gesonderten Stripe-Zahlungslinks erhältst du rechtzeitig per E-Mail.</p>
+            <p className="mt-2">Peer-Räume sind freiwillig. Die persönliche Nachrichtenbegleitung ist Prozessbegleitung im vereinbarten Rahmen und ersetzt keine Akut- oder Krisenhilfe.</p>
+          </div>
         </div>
       </section>
 
@@ -426,7 +383,7 @@ export const Zepter13 = () => {
 
       <section className="border-y border-[#d5e4dd] bg-[#edf5f1] py-20 lg:py-28">
         <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
-          <SectionTitle eyebrow="Fragen zum Programm" title="Was vor der Vormerkung wichtig ist" center />
+          <SectionTitle eyebrow="Fragen zum Programm" title="Was vor der Buchung wichtig ist" center />
           <div className="mt-12 divide-y divide-[#bed3ca] border-y border-[#bed3ca]">
             {questions.map((item) => (
               <details key={item.title} className="group py-6">
@@ -438,23 +395,21 @@ export const Zepter13 = () => {
         </div>
       </section>
 
-      <section id="vormerken" className="scroll-mt-8 bg-[#173c39] py-20 text-white lg:py-28">
-        <div className="mx-auto grid max-w-7xl items-start gap-12 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:px-10">
-          <div>
-            <SectionTitle
-              eyebrow="Das Zepter wieder übernehmen"
-              title="Dein Film muss nicht so weitergehen."
-              intro="Wenn du spürst, dass deine Geschichte größer ist als die Wiederholungen, in denen du bisher festhingst, kannst du dich hier unverbindlich vormerken. Du erhältst die Preise, den endgültigen Rahmen des Matrix-Gesprächs und den Buchungsstart zuerst."
-              light
-            />
-            <div className="mt-8 space-y-4 text-white/75">
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Start am Mittwoch, 21. Oktober 2026</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Abschluss am Mittwoch, 13. Januar 2027</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Vollständiges Spirit-Healing-Rauhnachtsprogramm inklusive</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Basis, Premium und VIP zur Auswahl</p>
-            </div>
+      <section className="bg-[#173c39] py-20 text-white lg:py-28">
+        <div className="mx-auto max-w-5xl px-5 text-center sm:px-8 lg:px-10">
+          <SectionTitle
+            eyebrow="Das Zepter wieder übernehmen"
+            title="Dein Film muss nicht so weitergehen."
+            intro="Wenn du spürst, dass deine Geschichte größer ist als die Wiederholungen, in denen du bisher festhingst, wähle den Weg, der zu deiner gewünschten Begleitungstiefe passt."
+            center
+            light
+          />
+          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-3 text-sm font-semibold text-white/80">
+            <span className="rounded-full border border-white/20 px-4 py-2.5">21. Oktober 2026 bis 13. Januar 2027</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">Rauhnachtsprogramm inklusive</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">bis zu drei Raten</span>
           </div>
-          <InterestForm />
+          <button type="button" onClick={scrollToBooking} className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 font-bold text-[#173c39] transition hover:bg-white">Teilnahme wählen <ArrowRight size={18} /></button>
         </div>
       </section>
 

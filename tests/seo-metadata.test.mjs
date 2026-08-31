@@ -59,7 +59,12 @@ test("adds truthful structured data for the main offers", () => {
   const rauhnaechte = JSON.stringify(structuredDataForPath("/rauhnaechte", "de"))
   assert.match(rauhnaechte, /"Course"/u)
   assert.match(rauhnaechte, /"222"/u)
-  assert.match(rauhnaechte, /"555"/u)
+  assert.match(rauhnaechte, /"444"/u)
+
+  const zepter = JSON.stringify(structuredDataForPath("/13-wochen-programm", "de"))
+  assert.match(zepter, /"1555"/u)
+  assert.match(zepter, /"2777"/u)
+  assert.match(zepter, /"4444"/u)
 
   assert.deepEqual(structuredDataForPath("/admin", "de"), [])
 })

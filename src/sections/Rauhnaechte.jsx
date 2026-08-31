@@ -14,8 +14,8 @@ import {
 const checkoutLinks = {
   begleitungEinmalig: import.meta.env.VITE_RAUHNAECHTE_BEGLEITUNG_CHECKOUT_URL || "https://book.stripe.com/9B6eVf8ZQ3m5aFl6Rx83C0f",
   begleitungRateEins: import.meta.env.VITE_RAUHNAECHTE_BEGLEITUNG_RATE_CHECKOUT_URL || "https://book.stripe.com/8x214peka4q9dRx5Nt83C0h",
-  persoenlichEinmalig: import.meta.env.VITE_RAUHNAECHTE_PERSOENLICH_CHECKOUT_URL || "https://book.stripe.com/7sYaEZa3U4q93cTa3J83C0i",
-  persoenlichRateEins: import.meta.env.VITE_RAUHNAECHTE_PERSOENLICH_RATE_CHECKOUT_URL || "https://book.stripe.com/cNi4gB6RIg8RdRx1xd83C0g",
+  persoenlichEinmalig: import.meta.env.VITE_RAUHNAECHTE_PERSOENLICH_CHECKOUT_URL || "https://book.stripe.com/00w14pb7Y8Gp3cTb7N83C0j",
+  persoenlichRateEins: import.meta.env.VITE_RAUHNAECHTE_PERSOENLICH_RATE_CHECKOUT_URL || "https://book.stripe.com/28EaEZa3U8Gp9Bh7VB83C0l",
 }
 
 const dailyThemes = [
@@ -252,19 +252,20 @@ export const Rauhnaechte = () => {
               <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#c69543]/18 blur-3xl" aria-hidden="true" />
               <div className="relative">
                 <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">Rauhnächte persönlich</p>
-                <h3 className="mt-4 font-serif text-4xl font-semibold">555 €</h3>
+                <h3 className="mt-4 font-serif text-4xl font-semibold">444 €</h3>
                 <p className="mt-2 text-sm font-semibold text-white/65">Einmalzahlung</p>
                 <p className="mt-6 text-lg leading-8 text-white/76">Für dich, wenn du zusätzlich zur gemeinsamen Reise einen persönlichen Raum möchtest, in dem wir deine Wahrnehmungen und dein Thema gemeinsam vertiefen.</p>
                 <ul className="mt-7 space-y-3 text-white/82">
                   <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Alles aus der vollständigen Rauhnächte-Begleitung</li>
                   <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Ein gemeinsames Einzelsetting mit Sabine und Selcan</li>
                   <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Wert des Einzelsettings: 333 €</li>
+                  <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Gesamtwert aus Begleitung und Einzelsetting: 555 €</li>
                 </ul>
               </div>
               <div className="relative mt-auto pt-8">
-                <a href={checkoutLinks.persoenlichEinmalig} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3.5 font-bold text-[#173c39] transition hover:bg-white">Einmalig 555 € buchen <ArrowRight size={18} /></a>
-                <a href={checkoutLinks.persoenlichRateEins} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-white/50 px-6 py-3.5 font-bold text-white transition hover:bg-white/10">Mit 2 × 292 € buchen <ArrowRight size={18} /></a>
-                <p className="mt-3 text-center text-xs leading-5 text-white/58">Raten-Gesamtpreis: 584 €</p>
+                <a href={checkoutLinks.persoenlichEinmalig} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3.5 font-bold text-[#173c39] transition hover:bg-white">Einmalig 444 € buchen <ArrowRight size={18} /></a>
+                <a href={checkoutLinks.persoenlichRateEins} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-white/50 px-6 py-3.5 font-bold text-white transition hover:bg-white/10">Mit 2 × 233 € buchen <ArrowRight size={18} /></a>
+                <p className="mt-3 text-center text-xs leading-5 text-white/58">Raten-Gesamtpreis: 466 €</p>
               </div>
             </article>
           </div>

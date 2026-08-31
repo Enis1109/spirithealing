@@ -391,6 +391,11 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
         endDate: "2027-01-13",
         inLanguage: "de",
       },
+      offers: [
+        { "@type": "Offer", name: "Gemeinsamer Weg", price: "1555", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
+        { "@type": "Offer", name: "Vertiefter Weg", price: "2777", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
+        { "@type": "Offer", name: "Persönlicher Weg", price: "4444", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#teilnahme` },
+      ],
     })
   }
 
@@ -411,7 +416,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       },
       offers: [
         { "@type": "Offer", name: "Rauhnächte-Begleitung", price: "222", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#rauhnaechte-buchen` },
-        { "@type": "Offer", name: "Rauhnächte persönlich", price: "555", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#rauhnaechte-buchen` },
+        { "@type": "Offer", name: "Rauhnächte persönlich", price: "444", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#rauhnaechte-buchen` },
       ],
     })
   }
