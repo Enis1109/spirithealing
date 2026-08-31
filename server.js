@@ -133,6 +133,8 @@ import {
     validateMemberRegistration,
     validateZepterBankTransfer,
 } from "./server/validation.js";
+import { metadataForPath } from "./src/seo/pageMeta.js";
+import { injectSeoIntoDocument } from "./server/frontendSeo.js";
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -147,75 +149,9 @@ const zepterLandingOrigins = new Set(
 const currentFile = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(currentFile);
 const distDirectory = path.join(currentDirectory, "dist");
-const berlinLiveSeo = Object.freeze({
-    path: "/berlin-live",
-    canonical: "https://spirit-healing.tr/berlin-live",
-    title: "Familienaufstellung Berlin 2026 | Spirit Healing",
-    description: "Familienaufstellung in Berlin am 9. und 10. Oktober 2026 mit Sabine und Selcan. Zwei Tage Einführung, Stellvertretung und eigene Aufstellung.",
-    image: "https://spirit-healing.tr/familie/berlin.jpeg",
-    imageAlt: "Familienaufstellung live in Berlin mit Spirit Healing",
-});
-
-const berlinLiveStructuredData = [
-    {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "@id": `${berlinLiveSeo.canonical}#webpage`,
-        url: berlinLiveSeo.canonical,
-        name: berlinLiveSeo.title,
-        headline: "Familienaufstellung live in Berlin",
-        description: berlinLiveSeo.description,
-        inLanguage: "de",
-        primaryImageOfPage: {
-            "@type": "ImageObject",
-            url: berlinLiveSeo.image,
-            width: 1536,
-            height: 1024,
-        },
-        isPartOf: {
-            "@type": "WebSite",
-            name: "Spirit Healing",
-            url: "https://spirit-healing.tr",
-        },
-        breadcrumb: { "@id": `${berlinLiveSeo.canonical}#breadcrumb` },
-    },
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "@id": `${berlinLiveSeo.canonical}#breadcrumb`,
-        itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Spirit Healing", item: "https://spirit-healing.tr" },
-            { "@type": "ListItem", position: 2, name: "Vorträge & Seminare", item: "https://spirit-healing.tr/vortraege-seminare" },
-            { "@type": "ListItem", position: 3, name: "Familienaufstellung Berlin", item: berlinLiveSeo.canonical },
-        ],
-    },
-];
-
-const frontendDocumentForPath = (requestPath) => {
+export const frontendDocumentForPath = (requestPath) => {
     const frontendDocument = fs.readFileSync(path.join(distDirectory, "index.html"), "utf8");
-    if (requestPath !== berlinLiveSeo.path) return frontendDocument;
-
-    const structuredData = JSON.stringify(berlinLiveStructuredData).replaceAll("<", "\\u003c");
-    const additionalHead = [
-        `<meta property="og:image:width" content="1536" />`,
-        `<meta property="og:image:height" content="1024" />`,
-        `<meta property="og:image:alt" content="${berlinLiveSeo.imageAlt}" />`,
-        `<meta name="twitter:title" content="${berlinLiveSeo.title}" />`,
-        `<meta name="twitter:description" content="${berlinLiveSeo.description}" />`,
-        `<meta name="twitter:image" content="${berlinLiveSeo.image}" />`,
-        `<meta name="twitter:image:alt" content="${berlinLiveSeo.imageAlt}" />`,
-        `<script type="application/ld+json" data-spirit-healing-seo="true">${structuredData}</script>`,
-    ].join("\n    ");
-
-    return frontendDocument
-        .replace(/<title>[^<]*<\/title>/u, `<title>${berlinLiveSeo.title}</title>`)
-        .replace(/<meta name="description"[^>]*>/u, `<meta name="description" content="${berlinLiveSeo.description}" />`)
-        .replace(/<link rel="canonical"[^>]*>/u, `<link rel="canonical" href="${berlinLiveSeo.canonical}" />`)
-        .replace(/<meta property="og:title"[^>]*>/u, `<meta property="og:title" content="${berlinLiveSeo.title}" />`)
-        .replace(/<meta property="og:description"[^>]*>/u, `<meta property="og:description" content="${berlinLiveSeo.description}" />`)
-        .replace(/<meta property="og:url"[^>]*>/u, `<meta property="og:url" content="${berlinLiveSeo.canonical}" />`)
-        .replace(/<meta property="og:image"[^>]*>/u, `<meta property="og:image" content="${berlinLiveSeo.image}" />`)
-        .replace("</head>", `    ${additionalHead}\n  </head>`);
+    return injectSeoIntoDocument(frontendDocument, requestPath);
 };
 const privacyConsentVersion = "privacy-2026-07";
 const memberPrivacyConsentVersion = "members-privacy-2026-07";
@@ -1548,10 +1484,12 @@ app.use(express.static(distDirectory, {
 app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith("/api/")) return next();
     try {
-        if (request.path.startsWith("/admin") || request.path.startsWith("/startfragebogen") || request.path.startsWith("/terminumfrage")) {
+        const meta = metadataForPath(request.path, "de");
+        if (meta.noindex || meta.notFound) {
             response.set("X-Robots-Tag", "noindex, nofollow");
         }
         return response
+            .status(meta.notFound ? 404 : 200)
             .type("html")
             .send(frontendDocumentForPath(request.path));
     } catch (error) {

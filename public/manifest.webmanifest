@@ -1,9 +1,9 @@
 {
-  "name": "Spirit Healing – Mitgliederbereich",
+  "name": "Spirit Healing – Online-Begleitung",
   "short_name": "Spirit Healing",
-  "description": "Dein persönlicher Spirit-Healing-Bereich mit Meditationen, Vorträgen, Workbooks und Begleitung.",
+  "description": "Traumasensible Prozessbegleitung, integrative Therapie, Seminare und geführte Programme mit Sabine und Selcan.",
   "lang": "de",
-  "start_url": "/mitglieder",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#edf8f6",
@@ -18,9 +18,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Mediathek",
-      "short_name": "Mediathek",
-      "url": "/mitglieder?tab=library"
+      "name": "Kostenlose Meditationen",
+      "short_name": "Meditationen",
+      "url": "/gratis-meditationen"
     },
     {
       "name": "Termin buchen",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import {
   ArrowDown,
@@ -113,58 +113,6 @@ const questions = [
   },
 ]
 
-const metadata = {
-  title: "13-Wochen-Programm | Wer schreibt dein inneres Drehbuch? | Spirit Healing",
-  description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. 13 Wochen mit Matrix-Gespräch, Live-Begleitung und Rauhnächten.",
-  url: "https://spirit-healing.tr/13-wochen-programm",
-  image: "https://spirit-healing.tr/zepter-spirit-healing.png",
-}
-
-const upsertMeta = (selector, attribute, value) => {
-  let element = document.head.querySelector(selector)
-  const created = !element
-  if (!element) {
-    element = document.createElement("meta")
-    const match = selector.match(/meta\[(name|property)="([^"]+)"\]/)
-    if (match) element.setAttribute(match[1], match[2])
-    document.head.appendChild(element)
-  }
-  const previousValue = element.getAttribute(attribute)
-  element.setAttribute(attribute, value)
-  return () => {
-    if (created) element.remove()
-    else if (previousValue === null) element.removeAttribute(attribute)
-    else element.setAttribute(attribute, previousValue)
-  }
-}
-
-const usePageMetadata = () => {
-  useEffect(() => {
-    const previousTitle = document.title
-    const cleanup = [
-      upsertMeta('meta[name="description"]', "content", metadata.description),
-      upsertMeta('meta[name="robots"]', "content", "index, follow, max-image-preview:large"),
-      upsertMeta('meta[property="og:title"]', "content", metadata.title),
-      upsertMeta('meta[property="og:description"]', "content", metadata.description),
-      upsertMeta('meta[property="og:url"]', "content", metadata.url),
-      upsertMeta('meta[property="og:image"]', "content", metadata.image),
-      upsertMeta('meta[name="twitter:title"]', "content", metadata.title),
-      upsertMeta('meta[name="twitter:description"]', "content", metadata.description),
-      upsertMeta('meta[name="twitter:image"]', "content", metadata.image),
-    ]
-    const canonical = document.head.querySelector('link[rel="canonical"]')
-    const previousCanonical = canonical?.getAttribute("href")
-    document.title = metadata.title
-    canonical?.setAttribute("href", metadata.url)
-
-    return () => {
-      document.title = previousTitle
-      cleanup.reverse().forEach((restore) => restore())
-      if (canonical && previousCanonical) canonical.setAttribute("href", previousCanonical)
-    }
-  }, [])
-}
-
 const SectionTitle = ({ eyebrow, title, intro, center = false, light = false }) => (
   <header className={center ? "mx-auto max-w-4xl text-center" : "max-w-4xl"}>
     <p className={`text-xs font-extrabold uppercase tracking-[0.24em] ${light ? "text-[#f1d7a0]" : "text-[#a67426]"}`}>{eyebrow}</p>
@@ -258,8 +206,6 @@ const InterestForm = () => {
 }
 
 export const Zepter13 = () => {
-  usePageMetadata()
-
   const scrollToInterest = () => {
     document.getElementById("vormerken")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }

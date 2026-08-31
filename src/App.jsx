@@ -20,6 +20,7 @@ import { WebsiteAssistant } from "@/components/WebsiteAssistant"
 import { BerlinLive } from "@/sections/BerlinLive"
 import { Zepter13 } from "@/sections/Zepter13"
 import { Rauhnaechte } from "@/sections/Rauhnaechte"
+import { NotFound } from "@/sections/NotFound"
 
 const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
 const AdminArea = lazy(() => import("@/sections/AdminArea").then((module) => ({ default: module.AdminArea })));
@@ -108,6 +109,7 @@ function App() {
         }/>
         <Route path="/impressum" element={<Imp/>}/>
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
+        <Route path="*" element={<NotFound/>}/>
       </Routes>
       {!isStandaloneApp && <WebsiteAssistant/>}
     </div>

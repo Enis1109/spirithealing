@@ -1,14 +1,15 @@
 import { useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { pageMeta, turkishTranslations, turkishTranslationsByPath } from "@/i18n/translations";
+import { turkishTranslations, turkishTranslationsByPath } from "@/i18n/translations";
+import {
+    canonicalUrlFor,
+    metadataForPath,
+    socialImageFor,
+    structuredDataForPath,
+} from "@/seo/pageMeta";
 
 const translatedAttributes = ["aria-label", "alt", "placeholder", "title"];
-const siteUrl = "https://spirit-healing.tr";
-const defaultSocialImage = `${siteUrl}/Logo-tuerkis.jpeg?v=20260730`;
-const socialImageFor = (meta) => meta.image
-    ? new URL(meta.image, siteUrl).href
-    : defaultSocialImage;
 
 const upsertMeta = (selector, attributes) => {
     let element = document.head.querySelector(selector);
@@ -27,76 +28,6 @@ const upsertLink = (rel, href) => {
         document.head.appendChild(element);
     }
     element.setAttribute("href", href);
-};
-
-const structuredDataFor = (pathname, language, meta) => {
-    const url = `${siteUrl}${pathname === "/" ? "" : pathname}`;
-    const common = { "@context": "https://schema.org", inLanguage: language, url };
-
-    if (pathname === "/berlin-live") {
-        const breadcrumbId = `${url}#breadcrumb`;
-        return [
-            {
-                ...common,
-                "@type": "WebPage",
-                "@id": `${url}#webpage`,
-                name: meta.title,
-                headline: language === "tr"
-                    ? "Berlin'de aile dizimi çalışması"
-                    : "Familienaufstellung live in Berlin",
-                description: meta.description,
-                primaryImageOfPage: {
-                    "@type": "ImageObject",
-                    url: socialImageFor(meta),
-                    width: Number(meta.imageWidth),
-                    height: Number(meta.imageHeight),
-                },
-                isPartOf: { "@type": "WebSite", name: "Spirit Healing", url: siteUrl },
-                breadcrumb: { "@id": breadcrumbId },
-            },
-            {
-                "@context": "https://schema.org",
-                "@type": "BreadcrumbList",
-                "@id": breadcrumbId,
-                itemListElement: [
-                    { "@type": "ListItem", position: 1, name: "Spirit Healing", item: siteUrl },
-                    {
-                        "@type": "ListItem",
-                        position: 2,
-                        name: language === "tr" ? "Seminerler & Eğitimler" : "Vorträge & Seminare",
-                        item: `${siteUrl}/vortraege-seminare`,
-                    },
-                    {
-                        "@type": "ListItem",
-                        position: 3,
-                        name: language === "tr" ? "Berlin Aile Dizimi" : "Familienaufstellung Berlin",
-                        item: url,
-                    },
-                ],
-            },
-        ];
-    }
-
-    if (pathname === "/") return [
-        { ...common, "@type": "WebSite", name: "Spirit Healing" },
-        { ...common, "@type": "Organization", name: "Spirit Healing", logo: defaultSocialImage, description: meta.description },
-    ];
-    if (["/coaching", "/therapie"].includes(pathname)) return [{
-        ...common,
-        "@type": "Service",
-        name: meta.title.split("|")[0].trim(),
-        description: meta.description,
-        provider: { "@type": "Organization", name: "Spirit Healing", url: siteUrl },
-        areaServed: ["DE", "AT", "CH", "TR"],
-    }];
-    if (pathname === "/about") return [{
-        ...common,
-        "@type": "AboutPage",
-        name: meta.title,
-        description: meta.description,
-        about: { "@type": "Organization", name: "Spirit Healing", url: siteUrl },
-    }];
-    return [{ ...common, "@type": "WebPage", name: meta.title, description: meta.description }];
 };
 
 const normalize = (value = "") => value.replace(/\s+/g, " ").trim();
@@ -226,24 +157,28 @@ export const DocumentTranslator = () => {
             attributeFilter: translatedAttributes,
         });
 
-        const routeMeta = pageMeta[language]?.[pathname] ?? pageMeta[language]?.["/"];
+        const routeMeta = metadataForPath(pathname, language);
         if (routeMeta) {
             document.title = routeMeta.title;
-            const canonicalUrl = `${siteUrl}${pathname === "/" ? "" : pathname}`;
+            const canonicalUrl = canonicalUrlFor(pathname);
             const socialImage = socialImageFor(routeMeta);
             const socialImageAlt = routeMeta.imageAlt || "Spirit Healing";
-            document.documentElement.lang = language;
+            const contentLanguage = routeMeta.contentLanguage || language;
+            document.documentElement.lang = contentLanguage;
             upsertMeta('meta[name="description"]', { name: "description", content: routeMeta.description });
             upsertMeta('meta[name="robots"]', { name: "robots", content: routeMeta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large" });
+            upsertMeta('meta[name="googlebot"]', { name: "googlebot", content: routeMeta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" });
             upsertMeta('meta[property="og:title"]', { property: "og:title", content: routeMeta.title });
             upsertMeta('meta[property="og:description"]', { property: "og:description", content: routeMeta.description });
             upsertMeta('meta[property="og:type"]', { property: "og:type", content: "website" });
             upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
             upsertMeta('meta[property="og:image"]', { property: "og:image", content: socialImage });
+            upsertMeta('meta[property="og:image:secure_url"]', { property: "og:image:secure_url", content: socialImage });
             upsertMeta('meta[property="og:image:width"]', { property: "og:image:width", content: routeMeta.imageWidth || "1254" });
             upsertMeta('meta[property="og:image:height"]', { property: "og:image:height", content: routeMeta.imageHeight || "1254" });
             upsertMeta('meta[property="og:image:alt"]', { property: "og:image:alt", content: socialImageAlt });
-            upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: language === "tr" ? "tr_TR" : "de_DE" });
+            upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: contentLanguage === "tr" ? "tr_TR" : "de_DE" });
+            upsertMeta('meta[property="og:locale:alternate"]', { property: "og:locale:alternate", content: contentLanguage === "tr" ? "de_DE" : "tr_TR" });
             upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
             upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: routeMeta.title });
             upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: routeMeta.description });
@@ -258,7 +193,7 @@ export const DocumentTranslator = () => {
                 structuredData.dataset.spiritHealingSeo = "true";
                 document.head.appendChild(structuredData);
             }
-            structuredData.textContent = JSON.stringify(structuredDataFor(pathname, language, routeMeta));
+            structuredData.textContent = JSON.stringify(structuredDataForPath(pathname, contentLanguage, routeMeta)).replaceAll("<", "\\u003c");
         }
 
         return () => observer.disconnect();

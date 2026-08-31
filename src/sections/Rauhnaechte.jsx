@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import {
   ArrowDown,
@@ -45,58 +44,6 @@ const programIncluded = [
   "Geschützter Austausch während der gemeinsamen Zeit",
 ]
 
-const metadata = {
-  title: "Die Rauhnächte mit Spirit Healing | 2026/2027",
-  description: "Zwölf geführte Rauhnächte mit Meditationen, Ritualen, Journal, täglichen Impulsen und Live-Begleitung von Spirit Healing.",
-  url: "https://spirit-healing.tr/rauhnaechte",
-  image: "https://spirit-healing.tr/rauhnaechte-spirit-healing.png",
-}
-
-const upsertMeta = (selector, attribute, value) => {
-  let element = document.head.querySelector(selector)
-  const created = !element
-  if (!element) {
-    element = document.createElement("meta")
-    const match = selector.match(/meta\[(name|property)="([^"]+)"\]/)
-    if (match) element.setAttribute(match[1], match[2])
-    document.head.appendChild(element)
-  }
-  const previousValue = element.getAttribute(attribute)
-  element.setAttribute(attribute, value)
-  return () => {
-    if (created) element.remove()
-    else if (previousValue === null) element.removeAttribute(attribute)
-    else element.setAttribute(attribute, previousValue)
-  }
-}
-
-const usePageMetadata = () => {
-  useEffect(() => {
-    const previousTitle = document.title
-    const cleanup = [
-      upsertMeta('meta[name="description"]', "content", metadata.description),
-      upsertMeta('meta[name="robots"]', "content", "index, follow, max-image-preview:large"),
-      upsertMeta('meta[property="og:title"]', "content", metadata.title),
-      upsertMeta('meta[property="og:description"]', "content", metadata.description),
-      upsertMeta('meta[property="og:url"]', "content", metadata.url),
-      upsertMeta('meta[property="og:image"]', "content", metadata.image),
-      upsertMeta('meta[name="twitter:title"]', "content", metadata.title),
-      upsertMeta('meta[name="twitter:description"]', "content", metadata.description),
-      upsertMeta('meta[name="twitter:image"]', "content", metadata.image),
-    ]
-    const canonical = document.head.querySelector('link[rel="canonical"]')
-    const previousCanonical = canonical?.getAttribute("href")
-    document.title = metadata.title
-    canonical?.setAttribute("href", metadata.url)
-
-    return () => {
-      document.title = previousTitle
-      cleanup.reverse().forEach((restore) => restore())
-      if (canonical && previousCanonical) canonical.setAttribute("href", previousCanonical)
-    }
-  }, [])
-}
-
 const SectionTitle = ({ eyebrow, title, intro, light = false }) => (
   <header className="max-w-4xl">
     <p className={`text-xs font-extrabold uppercase tracking-[0.24em] ${light ? "text-[#f1d7a0]" : "text-[#a67426]"}`}>{eyebrow}</p>
@@ -106,8 +53,6 @@ const SectionTitle = ({ eyebrow, title, intro, light = false }) => (
 )
 
 export const Rauhnaechte = () => {
-  usePageMetadata()
-
   const scrollToBooking = () => {
     document.getElementById("rauhnaechte-buchen")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }

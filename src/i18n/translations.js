@@ -1,3 +1,5 @@
+export { pageMeta } from "@/seo/pageMeta"
+
 const translationEntries = [
     // Navigation and shared actions
     ["Traumasensible Prozessbegleitung", "Travma bilgili danışmanlık"],
@@ -892,52 +894,4 @@ export const turkishTranslationsByPath = {
     "/prices": Object.fromEntries(pricingEntries),
     "/faq": Object.fromEntries(faqEntries),
     "/impressum": Object.fromEntries(imprintEntries),
-};
-
-const sharedTurkishDescription = "Bütüncül terapi, travma bilgili danışmanlık ve koçluk – güvenli, özenli ve kendi hızınızda.";
-
-export const pageMeta = {
-    de: {
-        "/": { title: "Traumasensible Online-Begleitung | Spirit Healing", description: "Traumasensible Prozessbegleitung und integrative Therapie online - achtsam, klar und in Ihrem Tempo. Kostenloses Kennenlerngespräch vereinbaren." },
-        "/coaching": { title: "Traumasensible Prozessbegleitung online | Spirit Healing", description: "Schutzmuster und Reaktionen des Nervensystems besser verstehen. Traumasensible Online-Begleitung mit Sabine und Selcan kennenlernen." },
-        "/therapie": { title: "Integrative Therapie online | Spirit Healing", description: "Integrative Online-Therapie verbindet Anteilearbeit, Energiearbeit und einen traumasensiblen Blick - individuell und in Ihrem Tempo." },
-        "/about": { title: "Sabine & Selcan - Über Spirit Healing", description: "Lernen Sie Sabine und Selcan, ihre Haltung und die Verbindung aus Anteilearbeit, Energiearbeit und traumasensibler Begleitung kennen." },
-        "/prices": { title: "Preise & Termine für Online-Begleitung | Spirit Healing", description: "Preise für Einzelsitzungen, gemeinsame Begleitung und Intensivtermine. Kostenfreies 15-minütiges Kennenlerngespräch buchen." },
-        "/faq": { title: "Häufige Fragen zur Online-Begleitung | Spirit Healing", description: "Antworten zu Ablauf, Terminen, Kosten und zur traumasensiblen Online-Begleitung bei Spirit Healing." },
-        "/vortraege-seminare": { title: "Vorträge & Seminare | Spirit Healing", description: "Live-Vorträge und Seminare von Spirit Healing zu inneren Anteilen, Nervensystem, Beziehungsmustern und Energiearbeit." },
-        "/berlin-live": {
-            title: "Familienaufstellung Berlin 2026 | Spirit Healing",
-            description: "Familienaufstellung in Berlin am 9. und 10. Oktober 2026 mit Sabine und Selcan. Zwei Tage Einführung, Stellvertretung und eigene Aufstellung.",
-            image: "/familie/berlin.jpeg",
-            imageWidth: "1536",
-            imageHeight: "1024",
-            imageAlt: "Familienaufstellung live in Berlin mit Spirit Healing",
-        },
-        "/mitglieder": { title: "Kostenlose Meditationen & Mitgliederbereich | Spirit Healing", description: "Drei geführte Meditationen, den Spirit-Healing-Vortrag und das begleitende Workbook kostenlos im geschützten Mitgliederbereich nutzen." },
-        "/kontakt": { title: "Kontakt | Spirit Healing", description: "Nehmen Sie Kontakt mit Spirit Healing auf und vereinbaren Sie ein unverbindliches Kennenlerngespräch." },
-        "/impressum": { title: "Impressum | Spirit Healing", description: "Impressum und Anbieterinformationen von Spirit Healing." },
-        "/datenschutz": { title: "Datenschutz | Spirit Healing", description: "Datenschutzhinweise zur Nutzung der Website und Angebote von Spirit Healing." },
-        "/newsletter/status": { title: "Newsletter-Status | Spirit Healing", description: "Status Ihrer Newsletter-Anmeldung bei Spirit Healing.", noindex: true },
-    },
-    tr: {
-        "/": { title: "Spirit Healing | Çevrim İçi Danışmanlık", description: sharedTurkishDescription },
-        "/coaching": { title: "Travma Bilgili Danışmanlık | Spirit Healing", description: sharedTurkishDescription },
-        "/therapie": { title: "Bütüncül Terapi | Spirit Healing", description: sharedTurkishDescription },
-        "/about": { title: "Hakkımızda | Spirit Healing", description: sharedTurkishDescription },
-        "/prices": { title: "Ücretler ve Randevular | Spirit Healing", description: sharedTurkishDescription },
-        "/faq": { title: "Sıkça Sorulan Sorular | Spirit Healing", description: sharedTurkishDescription },
-        "/vortraege-seminare": { title: "Seminerler & Eğitimler | Spirit Healing", description: "İçsel parçalar, sinir sistemi, ilişki örüntüleri ve enerji çalışması üzerine Spirit Healing canlı seminerleri ve eğitimleri." },
-        "/berlin-live": {
-            title: "Berlin Aile Dizimi 2026 | Spirit Healing",
-            description: "9 ve 10 Ekim 2026 tarihlerinde Sabine ve Selcan ile Berlin'de iki günlük aile dizimi çalışması.",
-            image: "/familie/berlin.jpeg",
-            imageWidth: "1536",
-            imageHeight: "1024",
-            imageAlt: "Spirit Healing ile Berlin'de aile dizimi",
-        },
-        "/mitglieder": { title: "Ücretsiz Meditasyonlar ve Üye Alanı | Spirit Healing", description: "Üç rehberli meditasyonu dinleyin, Spirit Healing seminerini izleyin ve çalışma kitabını ücretsiz kullanın." },
-        "/kontakt": { title: "İletişim | Spirit Healing", description: "Spirit Healing ile iletişime geçin ve ücretsiz bir tanışma görüşmesi planlayın." },
-        "/impressum": { title: "Künye | Spirit Healing", description: sharedTurkishDescription },
-        "/datenschutz": { title: "Gizlilik | Spirit Healing", description: sharedTurkishDescription },
-    },
 };

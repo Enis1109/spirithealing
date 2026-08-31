@@ -261,7 +261,7 @@ export const Events = () => {
                                 </div>;
                             })}
                         </div>
-                        <Link to="/mitglieder" className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-center font-bold text-primary-foreground transition hover:bg-surface">
+                        <Link to="/gratis-meditationen" className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-center font-bold text-primary-foreground transition hover:bg-surface">
                             {copy.register}
                             <LockKeyhole className="h-5 w-5" aria-hidden="true" />
                         </Link>
