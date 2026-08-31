@@ -27,6 +27,10 @@ const content = {
         format: "Aufzeichnung im Mitgliederbereich",
         register: "Aufzeichnung & Workbook ansehen",
         access: "Der vollständige Vortrag und das begleitende Workbook stehen jetzt im kostenlosen Mitgliederbereich für dich bereit.",
+        programEyebrow: "Neu · 21. Oktober 2026 bis 13. Januar 2027",
+        programTitle: "Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?",
+        programText: "Im 13-Wochen-Programm erkennst du, welche unbewusste Matrix deine Rollen, Beziehungen und Entscheidungen lenkt, und gehst den Weg zurück in deine eigene Schöpferkraft. Mit persönlichem Matrix-Gespräch, täglicher energetischer Begleitung und vollständigem Rauhnachtsprogramm.",
+        programCta: "13-Wochen-Programm entdecken",
         topicsEyebrow: "Darum geht es",
         topicsTitle: "Innere Anteile verstehen, statt gegen dich selbst zu kämpfen",
         topicsIntro: "Der Vortrag verbindet psychologische Einordnung mit einer verständlichen Einführung in die systemische Anteilearbeit.",
@@ -91,6 +95,10 @@ const content = {
         format: "Üye alanında seminer kaydı",
         register: "Kaydı izle & çalışma kitabını indir",
         access: "Seminerin tamamı ve çalışma kitabı artık ücretsiz üye alanında seni bekliyor.",
+        programEyebrow: "Yeni · 21 Ekim 2026 – 13 Ocak 2027",
+        programTitle: "Başrolde sensin. Peki senaryonu kim yazıyor?",
+        programText: "13 haftalık programda rollerini, ilişkilerini ve kararlarını yönlendiren bilinçdışı matrisi fark ediyor, kendi yaratıcı gücüne dönmek için ilerliyorsun. Kişisel matris görüşmesi, günlük enerjetik eşlik ve eksiksiz Rauhnächte programı dahildir.",
+        programCta: "13 haftalık programı keşfet",
         topicsEyebrow: "Seminerin içeriği",
         topicsTitle: "Kendinle savaşmak yerine içsel parçalarını anlamak",
         topicsIntro: "Seminer, psikolojik çerçeveyi sistemik içsel parçalar çalışmasına anlaşılır bir girişle birleştiriyor.",
@@ -177,6 +185,24 @@ export const Events = () => {
                         </div>
                     </div>
                     <img src="/familie/berlin.jpeg" alt="" className="h-56 w-full object-cover object-center md:h-full" />
+                </article>
+            </section>
+
+            <section className="border-b border-white/10 bg-card py-8 sm:py-10">
+                <article className="relative mx-auto grid w-[calc(100%-2rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-primary/35 bg-[#0B777A] shadow-xl shadow-black/10 md:grid-cols-[1fr_17rem] lg:grid-cols-[1fr_20rem]">
+                    <div className="relative z-10 p-6 sm:p-8 lg:p-10">
+                        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-primary">{copy.programEyebrow}</p>
+                        <h2 className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-white sm:text-4xl">{copy.programTitle}</h2>
+                        <p className="mt-4 max-w-3xl leading-7 text-white/80">{copy.programText}</p>
+                        <Link to="/13-wochen-programm" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
+                            {copy.programCta}
+                            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                        </Link>
+                    </div>
+                    <div className="relative min-h-64 overflow-hidden bg-[#073f42] md:min-h-full">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.28),transparent_64%)]" aria-hidden="true" />
+                        <img src="/zepter-spirit-healing.png" alt="" className="absolute inset-0 h-full w-full object-cover object-[center_17%] opacity-90" />
+                    </div>
                 </article>
             </section>
 
