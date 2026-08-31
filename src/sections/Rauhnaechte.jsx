@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import {
   ArrowDown,
@@ -10,9 +10,14 @@ import {
   Instagram,
   MoonStar,
   PlayCircle,
-  Send,
 } from "lucide-react"
-import { submitForm } from "@/lib/submissions"
+
+const checkoutLinks = {
+  begleitungEinmalig: import.meta.env.VITE_RAUHNAECHTE_BEGLEITUNG_CHECKOUT_URL || "https://book.stripe.com/9B6eVf8ZQ3m5aFl6Rx83C0f",
+  begleitungRateEins: import.meta.env.VITE_RAUHNAECHTE_BEGLEITUNG_RATE_CHECKOUT_URL || "https://book.stripe.com/8x214peka4q9dRx5Nt83C0h",
+  persoenlichEinmalig: import.meta.env.VITE_RAUHNAECHTE_PERSOENLICH_CHECKOUT_URL || "https://book.stripe.com/7sYaEZa3U4q93cTa3J83C0i",
+  persoenlichRateEins: import.meta.env.VITE_RAUHNAECHTE_PERSOENLICH_RATE_CHECKOUT_URL || "https://book.stripe.com/cNi4gB6RIg8RdRx1xd83C0g",
+}
 
 const dailyThemes = [
   ["01", "Ankommen", "Aus dem Lärm des Jahres zurück in deinen Körper kommen und spüren, was in dir jetzt Raum braucht."],
@@ -100,88 +105,11 @@ const SectionTitle = ({ eyebrow, title, intro, light = false }) => (
   </header>
 )
 
-const InterestForm = () => {
-  const [submitState, setSubmitState] = useState("idle")
-  const [errorMessage, setErrorMessage] = useState("")
-
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setSubmitState("submitting")
-    setErrorMessage("")
-    const form = event.currentTarget
-    const formData = new FormData(form)
-    const interest = String(formData.get("interest") || "Rauhnachtsprogramm")
-
-    try {
-      await submitForm("/api/contact", {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        phone: null,
-        topic: "Rauhnächte 2026/2027 – Vormerkung",
-        message: `Unverbindliche Vormerkung für die Rauhnächte. Interesse an: ${interest}.`,
-        privacyConsent: formData.get("privacy") === "on",
-        newsletterConsent: false,
-        company: formData.get("company"),
-        locale: "de",
-      })
-      setSubmitState("success")
-      form.reset()
-    } catch (error) {
-      setSubmitState("error")
-      setErrorMessage(error.code === "rate_limit"
-        ? "Es wurden zu viele Anfragen in kurzer Zeit gesendet. Bitte versuche es in einigen Minuten erneut."
-        : "Die Vormerkung konnte gerade nicht gesendet werden. Bitte schreibe uns an info@spirit-healing.tr.")
-    }
-  }
-
-  if (submitState === "success") {
-    return (
-      <div className="rounded-[2rem] bg-white p-8 text-center text-[#173c39] shadow-[0_22px_60px_rgba(0,0,0,0.2)] sm:p-10">
-        <CheckCircle2 className="mx-auto h-14 w-14 text-[#0f7d79]" aria-hidden="true" />
-        <h3 className="mt-5 font-serif text-3xl font-semibold">Deine Vormerkung ist angekommen.</h3>
-        <p className="mt-4 leading-7 text-[#526a66]">Wir melden uns mit dem endgültigen Umfang, dem Preis und dem Buchungsstart persönlich bei dir.</p>
-      </div>
-    )
-  }
-
-  const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-[#b7cec5] bg-white px-4 py-3 text-base text-[#173c39] outline-none transition placeholder:text-[#748783] focus:border-[#0f7d79] focus:ring-2 focus:ring-[#0f7d79]/20"
-
-  return (
-    <form onSubmit={handleSubmit} className="rounded-[2rem] bg-white p-7 text-[#173c39] shadow-[0_22px_60px_rgba(0,0,0,0.2)] sm:p-10">
-      <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
-        <label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label>
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className="block text-sm font-bold">Vor- und Nachname *<input className={fieldClass} type="text" name="name" autoComplete="name" maxLength={100} required /></label>
-        <label className="block text-sm font-bold">E-Mail-Adresse *<input className={fieldClass} type="email" name="email" autoComplete="email" inputMode="email" maxLength={254} required /></label>
-      </div>
-      <label className="mt-5 block text-sm font-bold">
-        Wofür möchtest du Informationen erhalten?
-        <select className={fieldClass} name="interest" defaultValue="Das vollständige Rauhnachtsprogramm">
-          <option>Das vollständige Rauhnachtsprogramm</option>
-          <option>Die kostenlose öffentliche Reihe</option>
-          <option>Beides</option>
-          <option>Das 13-Wochen-Programm mit Rauhnächten</option>
-        </select>
-      </label>
-      <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6 text-[#4f6662]">
-        <input className="mt-1.5 h-4 w-4 shrink-0 accent-[#0f7d79]" type="checkbox" name="privacy" required />
-        <span>Ich habe die <Link to="/datenschutz" target="_blank" className="font-bold text-[#0f7d79] underline underline-offset-2">Datenschutzerklärung</Link> gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung dieser Vormerkung zu.</span>
-      </label>
-      {errorMessage && <p role="alert" className="mt-5 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm leading-6 text-red-800">{errorMessage}</p>}
-      <button type="submit" disabled={submitState === "submitting"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57] disabled:cursor-wait disabled:opacity-65">
-        {submitState === "submitting" ? "Vormerkung wird gesendet …" : "Unverbindlich vormerken"}<Send size={18} aria-hidden="true" />
-      </button>
-      <p className="mt-4 text-center text-xs leading-5 text-[#71827f]">Die Vormerkung ist kostenfrei und noch keine Buchung.</p>
-    </form>
-  )
-}
-
 export const Rauhnaechte = () => {
   usePageMetadata()
 
-  const scrollToInterest = () => {
-    document.getElementById("rauhnaechte-vormerken")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  const scrollToBooking = () => {
+    document.getElementById("rauhnaechte-buchen")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   return (
@@ -196,7 +124,7 @@ export const Rauhnaechte = () => {
               <img src="/Logo-tuerkis.jpeg?v=20260730" alt="Spirit Healing" className="h-12 w-12 rounded-full object-cover shadow-sm" />
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-white">Spirit Healing</span>
             </a>
-            <button type="button" onClick={scrollToInterest} className="hidden rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/15 sm:block">Unverbindlich vormerken</button>
+            <button type="button" onClick={scrollToBooking} className="hidden rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/15 sm:block">Jetzt buchen</button>
           </header>
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
@@ -205,7 +133,7 @@ export const Rauhnaechte = () => {
               <h1 className="mt-5 max-w-4xl font-serif text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-8xl">Zwölf Nächte.<br />Ein bewusster Übergang.</h1>
               <p className="mt-7 max-w-2xl text-xl leading-9 text-white/78">Es gibt Zeiten, in denen das Alte nicht mehr trägt und das Neue noch keinen Namen hat. Die Rauhnächte laden dich ein, still genug zu werden, um dich selbst wieder zu hören.</p>
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <button type="button" onClick={scrollToInterest} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d5ad61] px-7 py-4 font-bold text-[#173c39] shadow-[0_16px_36px_rgba(0,0,0,0.2)] transition hover:bg-[#f1d7a0]">Interesse vormerken <ArrowDown size={18} /></button>
+                <button type="button" onClick={scrollToBooking} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d5ad61] px-7 py-4 font-bold text-[#173c39] shadow-[0_16px_36px_rgba(0,0,0,0.2)] transition hover:bg-[#f1d7a0]">Buchungsoptionen ansehen <ArrowDown size={18} /></button>
                 <a href="#innere-reise" className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/5 px-7 py-4 font-bold text-white transition hover:bg-white/10">Die innere Reise entdecken</a>
               </div>
               <div className="mt-9 flex flex-wrap gap-3 text-sm font-semibold text-white/85">
@@ -321,7 +249,7 @@ export const Rauhnaechte = () => {
                 title="Die vollständige Begleitung durch alle zwölf Rauhnächte"
                 intro="Das separat buchbare Programm verbindet die zwölf Nächte zu einem zusammenhängenden inneren Prozess. Längere Meditationen, das Journal, Live-Begegnungen, Aufzeichnungen und ein geschützter Austausch geben dir einen gehaltenen Raum für deine eigene Tiefe."
               />
-              <button type="button" onClick={scrollToInterest} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Zum Rauhnachtsprogramm vormerken</button>
+              <button type="button" onClick={scrollToBooking} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Buchungsoptionen ansehen</button>
             </div>
             <ul className="divide-y divide-[#d3bc91] border-y border-[#d3bc91]">
               {programIncluded.map((item) => <li key={item} className="flex gap-4 py-5 text-lg font-semibold leading-8 text-[#31534f]"><CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>)}
@@ -345,26 +273,61 @@ export const Rauhnaechte = () => {
               <Link to="/13-wochen-programm" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3 font-bold text-[#173c39] transition hover:bg-white">13-Wochen-Programm entdecken <ArrowRight className="h-5 w-5" aria-hidden="true" /></Link>
             </div>
           </div>
-          <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-6 text-[#63736f]">Der Preis und die endgültige Zahl der Plätze werden vor dem Buchungsstart veröffentlicht. Die Vormerkung ist kostenfrei.</p>
+          <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-6 text-[#63736f]">Wenn du am 13-Wochen-Programm teilnimmst, brauchst du die Rauhnächte nicht zusätzlich zu buchen. Die vollständige Begleitung ist dort bereits enthalten.</p>
         </div>
       </section>
 
-      <section id="rauhnaechte-vormerken" className="scroll-mt-8 bg-[#173c39] py-20 text-white lg:py-28">
-        <div className="mx-auto grid max-w-7xl items-start gap-12 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:px-10">
-          <div>
-            <SectionTitle
-              eyebrow="Wenn du spürst, dass diese Zeit dir gehören soll"
-              title="Lass dich informieren, sobald der gemeinsame Raum sich öffnet."
-              intro="Du musst dich heute noch nicht entscheiden. Mit deiner kostenfreien Vormerkung erfährst du zuerst, wann die Buchung startet und welche Form der Begleitung für dich möglich ist."
-              light
-            />
-            <div className="mt-8 space-y-4 text-white/75">
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Zwölf geführte Räume für Rückblick, Loslassen und Ausrichtung</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Meditationen, Rituale und ein Journal für deine eigenen Wahrnehmungen</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Live-Begleitung und geschützter Austausch in der gemeinsamen Zeit</p>
-            </div>
+      <section id="rauhnaechte-buchen" className="scroll-mt-8 bg-[#173c39] py-20 text-white lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <SectionTitle
+            eyebrow="Deine Buchung"
+            title="Wähle die Begleitung, die jetzt zu dir passt."
+            intro="Beide Möglichkeiten führen dich durch die vollständigen Rauhnächte. In der persönlichen Variante kommt ein gemeinsames Einzelsetting hinzu, in dem wir das vertiefen, was sich in deinem Prozess zeigt."
+            light
+          />
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-2">
+            <article className="flex flex-col rounded-[2rem] bg-white p-7 text-[#173c39] shadow-[0_22px_60px_rgba(0,0,0,0.18)] sm:p-10">
+              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#a67426]">Rauhnächte-Begleitung</p>
+              <h3 className="mt-4 font-serif text-4xl font-semibold">222 €</h3>
+              <p className="mt-2 text-sm font-semibold text-[#627570]">Einmalzahlung</p>
+              <p className="mt-6 text-lg leading-8 text-[#506864]">Für dich, wenn du die zwölf Nächte in einem gehaltenen Gruppenraum erleben und deinen eigenen inneren Weg dabei bewusst gehen möchtest.</p>
+              <ul className="mt-7 space-y-3 text-[#31534f]">
+                {programIncluded.slice(0, 4).map((item) => <li key={item} className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>)}
+                <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#0f7d79]" aria-hidden="true" />Live-Begleitung, Aufzeichnungen und geschützter Austausch</li>
+              </ul>
+              <div className="mt-auto pt-8">
+                <a href={checkoutLinks.begleitungEinmalig} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Einmalig 222 € buchen <ArrowRight size={18} /></a>
+                <a href={checkoutLinks.begleitungRateEins} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-[#0f7d79] px-6 py-3.5 font-bold text-[#0f7d79] transition hover:bg-[#e8f2ee]">Mit 2 × 117 € buchen <ArrowRight size={18} /></a>
+                <p className="mt-3 text-center text-xs leading-5 text-[#6d7e7a]">Raten-Gesamtpreis: 234 €</p>
+              </div>
+            </article>
+
+            <article className="relative flex flex-col overflow-hidden rounded-[2rem] border border-[#d8bd82] bg-[#0f302f] p-7 text-white shadow-[0_22px_60px_rgba(0,0,0,0.22)] sm:p-10">
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#c69543]/18 blur-3xl" aria-hidden="true" />
+              <div className="relative">
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">Rauhnächte persönlich</p>
+                <h3 className="mt-4 font-serif text-4xl font-semibold">555 €</h3>
+                <p className="mt-2 text-sm font-semibold text-white/65">Einmalzahlung</p>
+                <p className="mt-6 text-lg leading-8 text-white/76">Für dich, wenn du zusätzlich zur gemeinsamen Reise einen persönlichen Raum möchtest, in dem wir deine Wahrnehmungen und dein Thema gemeinsam vertiefen.</p>
+                <ul className="mt-7 space-y-3 text-white/82">
+                  <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Alles aus der vollständigen Rauhnächte-Begleitung</li>
+                  <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Ein gemeinsames Einzelsetting mit Sabine und Selcan</li>
+                  <li className="flex gap-3 leading-7"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Wert des Einzelsettings: 333 €</li>
+                </ul>
+              </div>
+              <div className="relative mt-auto pt-8">
+                <a href={checkoutLinks.persoenlichEinmalig} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3.5 font-bold text-[#173c39] transition hover:bg-white">Einmalig 555 € buchen <ArrowRight size={18} /></a>
+                <a href={checkoutLinks.persoenlichRateEins} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-white/50 px-6 py-3.5 font-bold text-white transition hover:bg-white/10">Mit 2 × 292 € buchen <ArrowRight size={18} /></a>
+                <p className="mt-3 text-center text-xs leading-5 text-white/58">Raten-Gesamtpreis: 584 €</p>
+              </div>
+            </article>
           </div>
-          <InterestForm />
+
+          <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-white/15 bg-white/7 px-6 py-5 text-center text-sm leading-6 text-white/72">
+            <p>Bei Ratenzahlung wird die zweite Rate 30 Tage nach der ersten Zahlung fällig. Den gesonderten Stripe-Zahlungslink erhältst du per E-Mail. Die Ratenoption ist bis zum 23. November 2026 buchbar.</p>
+            <p className="mt-2">Die Zahlung wird sicher über Stripe abgewickelt. Wenn du das 13-Wochen-Programm buchst, ist die vollständige Rauhnächte-Begleitung bereits enthalten.</p>
+          </div>
         </div>
       </section>
 
