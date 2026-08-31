@@ -31,6 +31,10 @@ const content = {
         programTitle: "Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?",
         programText: "Im 13-Wochen-Programm erkennst du, welche unbewusste Matrix deine Rollen, Beziehungen und Entscheidungen lenkt, und gehst den Weg zurück in deine eigene Schöpferkraft. Mit persönlichem Matrix-Gespräch, täglicher energetischer Begleitung und vollständigem Rauhnachtsprogramm.",
         programCta: "13-Wochen-Programm entdecken",
+        rauhnaechteEyebrow: "23. Dezember 2026 bis 6. Januar 2027",
+        rauhnaechteTitle: "Zwölf Nächte. Ein bewusster Übergang.",
+        rauhnaechteText: "Schließe das alte Jahr bewusst ab und kläre deine Ausrichtung für das neue Jahr. Wir begleiten dich mit Meditationen, Ritualen und täglichen Impulsen durch die Zeit zwischen den Jahren.",
+        rauhnaechteCta: "Rauhnächte-Programm entdecken",
         topicsEyebrow: "Darum geht es",
         topicsTitle: "Innere Anteile verstehen, statt gegen dich selbst zu kämpfen",
         topicsIntro: "Der Vortrag verbindet psychologische Einordnung mit einer verständlichen Einführung in die systemische Anteilearbeit.",
@@ -99,6 +103,10 @@ const content = {
         programTitle: "Başrolde sensin. Peki senaryonu kim yazıyor?",
         programText: "13 haftalık programda rollerini, ilişkilerini ve kararlarını yönlendiren bilinçdışı matrisi fark ediyor, kendi yaratıcı gücüne dönmek için ilerliyorsun. Kişisel matris görüşmesi, günlük enerjetik eşlik ve eksiksiz Rauhnächte programı dahildir.",
         programCta: "13 haftalık programı keşfet",
+        rauhnaechteEyebrow: "23 Aralık 2026 – 6 Ocak 2027",
+        rauhnaechteTitle: "On iki gece. Bilinçli bir geçiş.",
+        rauhnaechteText: "Eski yılı bilinçli bir şekilde tamamla ve yeni yıl için yönünü netleştir. Yıllar arasındaki bu dönemde meditasyonlar, ritüeller ve günlük ilhamlarla sana eşlik ediyoruz.",
+        rauhnaechteCta: "Rauhnächte programını keşfet",
         topicsEyebrow: "Seminerin içeriği",
         topicsTitle: "Kendinle savaşmak yerine içsel parçalarını anlamak",
         topicsIntro: "Seminer, psikolojik çerçeveyi sistemik içsel parçalar çalışmasına anlaşılır bir girişle birleştiriyor.",
@@ -202,6 +210,24 @@ export const Events = () => {
                     <div className="relative min-h-64 overflow-hidden bg-[#073f42] md:min-h-full">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.28),transparent_64%)]" aria-hidden="true" />
                         <img src="/zepter-spirit-healing.png" alt="" className="absolute inset-0 h-full w-full object-cover object-[center_17%] opacity-90" />
+                    </div>
+                </article>
+            </section>
+
+            <section className="border-b border-white/10 bg-card py-8 sm:py-10">
+                <article className="relative mx-auto grid w-[calc(100%-2rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-[#d8bd86]/40 bg-[#112f34] shadow-xl shadow-black/15 md:grid-cols-[17rem_1fr] lg:grid-cols-[20rem_1fr]">
+                    <div className="relative min-h-64 overflow-hidden bg-[#071c22] md:min-h-full">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(216,189,134,0.2),transparent_66%)]" aria-hidden="true" />
+                        <img src="/rauhnaechte-spirit-healing.png" alt="" className="absolute inset-0 h-full w-full object-cover object-center opacity-90" />
+                    </div>
+                    <div className="relative z-10 p-6 sm:p-8 lg:p-10">
+                        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f1d7a0]">{copy.rauhnaechteEyebrow}</p>
+                        <h2 className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-white sm:text-4xl">{copy.rauhnaechteTitle}</h2>
+                        <p className="mt-4 max-w-3xl leading-7 text-white/78">{copy.rauhnaechteText}</p>
+                        <Link to="/rauhnaechte" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3 font-bold text-[#173c39] transition hover:bg-white">
+                            {copy.rauhnaechteCta}
+                            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                        </Link>
                     </div>
                 </article>
             </section>
