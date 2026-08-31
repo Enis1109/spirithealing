@@ -6,7 +6,6 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
-  Clock3,
   Facebook,
   Instagram,
   MoonStar,
@@ -16,26 +15,18 @@ import {
 import { submitForm } from "@/lib/submissions"
 
 const dailyThemes = [
-  ["01", "Ankommen", "Zur Ruhe kommen und wahrnehmen, wie du in diese Übergangszeit eintrittst."],
-  ["02", "Rückblick", "Das vergangene Jahr betrachten, ohne es bewerten oder schönreden zu müssen."],
-  ["03", "Loslassen", "Erkennen, was nicht mit in das neue Jahr genommen werden soll."],
-  ["04", "Den Körper hören", "Körpersignale als heutige Information wahrnehmen und einordnen."],
-  ["05", "Beziehungen", "Betrachten, wo du verbunden bist und wo du dich selbst verlässt."],
-  ["06", "Grenzen", "Ein Nein, ein Ja und den eigenen Platz deutlicher spüren."],
-  ["07", "Die eigene Stimme", "In Worte bringen, was bisher zurückgehalten oder übergangen wurde."],
-  ["08", "Wünsche", "Wünsche von Erwartungen unterscheiden und bewusst formulieren."],
-  ["09", "Empfangen", "Wahrnehmen, was du annehmen kannst, ohne dich dafür rechtfertigen zu müssen."],
-  ["10", "Entscheiden", "Aus vielen Möglichkeiten eine stimmige Richtung auswählen."],
-  ["11", "Ausrichten", "Die eigene Aufmerksamkeit auf das lenken, was im neuen Jahr wachsen darf."],
-  ["12", "Verkörpern", "Einen Wunsch in eine kleine, überprüfbare Handlung übersetzen."],
-]
-
-const schedule = [
-  ["Ab 1. Dezember", "Öffentliche Hinführung mit kurzen Reels und Story-Impulsen"],
-  ["23. Dezember", "Kostenlose Live-Meditation und Vorbereitung des 13-Wünsche-Rituals auf Instagram, YouTube und Facebook"],
-  ["25. Dezember bis 5. Januar", "Zwölf tägliche Rauhnachtsimpulse; öffentlich kurz, im Programm als vollständige Begleitung"],
-  ["30. Dezember", "Gemeinsame Zwischenreflexion für die Teilnehmerinnen und Teilnehmer des Programms"],
-  ["6. Januar", "Geführter Abschluss und der dreizehnte Wunsch als eigene Handlung"],
+  ["01", "Ankommen", "Aus dem Lärm des Jahres zurück in deinen Körper kommen und spüren, was in dir jetzt Raum braucht."],
+  ["02", "Rückblick", "Das vergangene Jahr ehrlich betrachten: was dich genährt hat, was dich erschöpft hat und was noch nachwirkt."],
+  ["03", "Loslassen", "Wahrnehmen, was du aus Gewohnheit noch trägst, obwohl es längst zu schwer geworden ist."],
+  ["04", "Den Körper hören", "Deine Körpersignale als Sprache verstehen und wieder feiner wahrnehmen, was sich für dich stimmig anfühlt."],
+  ["05", "Beziehungen", "Erkennen, in welchen Verbindungen du ganz bei dir bist und wo du dich verlässt, um dazuzugehören."],
+  ["06", "Grenzen", "Dein Nein, dein Ja und deinen eigenen Platz klarer spüren, ohne dich dafür rechtfertigen zu müssen."],
+  ["07", "Die eigene Stimme", "Worte für das finden, was du lange zurückgehalten, angepasst oder selbst überhört hast."],
+  ["08", "Wünsche", "Unterscheiden, was wirklich aus dir kommt und was du glaubst, wollen oder erfüllen zu müssen."],
+  ["09", "Empfangen", "Dich für das öffnen, was dich stärkt, ohne sofort etwas leisten oder zurückgeben zu müssen."],
+  ["10", "Entscheiden", "Aus innerer Klarheit eine Richtung wählen, die zu deinem heutigen Leben und deinem heutigen Selbst passt."],
+  ["11", "Ausrichten", "Deine Aufmerksamkeit bewusst auf das lenken, dem du im neuen Jahr Kraft und Raum geben möchtest."],
+  ["12", "Verkörpern", "Aus einem inneren Wunsch einen ersten greifbaren Schritt machen, der in deinem Alltag wirklich leben kann."],
 ]
 
 const programIncluded = [
@@ -43,41 +34,10 @@ const programIncluded = [
   "Rauhnachtsjournal mit den täglichen Fragen und Platz für eigene Notizen",
   "Anleitung für das 13-Wünsche-Ritual mit einer sicheren Alternative zum Verbrennen",
   "Kurze Rituale für Rückblick, Loslassen, Ausrichtung und Verkörperung",
-  "Live-Eröffnung am 23. Dezember",
-  "Gemeinsame Zwischenreflexion am 30. Dezember",
-  "Live-Abschluss am 6. Januar inklusive Aufzeichnungen",
+  "Live-Eröffnung im gemeinsamen Raum",
+  "Gemeinsame Zwischenreflexion während der Rauhnächte",
+  "Live-Abschluss inklusive Aufzeichnungen",
   "Geschützter Austausch während der gemeinsamen Zeit",
-]
-
-const questions = [
-  {
-    title: "Wann beginnen die Rauhnächte in diesem Programm?",
-    text: "Wir öffnen den gemeinsamen Raum am 23. Dezember. Die zwölf täglichen Impulse laufen vom 25. Dezember bis 5. Januar. Am 6. Januar schließen wir den Prozess gemeinsam ab.",
-  },
-  {
-    title: "Sind die zwölf Themen eine alte, feststehende Überlieferung?",
-    text: "Nein. Rauhnachtsbräuche unterscheiden sich je nach Region und Familie. Die zwölf Themen auf dieser Seite bilden die Spirit-Healing-Struktur für einen zusammenhängenden Reflexionsprozess.",
-  },
-  {
-    title: "Brauche ich spirituelle Vorkenntnisse?",
-    text: "Nein. Alle Rituale werden erklärt und bleiben freiwillig. Du kannst die Rauhnächte auch als ruhige Zeit für Rückblick, Schreiben und bewusste Entscheidungen nutzen.",
-  },
-  {
-    title: "Wie viel Zeit brauche ich täglich?",
-    text: "Die täglichen Einheiten sind so geplant, dass sie meistens in zehn bis zwanzig Minuten möglich sind. Du kannst einzelne Impulse nachholen und musst an den Feiertagen nichts in der Gruppe teilen.",
-  },
-  {
-    title: "Muss ich räuchern oder Wünsche verbrennen?",
-    text: "Nein. Wegen Haustieren, Allergien und Brandschutz gibt es für jede Übung eine rauch- und feuerfreie Alternative.",
-  },
-  {
-    title: "Werden Träume oder Zeichen vorhergesagt?",
-    text: "Nein. Träume und innere Bilder können im eigenen Journal als persönliches Reflexionsmaterial festgehalten werden. Wir deuten sie nicht als sichere Vorhersage und interpretieren sie nicht für andere.",
-  },
-  {
-    title: "Ist die Rauhnachtsbegleitung eine Therapie?",
-    text: "Nein. Sie ersetzt keine medizinische, psychiatrische oder psychotherapeutische Behandlung. In einer akuten Krise ist eine entsprechend qualifizierte Anlaufstelle der richtige Rahmen.",
-  },
 ]
 
 const metadata = {
@@ -132,8 +92,8 @@ const usePageMetadata = () => {
   }, [])
 }
 
-const SectionTitle = ({ eyebrow, title, intro, center = false, light = false }) => (
-  <header className={center ? "mx-auto max-w-4xl text-center" : "max-w-4xl"}>
+const SectionTitle = ({ eyebrow, title, intro, light = false }) => (
+  <header className="max-w-4xl">
     <p className={`text-xs font-extrabold uppercase tracking-[0.24em] ${light ? "text-[#f1d7a0]" : "text-[#a67426]"}`}>{eyebrow}</p>
     <h2 className={`mt-4 font-serif text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl ${light ? "text-white" : "text-[#173c39]"}`}>{title}</h2>
     {intro && <p className={`mt-5 text-lg leading-8 ${light ? "text-white/75" : "text-[#49635f]"}`}>{intro}</p>}
@@ -243,10 +203,10 @@ export const Rauhnaechte = () => {
             <div className="relative z-10">
               <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">Die Rauhnächte mit Spirit Healing</p>
               <h1 className="mt-5 max-w-4xl font-serif text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-8xl">Zwölf Nächte.<br />Ein bewusster Übergang.</h1>
-              <p className="mt-7 max-w-2xl text-xl leading-9 text-white/78">Vom 23. Dezember 2026 bis 6. Januar 2027 begleiten wir dich mit Meditationen, Ritualen und kurzen täglichen Impulsen durch die Zeit zwischen den Jahren.</p>
+              <p className="mt-7 max-w-2xl text-xl leading-9 text-white/78">Es gibt Zeiten, in denen das Alte nicht mehr trägt und das Neue noch keinen Namen hat. Die Rauhnächte laden dich ein, still genug zu werden, um dich selbst wieder zu hören.</p>
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <button type="button" onClick={scrollToInterest} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d5ad61] px-7 py-4 font-bold text-[#173c39] shadow-[0_16px_36px_rgba(0,0,0,0.2)] transition hover:bg-[#f1d7a0]">Interesse vormerken <ArrowDown size={18} /></button>
-                <a href="#rauhnaechte-ablauf" className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/5 px-7 py-4 font-bold text-white transition hover:bg-white/10">Den Ablauf ansehen</a>
+                <a href="#innere-reise" className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/5 px-7 py-4 font-bold text-white transition hover:bg-white/10">Die innere Reise entdecken</a>
               </div>
               <div className="mt-9 flex flex-wrap gap-3 text-sm font-semibold text-white/85">
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2.5"><CalendarDays size={17} className="text-[#f1d7a0]" />23. Dezember 2026 bis 6. Januar 2027</span>
@@ -261,7 +221,7 @@ export const Rauhnaechte = () => {
                 <img src="/rauhnaechte-spirit-healing.png" alt="Sabine und Selcan bei einem winterlichen Rauhnachtsritual mit Kerze und Journal" className="h-[40rem] w-full object-cover object-center" />
                 <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0f302f] via-[#0f302f]/55 to-transparent px-7 pb-7 pt-28">
                   <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#f1d7a0]">Loslassen · lauschen · ausrichten</p>
-                  <p className="mt-2 text-xl font-semibold leading-8">Eine ruhige tägliche Begleitung, die auch an den Feiertagen in deinen Alltag passt.</p>
+                  <p className="mt-2 text-xl font-semibold leading-8">Wenn das Außen leiser wird, darf deine eigene Stimme wieder hörbar werden.</p>
                 </figcaption>
               </figure>
             </div>
@@ -272,41 +232,42 @@ export const Rauhnaechte = () => {
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="grid gap-14 lg:grid-cols-[0.84fr_1.16fr] lg:gap-20">
           <SectionTitle
-            eyebrow="Die Zeit zwischen den Jahren"
-            title="Rückblick, Ruhe und eine bewusste Ausrichtung"
-            intro="Rauhnachtsbräuche sind regional unterschiedlich. Wir arbeiten deshalb nicht mit der Vorstellung eines einzig richtigen Ablaufs. Das Programm verbindet ausgewählte Bräuche mit Meditation, Schreiben, Körperwahrnehmung und einer klaren Frage: Was möchtest du im neuen Jahr wirklich leben?"
+            eyebrow="Wenn das Jahr leiser wird"
+            title="Vielleicht hast du viel getragen – und dich selbst dabei immer wieder überhört."
+            intro="Du hast funktioniert, entschieden, reagiert und weitergemacht. Doch manches in dir hatte kaum Raum: eine Erschöpfung, die sich nicht wegorganisieren lässt, ein Wunsch ohne Worte oder das Gefühl, dass dein Leben nach außen läuft, während du innerlich stehen geblieben bist."
           />
           <div className="border-y border-[#cbdcd5]">
-            <p className="py-8 text-xl font-semibold leading-9 text-[#244b47] sm:text-2xl">Du musst weder an Vorhersagen glauben noch spirituelle Erfahrung mitbringen. Die Rituale geben deiner eigenen Wahrnehmung einen ruhigen Rahmen.</p>
-            <p className="border-t border-[#cbdcd5] py-8 text-lg leading-8 text-[#506864]">Jede Rauhnacht enthält eine geführte Meditation, eine Reflexionsfrage und einen kleinen Schritt für den Alltag. Träume und innere Bilder können notiert werden, werden aber nicht als sichere Zeichen für die Zukunft ausgelegt.</p>
-            <p className="border-t border-[#cbdcd5] py-8 text-lg leading-8 text-[#506864]">Das 13-Wünsche-Ritual begleitet den gesamten Prozess. Zwölf Wünsche dürfen symbolisch abgegeben werden. Der dreizehnte Wunsch wird am 6. Januar zu einer Handlung, für die du selbst Verantwortung übernimmst.</p>
+            <p className="py-8 text-xl font-semibold leading-9 text-[#244b47] sm:text-2xl">Ein Jahr kann enden, während seine Geschichten in dir weiterlaufen. Unerledigte Gefühle, alte Rollen und Entscheidungen, die du längst hinter dir lassen wolltest, melden sich oft gerade dann, wenn es stiller wird.</p>
+            <p className="border-t border-[#cbdcd5] py-8 text-lg leading-8 text-[#506864]">Vielleicht warst du so lange im Tun, dass du kaum noch unterscheiden kannst, was du wirklich willst und was du nur weiterführst, weil es von dir erwartet wird.</p>
+            <p className="border-t border-[#cbdcd5] py-8 text-lg leading-8 text-[#506864]">Die Rauhnächte geben diesen leisen Fragen einen geschützten Raum. Du musst noch keine Antwort kennen. Du darfst zuerst wahrnehmen, was in dir gesehen, verabschiedet oder neu gewählt werden möchte.</p>
           </div>
         </div>
       </section>
 
-      <section id="rauhnaechte-ablauf" className="scroll-mt-8 border-y border-[#d5e4dd] bg-[#edf5f1] py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <section id="innere-reise" className="scroll-mt-8 relative overflow-hidden bg-[#173c39] py-20 text-white lg:py-28">
+        <div className="absolute -left-24 top-12 h-96 w-96 rounded-full bg-[#0f7d79]/30 blur-3xl" aria-hidden="true" />
+        <div className="absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-[#c69543]/15 blur-3xl" aria-hidden="true" />
+        <div className="relative mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20 lg:px-10">
           <SectionTitle
-            eyebrow="Der zeitliche Ablauf"
-            title="Vom öffentlichen Auftakt bis zum gemeinsamen Abschluss"
-            intro="Die kostenlose Dezember-Reihe und das vollständige Programm folgen derselben zeitlichen Linie. Die Tiefe und der Umfang der Begleitung unterscheiden sich."
+            eyebrow="Die Schwelle"
+            title="Zwischen dem, was war, und dem, was werden will, liegt ein stiller Raum."
+            intro="Die Rauhnächte sind kein Orakel, das dir dein Leben erklärt. Sie schaffen einen bewussten Zwischenraum, in dem du das alte Jahr würdigen, deiner eigenen Wahrnehmung lauschen und deine Richtung neu wählen kannst."
+            light
           />
-          <div className="mt-12 divide-y divide-[#bed3ca] border-y border-[#bed3ca]">
-            {schedule.map(([date, text]) => (
-              <div key={date} className="grid gap-2 py-6 sm:grid-cols-[13rem_1fr] sm:gap-8">
-                <p className="font-bold text-[#0f7d79]">{date}</p>
-                <p className="text-lg leading-8 text-[#47625e]">{text}</p>
-              </div>
-            ))}
+          <div className="space-y-7 text-lg leading-8 text-white/78">
+            <p>Wenn du langsamer wirst, wird sichtbar, was im Alltag leicht übergangen wird. Vielleicht spürst du Trauer über etwas, das nicht geworden ist. Vielleicht erkennst du, wie viel Kraft dich eine Rolle kostet, die längst nicht mehr zu dir passt.</p>
+            <p>Meditationen, Schreiben, Körperwahrnehmung und ausgewählte Rituale helfen dir, bei diesen Wahrnehmungen zu bleiben, ohne sie sofort lösen oder bewerten zu müssen.</p>
+            <blockquote className="border-l-2 border-[#f1d7a0] pl-6 font-serif text-2xl font-semibold leading-10 text-white sm:text-3xl">Du musst das neue Jahr nicht kontrollieren. Du darfst ihm aus einer klareren Verbindung zu dir selbst begegnen.</blockquote>
+            <p>Aus dieser Verbindung kann eine andere Art von Wunsch entstehen: keiner, der dich von deinem heutigen Leben wegträgt, sondern einer, dem du im neuen Jahr mit deinen eigenen Entscheidungen näherkommst.</p>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <section id="themen" className="scroll-mt-8 mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <SectionTitle
-          eyebrow="Die zwölf täglichen Themen"
-          title="Eine zusammenhängende Spirit-Healing-Reise"
-          intro="Die Themen sind unsere Struktur für diesen Prozess. Sie sind keine Behauptung darüber, dass jede Rauhnacht historisch oder für jeden Menschen dieselbe feststehende Bedeutung besitzt."
+          eyebrow="Zwölf innere Bewegungen"
+          title="Eine Reise zurück zu dem, was in dir wahr ist"
+          intro="Jede Rauhnacht öffnet eine andere Perspektive auf dein Erleben. Du musst dabei nichts erreichen. Die Themen helfen dir, tiefer zu lauschen und aus einzelnen Wahrnehmungen langsam eine stimmige innere Richtung entstehen zu lassen."
         />
         <div className="mt-14 grid gap-px overflow-hidden rounded-[2rem] border border-[#c8dcd3] bg-[#c8dcd3] sm:grid-cols-2 lg:grid-cols-3">
           {dailyThemes.map(([number, title, text]) => (
@@ -322,26 +283,26 @@ export const Rauhnaechte = () => {
       <section id="kostenlos" className="scroll-mt-8 bg-[#173c39] py-20 text-white lg:py-28">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SectionTitle
-            eyebrow="Kostenlos öffentlich mitgehen"
-            title="Tägliche kurze Impulse im Dezember"
-            intro="Auch Menschen, die das Programm nicht buchen, können über unsere öffentlichen Kanäle einen kleinen Rauhnachtsprozess mitgehen."
+            eyebrow="Ein erster Raum für alle"
+            title="Du darfst erst einmal hineinspüren."
+            intro="Über unsere öffentlichen Kanäle teilen wir ausgewählte Gedanken, kurze Meditationen und Fragen aus der Rauhnachtszeit. So kannst du wahrnehmen, ob unsere Art der Begleitung und diese innere Reise für dich stimmig sind."
             light
           />
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             <article className="rounded-[2rem] border border-white/15 bg-white/7 p-7">
               <PlayCircle className="h-9 w-9 text-[#f1d7a0]" aria-hidden="true" />
-              <h3 className="mt-5 font-serif text-3xl font-semibold">Live-Meditation</h3>
-              <p className="mt-4 leading-7 text-white/72">Am 23. Dezember öffnen wir die gemeinsame Zeit öffentlich über Instagram, YouTube und Facebook.</p>
+              <h3 className="mt-5 font-serif text-3xl font-semibold">Gemeinsam still werden</h3>
+              <p className="mt-4 leading-7 text-white/72">Ausgewählte Live-Meditationen öffnen einen ruhigen Raum, in dem du ankommen und deine Aufmerksamkeit wieder nach innen richten kannst.</p>
             </article>
             <article className="rounded-[2rem] border border-white/15 bg-white/7 p-7">
               <MoonStar className="h-9 w-9 text-[#f1d7a0]" aria-hidden="true" />
-              <h3 className="mt-5 font-serif text-3xl font-semibold">Zwölf kurze Reels</h3>
-              <p className="mt-4 leading-7 text-white/72">Vom 25. Dezember bis 5. Januar erscheint täglich ein kurzer Gedanke mit einer Frage oder kleinen Übung.</p>
+              <h3 className="mt-5 font-serif text-3xl font-semibold">Eine Frage, die bleibt</h3>
+              <p className="mt-4 leading-7 text-white/72">Kurze Impulse geben dir eine Frage oder Wahrnehmung mit, die dich durch den Tag begleiten darf, ohne dass daraus eine weitere Aufgabe wird.</p>
             </article>
             <article className="rounded-[2rem] border border-white/15 bg-white/7 p-7">
-              <CalendarDays className="h-9 w-9 text-[#f1d7a0]" aria-hidden="true" />
-              <h3 className="mt-5 font-serif text-3xl font-semibold">Vorbereitung ab Dezember</h3>
-              <p className="mt-4 leading-7 text-white/72">Vor dem Start erklären wir die Idee, die benötigten Materialien und den Unterschied zwischen öffentlicher Reihe und vollständigem Programm.</p>
+              <CheckCircle2 className="h-9 w-9 text-[#f1d7a0]" aria-hidden="true" />
+              <h3 className="mt-5 font-serif text-3xl font-semibold">In deinem eigenen Tempo</h3>
+              <p className="mt-4 leading-7 text-white/72">Du entscheidest selbst, was du aufnimmst und wie tief du gehst. Auch ein einzelner bewusster Moment kann etwas in dir in Bewegung bringen.</p>
             </article>
           </div>
           <div className="mt-10 flex flex-wrap gap-3">
@@ -358,7 +319,7 @@ export const Rauhnaechte = () => {
               <SectionTitle
                 eyebrow="Das separat buchbare Programm"
                 title="Die vollständige Begleitung durch alle zwölf Rauhnächte"
-                intro="Das bezahlte Programm führt die täglichen Themen als zusammenhängenden Prozess weiter. Es enthält längere Meditationen, das Journal, die Live-Termine, Aufzeichnungen und einen geschützten Austausch."
+                intro="Das separat buchbare Programm verbindet die zwölf Nächte zu einem zusammenhängenden inneren Prozess. Längere Meditationen, das Journal, Live-Begegnungen, Aufzeichnungen und ein geschützter Austausch geben dir einen gehaltenen Raum für deine eigene Tiefe."
               />
               <button type="button" onClick={scrollToInterest} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Zum Rauhnachtsprogramm vormerken</button>
             </div>
@@ -388,31 +349,19 @@ export const Rauhnaechte = () => {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <SectionTitle eyebrow="Fragen zur Begleitung" title="Was vor der Vormerkung wichtig ist" center />
-        <div className="mt-12 divide-y divide-[#bed3ca] border-y border-[#bed3ca]">
-          {questions.map((item) => (
-            <details key={item.title} className="group py-6">
-              <summary className="cursor-pointer list-none pr-8 text-xl font-bold leading-8 text-[#173c39] marker:hidden">{item.title}</summary>
-              <p className="mt-4 max-w-4xl text-lg leading-8 text-[#506864]">{item.text}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
       <section id="rauhnaechte-vormerken" className="scroll-mt-8 bg-[#173c39] py-20 text-white lg:py-28">
         <div className="mx-auto grid max-w-7xl items-start gap-12 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:px-10">
           <div>
             <SectionTitle
-              eyebrow="Unverbindliche Vormerkung"
-              title="Erhalte Preis und Buchungsstart zuerst"
-              intro="Du kannst dich für das vollständige Rauhnachtsprogramm, die kostenlose öffentliche Reihe oder beides vormerken. Daraus entsteht noch keine Buchung."
+              eyebrow="Wenn du spürst, dass diese Zeit dir gehören soll"
+              title="Lass dich informieren, sobald der gemeinsame Raum sich öffnet."
+              intro="Du musst dich heute noch nicht entscheiden. Mit deiner kostenfreien Vormerkung erfährst du zuerst, wann die Buchung startet und welche Form der Begleitung für dich möglich ist."
               light
             />
             <div className="mt-8 space-y-4 text-white/75">
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Öffentliche Live-Meditation am 23. Dezember 2026</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Zwölf tägliche Impulse vom 25. Dezember bis 5. Januar</p>
-              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Gemeinsamer Abschluss am 6. Januar 2027</p>
+              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Zwölf geführte Räume für Rückblick, Loslassen und Ausrichtung</p>
+              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Meditationen, Rituale und ein Journal für deine eigenen Wahrnehmungen</p>
+              <p className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#f1d7a0]" aria-hidden="true" />Live-Begleitung und geschützter Austausch in der gemeinsamen Zeit</p>
             </div>
           </div>
           <InterestForm />
