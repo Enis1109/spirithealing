@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import {
   ArrowDown,
+  ArrowRight,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -366,14 +367,21 @@ export const Rauhnaechte = () => {
             </ul>
           </div>
 
-          <div className="mt-14 grid overflow-hidden rounded-[2rem] bg-[#0f302f] text-white lg:grid-cols-[0.78fr_1.22fr]">
-            <div className="bg-[#0f7d79] px-7 py-10 sm:px-10 lg:py-12">
-              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">Im 13-Wochen-Programm</p>
-              <h3 className="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl">Die Rauhnachtsbegleitung ist vollständig enthalten.</h3>
+          <div className="mt-14 grid overflow-hidden rounded-[2rem] bg-[#0f302f] text-white shadow-[0_24px_64px_rgba(15,48,47,0.2)] lg:grid-cols-[0.78fr_1.22fr]">
+            <div className="relative min-h-[24rem] overflow-hidden bg-[#073f42] lg:min-h-full">
+              <img src="/zepter-spirit-healing.png" alt="" className="absolute inset-0 h-full w-full object-cover object-[center_18%] opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0f302f] via-[#0f302f]/20 to-transparent" aria-hidden="true" />
+              <div className="absolute inset-x-0 bottom-0 p-7 sm:p-10">
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">Im 13-Wochen-Programm</p>
+                <p className="mt-3 text-xl font-semibold leading-8">Die vollständige Rauhnachtsbegleitung ist bereits enthalten.</p>
+              </div>
             </div>
             <div className="px-7 py-10 sm:px-10 lg:py-12">
-              <p className="text-lg leading-8 text-white/82">Wer am 13-Wochen-Programm teilnimmt, muss das Rauhnachtsprogramm nicht zusätzlich buchen. Dort verbindet sich der Prozess ab dem 23. Dezember mit dem Halschakra und wird bis zur Integrationswoche am 13. Januar weitergeführt.</p>
-              <Link to="/13-wochen-programm" className="mt-7 inline-flex min-h-12 items-center rounded-full bg-[#f1d7a0] px-6 py-3 font-bold text-[#173c39] transition hover:bg-white">Zum 13-Wochen-Programm</Link>
+              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">21. Oktober 2026 bis 13. Januar 2027</p>
+              <h3 className="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-5xl">Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?</h3>
+              <p className="mt-6 text-lg leading-8 text-white/82">Du verteilst die Rollen. Du triffst die Entscheidungen. Und trotzdem wiederholen sich dieselben Szenen. Solange deine innere Matrix im Verborgenen wirkt, führt ein altes Drehbuch Regie.</p>
+              <p className="mt-5 text-lg leading-8 text-white/82">Das 13-Wochen-Programm lädt dich ein, diese Matrix sichtbar zu machen und das Zepter wieder selbst zu übernehmen. Die Rauhnächte verbinden sich darin mit deinem Prozess und werden bis zur Integrationswoche am 13. Januar weitergeführt.</p>
+              <Link to="/13-wochen-programm" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3 font-bold text-[#173c39] transition hover:bg-white">13-Wochen-Programm entdecken <ArrowRight className="h-5 w-5" aria-hidden="true" /></Link>
             </div>
           </div>
           <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-6 text-[#63736f]">Der Preis und die endgültige Zahl der Plätze werden vor dem Buchungsstart veröffentlicht. Die Vormerkung ist kostenfrei.</p>
