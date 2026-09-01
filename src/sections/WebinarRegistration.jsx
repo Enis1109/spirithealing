@@ -22,6 +22,7 @@ const errorText = (error) => {
 export const WebinarRegistration = () => {
   const [slotResponse, setSlotResponse] = useState({ loading: true, slots: [], timeZone: "Europe/Berlin" })
   const [selectedSlot, setSelectedSlot] = useState(null)
+  const [selectedDate, setSelectedDate] = useState("")
   const [submitState, setSubmitState] = useState("idle")
   const [registration, setRegistration] = useState(null)
   const [message, setMessage] = useState("")
@@ -35,12 +36,28 @@ export const WebinarRegistration = () => {
         if (!response.ok || !result.ok) throw new Error("slots")
         setSlotResponse({ loading: false, slots: result.slots, timeZone: result.timeZone })
         setSelectedSlot(result.slots[0] || null)
+        setSelectedDate(result.slots[0]?.dateLabel || "")
       })
       .catch(() => setSlotResponse({ loading: false, error: true, slots: [], timeZone: "Europe/Berlin" }))
     return () => { document.title = previousTitle }
   }, [])
 
   const slotGroups = useMemo(() => groupSlots(slotResponse.slots), [slotResponse.slots])
+  const selectedGroup = useMemo(
+    () => slotGroups.find((group) => group.dateLabel === selectedDate) || slotGroups[0] || null,
+    [selectedDate, slotGroups],
+  )
+
+  const handleDateChange = (event) => {
+    const dateLabel = event.target.value
+    const group = slotGroups.find((entry) => entry.dateLabel === dateLabel)
+    setSelectedDate(dateLabel)
+    setSelectedSlot(group?.slots[0] || null)
+  }
+
+  const handleTimeChange = (event) => {
+    setSelectedSlot(selectedGroup?.slots.find((slot) => slot.id === event.target.value) || null)
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -106,7 +123,7 @@ export const WebinarRegistration = () => {
           <div className="mt-16 max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f0d687]">Kostenloser aufgezeichneter Online-Vortrag</p>
             <h1 className="mt-5 font-serif text-4xl font-semibold leading-tight sm:text-6xl">Das Zepter wieder übernehmen</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80">Wähle den Zeitpunkt, zu dem du den Vortrag über das 13-Wochen-Programm und die persönliche Matrix ansehen möchtest.</p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80">Ab Mittwoch kannst du den Vortrag flexibel ansehen. Wähle einfach den Tag und die Startzeit, die zu dir passen.</p>
           </div>
         </div>
       </header>
@@ -116,37 +133,48 @@ export const WebinarRegistration = () => {
           <div className="flex items-start gap-4">
             <div className="rounded-2xl bg-[#e5f1ed] p-3 text-[#087478]"><CalendarDays className="h-6 w-6" aria-hidden="true" /></div>
             <div>
-              <h2 className="font-serif text-3xl font-semibold">Wähle deinen Termin</h2>
-              <p className="mt-2 text-sm text-[#617672]">Alle Zeiten gelten für Deutschland (Europe/Berlin).</p>
+              <h2 className="font-serif text-3xl font-semibold">Wähle Tag und Uhrzeit</h2>
+              <p className="mt-2 text-sm leading-6 text-[#617672]">Am Mittwoch ab 16:00 Uhr, danach täglich stündlich von 08:00 bis 22:00 Uhr. Alle Zeiten gelten für Deutschland.</p>
             </div>
           </div>
 
           {slotResponse.loading && <p className="mt-8 rounded-2xl bg-[#edf5f2] p-5">Termine werden geladen …</p>}
           {slotResponse.error && <p className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800">Die Termine konnten gerade nicht geladen werden.</p>}
 
-          <div className="mt-8 space-y-7">
-            {slotGroups.map((group) => (
-              <fieldset key={group.dateLabel}>
-                <legend className="font-bold capitalize text-[#2f5350]">{group.dateLabel}</legend>
-                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {group.slots.map((slot) => {
-                    const active = selectedSlot?.id === slot.id
-                    return (
-                      <button
-                        type="button"
-                        key={slot.id}
-                        aria-pressed={active}
-                        onClick={() => setSelectedSlot(slot)}
-                        className={`min-h-12 rounded-xl border px-3 py-3 font-bold transition ${active ? "border-[#0f7d79] bg-[#0f7d79] text-white shadow-md" : "border-[#b9cec7] bg-white text-[#315652] hover:border-[#0f7d79]"}`}
-                      >
-                        {slot.timeLabel} Uhr
-                      </button>
-                    )
-                  })}
-                </div>
-              </fieldset>
-            ))}
-          </div>
+          {slotGroups.length > 0 && (
+            <div className="mt-8 grid gap-5 sm:grid-cols-2">
+              <label className="block text-sm font-bold text-[#2f5350]" htmlFor="webinar-date">
+                Tag
+                <select
+                  id="webinar-date"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  className="mt-2 min-h-14 w-full rounded-xl border border-[#b9cec7] bg-white px-4 py-3 font-semibold capitalize text-[#315652] outline-none focus:border-[#0f7d79] focus:ring-2 focus:ring-[#0f7d79]/20"
+                >
+                  {slotGroups.map((group) => <option key={group.dateLabel} value={group.dateLabel}>{group.dateLabel}</option>)}
+                </select>
+              </label>
+
+              <label className="block text-sm font-bold text-[#2f5350]" htmlFor="webinar-time">
+                Startzeit
+                <select
+                  id="webinar-time"
+                  value={selectedSlot?.id || ""}
+                  onChange={handleTimeChange}
+                  className="mt-2 min-h-14 w-full rounded-xl border border-[#b9cec7] bg-white px-4 py-3 font-semibold text-[#315652] outline-none focus:border-[#0f7d79] focus:ring-2 focus:ring-[#0f7d79]/20"
+                >
+                  {selectedGroup?.slots.map((slot) => <option key={slot.id} value={slot.id}>{slot.timeLabel} Uhr</option>)}
+                </select>
+              </label>
+            </div>
+          )}
+
+          {selectedSlot && (
+            <div className="mt-6 flex gap-3 rounded-2xl bg-[#eef5f2] p-4 text-sm font-semibold text-[#315652]">
+              <Clock3 className="mt-0.5 h-5 w-5 shrink-0 text-[#0f7d79]" aria-hidden="true" />
+              <span>Deine Auswahl: {selectedSlot.label}</span>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="rounded-[2rem] bg-white p-6 shadow-[0_24px_80px_rgba(4,72,70,.12)] sm:p-9">

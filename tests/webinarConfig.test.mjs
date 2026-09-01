@@ -7,11 +7,14 @@ import {
     normalizeWebinarEmbedUrl,
 } from "../server/webinarConfig.js";
 
-test("creates configurable webinar times from the following day in Berlin time", () => {
+test("creates flexible webinar times from the first available date in Berlin time", () => {
     const config = getWebinarConfig({
         WEBINAR_TIME_ZONE: "Europe/Berlin",
-        WEBINAR_SLOT_HOURS: "10:00,18:00",
+        WEBINAR_START_TIMES: "10:00,18:00",
         WEBINAR_DAYS_AHEAD: "2",
+        WEBINAR_FIRST_DATE: "2026-09-02",
+        WEBINAR_FIRST_DAY_START_TIME: "10:00",
+        WEBINAR_MIN_LEAD_MINUTES: "15",
     });
     const slots = buildWebinarSlots({
         now: new Date("2026-09-01T06:00:00.000Z"),
@@ -22,6 +25,41 @@ test("creates configurable webinar times from the following day in Berlin time",
     assert.equal(slots[0].startsAt, "2026-09-02T08:00:00.000Z");
     assert.equal(slots[0].timeLabel, "10:00");
     assert.equal(slots[2].startsAt, "2026-09-03T08:00:00.000Z");
+});
+
+test("offers remaining start times on the same day and keeps seven available days", () => {
+    const config = getWebinarConfig({
+        WEBINAR_TIME_ZONE: "Europe/Berlin",
+        WEBINAR_START_TIMES: "10:00,11:00,12:00",
+        WEBINAR_DAYS_AHEAD: "7",
+        WEBINAR_FIRST_DATE: "2026-09-02",
+        WEBINAR_FIRST_DAY_START_TIME: "10:00",
+        WEBINAR_MIN_LEAD_MINUTES: "15",
+    });
+    const slots = buildWebinarSlots({
+        now: new Date("2026-09-02T08:10:00.000Z"),
+        config,
+    });
+
+    assert.equal(slots[0].startsAt, "2026-09-02T09:00:00.000Z");
+    assert.equal(new Set(slots.map((slot) => slot.dateLabel)).size, 7);
+});
+
+test("starts the launch day at 16:00 and offers the full schedule afterwards", () => {
+    const config = getWebinarConfig({
+        WEBINAR_TIME_ZONE: "Europe/Berlin",
+        WEBINAR_START_TIMES: "08:00,15:00,16:00,22:00",
+        WEBINAR_DAYS_AHEAD: "2",
+        WEBINAR_FIRST_DATE: "2026-09-02",
+        WEBINAR_FIRST_DAY_START_TIME: "16:00",
+        WEBINAR_MIN_LEAD_MINUTES: "15",
+    });
+    const slots = buildWebinarSlots({
+        now: new Date("2026-09-01T06:00:00.000Z"),
+        config,
+    });
+
+    assert.deepEqual(slots.map((slot) => slot.timeLabel), ["16:00", "22:00", "08:00", "15:00", "16:00", "22:00"]);
 });
 test("opens access shortly before the chosen time and expires after the viewing window", () => {
     const config = getWebinarConfig({

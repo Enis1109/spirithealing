@@ -417,7 +417,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       offers: [
         { "@type": "Offer", name: "Gemeinsamer Weg", price: "1555", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
         { "@type": "Offer", name: "Vertiefter Weg", price: "2777", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
-        { "@type": "Offer", name: "Persönlicher Weg", price: "4444", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#teilnahme` },
+        { "@type": "Offer", name: "Persönlicher Weg", price: "4777", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
       ],
     })
   }

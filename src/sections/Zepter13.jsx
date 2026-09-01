@@ -16,9 +16,9 @@ const checkoutLinks = {
   vertieftEinmalig: import.meta.env.VITE_ZEPTER_VERTIEFT_CHECKOUT_URL || "https://book.stripe.com/14A28t3Fwe0JeVB8ZF83C0K",
   vertieftZweiRaten: import.meta.env.VITE_ZEPTER_VERTIEFT_ZWEI_RATEN_URL || "https://book.stripe.com/eVq5kF2Bs2i1aFl2Bh83C0N",
   vertieftDreiRaten: import.meta.env.VITE_ZEPTER_VERTIEFT_DREI_RATEN_URL || "https://book.stripe.com/bJedRb1xo4q900H3Fl83C0M",
-  persoenlichEinmalig: import.meta.env.VITE_ZEPTER_PERSOENLICH_CHECKOUT_URL || "https://book.stripe.com/cNi6oJdg63m59Bh4Jp83C0Q",
-  persoenlichZweiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_ZWEI_RATEN_URL || "https://book.stripe.com/3cIbJ3gsi8Gp7t93Fl83C0R",
-  persoenlichDreiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_DREI_RATEN_URL || "https://book.stripe.com/bJecN73Fwg8ReVB4Jp83C0S",
+  persoenlichEinmalig: import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_CHECKOUT_URL || "https://book.stripe.com/9B614pcc2e0J9Bhgs783C0W",
+  persoenlichZweiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_ZWEI_RATEN_URL || "https://book.stripe.com/7sY8wR1xo3m58xda3J83C0X",
+  persoenlichDreiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_DREI_RATEN_URL || "https://book.stripe.com/4gM00l5NE6yhbJp3Fl83C0Z",
 }
 
 const recurringScenes = [
@@ -99,7 +99,7 @@ const tiers = [
   },
   {
     name: "Persönlicher Weg",
-    price: "4.444 €",
+    price: "4.777 €",
     intro: "Die engste Begleitung für einen Prozess, der täglich auf deine persönliche Bewegung reagieren darf.",
     items: [
       "Alles aus dem Vertieften Weg",
@@ -107,42 +107,10 @@ const tiers = [
       "Wöchentliche persönliche schriftliche Prozessauswertung",
       "Täglich ein individuell auf deinen Prozess zugeschnittener Impuls",
       "Antwort auf jede persönliche Anfrage im vereinbarten privaten Nachrichtenrahmen, werktags innerhalb von 48 Stunden",
-      "Auf vier Plätze begrenzt",
     ],
     checkout: checkoutLinks.persoenlichEinmalig,
-    twoInstallments: { label: "2 × 2.334 €", total: "4.668 €", checkout: checkoutLinks.persoenlichZweiRaten },
-    threeInstallments: { label: "3 × 1.556 €", total: "4.668 €", checkout: checkoutLinks.persoenlichDreiRaten },
-  },
-]
-
-const questions = [
-  {
-    title: "Brauche ich Vorkenntnisse in Anteilearbeit oder Matrixarbeit?",
-    text: "Nein. Der Einstieg ist so gestaltet, dass du die Begriffe und Zusammenhänge von Grund auf verständlich und praktisch kennenlernen kannst. Entscheidend ist nicht, was du schon weißt, sondern ob du bereit bist, deine wiederkehrenden Szenen ehrlich zu betrachten.",
-  },
-  {
-    title: "Was meint Spirit Healing mit einer Matrix?",
-    text: "Damit meinen wir kein äußeres System, das dich kontrolliert. Deine persönliche Matrix ist das unbewusste Zusammenspiel aus Erfahrungen, inneren Anteilen, Körperreaktionen, Erwartungen und Rollen. Daraus entsteht ein vertrautes Drehbuch, das sich in neuen Situationen wiederholen kann, solange es unsichtbar bleibt.",
-  },
-  {
-    title: "Was ist das Matrix-Gespräch?",
-    text: "Zu Beginn des Programms schauen wir gemeinsam auf eine wiederkehrende Situation aus deinem Leben. Wir machen sichtbar, welche Rollen vergeben sind, welche innere Regel wirkt und welcher Anteil bisher die Führung übernommen hat. Aus dem Gespräch entsteht dein persönlicher Start- und Integrationsplan. Im Vertieften und Persönlichen Weg erhältst du zusätzlich eine schriftliche Matrix-Ausarbeitung.",
-  },
-  {
-    title: "Wie werden persönliche Fragen beantwortet?",
-    text: "Im Gemeinsamen Weg greifen wir Fragen auf, wenn sie für den Gruppenprozess relevant sind. Im Vertieften Weg gibt es dafür sechs zusätzliche Kleingruppen-Calls. Im Persönlichen Weg wird jede persönliche Anfrage im vereinbarten privaten Nachrichtenrahmen werktags innerhalb von 48 Stunden beantwortet. Dieser Rahmen ersetzt keine Akut- oder Krisenbegleitung.",
-  },
-  {
-    title: "Was passiert, wenn ich an einem Live-Termin nicht teilnehmen kann?",
-    text: "Die Live-Termine werden aufgezeichnet. Du kannst den Inhalt nachholen und mit den jeweiligen Übungen weiterarbeiten.",
-  },
-  {
-    title: "Wie umfangreich sind die Rauhnachtsimpulse?",
-    text: "Die täglichen Impulse sind bewusst kurz gehalten. An den Feiertagen gibt es keine Verpflichtung zur Teilnahme oder zum Teilen persönlicher Inhalte.",
-  },
-  {
-    title: "Ist das Programm eine Psychotherapie?",
-    text: "Nein. Das Programm ersetzt keine medizinische, psychiatrische oder psychotherapeutische Behandlung. Bei einer akuten Krise ist eine entsprechend qualifizierte Anlaufstelle der richtige Rahmen.",
+    twoInstallments: { label: "2 × 2.508 €", total: "5.016 €", checkout: checkoutLinks.persoenlichZweiRaten },
+    threeInstallments: { label: "3 × 1.672 €", total: "5.016 €", checkout: checkoutLinks.persoenlichDreiRaten },
   },
 ]
 
@@ -377,20 +345,6 @@ export const Zepter13 = () => {
             <div className="mt-8 rounded-3xl border border-[#c9dcd3] bg-[#edf5f1] p-6">
               <p className="flex gap-4 leading-7 text-[#365653]"><HeartHandshake className="mt-1 h-6 w-6 shrink-0 text-[#0f7d79]" aria-hidden="true" />Wir arbeiten ressourcenorientiert und öffnen keine persönlichen Themen unter Druck. Deine Grenzen und dein eigenes Tempo gehören zum Rahmen der gesamten Begleitung.</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-[#d5e4dd] bg-[#edf5f1] py-20 lg:py-28">
-        <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
-          <SectionTitle eyebrow="Fragen zum Programm" title="Was vor der Buchung wichtig ist" center />
-          <div className="mt-12 divide-y divide-[#bed3ca] border-y border-[#bed3ca]">
-            {questions.map((item) => (
-              <details key={item.title} className="group py-6">
-                <summary className="cursor-pointer list-none pr-8 text-xl font-bold leading-8 text-[#173c39] marker:hidden">{item.title}</summary>
-                <p className="mt-4 max-w-4xl text-lg leading-8 text-[#506864]">{item.text}</p>
-              </details>
-            ))}
           </div>
         </div>
       </section>
