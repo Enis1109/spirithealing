@@ -106,6 +106,18 @@ import {
     ScheduleSurveyValidationError,
 } from "./server/scheduleSurveyValidation.js";
 import {
+    getAdminWebinarRegistrations,
+    getAvailableWebinarSlots,
+    getWebinarAccess,
+    registerForWebinar,
+    startWebinarReminderWorker,
+} from "./server/webinar.js";
+import {
+    normalizeWebinarRegistration,
+    normalizeWebinarToken,
+    WebinarValidationError,
+} from "./server/webinarValidation.js";
+import {
     AiCommandCenterExecutionError,
     createAiImageDraft,
     decideAiWorkflowRun,
@@ -374,6 +386,48 @@ app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, resp
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Contact submission failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/webinar/slots", (_request, response) => {
+    response.set("Cache-Control", "no-store");
+    return response.json({ ok: true, ...getAvailableWebinarSlots() });
+});
+
+app.post("/api/webinar/register", submissionLimiter, sameOriginOnly, async (request, response) => {
+    try {
+        const form = normalizeWebinarRegistration(request.body);
+        const registration = await registerForWebinar(form);
+        return response.status(201).json({ ok: true, ...registration });
+    } catch (error) {
+        if (error instanceof WebinarValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        if (error?.code === "SLOT_UNAVAILABLE") {
+            return response.status(409).json({ ok: false, error: "slot_unavailable" });
+        }
+        if (error?.code === "EMAIL_DELIVERY") {
+            console.error("Webinar confirmation could not be sent", error);
+            return response.status(502).json({ ok: false, error: "email_delivery" });
+        }
+        console.error("Webinar registration failed", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.get("/api/webinar/access", analyticsLimiter, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    try {
+        const token = normalizeWebinarToken(request.query.token);
+        const access = await getWebinarAccess(token);
+        if (!access) return response.status(404).json({ ok: false, error: "invalid_access" });
+        return response.json({ ok: true, access });
+    } catch (error) {
+        if (error instanceof WebinarValidationError) {
+            return response.status(404).json({ ok: false, error: "invalid_access" });
+        }
+        console.error("Webinar access could not be prepared", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });
@@ -985,6 +1039,19 @@ app.get("/api/admin/schedule-surveys", async (request, response) => {
     }
 });
 
+app.get("/api/admin/webinar/registrations", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        response.set("Cache-Control", "no-store");
+        return response.json({ ok: true, registrations: await getAdminWebinarRegistrations() });
+    } catch (error) {
+        console.error("Webinar registrations could not be prepared", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
 app.put("/api/admin/onboarding/:id", adminSameOriginOnly, async (request, response) => {
     const member = await getAdminMember(request, response);
     if (!member) return undefined;
@@ -1519,6 +1586,7 @@ const initializeServices = async () => {
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
     await initializeDefaultPrograms();
+    startWebinarReminderWorker();
 };
 
 startupPromise = initializeServices().catch((error) => {

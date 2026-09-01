@@ -34,6 +34,34 @@ CREATE TABLE IF NOT EXISTS event_registrations (
     INDEX event_created_at_idx (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS webinar_registrations (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    event_key VARCHAR(80) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(254) NOT NULL,
+    locale CHAR(2) NOT NULL DEFAULT 'de',
+    selected_at DATETIME NOT NULL,
+    access_token_hash CHAR(64) NULL,
+    token_expires_at DATETIME NOT NULL,
+    privacy_consent_version VARCHAR(48) NOT NULL,
+    privacy_consent_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    newsletter_requested TINYINT(1) NOT NULL DEFAULT 0,
+    newsletter_status VARCHAR(24) NOT NULL DEFAULT 'not_requested',
+    confirmation_status VARCHAR(24) NOT NULL DEFAULT 'pending',
+    confirmation_sent_at DATETIME NULL,
+    reminder_status VARCHAR(24) NOT NULL DEFAULT 'pending',
+    reminder_attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    reminder_attempted_at DATETIME NULL,
+    reminder_sent_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY webinar_event_email_unique (event_key, email),
+    UNIQUE KEY webinar_access_token_unique (access_token_hash),
+    INDEX webinar_selected_at_idx (selected_at),
+    INDEX webinar_reminder_idx (event_key, reminder_status, selected_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,

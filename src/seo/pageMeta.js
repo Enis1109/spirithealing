@@ -71,6 +71,17 @@ export const pageMeta = {
       ...zepterImage,
       contentLanguage: "de",
     },
+    "/vortrag-13-wochen-programm": {
+      title: "Online-Vortrag zum 13-Wochen-Programm | Spirit Healing",
+      description: "Wähle deinen Termin für den aufgezeichneten Spirit-Healing-Online-Vortrag über die Matrix und das 13-Wochen-Programm.",
+      ...zepterImage,
+      contentLanguage: "de",
+    },
+    "/vortrag-13-wochen-programm/ansehen": {
+      title: "Dein Online-Vortrag | Spirit Healing",
+      description: "Persönlicher Zugang zum Spirit-Healing-Online-Vortrag.",
+      noindex: true,
+    },
     "/rauhnaechte": {
       title: "Rauhnächte 2026/2027: Begleitung & Rituale | Spirit Healing",
       description: "Zwölf geführte Rauhnächte mit Meditationen, Ritualen, Journal, täglichen Impulsen und Live-Begleitung von Sabine und Selcan. Jetzt online buchen.",
@@ -132,6 +143,17 @@ export const pageMeta = {
       ...zepterImage,
       contentLanguage: "de",
     },
+    "/vortrag-13-wochen-programm": {
+      title: "13-Wochen-Programm Online-Vortrag | Spirit Healing",
+      description: "Wähle deinen Termin für den aufgezeichneten Spirit-Healing-Online-Vortrag über die Matrix und das 13-Wochen-Programm.",
+      ...zepterImage,
+      contentLanguage: "de",
+    },
+    "/vortrag-13-wochen-programm/ansehen": {
+      title: "Dein Online-Vortrag | Spirit Healing",
+      description: "Persönlicher Zugang zum Spirit-Healing-Online-Vortrag.",
+      noindex: true,
+    },
     "/rauhnaechte": {
       title: "Rauhnächte 2026/2027: Begleitung & Rituale | Spirit Healing",
       description: "Zwölf geführte Rauhnächte mit Meditationen, Ritualen, Journal, täglichen Impulsen und Live-Begleitung von Sabine und Selcan.",
@@ -168,6 +190,7 @@ export const indexablePaths = Object.freeze([
   "/vortraege-seminare",
   "/berlin-live",
   "/13-wochen-programm",
+  "/vortrag-13-wochen-programm",
   "/rauhnaechte",
   "/gratis-meditationen",
   "/kontakt",

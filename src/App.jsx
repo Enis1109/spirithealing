@@ -21,6 +21,8 @@ import { BerlinLive } from "@/sections/BerlinLive"
 import { Zepter13 } from "@/sections/Zepter13"
 import { Rauhnaechte } from "@/sections/Rauhnaechte"
 import { NotFound } from "@/sections/NotFound"
+import { WebinarRegistration } from "@/sections/WebinarRegistration"
+import { WebinarWatch } from "@/sections/WebinarWatch"
 
 const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
 const AdminArea = lazy(() => import("@/sections/AdminArea").then((module) => ({ default: module.AdminArea })));
@@ -56,12 +58,13 @@ function App() {
   const isBerlinLanding = location.pathname === "/berlin-live";
   const isZepter13Landing = location.pathname === "/13-wochen-programm";
   const isRauhnaechteLanding = location.pathname === "/rauhnaechte";
+  const isWebinarApp = location.pathname.startsWith("/vortrag-13-wochen-programm");
   const isAdminApp = location.pathname.startsWith("/admin");
   const isOnboardingApp = location.pathname.startsWith("/startfragebogen");
   const isScheduleSurveyApp = location.pathname.startsWith("/terminumfrage");
   const isMemberApp = location.pathname.startsWith("/mitglieder")
     || isCampaignLanding;
-  const isStandaloneApp = isMemberApp || isAdminApp || isOnboardingApp || isScheduleSurveyApp || isBerlinLanding || isZepter13Landing || isRauhnaechteLanding;
+  const isStandaloneApp = isMemberApp || isAdminApp || isOnboardingApp || isScheduleSurveyApp || isBerlinLanding || isZepter13Landing || isRauhnaechteLanding || isWebinarApp;
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
@@ -82,6 +85,8 @@ function App() {
         <Route path="/berlin-live" element={<BerlinLive/>}/>
         <Route path="/13-wochen-programm" element={<Zepter13/>}/>
         <Route path="/rauhnaechte" element={<Rauhnaechte/>}/>
+        <Route path="/vortrag-13-wochen-programm" element={<WebinarRegistration/>}/>
+        <Route path="/vortrag-13-wochen-programm/ansehen" element={<WebinarWatch/>}/>
         <Route path="/mitglieder/*" element={
           <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#edf8f6] font-bold text-[#168e91]">Spirit Healing wird geladen …</main>}>
             <MemberArea/>

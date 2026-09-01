@@ -349,6 +349,66 @@ export const sendEventNotification = async ({ id, eventKey, name, email, newslet
     });
 };
 
+const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false }) => {
+    const subject = reminder
+        ? "Dein Spirit-Healing-Vortrag beginnt in einer Stunde"
+        : "Dein Termin für den Spirit-Healing-Online-Vortrag";
+    const headline = reminder
+        ? "In einer Stunde beginnt dein Vortrag"
+        : "Dein Termin ist reserviert";
+    const intro = reminder
+        ? "Über deinen persönlichen Link kommst du direkt zum Vortrag. Du kannst die Seite schon jetzt öffnen."
+        : "Du hast diesen Zeitpunkt für den aufgezeichneten Online-Vortrag gewählt:";
+    const button = reminder ? "Zum Vortrag" : "Persönlichen Zugang öffnen";
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: email,
+        replyTo: notificationRecipient,
+        subject,
+        text: [
+            `Hallo ${name},`,
+            "",
+            intro,
+            "",
+            slotLabel,
+            "",
+            watchUrl,
+            "",
+            "Der Link ist persönlich und gilt für den von dir gewählten Termin.",
+            "",
+            "Von Herzen",
+            "Sabine & Selcan",
+            "Spirit Healing",
+        ].join("\n"),
+        html: `
+            <div style="margin:0;background:#eaf3f1;padding:30px 12px;font-family:Arial,sans-serif;color:#163f41">
+                <div style="max-width:640px;margin:0 auto;overflow:hidden;border-radius:28px;background:#fffaf2;box-shadow:0 16px 44px rgba(1,47,49,.16)">
+                    <div style="background:linear-gradient(145deg,#054e51,#087478);padding:36px 28px;text-align:center;color:#fff">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#e8ca67">Spirit Healing</div>
+                        <h1 style="margin:14px auto 0;max-width:520px;font-size:29px;line-height:1.22">${escapeHtml(headline)}</h1>
+                    </div>
+                    <div style="padding:34px 28px;line-height:1.65">
+                        <p style="margin:0 0 14px;font-size:18px">Hallo ${escapeHtml(name)},</p>
+                        <p style="margin:0 0 22px">${escapeHtml(intro)}</p>
+                        <div style="border:1px solid #d8bd60;border-radius:18px;background:#f8f0d6;padding:20px;text-align:center">
+                            <strong style="font-size:19px;color:#075f62">${escapeHtml(slotLabel)}</strong>
+                        </div>
+                        <p style="margin:28px 0;text-align:center">
+                            <a href="${escapeHtml(watchUrl)}" style="display:inline-block;border-radius:999px;background:#d4af37;padding:14px 24px;color:#034f52;text-decoration:none;font-size:16px;font-weight:700">${escapeHtml(button)}</a>
+                        </p>
+                        <p style="margin:0;font-size:13px;color:#607779">Der Link ist persönlich und gilt für den von dir gewählten Termin.</p>
+                        <p style="margin:24px 0 0;color:#557072">Von Herzen<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
+                    </div>
+                </div>
+            </div>
+        `,
+    });
+};
+
+export const sendWebinarConfirmation = (details) => webinarEmail(details);
+export const sendWebinarReminder = (details) => webinarEmail({ ...details, reminder: true });
+
 export const sendNewsletterConfirmation = async ({ name, email, locale, confirmationUrl }) => {
     const isTurkish = locale === "tr";
     const subject = isTurkish
