@@ -7,6 +7,22 @@ import {
     normalizeWebinarEmbedUrl,
 } from "../server/webinarConfig.js";
 
+test("does not offer webinar dates before Thursday, 3 September 2026 by default", () => {
+    const config = getWebinarConfig({
+        WEBINAR_TIME_ZONE: "Europe/Berlin",
+        WEBINAR_START_TIMES: "08:00,20:00",
+        WEBINAR_DAYS_AHEAD: "1",
+    });
+    const slots = buildWebinarSlots({
+        now: new Date("2026-09-02T06:00:00.000Z"),
+        config,
+    });
+
+    assert.equal(slots.length, 2);
+    assert.equal(slots[0].startsAt, "2026-09-03T06:00:00.000Z");
+    assert.match(slots[0].dateLabel, /Donnerstag, 03\.09\.2026/u);
+});
+
 test("creates flexible webinar times from the first available date in Berlin time", () => {
     const config = getWebinarConfig({
         WEBINAR_TIME_ZONE: "Europe/Berlin",
