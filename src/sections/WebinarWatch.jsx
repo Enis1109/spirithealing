@@ -30,7 +30,7 @@ export const WebinarWatch = () => {
 
   useEffect(() => {
     const previousTitle = document.title
-    document.title = "Dein Online-Vortrag | Spirit Healing"
+    document.title = "Wer schreibt dein inneres Drehbuch? | Spirit Healing"
     let stopped = false
     let pollingTimer
 
@@ -122,15 +122,18 @@ export const WebinarWatch = () => {
     <div className="p-5 sm:p-9">
       <div className="mb-6 flex items-center gap-3 text-[#075f62]">
         <PlayCircle className="h-7 w-7" aria-hidden="true" />
-        <h1 className="font-serif text-3xl font-semibold">Das Zepter wieder übernehmen</h1>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a67426]">Spirit-Healing-Online-Vortrag</p>
+          <h1 className="mt-1 font-serif text-3xl font-semibold">Wer schreibt dein inneres Drehbuch?</h1>
+        </div>
       </div>
       {access.embedUrl ? (
         <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-lg">
           <iframe
             src={access.embedUrl}
-            title="Spirit-Healing-Online-Vortrag"
+            title="Wer schreibt dein inneres Drehbuch? – Spirit-Healing-Online-Vortrag"
             className="h-full w-full"
-            allow="autoplay; fullscreen; picture-in-picture"
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />

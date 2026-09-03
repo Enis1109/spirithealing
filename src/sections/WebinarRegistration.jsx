@@ -122,8 +122,9 @@ export const WebinarRegistration = () => {
           <Link to="/13-wochen-programm" className="inline-block rounded-full bg-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/15">Spirit Healing</Link>
           <div className="mt-16 max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f0d687]">Kostenloser aufgezeichneter Online-Vortrag</p>
-            <h1 className="mt-5 font-serif text-4xl font-semibold leading-tight sm:text-6xl">Das Zepter wieder übernehmen</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80">Ab Mittwoch kannst du den Vortrag flexibel ansehen. Wähle einfach den Tag und die Startzeit, die zu dir passen.</p>
+            <h1 className="mt-5 font-serif text-4xl font-semibold leading-tight sm:text-6xl">Wer schreibt dein inneres Drehbuch?</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80">Erfahre, wie deine persönliche Matrix entsteht, warum sich bestimmte Rollen und Muster wiederholen und wie du das Zepter wieder in die eigene Hand nehmen kannst.</p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/70">Wähle den Tag und die Startzeit, die zu dir passen. Den persönlichen Zugang erhältst du direkt per E-Mail.</p>
           </div>
         </div>
       </header>
@@ -134,7 +135,7 @@ export const WebinarRegistration = () => {
             <div className="rounded-2xl bg-[#e5f1ed] p-3 text-[#087478]"><CalendarDays className="h-6 w-6" aria-hidden="true" /></div>
             <div>
               <h2 className="font-serif text-3xl font-semibold">Wähle Tag und Uhrzeit</h2>
-              <p className="mt-2 text-sm leading-6 text-[#617672]">Am Mittwoch ab 16:00 Uhr, danach täglich stündlich von 08:00 bis 22:00 Uhr. Alle Zeiten gelten für Deutschland.</p>
+              <p className="mt-2 text-sm leading-6 text-[#617672]">Wähle einen verfügbaren Termin. Alle Zeiten gelten für Deutschland.</p>
             </div>
           </div>
 

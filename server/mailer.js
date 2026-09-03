@@ -351,14 +351,14 @@ export const sendEventNotification = async ({ id, eventKey, name, email, newslet
 
 const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false }) => {
     const subject = reminder
-        ? "Dein Spirit-Healing-Vortrag beginnt in einer Stunde"
-        : "Dein Termin für den Spirit-Healing-Online-Vortrag";
+        ? "In einer Stunde: Wer schreibt dein inneres Drehbuch?"
+        : "Dein Zugang: Wer schreibt dein inneres Drehbuch?";
     const headline = reminder
         ? "In einer Stunde beginnt dein Vortrag"
         : "Dein Termin ist reserviert";
     const intro = reminder
-        ? "Über deinen persönlichen Link kommst du direkt zum Vortrag. Du kannst die Seite schon jetzt öffnen."
-        : "Du hast diesen Zeitpunkt für den aufgezeichneten Online-Vortrag gewählt:";
+        ? "Über deinen persönlichen Link kommst du direkt zum Vortrag „Wer schreibt dein inneres Drehbuch?“. Du kannst die Seite schon jetzt öffnen."
+        : "Dein Termin für den Online-Vortrag „Wer schreibt dein inneres Drehbuch?“ ist reserviert:";
     const button = reminder ? "Zum Vortrag" : "Persönlichen Zugang öffnen";
 
     await transporter.sendMail({
@@ -375,7 +375,7 @@ const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false
             "",
             watchUrl,
             "",
-            "Der Link ist persönlich und gilt für den von dir gewählten Termin.",
+            "Der Link führt dich zu deiner persönlichen Vortragsseite und gilt für den von dir gewählten Termin.",
             "",
             "Von Herzen",
             "Sabine & Selcan",
@@ -397,7 +397,7 @@ const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false
                         <p style="margin:28px 0;text-align:center">
                             <a href="${escapeHtml(watchUrl)}" style="display:inline-block;border-radius:999px;background:#d4af37;padding:14px 24px;color:#034f52;text-decoration:none;font-size:16px;font-weight:700">${escapeHtml(button)}</a>
                         </p>
-                        <p style="margin:0;font-size:13px;color:#607779">Der Link ist persönlich und gilt für den von dir gewählten Termin.</p>
+                        <p style="margin:0;font-size:13px;color:#607779">Der Link führt dich zu deiner persönlichen Vortragsseite und gilt für den von dir gewählten Termin.</p>
                         <p style="margin:24px 0 0;color:#557072">Von Herzen<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
                     </div>
                 </div>

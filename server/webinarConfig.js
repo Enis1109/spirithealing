@@ -6,6 +6,7 @@ const DEFAULT_FIRST_DAY_START_TIME = "08:00";
 const DEFAULT_MIN_LEAD_MINUTES = 15;
 const DEFAULT_ACCESS_EARLY_MINUTES = 5;
 const DEFAULT_ACCESS_WINDOW_MINUTES = 240;
+const DEFAULT_VIDEO_URL = "https://vimeo.com/1223574981/ad820715ad";
 
 const dateTimeFormatter = (timeZone) => new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -86,6 +87,17 @@ export const normalizeWebinarEmbedUrl = (value) => {
     try {
         const url = new URL(value);
         const hostname = url.hostname.toLowerCase();
+        if (url.protocol === "https:" && (hostname === "vimeo.com" || hostname === "www.vimeo.com")) {
+            const match = url.pathname.match(/^\/(\d+)(?:\/([a-zA-Z0-9]+))?\/?$/u);
+            if (!match) return "";
+            const embedUrl = new URL(`https://player.vimeo.com/video/${match[1]}`);
+            if (match[2]) embedUrl.searchParams.set("h", match[2]);
+            embedUrl.searchParams.set("dnt", "1");
+            embedUrl.searchParams.set("title", "0");
+            embedUrl.searchParams.set("byline", "0");
+            embedUrl.searchParams.set("portrait", "0");
+            return embedUrl.toString();
+        }
         const allowed = hostname === "player.vimeo.com"
             || hostname === "www.youtube-nocookie.com"
             || hostname === "www.youtube.com";
@@ -99,7 +111,7 @@ export const getWebinarConfig = (environment = process.env) => {
     const slotHours = parseSlotHours(environment.WEBINAR_START_TIMES);
     return {
         eventKey: "zepter-13-webinar",
-        title: "Das Zepter wieder übernehmen – der Online-Vortrag",
+        title: "Wer schreibt dein inneres Drehbuch? – der Online-Vortrag",
         timeZone: environment.WEBINAR_TIME_ZONE || DEFAULT_TIME_ZONE,
         slotHours: slotHours.length > 0 ? slotHours : parseSlotHours(DEFAULT_SLOT_HOURS),
         daysAhead: clampInteger(environment.WEBINAR_DAYS_AHEAD, DEFAULT_DAYS_AHEAD, 1, 31),
@@ -125,7 +137,7 @@ export const getWebinarConfig = (environment = process.env) => {
             30,
             1440,
         ),
-        embedUrl: normalizeWebinarEmbedUrl(environment.WEBINAR_VIDEO_EMBED_URL),
+        embedUrl: normalizeWebinarEmbedUrl(environment.WEBINAR_VIDEO_EMBED_URL || DEFAULT_VIDEO_URL),
     };
 };
 

@@ -72,8 +72,8 @@ export const pageMeta = {
       contentLanguage: "de",
     },
     "/vortrag-13-wochen-programm": {
-      title: "Online-Vortrag zum 13-Wochen-Programm | Spirit Healing",
-      description: "Wähle deinen Termin für den aufgezeichneten Spirit-Healing-Online-Vortrag über die Matrix und das 13-Wochen-Programm.",
+      title: "Wer schreibt dein inneres Drehbuch? | Spirit Healing",
+      description: "Kostenloser Online-Vortrag über deine persönliche Matrix, unbewusste Rollen und wiederkehrende Muster. Wähle deinen Termin und erhalte deinen persönlichen Zugang.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -144,8 +144,8 @@ export const pageMeta = {
       contentLanguage: "de",
     },
     "/vortrag-13-wochen-programm": {
-      title: "13-Wochen-Programm Online-Vortrag | Spirit Healing",
-      description: "Wähle deinen Termin für den aufgezeichneten Spirit-Healing-Online-Vortrag über die Matrix und das 13-Wochen-Programm.",
+      title: "Wer schreibt dein inneres Drehbuch? | Spirit Healing",
+      description: "Kostenloser Online-Vortrag über deine persönliche Matrix, unbewusste Rollen und wiederkehrende Muster. Wähle deinen Termin und erhalte deinen persönlichen Zugang.",
       ...zepterImage,
       contentLanguage: "de",
     },

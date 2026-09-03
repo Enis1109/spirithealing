@@ -97,3 +97,12 @@ test("accepts only supported secure video embeds", () => {
     assert.equal(normalizeWebinarEmbedUrl("https://example.com/video/123456"), "");
     assert.equal(normalizeWebinarEmbedUrl("http://player.vimeo.com/video/123456"), "");
 });
+
+test("turns the supplied private Vimeo link into the protected player URL", () => {
+    const config = getWebinarConfig({});
+
+    assert.equal(
+        config.embedUrl,
+        "https://player.vimeo.com/video/1223574981?h=ad820715ad&dnt=1&title=0&byline=0&portrait=0",
+    );
+});
