@@ -77,12 +77,16 @@ test("normalizes a content project and blocks direct identifiers", () => {
         callToAction: "Mehr über die Gruppe erfahren",
         tone: "warm und klar",
         constraints: "Keine Heilversprechen",
-        channels: ["instagram", "facebook", "instagram"],
+        channels: ["instagram", "facebook", "tiktok", "whatsapp", "youtube", "linkedin", "newsletter", "blog", "instagram"],
         anonymizationConfirmed: true,
     };
     const normalized = normalizeWorkflowRequest(input);
     assert.equal(normalized.workflowId, "content-project");
-    assert.deepEqual(normalized.contentBrief.channels, ["instagram", "facebook"]);
+    assert.deepEqual(normalized.contentBrief.channels, ["instagram", "facebook", "tiktok", "whatsapp", "youtube", "linkedin", "newsletter", "blog"]);
+    assert.throws(
+        () => normalizeWorkflowRequest({ ...input, channels: ["instagram", "telegram"] }),
+        (error) => error instanceof AiCommandCenterValidationError && error.field === "channels",
+    );
     assert.throws(
         () => normalizeWorkflowRequest({ ...input, coreMessage: "Bitte an person@example.com senden" }),
         (error) => error instanceof AiCommandCenterValidationError && error.reason === "personal_data_email",
