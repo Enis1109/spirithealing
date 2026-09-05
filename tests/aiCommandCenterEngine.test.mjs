@@ -83,10 +83,11 @@ test("creates a content project with text and image handoff but no external acti
         callToAction: "Mehr erfahren",
         tone: "warm und klar",
         constraints: "Keine Heilversprechen",
-        channels: ["instagram", "facebook"],
+        channels: ["instagram", "facebook", "tiktok", "whatsapp", "youtube"],
     };
     const run = buildMockWorkflowRun({ workflowId: "content-project", contentBrief });
-    assert.equal(run.result.contentPackage.pieces.length, 2);
+    assert.equal(run.result.contentPackage.pieces.length, 5);
+    assert.deepEqual(run.result.contentPackage.pieces.map((piece) => piece.channel), ["instagram", "facebook", "tiktok", "whatsapp", "youtube"]);
     assert.equal(run.result.contentPackage.imageBriefs.length, 1);
     assert.deepEqual(run.result.externalActions, []);
     assert.ok(run.steps.some((step) => step.agentId === "brand-review"));

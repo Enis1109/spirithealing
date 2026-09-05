@@ -1,5 +1,5 @@
 const workflowIds = new Set(["core-product-development", "content-project", "team-meeting"]);
-const contentChannels = new Set(["instagram", "facebook", "linkedin", "newsletter", "blog"]);
+const contentChannels = new Set(["instagram", "facebook", "tiktok", "whatsapp", "youtube", "linkedin", "newsletter", "blog"]);
 const knowledgeCategories = new Set(["unternehmen", "marke", "angebote", "zielgruppen", "prozesse", "kennzahlen", "termine"]);
 
 const directIdentifierPatterns = [
@@ -97,7 +97,7 @@ export const normalizeWorkflowRequest = (body = {}) => {
     }
     const channels = [...new Set((Array.isArray(body.channels) ? body.channels : [])
         .map((channel) => String(channel || "").trim().toLowerCase()))];
-    if (channels.length < 1 || channels.length > 5 || channels.some((channel) => !contentChannels.has(channel))) {
+    if (channels.length < 1 || channels.length > contentChannels.size || channels.some((channel) => !contentChannels.has(channel))) {
         throw new AiCommandCenterValidationError("channels");
     }
     const contentBrief = {

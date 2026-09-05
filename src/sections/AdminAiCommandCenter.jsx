@@ -69,6 +69,9 @@ const emptyKnowledge = {
 const contentChannels = [
     ["instagram", "Instagram"],
     ["facebook", "Facebook"],
+    ["tiktok", "TikTok"],
+    ["whatsapp", "WhatsApp"],
+    ["youtube", "YouTube"],
     ["linkedin", "LinkedIn"],
     ["newsletter", "Newsletter"],
     ["blog", "Blog"],
