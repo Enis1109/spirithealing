@@ -3,6 +3,7 @@ import fs from "node:fs"
 import test from "node:test"
 import {
   canonicalUrlFor,
+  canonicalUrlForLanguage,
   indexablePaths,
   metadataForPath,
   structuredDataForPath,
@@ -42,9 +43,29 @@ test("keeps private and unknown routes out of the index", () => {
 test("keeps the XML sitemap aligned with public pages", () => {
   const sitemap = fs.readFileSync(new URL("../public/sitemap.xml", import.meta.url), "utf8")
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1])
-  const expected = indexablePaths.map((pathname) => canonicalUrlFor(pathname === "/" ? "/" : pathname).replace(/^https:\/\/spirit-healing\.tr$/u, "https://spirit-healing.tr/"))
+  const expected = indexablePaths.flatMap((pathname) => {
+    const canonical = canonicalUrlFor(pathname === "/" ? "/" : pathname).replace(/^https:\/\/spirit-healing\.tr$/u, "https://spirit-healing.tr/")
+    return pathname === "/berlin-live"
+      ? [canonical, canonicalUrlForLanguage(pathname, "tr")]
+      : [canonical]
+  })
   assert.deepEqual(locations, expected)
   assert.equal(sitemap.includes("/mitglieder"), false)
+})
+
+test("keeps the reviewed Berlin Live language versions separate", () => {
+  const german = metadataForPath("/berlin-live", "de")
+  const turkish = metadataForPath("/berlin-live", "tr")
+
+  assert.equal(canonicalUrlForLanguage("/berlin-live", "de"), "https://spirit-healing.tr/berlin-live")
+  assert.equal(canonicalUrlForLanguage("/berlin-live", "tr"), "https://spirit-healing.tr/berlin-live?lang=tr")
+  assert.match(german.title, /Familienaufstellung Berlin/u)
+  assert.match(turkish.title, /Travma Duyarlı Aile ve Sistem Dizimi/u)
+
+  const structuredData = JSON.stringify(structuredDataForPath("/berlin-live", "tr"))
+  assert.match(structuredData, /Berlin’de Travma Duyarlı Aile ve Sistem Dizimi/u)
+  assert.match(structuredData, /Kendi dizimiyle katılım/u)
+  assert.match(structuredData, /berlin-live\?lang=tr#event/u)
 })
 
 test("adds truthful structured data for the main offers", () => {
@@ -76,6 +97,14 @@ test("places route-specific SEO in the initial HTML response", () => {
   assert.match(rauhnaechte, /rel="canonical" href="https:\/\/spirit-healing\.tr\/rauhnaechte"/u)
   assert.match(rauhnaechte, /property="og:image" content="https:\/\/spirit-healing\.tr\/rauhnaechte-spirit-healing\.png"/u)
   assert.match(rauhnaechte, /data-spirit-healing-seo="true"/u)
+
+  const berlinTurkish = injectSeoIntoDocument(shell, "/berlin-live?lang=tr")
+  assert.match(berlinTurkish, /<html lang="tr">/u)
+  assert.match(berlinTurkish, /Berlin’de Travma Duyarlı Aile ve Sistem Dizimi/u)
+  assert.match(berlinTurkish, /rel="canonical" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)
+  assert.match(berlinTurkish, /hreflang="de" href="https:\/\/spirit-healing\.tr\/berlin-live"/u)
+  assert.match(berlinTurkish, /hreflang="tr" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)
+  assert.match(berlinTurkish, /property="og:locale" content="tr_TR"/u)
 
   const privatePage = injectSeoIntoDocument(shell, "/mitglieder/programme/zepter")
   assert.match(privatePage, /name="robots" content="noindex, follow"/u)

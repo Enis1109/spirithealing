@@ -4,6 +4,7 @@ import { contactContent } from "@/sections/Contact";
 import { faqContent } from "@/sections/FAQ";
 import { homeHeroContent } from "@/sections/Herotest";
 import { berlinLiveContentFields } from "@/content/berlinLiveContent";
+import { berlinLiveTurkishDefaults } from "@/content/berlinLiveTurkishContent";
 
 const pageEntry = ({ key, section, group = section, label, de, tr, compact = false, languages = ["de", "tr"] }) => ({
     key,
@@ -53,6 +54,19 @@ berlinLiveContentFields.forEach((item) => {
         tr: item.value,
         compact: item.compact,
         languages: ["de"],
+    }));
+});
+
+berlinLiveContentFields.forEach((item) => {
+    pageEntries.push(pageEntry({
+        key: `berlin-tr.${item.id}`,
+        section: "Berlin Live",
+        group: `Türkçe · ${item.group}`,
+        label: item.label,
+        de: "",
+        tr: berlinLiveTurkishDefaults[item.id] || item.value,
+        compact: item.compact,
+        languages: ["tr"],
     }));
 });
 

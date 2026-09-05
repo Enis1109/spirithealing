@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { turkishTranslations, turkishTranslationsByPath } from "@/i18n/translations";
 import {
-    canonicalUrlFor,
+    canonicalUrlForLanguage,
     metadataForPath,
     socialImageFor,
     structuredDataForPath,
@@ -30,6 +30,32 @@ const upsertLink = (rel, href) => {
     element.setAttribute("href", href);
 };
 
+const syncBerlinLanguageLinks = (pathname) => {
+    const selector = 'link[data-spirit-healing-hreflang="true"]';
+    const existing = [...document.head.querySelectorAll(selector)];
+    if (pathname !== "/berlin-live") {
+        existing.forEach((element) => element.remove());
+        return;
+    }
+
+    const languages = [
+        ["de", canonicalUrlForLanguage(pathname, "de")],
+        ["tr", canonicalUrlForLanguage(pathname, "tr")],
+        ["x-default", canonicalUrlForLanguage(pathname, "de")],
+    ];
+    languages.forEach(([hrefLang, href]) => {
+        let element = document.head.querySelector(`${selector}[hreflang="${hrefLang}"]`);
+        if (!element) {
+            element = document.createElement("link");
+            element.rel = "alternate";
+            element.dataset.spiritHealingHreflang = "true";
+            document.head.appendChild(element);
+        }
+        element.hreflang = hrefLang;
+        element.href = href;
+    });
+};
+
 const normalize = (value = "") => value.replace(/\s+/g, " ").trim();
 
 const replacePreservingWhitespace = (value, replacement) => {
@@ -45,7 +71,10 @@ const isExcluded = (node) => {
 
 export const DocumentTranslator = () => {
     const { language } = useLanguage();
-    const { pathname } = useLocation();
+    const { pathname, search } = useLocation();
+    const pageLanguage = pathname === "/berlin-live" && new URLSearchParams(search).get("lang") === "tr"
+        ? "tr"
+        : language;
     const originalText = useRef(new WeakMap());
     const originalAttributes = useRef(new WeakMap());
 
@@ -53,7 +82,7 @@ export const DocumentTranslator = () => {
         const translateTextNode = (node) => {
             if (isExcluded(node)) return;
 
-            if (language === "de") {
+            if (pageLanguage === "de") {
                 const original = originalText.current.get(node);
                 if (original !== undefined && node.nodeValue !== original) {
                     node.nodeValue = original;
@@ -90,7 +119,7 @@ export const DocumentTranslator = () => {
 
                 let originals = originalAttributes.current.get(element);
 
-                if (language === "de") {
+                if (pageLanguage === "de") {
                     const original = originals?.get(attribute);
                     if (original !== undefined && currentValue !== original) {
                         element.setAttribute(attribute, original);
@@ -157,13 +186,13 @@ export const DocumentTranslator = () => {
             attributeFilter: translatedAttributes,
         });
 
-        const routeMeta = metadataForPath(pathname, language);
+        const routeMeta = metadataForPath(pathname, pageLanguage);
         if (routeMeta) {
             document.title = routeMeta.title;
-            const canonicalUrl = canonicalUrlFor(pathname);
+            const canonicalUrl = canonicalUrlForLanguage(pathname, pageLanguage);
             const socialImage = socialImageFor(routeMeta);
             const socialImageAlt = routeMeta.imageAlt || "Spirit Healing";
-            const contentLanguage = routeMeta.contentLanguage || language;
+            const contentLanguage = routeMeta.contentLanguage || pageLanguage;
             document.documentElement.lang = contentLanguage;
             upsertMeta('meta[name="description"]', { name: "description", content: routeMeta.description });
             upsertMeta('meta[name="robots"]', { name: "robots", content: routeMeta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large" });
@@ -185,6 +214,7 @@ export const DocumentTranslator = () => {
             upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: socialImage });
             upsertMeta('meta[name="twitter:image:alt"]', { name: "twitter:image:alt", content: socialImageAlt });
             upsertLink("canonical", canonicalUrl);
+            syncBerlinLanguageLinks(pathname);
 
             let structuredData = document.head.querySelector('script[data-spirit-healing-seo="true"]');
             if (!structuredData) {
@@ -197,7 +227,7 @@ export const DocumentTranslator = () => {
         }
 
         return () => observer.disconnect();
-    }, [language, pathname]);
+    }, [pageLanguage, pathname, search]);
 
     return null;
 };
