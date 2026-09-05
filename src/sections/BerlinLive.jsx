@@ -5,9 +5,14 @@ import {
   Clock3,
   MapPin,
 } from "lucide-react"
+import { useLocation } from "react-router-dom"
 import { usePublishedContent } from "@/content/ContentContext"
 import { getPublishedValue } from "@/content/contentValues"
 import { berlinLiveDefaults } from "@/content/berlinLiveContent"
+import {
+  berlinLiveStaticTurkishTranslations,
+  berlinLiveTurkishDefaults,
+} from "@/content/berlinLiveTurkishContent"
 
 const colors = {
   ink: "#173c39",
@@ -17,16 +22,16 @@ const colors = {
   paper: "#fbf8f1",
 }
 
-const timelineTimes = ["10:00–13:00", "13:00–14:00", "14:00–ca. 19:00"]
+const germanTimelineTimes = ["10:00–13:00", "13:00–14:00", "14:00–ca. 19:00"]
 
 const nonEmptyLines = (value, fallback) => {
   const lines = String(value || "").split("\n").map((line) => line.trim()).filter(Boolean)
   return lines.length ? lines : String(fallback || "").split("\n").map((line) => line.trim()).filter(Boolean)
 }
 
-const timelineFrom = (value, fallback) => {
+const timelineFrom = (value, fallback, times = germanTimelineTimes) => {
   const labels = nonEmptyLines(value, fallback)
-  return timelineTimes.map((time, index) => [time, labels[index] || ""])
+  return times.map((time, index) => [time, labels[index] || ""])
 }
 
 const stripeCheckoutUrls = {
@@ -57,12 +62,22 @@ const Timeline = ({ entries }) => (
 
 export const BerlinLive = () => {
   const { content } = usePublishedContent()
-  const text = (id) => getPublishedValue(content, `berlin.${id}`, "de", berlinLiveDefaults[id])
-  const friday = timelineFrom(text("weekend.friday-lines"), berlinLiveDefaults["weekend.friday-lines"])
-  const saturday = timelineFrom(text("weekend.saturday-lines"), berlinLiveDefaults["weekend.saturday-lines"])
-  const ownQuestions = nonEmptyLines(text("own.questions"), berlinLiveDefaults["own.questions"])
-  const ownTicketItems = nonEmptyLines(text("tickets.own-items"), berlinLiveDefaults["tickets.own-items"])
-  const intensiveTicketItems = nonEmptyLines(text("tickets.intensive-items"), berlinLiveDefaults["tickets.intensive-items"])
+  const { search } = useLocation()
+  const searchParams = new URLSearchParams(search)
+  const pageLanguage = searchParams.get("lang") === "tr" ? "tr" : "de"
+  const isTurkish = pageLanguage === "tr"
+  const defaults = isTurkish ? berlinLiveTurkishDefaults : berlinLiveDefaults
+  const keyPrefix = isTurkish ? "berlin-tr" : "berlin"
+  const text = (id) => getPublishedValue(content, `${keyPrefix}.${id}`, pageLanguage, defaults[id])
+  const staticText = (german) => isTurkish
+    ? berlinLiveStaticTurkishTranslations[german] || german
+    : german
+  const timelineTimes = germanTimelineTimes.map(staticText)
+  const friday = timelineFrom(text("weekend.friday-lines"), defaults["weekend.friday-lines"], timelineTimes)
+  const saturday = timelineFrom(text("weekend.saturday-lines"), defaults["weekend.saturday-lines"], timelineTimes)
+  const ownQuestions = nonEmptyLines(text("own.questions"), defaults["own.questions"])
+  const ownTicketItems = nonEmptyLines(text("tickets.own-items"), defaults["tickets.own-items"])
+  const intensiveTicketItems = nonEmptyLines(text("tickets.intensive-items"), defaults["tickets.intensive-items"])
   const systemItems = [1, 2, 3, 4].map((number) => ({
     id: number,
     eyebrow: text(`system.item-${number}-eyebrow`),
@@ -84,6 +99,14 @@ export const BerlinLive = () => {
     document.getElementById("tickets")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
+  const languageHref = (nextLanguage) => {
+    const nextParams = new URLSearchParams(searchParams)
+    if (nextLanguage === "tr") nextParams.set("lang", "tr")
+    else nextParams.delete("lang")
+    const query = nextParams.toString()
+    return `/berlin-live${query ? `?${query}` : ""}`
+  }
+
   const ownConstellationCheckoutUrl = import.meta.env.VITE_BERLIN_OWN_CONSTELLATION_CHECKOUT_URL
     || stripeCheckoutUrls.ownConstellation
   const ownConstellationInstallmentCheckoutUrl = import.meta.env.VITE_BERLIN_OWN_INSTALLMENT_CHECKOUT_URL
@@ -94,20 +117,41 @@ export const BerlinLive = () => {
     || stripeCheckoutUrls.intensiveParticipationInstallment
 
   return (
-    <main className="min-h-screen bg-[#fbf8f1] text-[#173c39]" style={{ color: colors.ink }}>
+    <main data-no-translate className="min-h-screen bg-[#fbf8f1] text-[#173c39]" style={{ color: colors.ink }}>
       <section className="relative isolate overflow-hidden border-b border-[#dbe7e1] bg-[#f8f5ed]">
         <div className="absolute -left-40 top-24 h-96 w-96 rounded-full bg-[#d8ebe3]/70 blur-3xl" aria-hidden="true" />
         <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#f2dfb9]/65 blur-3xl" aria-hidden="true" />
 
         <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 lg:px-10 lg:pb-24">
-          <div className="flex items-center justify-between">
-            <a href="/" aria-label="Zur Spirit-Healing-Startseite" className="inline-flex items-center gap-3">
+          <div className="flex items-center justify-between gap-4">
+            <a href="/" aria-label={staticText("Zur Spirit-Healing-Startseite")} className="inline-flex items-center gap-3">
               <img src="/Logo-tuerkis.jpeg" alt="Spirit Healing" className="h-12 w-12 rounded-full object-cover shadow-sm" />
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
             </a>
-            <button type="button" onClick={scrollToTickets} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
-              {text("hero.nav-cta")}
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="inline-flex rounded-full border border-[#0f7d79]/30 bg-white/90 p-1 shadow-sm" role="group" aria-label={isTurkish ? "Sayfa dili" : "Seitensprache"}>
+                {[
+                  { code: "de", label: "DE", title: "Deutsch" },
+                  { code: "tr", label: "TR", title: "Türkçe" },
+                ].map((option) => {
+                  const active = pageLanguage === option.code
+                  return (
+                    <a
+                      key={option.code}
+                      href={languageHref(option.code)}
+                      title={option.title}
+                      aria-current={active ? "page" : undefined}
+                      className={`min-w-11 rounded-full px-3 py-2 text-xs font-extrabold tracking-[0.12em] transition ${active ? "bg-[#0f7d79] text-white shadow-sm" : "text-[#075a57] hover:bg-[#edf5f1]"}`}
+                    >
+                      {option.label}
+                    </a>
+                  )
+                })}
+              </div>
+              <button type="button" onClick={scrollToTickets} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
+                {text("hero.nav-cta")}
+              </button>
+            </div>
           </div>
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
@@ -138,7 +182,7 @@ export const BerlinLive = () => {
             <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
               <div className="absolute -inset-4 rotate-2 rounded-[2rem] border border-[#d8c08d]/60 bg-[#f4e8cf]" aria-hidden="true" />
               <div className="relative overflow-hidden rounded-[2rem] border-8 border-white bg-white shadow-[0_26px_70px_rgba(31,75,70,0.18)]">
-                <img src="/familie/berlin.jpeg" alt="Blick über Berlin bei Abendlicht" className="h-[30rem] w-full object-cover object-center" />
+                <img src="/familie/berlin.jpeg" alt={staticText("Blick über Berlin bei Abendlicht")} className="h-[30rem] w-full object-cover object-center" />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#173c39]/90 via-[#173c39]/50 to-transparent px-7 pb-7 pt-24 text-white">
                   <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#f1d7a0]">{text("hero.image-eyebrow")}</p>
                   <p className="mt-2 text-xl font-semibold leading-8">{text("hero.image-text")}</p>
@@ -185,7 +229,7 @@ export const BerlinLive = () => {
           <div className="mt-14 grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16">
             <div>
               <div className="overflow-hidden rounded-[2rem] border-8 border-white shadow-[0_20px_55px_rgba(31,75,70,0.14)]">
-                <img src="/familie/aust.jpeg" alt="Aufstellungsarbeit in einer Gruppe" className="h-[32rem] w-full object-cover object-center" />
+                <img src="/familie/aust.jpeg" alt={staticText("Aufstellungsarbeit in einer Gruppe")} className="h-[32rem] w-full object-cover object-center" />
               </div>
               <p className="mt-7 text-lg leading-8 text-[#47625e]">
                 {text("process.image-note")}
@@ -222,7 +266,7 @@ export const BerlinLive = () => {
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div className="overflow-hidden rounded-[2rem] border border-[#e1e6df] bg-white p-3 shadow-[0_20px_60px_rgba(31,75,70,0.12)]">
-            <img src="/ueberuns.jpeg" alt="Sabine Schmidt und Selcan Yilmaz" className="h-[32rem] w-full rounded-[1.4rem] object-cover object-center" />
+            <img src="/ueberuns.jpeg" alt={staticText("Sabine Schmidt und Selcan Yilmaz")} className="h-[32rem] w-full rounded-[1.4rem] object-cover object-center" />
           </div>
           <div>
             <SectionTitle
@@ -312,7 +356,7 @@ export const BerlinLive = () => {
         />
         <div className="mx-auto mt-12 grid max-w-5xl gap-6 lg:grid-cols-2">
           <article className="relative overflow-hidden rounded-[2rem] border-2 border-[#0f7d79] bg-white p-8 shadow-[0_22px_60px_rgba(15,125,121,0.13)] sm:p-10">
-            <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#0f7d79] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">6 Plätze</span>
+            <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#0f7d79] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">{staticText("6 Plätze")}</span>
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#0f7d79]">{text("tickets.own-label")}</p>
             <p className="mt-5 text-5xl font-bold text-[#173c39]">444 €</p>
             <p className="mt-2 text-sm text-[#61736f]">{text("tickets.duration")}</p>
@@ -325,7 +369,7 @@ export const BerlinLive = () => {
               </a>
             ) : (
               <button type="button" disabled className="mt-9 w-full cursor-not-allowed rounded-full bg-[#0f7d79]/70 px-6 py-4 font-bold text-white">
-                Buchung wird freigeschaltet
+                {staticText("Buchung wird freigeschaltet")}
               </button>
             )}
             <div className="mt-6 border-t border-[#d6e3dc] pt-6">
@@ -349,7 +393,7 @@ export const BerlinLive = () => {
               </a>
             ) : (
               <button type="button" disabled className="mt-9 w-full cursor-not-allowed rounded-full border border-[#0f7d79]/50 bg-white px-6 py-4 font-bold text-[#0f7d79]/70">
-                Buchung wird freigeschaltet
+                {staticText("Buchung wird freigeschaltet")}
               </button>
             )}
             <div className="mt-6 border-t border-[#d6e3dc] pt-6">
@@ -372,8 +416,8 @@ export const BerlinLive = () => {
             <p className="font-bold text-[#075a57]">Spirit Healing</p>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <a href="/impressum" className="hover:text-[#0f7d79]">Impressum</a>
-            <a href="/datenschutz" className="hover:text-[#0f7d79]">Datenschutz</a>
+            <a href="/impressum" className="hover:text-[#0f7d79]">{staticText("Impressum")}</a>
+            <a href="/datenschutz" className="hover:text-[#0f7d79]">{staticText("Datenschutz")}</a>
           </div>
         </div>
       </footer>

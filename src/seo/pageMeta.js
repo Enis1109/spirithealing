@@ -132,10 +132,10 @@ export const pageMeta = {
     "/faq": { title: "Sıkça Sorulan Sorular | Spirit Healing", description: "Spirit Healing'in çalışma biçimi, yöntemleri, seansları, ücretleri ve travma bilgili yaklaşımı hakkında yanıtlar." },
     "/vortraege-seminare": { title: "Seminerler, Eğitimler ve Programlar | Spirit Healing", description: "İçsel parçalar, sinir sistemi, ilişki örüntüleri ve enerji çalışması üzerine güncel Spirit Healing seminerleri ve programları." },
     "/berlin-live": {
-      title: "Berlin Aile Dizimi 2026 | Spirit Healing",
-      description: "9 ve 10 Ekim 2026 tarihlerinde Sabine ve Selcan ile Berlin'de iki günlük aile dizimi çalışması.",
+      title: "Berlin’de Travma Duyarlı Aile ve Sistem Dizimi | Spirit Healing",
+      description: "9 ve 10 Ekim 2026 tarihlerinde Sabine ve Selcan ile Berlin’de iki günlük travma duyarlı aile ve sistem dizimi çalışmasına katılın.",
       ...berlinImage,
-      imageAlt: "Spirit Healing ile Berlin'de aile dizimi",
+      imageAlt: "Spirit Healing ile Berlin’de aile ve sistem dizimi",
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
@@ -231,6 +231,13 @@ export const canonicalUrlFor = (pathname) => {
   return `${siteUrl}${normalizedPath === "/" ? "" : normalizedPath}`
 }
 
+export const canonicalUrlForLanguage = (pathname, language = "de") => {
+  const canonical = canonicalUrlFor(pathname)
+  return normalizePathname(pathname) === "/berlin-live" && language === "tr"
+    ? `${canonical}?lang=tr`
+    : canonical
+}
+
 export const socialImageFor = (meta) => meta.image ? new URL(meta.image, siteUrl).href : defaultSocialImage
 
 const breadcrumbParents = {
@@ -313,14 +320,15 @@ const breadcrumbFor = (pathname, language) => {
   if (pathname === "/") return null
   const parent = breadcrumbParents[pathname]
   const paths = parent ? ["/", parent, pathname] : ["/", pathname]
+  const breadcrumbUrl = canonicalUrlForLanguage(pathname, language)
   return {
     "@type": "BreadcrumbList",
-    "@id": `${canonicalUrlFor(pathname)}#breadcrumb`,
+    "@id": `${breadcrumbUrl}#breadcrumb`,
     itemListElement: paths.map((path, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: breadcrumbLabels[language]?.[path] || breadcrumbLabels.de[path] || "Spirit Healing",
-      item: canonicalUrlFor(path),
+      item: path === pathname ? breadcrumbUrl : canonicalUrlFor(path),
     })),
   }
 }
@@ -330,7 +338,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
   const normalizedPath = meta.pathname || normalizePathname(pathname)
   if (meta.noindex || meta.notFound) return []
 
-  const url = canonicalUrlFor(normalizedPath)
+  const url = canonicalUrlForLanguage(normalizedPath, language)
   const breadcrumb = breadcrumbFor(normalizedPath, language)
   const pageType = normalizedPath === "/about"
     ? "AboutPage"
@@ -376,10 +384,11 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
   }
 
   if (normalizedPath === "/berlin-live") {
+    const isTurkish = language === "tr"
     graph.push({
       "@type": "Event",
       "@id": `${url}#event`,
-      name: "Familienaufstellung live in Berlin",
+      name: isTurkish ? "Berlin’de Travma Duyarlı Aile ve Sistem Dizimi" : "Familienaufstellung live in Berlin",
       description: meta.description,
       startDate: "2026-10-09T10:00:00+02:00",
       endDate: "2026-10-10T19:00:00+02:00",
@@ -393,8 +402,8 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       },
       organizer: { "@id": organizationId },
       offers: [
-        { "@type": "Offer", name: "Intensivteilnahme", price: "333", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
-        { "@type": "Offer", name: "Platz mit eigener Aufstellung", price: "444", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
+        { "@type": "Offer", name: isTurkish ? "Grup ve temsilci katılımı" : "Intensivteilnahme", price: "333", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
+        { "@type": "Offer", name: isTurkish ? "Kendi dizimiyle katılım" : "Platz mit eigener Aufstellung", price: "444", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
       ],
     })
   }

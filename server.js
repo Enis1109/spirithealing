@@ -1599,7 +1599,7 @@ app.use((request, response, next) => {
         return response
             .status(meta.notFound ? 404 : 200)
             .type("html")
-            .send(frontendDocumentForPath(request.path));
+            .send(frontendDocumentForPath(request.originalUrl));
     } catch (error) {
         console.error("Frontend index could not be read", error);
         return next(error);
