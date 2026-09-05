@@ -37,6 +37,20 @@ Mit der vorbereiteten Hochkantgröße `1024x1536` kostet die reine Bildausgabe n
 
 ## Arbeitsabläufe
 
+### Morgendliches Team-Meeting
+
+Im Adminbereich werden Tages-, Wochen- und Monatsprioritäten gemeinsam erfasst. Der Director verteilt jede Aufgabe an eine feste Rolle. Der Plan nennt Zeithorizont, Priorität, Abhängigkeit und ein prüfbares Fertig-Kriterium. Das Meeting startet keine Veröffentlichung oder andere Außenaktion.
+
+### Unternehmensgedächtnis
+
+Bestätigte Unternehmensfakten werden mit Bereich, Quelle und Versionsnummer gespeichert. Eine neue Fassung mit demselben Titel ersetzt die vorherige Fassung sichtbar; die Historie bleibt erhalten. Künftige Läufe erhalten nur aktive, bestätigte Fassungen als Unternehmenswissen.
+
+### Erfahrungslernen und Evals
+
+Jeder Live-Lauf darf bis zu drei Lernvorschläge erstellen. Ein Vorschlag enthält die konkrete Beobachtung, eine kleine Änderung der Arbeitsregel, ein messbares Erfolgskriterium, einen Vergleichsplan und eine Risikostufe. Nach der Freigabe des Arbeitsstands erscheint er zunächst als Lernkandidat. Erst eine zweite Entscheidung aktiviert ihn als neue Playbook-Version. Ab dann steht er künftigen Läufen als aktive Arbeitsregel zur Verfügung.
+
+So dürfen die Agenten eigenständig Hypothesen und Verbesserungen entwickeln, ohne Unternehmensfakten, Markenwissen oder Freigabegrenzen still umzuschreiben. Schlechtere Versionen bleiben nachvollziehbar und können verworfen werden.
+
 ### Pilotwoche auswerten
 
 Eine gespeicherte Woche läuft durch Director, Wissensordnung, Auswertung, Programmentwicklung, Faktenprüfung, Contententwurf, Datenschutzprüfung, getrennte Zweitprüfung und Qualitätskontrolle.

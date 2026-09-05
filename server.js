@@ -120,10 +120,12 @@ import {
 import {
     AiCommandCenterExecutionError,
     createAiImageDraft,
+    decideAiLearningItem,
     decideAiWorkflowRun,
     getAiGeneratedAssetImage,
     getAiCommandCenterSnapshot,
     saveAiBudgetSettings,
+    saveAiKnowledgeEntry,
     savePilotWeekAndRun,
     startAiWorkflow,
 } from "./server/aiCommandCenter.js";
@@ -131,6 +133,8 @@ import {
     AiCommandCenterValidationError,
     normalizeBudgetSettings,
     normalizeImageDraftRequest,
+    normalizeKnowledgeEntry,
+    normalizeLearningDecision,
     normalizePilotWeek,
     normalizeRunDecision,
     normalizeWorkflowRequest,
@@ -914,8 +918,8 @@ app.post("/api/admin/ai-command-center/runs", adminSameOriginOnly, async (reques
     if (!member) return undefined;
 
     try {
-        const { workflowId, contentBrief } = normalizeWorkflowRequest(request.body);
-        await startAiWorkflow({ workflowId, contentBrief, memberId: member.id });
+        const { workflowId, contentBrief, teamMeeting } = normalizeWorkflowRequest(request.body);
+        await startAiWorkflow({ workflowId, contentBrief, teamMeeting, memberId: member.id });
         return response.status(201).json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
     } catch (error) {
         if (error instanceof AiCommandCenterValidationError) {
@@ -999,6 +1003,43 @@ app.put("/api/admin/ai-command-center/settings", adminSameOriginOnly, async (req
             return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
         }
         console.error("AI command center settings could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.post("/api/admin/ai-command-center/knowledge", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const entry = normalizeKnowledgeEntry(request.body);
+        await saveAiKnowledgeEntry({ ...entry, memberId: member.id });
+        return response.status(201).json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        console.error("AI company knowledge could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/ai-command-center/learning/:id/decision", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+
+    try {
+        const itemId = Number(request.params.id);
+        if (!Number.isSafeInteger(itemId) || itemId < 1) throw new AiCommandCenterValidationError("id");
+        const decision = normalizeLearningDecision(request.body);
+        const decided = await decideAiLearningItem({ itemId, ...decision, memberId: member.id });
+        if (!decided) return response.status(409).json({ ok: false, error: "already_decided_or_missing" });
+        return response.json({ ok: true, commandCenter: await getAiCommandCenterSnapshot() });
+    } catch (error) {
+        if (error instanceof AiCommandCenterValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field, reason: error.reason });
+        }
+        console.error("AI learning decision could not be saved", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });

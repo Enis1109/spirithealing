@@ -32,6 +32,7 @@ const openAiImageOutputPricesUsd = {
 const webSearchPriceUsd = 0.01;
 const reviewAgentIds = new Set([
     "research-fact-check",
+    "learning-evals",
     "compliance-privacy",
     "independent-review",
     "quality-controller",
@@ -186,15 +187,29 @@ const estimateAnthropicCallCost = ({ model, inputText, maxOutputTokens }) => cal
     outputTokens: maxOutputTokens,
 });
 
-const sourcePayload = ({ workflowId, pilotWeek, pilotWeeks, contentBrief }) => workflowId === "pilot-week-learning"
-    ? { workflowId, pilotWeek }
-    : workflowId === "content-project"
-        ? { workflowId, contentBrief }
-        : { workflowId, pilotWeeks };
+const sourcePayload = ({
+    workflowId,
+    pilotWeek,
+    pilotWeeks,
+    contentBrief,
+    teamMeeting,
+    companyKnowledge = [],
+    activeLessons = [],
+}) => ({
+    ...(workflowId === "pilot-week-learning"
+        ? { workflowId, pilotWeek }
+        : workflowId === "content-project"
+            ? { workflowId, contentBrief }
+            : workflowId === "team-meeting"
+                ? { workflowId, teamMeeting }
+                : { workflowId, pilotWeeks }),
+    confirmedCompanyKnowledge: companyKnowledge,
+    activeVersionedLessons: activeLessons,
+});
 
-export const estimateLiveWorkflowCostUsd = ({ workflowId, pilotWeek = null, pilotWeeks = [], contentBrief = null }) => {
+export const estimateLiveWorkflowCostUsd = ({ workflowId, pilotWeek = null, pilotWeeks = [], contentBrief = null, teamMeeting = null, companyKnowledge = [], activeLessons = [] }) => {
     const config = getAiRuntimeConfig();
-    const source = JSON.stringify(sourcePayload({ workflowId, pilotWeek, pilotWeeks, contentBrief }));
+    const source = JSON.stringify(sourcePayload({ workflowId, pilotWeek, pilotWeeks, contentBrief, teamMeeting, companyKnowledge, activeLessons }));
     const draftMaxOutputTokens = 3200;
     const reviewMaxOutputTokens = 4800;
     const draftCost = estimateCallCost({
@@ -221,8 +236,10 @@ export const estimateLiveWorkflowCostUsd = ({ workflowId, pilotWeek = null, pilo
 
 const commonInstructions = `Du arbeitest intern für Spirit Healing. Schreibe auf Deutsch, klar und ohne Werbesprache.
 Die Eingaben sind anonymisierte Arbeitsdaten. Versuche niemals, Personen zu identifizieren. Erfinde keine Namen, Zitate, Zahlen, Quellen oder Beobachtungen.
+Behandle nur confirmedCompanyKnowledge als Unternehmensfakt. activeVersionedLessons sind freigegebene Arbeitsregeln mit Versionsstand. Widerspricht eine neue Eingabe einer älteren Regel, markiere den Konflikt; überschreibe ihn nicht still.
 Trenne dokumentierte Beobachtungen, fachliche Ableitungen, Hypothesen und fehlende Informationen. Pilotbeobachtungen sind kein Wirksamkeitsnachweis.
 Formuliere keine Diagnose, Behandlungsempfehlung oder unbelegte Gesundheitswirkung. Markiere Aussagen, die fachliche oder rechtliche Prüfung brauchen.
+Formuliere höchstens drei Lernvorschläge. Jeder Lernvorschlag braucht eine konkrete Beobachtung, eine kleine veränderbare Arbeitsregel, ein messbares Erfolgskriterium, einen Vergleichsplan und eine Risikostufe. Ein Lernvorschlag ist noch keine freigegebene Regel.
 Du darfst nichts veröffentlichen, versenden, abbuchen oder technisch verändern. Das Feld externalActions muss leer bleiben.
 Jedes Ergebnis bleibt ein interner Arbeitsstand und braucht eine menschliche Entscheidung.`;
 
@@ -237,6 +254,39 @@ const resultSchema = {
         contentIdeas: { type: "array", items: { type: "string" } },
         reviewNotes: { type: "array", items: { type: "string" } },
         openDecisions: { type: "array", items: { type: "string" } },
+        assignments: {
+            type: "array",
+            items: {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                    agentId: { type: "string", enum: aiAgentRegistry.map((agent) => agent.id) },
+                    owner: { type: "string" },
+                    horizon: { type: "string", enum: ["heute", "diese Woche", "dieser Monat"] },
+                    priority: { type: "string", enum: ["hoch", "normal", "später"] },
+                    task: { type: "string" },
+                    doneWhen: { type: "string" },
+                    dependsOn: { type: "string" },
+                },
+                required: ["agentId", "owner", "horizon", "priority", "task", "doneWhen", "dependsOn"],
+            },
+        },
+        learningProposals: {
+            type: "array",
+            items: {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                    agentId: { type: "string", enum: aiAgentRegistry.map((agent) => agent.id) },
+                    observation: { type: "string" },
+                    proposedChange: { type: "string" },
+                    successMetric: { type: "string" },
+                    evaluationPlan: { type: "string" },
+                    riskLevel: { type: "string", enum: ["low", "medium", "high"] },
+                },
+                required: ["agentId", "observation", "proposedChange", "successMetric", "evaluationPlan", "riskLevel"],
+            },
+        },
         contentPackage: {
             type: "object",
             additionalProperties: false,
@@ -315,6 +365,8 @@ const resultSchema = {
         "contentIdeas",
         "reviewNotes",
         "openDecisions",
+        "assignments",
+        "learningProposals",
         "contentPackage",
         "programBlueprint",
         "sourceWeeks",
@@ -612,6 +664,23 @@ const normalizedResult = ({ workflowId, pilotWeek, pilotWeeks, contentBrief, res
         contentIdeas: clippedList(result?.contentIdeas),
         reviewNotes: clippedList(result?.reviewNotes),
         openDecisions: clippedList(result?.openDecisions),
+        assignments: (Array.isArray(result?.assignments) ? result.assignments : []).slice(0, 24).map((assignment) => ({
+            agentId: clippedText(assignment?.agentId, "operations-manager", 80),
+            owner: clippedText(assignment?.owner, "Operations Manager", 160),
+            horizon: ["heute", "diese Woche", "dieser Monat"].includes(assignment?.horizon) ? assignment.horizon : "heute",
+            priority: ["hoch", "normal", "später"].includes(assignment?.priority) ? assignment.priority : "normal",
+            task: clippedText(assignment?.task, "Aufgabe prüfen", 1200),
+            doneWhen: clippedText(assignment?.doneWhen, "Ein prüfbarer interner Arbeitsstand liegt vor.", 800),
+            dependsOn: clippedText(assignment?.dependsOn, "Keine offene Abhängigkeit dokumentiert.", 800),
+        })),
+        learningProposals: (Array.isArray(result?.learningProposals) ? result.learningProposals : []).slice(0, 3).map((proposal) => ({
+            agentId: agentMap.has(proposal?.agentId) ? proposal.agentId : "learning-evals",
+            observation: clippedText(proposal?.observation, "Beobachtung noch konkretisieren.", 1200),
+            proposedChange: clippedText(proposal?.proposedChange, "Kleine Arbeitsregel als Experiment prüfen.", 1200),
+            successMetric: clippedText(proposal?.successMetric, "Vorher-Nachher-Vergleich dokumentieren.", 800),
+            evaluationPlan: clippedText(proposal?.evaluationPlan, "In zwei vergleichbaren Aufträgen prüfen.", 1600),
+            riskLevel: ["low", "medium", "high"].includes(proposal?.riskLevel) ? proposal.riskLevel : "medium",
+        })),
         sources: safeSources(result?.sources),
         externalActions: [],
     };
@@ -620,6 +689,15 @@ const normalizedResult = ({ workflowId, pilotWeek, pilotWeeks, contentBrief, res
         return {
             ...common,
             contentPackage: normalizedContentPackage(result?.contentPackage, contentBrief),
+            programBlueprint: [],
+            sourceWeeks: [],
+        };
+    }
+
+    if (workflowId === "team-meeting") {
+        return {
+            ...common,
+            contentPackage: null,
             programBlueprint: [],
             sourceWeeks: [],
         };
@@ -687,6 +765,9 @@ export const runLiveWorkflow = async ({
     pilotWeek = null,
     pilotWeeks = [],
     contentBrief = null,
+    teamMeeting = null,
+    companyKnowledge = [],
+    activeLessons = [],
     estimatedCostUsd,
     fetchImpl = globalThis.fetch,
 }) => {
@@ -704,10 +785,12 @@ export const runLiveWorkflow = async ({
         ? workflow.steps.filter((agentId) => editorialAgentIds.has(agentId))
         : [];
     const reviewAgentIdsForWorkflow = workflow.steps.filter((agentId) => reviewAgentIds.has(agentId));
-    const source = sourcePayload({ workflowId, pilotWeek, pilotWeeks, contentBrief });
+    const source = sourcePayload({ workflowId, pilotWeek, pilotWeeks, contentBrief, teamMeeting, companyKnowledge, activeLessons });
     const workflowInstructions = workflowId === "content-project"
         ? "Erstelle ein direkt nutzbares internes Content-Paket für alle angegebenen Kanäle. Liefere pro Kanal mindestens einen vollständigen Text. Bildprompts dürfen keine Schrift im Bild, keine medizinische Symbolik und keine Wirkungsversprechen verlangen. Die Canva-Übergabe beschreibt Layout und Formate, löst aber keine Canva-Aktion aus."
-        : "";
+        : workflowId === "team-meeting"
+            ? "Erstelle einen konkreten Arbeitsplan. Verteile jede Aufgabe an genau eine vorhandene Rolle. Ordne sie dem Zeithorizont heute, diese Woche oder dieser Monat zu. Nenne für jede Aufgabe ein überprüfbares Fertig-Kriterium und Abhängigkeiten. Beginne keine Aufgabe und löse keine Außenaktion aus."
+            : "";
     const draft = await requestOpenAi({
         apiKey: process.env.OPENAI_API_KEY,
         model: config.routineModel,

@@ -87,6 +87,34 @@ const mapAsset = (row) => ({
     imageUrl: row.status === "completed" ? `/api/admin/ai-command-center/assets/${row.id}/image` : "",
 });
 
+const mapKnowledge = (row) => ({
+    id: Number(row.id),
+    category: row.category,
+    title: row.title,
+    content: row.content,
+    sourceNote: row.source_note,
+    status: row.status,
+    version: Number(row.version),
+    createdAt: toIsoString(row.created_at),
+    updatedAt: toIsoString(row.updated_at),
+});
+
+const mapLearningItem = (row) => ({
+    id: Number(row.id),
+    sourceRunId: Number(row.source_run_id),
+    agentId: row.agent_id,
+    agentName: aiAgentRegistry.find((agent) => agent.id === row.agent_id)?.name || row.agent_id,
+    observation: row.observation,
+    proposedChange: row.proposed_change,
+    successMetric: row.success_metric,
+    evaluationPlan: row.evaluation_plan,
+    riskLevel: row.risk_level,
+    status: row.status,
+    playbookVersion: row.playbook_version ? Number(row.playbook_version) : null,
+    decidedAt: toIsoString(row.decided_at),
+    createdAt: toIsoString(row.created_at),
+});
+
 const getPilotWeeks = async () => {
     const [rows] = await database.execute(
         `SELECT id, week_number, participant_count, planned_focus, actual_focus,
@@ -125,6 +153,29 @@ const getAssets = async () => {
          LIMIT 60`,
     );
     return rows.map(mapAsset);
+};
+
+const getKnowledge = async ({ activeOnly = false } = {}) => {
+    const [rows] = await database.execute(
+        `SELECT id, category, title, content, source_note, status, version, created_at, updated_at
+         FROM ai_company_knowledge
+         ${activeOnly ? "WHERE status = 'active'" : ""}
+         ORDER BY updated_at DESC
+         LIMIT 80`,
+    );
+    return rows.map(mapKnowledge);
+};
+
+const getLearningItems = async ({ activeOnly = false } = {}) => {
+    const [rows] = await database.execute(
+        `SELECT id, source_run_id, agent_id, observation, proposed_change, success_metric,
+                evaluation_plan, risk_level, status, playbook_version, decided_at, created_at
+         FROM ai_learning_items
+         ${activeOnly ? "WHERE status = 'active'" : ""}
+         ORDER BY created_at DESC
+         LIMIT 100`,
+    );
+    return rows.map(mapLearningItem);
 };
 
 const getSettings = async () => {
@@ -190,11 +241,13 @@ const getSettings = async () => {
 };
 
 export const getAiCommandCenterSnapshot = async () => {
-    const [pilotWeeks, runs, assets, settings] = await Promise.all([
+    const [pilotWeeks, runs, assets, settings, knowledge, learningItems] = await Promise.all([
         getPilotWeeks(),
         getRuns(),
         getAssets(),
         getSettings(),
+        getKnowledge(),
+        getLearningItems(),
     ]);
     return {
         agents: aiAgentRegistry,
@@ -203,6 +256,8 @@ export const getAiCommandCenterSnapshot = async () => {
         pilotWeeks,
         runs,
         assets,
+        knowledge,
+        learningItems,
     };
 };
 
@@ -313,25 +368,33 @@ const failLiveRun = async ({ runId, error }) => {
     );
 };
 
-const executeWorkflow = async ({ workflowId, sourcePilotWeekId = null, pilotWeek = null, pilotWeeks = [], contentBrief = null, memberId }) => {
+const executeWorkflow = async ({ workflowId, sourcePilotWeekId = null, pilotWeek = null, pilotWeeks = [], contentBrief = null, teamMeeting = null, memberId }) => {
     const runtime = getAiRuntimeConfig();
     const workflow = aiWorkflowRegistry.find((item) => item.id === workflowId);
     if (!workflow) throw new AiCommandCenterExecutionError("AI_WORKFLOW_UNKNOWN", `Unknown workflow: ${workflowId}`);
+    const [companyKnowledge, activeLessons] = await Promise.all([
+        getKnowledge({ activeOnly: true }),
+        getLearningItems({ activeOnly: true }),
+    ]);
     const input = workflowId === "pilot-week-learning"
         ? { pilotWeekId: sourcePilotWeekId, weekNumber: pilotWeek.weekNumber }
         : workflowId === "content-project"
             ? { contentBrief }
-            : { pilotWeekIds: pilotWeeks.map((week) => week.id) };
+            : workflowId === "team-meeting"
+                ? { teamMeeting }
+                : { pilotWeekIds: pilotWeeks.map((week) => week.id) };
+    input.knowledgeVersionIds = companyKnowledge.map((entry) => entry.id);
+    input.playbookVersionIds = activeLessons.map((entry) => entry.id);
 
     if (runtime.mode === "mock") {
-        const workflowRun = buildMockWorkflowRun({ workflowId, pilotWeek, pilotWeeks, contentBrief });
+        const workflowRun = buildMockWorkflowRun({ workflowId, pilotWeek, pilotWeeks, contentBrief, teamMeeting });
         return insertMockRun({ workflowRun, sourcePilotWeekId, input, memberId });
     }
     if (!runtime.ready) {
         throw new AiCommandCenterExecutionError("AI_NOT_CONFIGURED", "A required AI provider key is missing");
     }
 
-    const estimatedCostUsd = estimateLiveWorkflowCostUsd({ workflowId, pilotWeek, pilotWeeks, contentBrief });
+    const estimatedCostUsd = estimateLiveWorkflowCostUsd({ workflowId, pilotWeek, pilotWeeks, contentBrief, teamMeeting, companyKnowledge, activeLessons });
     const runId = await reserveLiveRun({ workflow, sourcePilotWeekId, input, estimatedCostUsd, memberId });
     try {
         const workflowRun = await runLiveWorkflow({
@@ -339,6 +402,9 @@ const executeWorkflow = async ({ workflowId, sourcePilotWeekId = null, pilotWeek
             pilotWeek,
             pilotWeeks,
             contentBrief,
+            teamMeeting,
+            companyKnowledge,
+            activeLessons,
             estimatedCostUsd,
         });
         await completeLiveRun({ runId, workflowRun });
@@ -399,9 +465,12 @@ export const savePilotWeekAndRun = async ({ pilotWeek, memberId }) => {
     return { pilotWeekId, runId };
 };
 
-export const startAiWorkflow = async ({ workflowId, contentBrief = null, memberId }) => {
+export const startAiWorkflow = async ({ workflowId, contentBrief = null, teamMeeting = null, memberId }) => {
     if (workflowId === "content-project") {
         return executeWorkflow({ workflowId, contentBrief, memberId });
+    }
+    if (workflowId === "team-meeting") {
+        return executeWorkflow({ workflowId, teamMeeting, memberId });
     }
     const pilotWeeks = await getPilotWeeks();
     if (pilotWeeks.length === 0) {
@@ -505,13 +574,118 @@ export const getAiGeneratedAssetImage = async ({ assetId }) => {
 };
 
 export const decideAiWorkflowRun = async ({ runId, approved, note, memberId }) => {
-    const [result] = await database.execute(
-        `UPDATE ai_workflow_runs
-         SET approval_status = ?, decision_note = ?, decided_by = ?, decided_at = UTC_TIMESTAMP()
-         WHERE id = ? AND status = 'completed' AND approval_status = 'pending'`,
-        [approved ? "approved" : "rejected", note || null, memberId, runId],
-    );
-    return result.affectedRows > 0;
+    const connection = await database.getConnection();
+    try {
+        await connection.beginTransaction();
+        const [rows] = await connection.execute(
+            `SELECT result_json FROM ai_workflow_runs
+             WHERE id = ? AND status = 'completed' AND approval_status = 'pending' FOR UPDATE`,
+            [runId],
+        );
+        if (!rows[0]) {
+            await connection.rollback();
+            return false;
+        }
+        await connection.execute(
+            `UPDATE ai_workflow_runs
+             SET approval_status = ?, decision_note = ?, decided_by = ?, decided_at = UTC_TIMESTAMP()
+             WHERE id = ?`,
+            [approved ? "approved" : "rejected", note || null, memberId, runId],
+        );
+        if (approved) {
+            const proposals = parseJson(rows[0].result_json, {})?.learningProposals || [];
+            for (const proposal of proposals.slice(0, 3)) {
+                if (!aiAgentRegistry.some((agent) => agent.id === proposal.agentId)) continue;
+                await connection.execute(
+                    `INSERT IGNORE INTO ai_learning_items (
+                        source_run_id, agent_id, observation, proposed_change, success_metric,
+                        evaluation_plan, risk_level, status
+                     ) VALUES (?, ?, ?, ?, ?, ?, ?, 'candidate')`,
+                    [
+                        runId,
+                        proposal.agentId,
+                        String(proposal.observation || "").slice(0, 2000),
+                        String(proposal.proposedChange || "").slice(0, 2000),
+                        String(proposal.successMetric || "").slice(0, 800),
+                        String(proposal.evaluationPlan || "").slice(0, 2000),
+                        ["low", "medium", "high"].includes(proposal.riskLevel) ? proposal.riskLevel : "medium",
+                    ],
+                );
+            }
+        }
+        await connection.commit();
+        return true;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
+export const saveAiKnowledgeEntry = async ({ category, title, content, sourceNote, memberId }) => {
+    const connection = await database.getConnection();
+    try {
+        await connection.beginTransaction();
+        const [rows] = await connection.execute(
+            `SELECT id, version FROM ai_company_knowledge
+             WHERE category = ? AND title = ? AND status = 'active'
+             ORDER BY version DESC LIMIT 1 FOR UPDATE`,
+            [category, title],
+        );
+        const previous = rows[0] || null;
+        if (previous) {
+            await connection.execute("UPDATE ai_company_knowledge SET status = 'superseded' WHERE id = ?", [previous.id]);
+        }
+        await connection.execute(
+            `INSERT INTO ai_company_knowledge (
+                category, title, content, source_note, status, version, supersedes_id, created_by
+             ) VALUES (?, ?, ?, ?, 'active', ?, ?, ?)`,
+            [category, title, content, sourceNote, Number(previous?.version || 0) + 1, previous?.id || null, memberId],
+        );
+        await connection.commit();
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
+export const decideAiLearningItem = async ({ itemId, approved, memberId }) => {
+    const connection = await database.getConnection();
+    try {
+        await connection.beginTransaction();
+        const [rows] = await connection.execute(
+            "SELECT agent_id FROM ai_learning_items WHERE id = ? AND status = 'candidate' FOR UPDATE",
+            [itemId],
+        );
+        if (!rows[0]) {
+            await connection.rollback();
+            return false;
+        }
+        let playbookVersion = null;
+        if (approved) {
+            const [versionRows] = await connection.execute(
+                "SELECT COALESCE(MAX(playbook_version), 0) AS version FROM ai_learning_items WHERE agent_id = ? AND status = 'active' FOR UPDATE",
+                [rows[0].agent_id],
+            );
+            playbookVersion = Number(versionRows[0]?.version || 0) + 1;
+        }
+        await connection.execute(
+            `UPDATE ai_learning_items
+             SET status = ?, playbook_version = ?, decided_by = ?, decided_at = UTC_TIMESTAMP()
+             WHERE id = ? AND status = 'candidate'`,
+            [approved ? "active" : "rejected", playbookVersion, memberId, itemId],
+        );
+        await connection.commit();
+        return true;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
 };
 
 export const saveAiBudgetSettings = async ({ monthlyBudgetUsd, perRunBudgetUsd, memberId }) => {

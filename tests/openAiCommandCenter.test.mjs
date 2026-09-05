@@ -205,7 +205,7 @@ test("runs separate draft and review calls without external actions", async () =
         assert.equal(requests[0].tools, undefined);
         assert.deepEqual(requests[1].tools, [{ type: "web_search" }]);
         assert.equal(liveRun.mode, "live");
-        assert.equal(liveRun.steps.length, 9);
+        assert.equal(liveRun.steps.length, 10);
         assert.equal(liveRun.actualCostUsd, 0.0268);
         assert.deepEqual(liveRun.result.externalActions, []);
         assert.deepEqual(liveRun.result.sourceWeeks, [1]);
@@ -298,7 +298,7 @@ test("routes long-form work through Claude and then through the OpenAI review", 
         assert.equal(requests[1].request.max_tokens, 6000);
         assert.equal(liveRun.usage[1].provider, "Anthropic");
         assert.equal(liveRun.steps.find((step) => step.agentId === "editorial-teaching")?.provider, "Anthropic · claude-sonnet-5");
-        assert.equal(liveRun.steps.length, 10);
+        assert.equal(liveRun.steps.length, 11);
         assert.equal(liveRun.result.externalActions.length, 0);
         assert.ok(liveRun.actualCostUsd > 0);
         assert.ok(liveRun.actualCostUsd < 2);

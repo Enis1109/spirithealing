@@ -20,17 +20,36 @@ const pilotWeek = {
 };
 
 test("defines separate agent roles with explicit provider routes", () => {
-    assert.equal(aiAgentRegistry.length, 17);
-    assert.equal(new Set(aiAgentRegistry.map((agent) => agent.id)).size, 17);
+    assert.equal(aiAgentRegistry.length, 18);
+    assert.equal(new Set(aiAgentRegistry.map((agent) => agent.id)).size, 18);
     assert.ok(aiAgentRegistry.every((agent) => agent.purpose
         && agent.provider
         && agent.providerRoute
+        && agent.learning
         && agent.capabilities.length > 0
         && agent.access.length > 0
         && agent.guardrail));
     assert.equal(aiAgentRegistry.find((agent) => agent.id === "editorial-teaching")?.providerRoute, "anthropic-editorial");
     assert.equal(aiAgentRegistry.find((agent) => agent.id === "visual-design")?.providerRoute, "openai-image-canva-handoff");
     assert.ok(aiAgentRegistry.find((agent) => agent.id === "content-studio")?.capabilities.includes("Bildbriefings für GPT Image 2"));
+});
+
+test("turns a team meeting into assigned work without starting external actions", () => {
+    const run = buildMockWorkflowRun({
+        workflowId: "team-meeting",
+        teamMeeting: {
+            meetingDate: "2026-09-05",
+            dayPriorities: "Webinar prüfen\nReel auswerten",
+            weekPriorities: "Berlin-Kampagne vorbereiten",
+            monthPriorities: "13-Wochen-Programm begleiten",
+            currentSignals: "Zwei neue Anfragen",
+            openDecisions: "Budget festlegen",
+            constraints: "Keine Veröffentlichung ohne Freigabe",
+        },
+    });
+    assert.equal(run.result.assignments.length, 4);
+    assert.ok(run.steps.some((step) => step.agentId === "learning-evals"));
+    assert.deepEqual(run.result.externalActions, []);
 });
 
 test("runs the pilot workflow as an ordered, zero-cost mock chain", () => {

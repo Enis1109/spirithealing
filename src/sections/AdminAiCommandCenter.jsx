@@ -1,19 +1,21 @@
 import {
     BadgeDollarSign,
+    BookOpenCheck,
     Bot,
     BrainCircuit,
     CheckCircle2,
     ChevronRight,
     CircleDashed,
+    CalendarCheck2,
     FileCheck2,
     FlaskConical,
     Image,
-    LockKeyhole,
     Play,
     Save,
     ShieldCheck,
     Sparkles,
     UsersRound,
+    Workflow,
     XCircle,
 } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useState } from "react";
@@ -45,6 +47,25 @@ const emptyContentBrief = {
     anonymizationConfirmed: false,
 };
 
+const emptyTeamMeeting = {
+    meetingDate: new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Istanbul" }),
+    dayPriorities: "",
+    weekPriorities: "",
+    monthPriorities: "",
+    currentSignals: "",
+    openDecisions: "",
+    constraints: "",
+    anonymizationConfirmed: false,
+};
+
+const emptyKnowledge = {
+    category: "unternehmen",
+    title: "",
+    content: "",
+    sourceNote: "",
+    confirmed: false,
+};
+
 const contentChannels = [
     ["instagram", "Instagram"],
     ["facebook", "Facebook"],
@@ -66,7 +87,9 @@ const fieldDefinitions = [
 
 const viewOptions = [
     ["overview", "Übersicht", BrainCircuit],
+    ["meeting", "Team-Meeting", CalendarCheck2],
     ["projects", "Projekte", Sparkles],
+    ["learning", "Wissen & Lernen", BookOpenCheck],
     ["pilot", "Pilotwochen", FileCheck2],
     ["runs", "Prüfläufe", CircleDashed],
     ["agents", "Agenten", Bot],
@@ -114,6 +137,25 @@ const resultSources = (sources) => Array.isArray(sources) && sources.length > 0 
 
 const RunResult = ({ result, run, assets, settings, onImageDraft, busy }) => (
     <div className="grid gap-5 lg:grid-cols-2">
+        {Array.isArray(result.assignments) && result.assignments.length > 0 && (
+            <section className="lg:col-span-2">
+                <h4 className="font-bold text-[#173f40]">Arbeitsverteilung</h4>
+                <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                    {result.assignments.map((assignment, index) => (
+                        <article key={`${assignment.agentId}-${index}`} className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-4">
+                            <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
+                                <span className="rounded-full bg-[#eaf4f1] px-3 py-1 text-[#075f62]">{assignment.owner}</span>
+                                <span className="rounded-full bg-[#fff4d8] px-3 py-1 text-[#795800]">{assignment.horizon}</span>
+                                <span className="rounded-full bg-white px-3 py-1 text-[#6b8585]">{assignment.priority}</span>
+                            </div>
+                            <p className="mt-3 font-semibold text-[#173f40]">{assignment.task}</p>
+                            <p className="mt-2 text-sm leading-6 text-[#6b8585]"><strong>Fertig, wenn:</strong> {assignment.doneWhen}</p>
+                            <p className="mt-1 text-sm leading-6 text-[#6b8585]"><strong>Abhängigkeit:</strong> {assignment.dependsOn}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+        )}
         {result.contentPackage && (
             <section className="space-y-5 lg:col-span-2">
                 <div className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-5">
@@ -160,6 +202,23 @@ const RunResult = ({ result, run, assets, settings, onImageDraft, busy }) => (
         {resultList("Interne Contentansätze", result.contentIdeas)}
         {resultList("Prüfhinweise", result.reviewNotes)}
         {resultList("Offene Entscheidungen", result.openDecisions)}
+        {Array.isArray(result.learningProposals) && result.learningProposals.length > 0 && (
+            <section className="lg:col-span-2">
+                <h4 className="font-bold text-[#173f40]">Lernvorschläge</h4>
+                <p className="mt-1 text-sm leading-6 text-[#6b8585]">Nach Freigabe dieses Arbeitsstands erscheinen sie als Kandidaten. Erst eine zweite Entscheidung macht daraus eine aktive, versionierte Arbeitsregel.</p>
+                <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                    {result.learningProposals.map((proposal, index) => (
+                        <article key={`${proposal.agentId}-${index}`} className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-4 text-sm leading-6">
+                            <strong className="text-[#075f62]">{proposal.agentId} · Risiko {proposal.riskLevel}</strong>
+                            <p className="mt-2"><strong>Beobachtung:</strong> {proposal.observation}</p>
+                            <p className="mt-1"><strong>Änderung:</strong> {proposal.proposedChange}</p>
+                            <p className="mt-1"><strong>Erfolg:</strong> {proposal.successMetric}</p>
+                            <p className="mt-1"><strong>Vergleich:</strong> {proposal.evaluationPlan}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+        )}
         {resultSources(result.sources)}
         {Array.isArray(result.programBlueprint) && (
             <section className="lg:col-span-2">
@@ -187,6 +246,8 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
     const [activeView, setActiveView] = useState("overview");
     const [pilotWeek, setPilotWeek] = useState(emptyPilotWeek);
     const [contentBrief, setContentBrief] = useState(emptyContentBrief);
+    const [teamMeeting, setTeamMeeting] = useState(emptyTeamMeeting);
+    const [knowledgeEntry, setKnowledgeEntry] = useState(emptyKnowledge);
     const [busy, setBusy] = useState("");
     const [decisionNotes, setDecisionNotes] = useState({});
     const [budget, setBudget] = useState({ monthlyBudgetUsd: "15", perRunBudgetUsd: "2" });
@@ -240,6 +301,62 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
             setNotice({ type: "success", text: `Das Content-Paket wurde erstellt. Kosten: ${money(latestRun?.actualCostUsd)}. Es wartet auf deine Prüfung und wurde nicht veröffentlicht.` });
         } catch (error) {
             setNotice({ type: "error", text: describeError(error) });
+        } finally {
+            setBusy("");
+        }
+    };
+
+    const submitTeamMeeting = async (event) => {
+        event.preventDefault();
+        setBusy("team-meeting");
+        setNotice(null);
+        try {
+            const result = await requestJson("/api/admin/ai-command-center/runs", {
+                method: "POST",
+                body: JSON.stringify({ workflowId: "team-meeting", ...teamMeeting }),
+            });
+            applySnapshot(result.commandCenter);
+            setTeamMeeting((current) => ({ ...emptyTeamMeeting, meetingDate: current.meetingDate }));
+            setActiveView("runs");
+            setNotice({ type: "success", text: "Das Team-Meeting ist ausgewertet. Der Arbeitsplan wartet auf deine Prüfung; noch keine Aufgabe wurde außen ausgeführt." });
+        } catch (error) {
+            setNotice({ type: "error", text: describeError(error) });
+        } finally {
+            setBusy("");
+        }
+    };
+
+    const saveKnowledge = async (event) => {
+        event.preventDefault();
+        setBusy("knowledge");
+        setNotice(null);
+        try {
+            const result = await requestJson("/api/admin/ai-command-center/knowledge", {
+                method: "POST",
+                body: JSON.stringify(knowledgeEntry),
+            });
+            applySnapshot(result.commandCenter);
+            setKnowledgeEntry((current) => ({ ...emptyKnowledge, category: current.category }));
+            setNotice({ type: "success", text: "Das bestätigte Unternehmenswissen wurde versioniert gespeichert und steht künftigen Teamläufen zur Verfügung." });
+        } catch (error) {
+            setNotice({ type: "error", text: describeError(error) });
+        } finally {
+            setBusy("");
+        }
+    };
+
+    const decideLearning = async (itemId, approved) => {
+        setBusy(`learning-${itemId}`);
+        setNotice(null);
+        try {
+            const result = await requestJson(`/api/admin/ai-command-center/learning/${itemId}/decision`, {
+                method: "PUT",
+                body: JSON.stringify({ approved }),
+            });
+            applySnapshot(result.commandCenter);
+            setNotice({ type: "success", text: approved ? "Der Lernvorschlag ist als neue Playbook-Version aktiv." : "Der Lernvorschlag wurde verworfen und bleibt im Prüfprotokoll." });
+        } catch {
+            setNotice({ type: "error", text: "Der Lernvorschlag konnte nicht entschieden werden." });
         } finally {
             setBusy("");
         }
@@ -359,7 +476,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
     if (state === "loading") return <div className="rounded-3xl bg-[#fffaf2] p-8 font-bold text-[#0f8b8d]">KI-Zentrale wird geladen …</div>;
     if (state === "error") return <div className="rounded-3xl bg-red-50 p-8 font-bold text-red-800">Die KI-Zentrale konnte nicht geladen werden.</div>;
 
-    const { agents, workflows, settings, pilotWeeks, runs, assets = [] } = commandCenter;
+    const { agents, workflows, settings, pilotWeeks, runs, assets = [], knowledge = [], learningItems = [] } = commandCenter;
     const liveMode = settings.mode === "live";
     const liveReady = liveMode && settings.configurationStatus === "ready";
     const runCostLabel = `${money(settings.typicalRunCostUsd?.min)}–${money(settings.typicalRunCostUsd?.max)}`;
@@ -386,7 +503,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                 </div>
             </section>
 
-            <nav className="grid gap-2 rounded-3xl bg-[#fffaf2] p-3 shadow-sm sm:grid-cols-5">
+            <nav className="grid gap-2 rounded-3xl bg-[#fffaf2] p-3 shadow-sm sm:grid-cols-4 xl:grid-cols-7">
                 {viewOptions.map(([id, label, icon]) => (
                     <button key={id} type="button" onClick={() => setActiveView(id)} className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl px-4 font-bold transition ${activeView === id ? "bg-[#0f8b8d] text-white" : "text-[#4e6d6e] hover:bg-[#eaf4f1]"}`}>{createElement(icon, { className: "h-5 w-5" })}{label}</button>
                 ))}
@@ -394,12 +511,13 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
 
             {activeView === "overview" && (
                 <div className="space-y-6">
-                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                         {[
-                            [Bot, agents.length, "klar begrenzte Agenten"],
+                            [Bot, agents.length, "dauerhafte Rollen"],
+                            [BookOpenCheck, knowledge.filter((entry) => entry.status === "active").length, "bestätigte Wissenseinträge"],
+                            [Workflow, learningItems.filter((item) => item.status === "active").length, "aktive Lernversionen"],
                             [FileCheck2, pilotWeeks.length, "von 8 Pilotwochen erfasst"],
                             [CircleDashed, pendingRuns.length, "Ergebnisse warten auf Prüfung"],
-                            [LockKeyhole, "Aus", "externe Aktionen"],
                         ].map(([icon, value, label]) => (
                             <article key={label} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm">{createElement(icon, { className: "h-6 w-6 text-[#0f8b8d]" })}<strong className="mt-4 block text-3xl">{value}</strong><span className="mt-1 block text-sm text-[#6b8585]">{label}</span></article>
                         ))}
@@ -440,6 +558,65 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                             <button type="submit" disabled={busy === "budget"} className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#0f8b8d]/40 px-5 font-bold text-[#0f8b8d] hover:bg-[#eaf4f1] disabled:opacity-50"><Save className="h-4 w-4" /> Grenzen speichern</button>
                         </form>
                     </section>
+                </div>
+            )}
+
+            {activeView === "meeting" && (
+                <form onSubmit={submitTeamMeeting} className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm sm:p-8">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Morgendliche Arbeitsverteilung</p>
+                            <h2 className="mt-2 text-3xl font-bold">Team-Meeting starten</h2>
+                            <p className="mt-2 max-w-3xl leading-7 text-[#6b8585]">Du gibst die Lage und Prioritäten vor. Der Director verteilt sie auf die passenden Rollen, nennt Abhängigkeiten und legt für jede Aufgabe ein prüfbares Fertig-Kriterium fest.</p>
+                        </div>
+                        <span className="rounded-full bg-[#eaf4f1] px-4 py-2 text-sm font-bold text-[#075f62]">Unternehmenswissen: {knowledge.filter((entry) => entry.status === "active").length} · Playbooks: {learningItems.filter((item) => item.status === "active").length}</span>
+                    </div>
+                    <div className="mt-7 grid gap-5 lg:grid-cols-2">
+                        <label className="text-sm font-bold">Datum *<input type="date" required value={teamMeeting.meetingDate} onChange={(event) => setTeamMeeting((current) => ({ ...current, meetingDate: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Signale seit dem letzten Meeting<textarea rows={3} maxLength={6000} value={teamMeeting.currentSignals} onChange={(event) => setTeamMeeting((current) => ({ ...current, currentSignals: event.target.value }))} placeholder="Neue Buchungen, Reaktionen, Engpässe oder Ergebnisse. Eine Beobachtung pro Zeile." className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Heute *<textarea required rows={5} maxLength={6000} value={teamMeeting.dayPriorities} onChange={(event) => setTeamMeeting((current) => ({ ...current, dayPriorities: event.target.value }))} placeholder="Was soll heute konkret fertig werden? Eine Aufgabe pro Zeile." className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Diese Woche<textarea rows={5} maxLength={6000} value={teamMeeting.weekPriorities} onChange={(event) => setTeamMeeting((current) => ({ ...current, weekPriorities: event.target.value }))} placeholder="Welche Wochenziele müssen mitlaufen?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Dieser Monat<textarea rows={4} maxLength={6000} value={teamMeeting.monthPriorities} onChange={(event) => setTeamMeeting((current) => ({ ...current, monthPriorities: event.target.value }))} placeholder="Welche Monatsziele dürfen im Tagesgeschäft nicht verloren gehen?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold">Offene Entscheidungen<textarea rows={4} maxLength={6000} value={teamMeeting.openDecisions} onChange={(event) => setTeamMeeting((current) => ({ ...current, openDecisions: event.target.value }))} placeholder="Wo braucht das Team deine Entscheidung?" className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                        <label className="text-sm font-bold lg:col-span-2">Grenzen und feste Vorgaben<textarea rows={3} maxLength={6000} value={teamMeeting.constraints} onChange={(event) => setTeamMeeting((current) => ({ ...current, constraints: event.target.value }))} placeholder="Zum Beispiel feste Termine, Budgets oder Dinge, die heute nicht verändert werden dürfen." className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                    </div>
+                    <label className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><input type="checkbox" required checked={teamMeeting.anonymizationConfirmed} onChange={(event) => setTeamMeeting((current) => ({ ...current, anonymizationConfirmed: event.target.checked }))} className="mt-1 h-5 w-5 shrink-0 accent-[#0f8b8d]" /><span><strong className="block">Eingaben geprüft</strong>Das Meeting enthält keine personenbezogenen Daten oder vertraulichen Geschichten realer Teilnehmender.</span></label>
+                    <button type="submit" disabled={busy === "team-meeting" || (liveMode && !liveReady)} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-7 font-bold text-white hover:bg-[#0a6f71] disabled:opacity-50"><UsersRound className="h-5 w-5" />{busy === "team-meeting" ? "Team berät …" : `Team-Meeting auswerten (typisch ${runCostLabel})`}</button>
+                </form>
+            )}
+
+            {activeView === "learning" && (
+                <div className="grid gap-6 2xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                    <form onSubmit={saveKnowledge} className="h-fit rounded-3xl bg-[#fffaf2] p-6 shadow-sm sm:p-8">
+                        <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#0f8b8d]">Unternehmensgedächtnis</p>
+                        <h2 className="mt-2 text-3xl font-bold">Bestätigtes Wissen speichern</h2>
+                        <p className="mt-2 leading-7 text-[#6b8585]">Nur hier bestätigte Fakten gelten künftig als Unternehmenswissen. Eine neue Fassung mit demselben Titel ersetzt die alte sichtbar als nächste Version.</p>
+                        <div className="mt-6 space-y-5">
+                            <label className="block text-sm font-bold">Bereich<select value={knowledgeEntry.category} onChange={(event) => setKnowledgeEntry((current) => ({ ...current, category: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]"><option value="unternehmen">Unternehmen</option><option value="marke">Marke und Sprache</option><option value="angebote">Angebote</option><option value="zielgruppen">Zielgruppen</option><option value="prozesse">Prozesse</option><option value="kennzahlen">Kennzahlen</option><option value="termine">Termine</option></select></label>
+                            <label className="block text-sm font-bold">Titel *<input required maxLength={180} value={knowledgeEntry.title} onChange={(event) => setKnowledgeEntry((current) => ({ ...current, title: event.target.value }))} className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
+                            <label className="block text-sm font-bold">Inhalt *<textarea required rows={7} maxLength={12000} value={knowledgeEntry.content} onChange={(event) => setKnowledgeEntry((current) => ({ ...current, content: event.target.value }))} className="mt-2 w-full rounded-2xl border border-[#0f8b8d]/25 bg-white px-4 py-3 leading-7 outline-none focus:border-[#0f8b8d]" /></label>
+                            <label className="block text-sm font-bold">Quelle oder Beschluss *<input required maxLength={500} value={knowledgeEntry.sourceNote} onChange={(event) => setKnowledgeEntry((current) => ({ ...current, sourceNote: event.target.value }))} placeholder="Zum Beispiel: Team-Beschluss vom 05.09.2026" className="mt-2 min-h-12 w-full rounded-xl border border-[#0f8b8d]/25 bg-white px-4 outline-none focus:border-[#0f8b8d]" /></label>
+                            <label className="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><input type="checkbox" required checked={knowledgeEntry.confirmed} onChange={(event) => setKnowledgeEntry((current) => ({ ...current, confirmed: event.target.checked }))} className="mt-1 h-5 w-5 shrink-0 accent-[#0f8b8d]" /><span>Ich bestätige, dass dieser Eintrag stimmt, keine personenbezogenen Daten enthält und von allen Agenten als Unternehmenswissen verwendet werden darf.</span></label>
+                        </div>
+                        <button type="submit" disabled={busy === "knowledge"} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f8b8d] px-7 font-bold text-white disabled:opacity-50"><Save className="h-5 w-5" /> Wissen versioniert speichern</button>
+                    </form>
+                    <div className="space-y-6">
+                        <section className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm">
+                            <h2 className="text-2xl font-bold">Aktives Unternehmenswissen</h2>
+                            <div className="mt-4 space-y-3">
+                                {knowledge.filter((entry) => entry.status === "active").map((entry) => <article key={entry.id} className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-4"><div className="flex items-center justify-between gap-3"><strong>{entry.title}</strong><span className="rounded-full bg-[#eaf4f1] px-3 py-1 text-xs font-bold text-[#075f62]">{entry.category} · v{entry.version}</span></div><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[#4e6d6e]">{entry.content}</p><p className="mt-2 text-xs text-[#789091]">Quelle: {entry.sourceNote}</p></article>)}
+                                {knowledge.filter((entry) => entry.status === "active").length === 0 && <p className="rounded-2xl bg-white p-4 text-sm text-[#6b8585]">Noch kein bestätigter Wissenseintrag.</p>}
+                            </div>
+                        </section>
+                        <section className="rounded-3xl bg-[#fffaf2] p-6 shadow-sm">
+                            <h2 className="text-2xl font-bold">Lernkandidaten und Playbooks</h2>
+                            <p className="mt-2 text-sm leading-6 text-[#6b8585]">Die Agenten dürfen Vorschläge selbst entwickeln. Als aktive Regel lernen sie erst nach einem dokumentierten Vergleich und deiner Entscheidung. So bleibt jede Veränderung nachvollziehbar und rücksetzbar.</p>
+                            <div className="mt-4 space-y-3">
+                                {learningItems.map((item) => <article key={item.id} className="rounded-2xl border border-[#0f8b8d]/15 bg-white p-4"><div className="flex flex-wrap items-center justify-between gap-3"><strong>{item.agentName}</strong><span className={`rounded-full px-3 py-1 text-xs font-bold ${item.status === "active" ? "bg-emerald-100 text-emerald-800" : item.status === "rejected" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>{item.status === "active" ? `aktiv · v${item.playbookVersion}` : item.status === "rejected" ? "verworfen" : `Kandidat · Risiko ${item.riskLevel}`}</span></div><p className="mt-3 text-sm leading-6"><strong>Beobachtung:</strong> {item.observation}</p><p className="mt-1 text-sm leading-6"><strong>Vorgeschlagene Regel:</strong> {item.proposedChange}</p><p className="mt-1 text-sm leading-6"><strong>Erfolgskriterium:</strong> {item.successMetric}</p><p className="mt-1 text-sm leading-6"><strong>Vergleich:</strong> {item.evaluationPlan}</p>{item.status === "candidate" && <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={() => decideLearning(item.id, true)} disabled={busy === `learning-${item.id}`} className="rounded-full bg-[#0f8b8d] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">Als neue Version aktivieren</button><button type="button" onClick={() => decideLearning(item.id, false)} disabled={busy === `learning-${item.id}`} className="rounded-full border border-red-300 px-4 py-2 text-sm font-bold text-red-800 disabled:opacity-50">Verwerfen</button></div>}</article>)}
+                                {learningItems.length === 0 && <p className="rounded-2xl bg-white p-4 text-sm text-[#6b8585]">Lernkandidaten entstehen aus freigegebenen Team- und Arbeitsläufen.</p>}
+                            </div>
+                        </section>
+                    </div>
                 </div>
             )}
 
@@ -539,7 +716,7 @@ export const AdminAiCommandCenter = ({ requestJson, setNotice }) => {
                 <div>
                     <div className="rounded-3xl bg-[#fffaf2] p-6"><h2 className="text-3xl font-bold">Agenten, Zugänge und Grenzen</h2><p className="mt-2 leading-7 text-[#6b8585]">{liveReady ? `Routinearbeiten laufen über ${settings.routineModel}; Langform über ${settings.editorialProvider === "Anthropic" ? settings.editorialModel : `${settings.routineModel} als Rückfallroute`}; Prüfung, Datenschutz und Qualitätskontrolle über ${settings.reviewModel}. Bilder laufen nach Einzelbestätigung über ${settings.imageModel} und anschließend durch das Canva-Markenlayout.` : `Im aktuellen Mock-Modus werden Rollen und Übergaben ohne kostenpflichtige Modellaufrufe geprüft. Claude, ${settings.imageModel} und Canva bleiben bis zur gesonderten Aktivierung geschützt.`}</p></div>
                     <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        {agents.map((agent) => <article key={agent.id} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf4f1] text-[#0f8b8d]"><UsersRound className="h-5 w-5" /></span><span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#6b8585]">{agent.provider}</span></div><p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#0f8b8d]">{agent.area}</p><h3 className="mt-1 text-xl font-bold">{agent.name}</h3><p className="mt-2 leading-7 text-[#6b8585]">{agent.purpose}</p><div className="mt-4 rounded-2xl border border-[#0f8b8d]/10 bg-white p-4 text-sm leading-6"><strong className="text-[#075f62]">Möglichkeiten</strong><p className="mt-1 text-[#6b8585]">{agent.capabilities.join(" · ")}</p><strong className="mt-3 block text-[#075f62]">Zugriff</strong><p className="mt-1 text-[#6b8585]">{agent.access.join(" · ")}</p><strong className="mt-3 block text-[#075f62]">Freigabegrenze</strong><p className="mt-1 text-[#6b8585]">{agent.guardrail}</p></div></article>)}
+                        {agents.map((agent) => <article key={agent.id} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf4f1] text-[#0f8b8d]"><UsersRound className="h-5 w-5" /></span><span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#6b8585]">{agent.provider}</span></div><p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#0f8b8d]">{agent.area}</p><h3 className="mt-1 text-xl font-bold">{agent.name}</h3><p className="mt-2 leading-7 text-[#6b8585]">{agent.purpose}</p><div className="mt-4 rounded-2xl border border-[#0f8b8d]/10 bg-white p-4 text-sm leading-6"><strong className="text-[#075f62]">Möglichkeiten</strong><p className="mt-1 text-[#6b8585]">{agent.capabilities.join(" · ")}</p><strong className="mt-3 block text-[#075f62]">Lernweise</strong><p className="mt-1 text-[#6b8585]">{agent.learning}</p><strong className="mt-3 block text-[#075f62]">Zugriff</strong><p className="mt-1 text-[#6b8585]">{agent.access.join(" · ")}</p><strong className="mt-3 block text-[#075f62]">Freigabegrenze</strong><p className="mt-1 text-[#6b8585]">{agent.guardrail}</p></div></article>)}
                     </div>
                 </div>
             )}

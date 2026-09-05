@@ -1,11 +1,18 @@
 const internalAccess = ["anonymisierte Arbeitsdaten", "interne Arbeitsstände"];
 const humanApproval = "Menschliche Freigabe vor jeder Außenwirkung";
 
-const agent = ({ access = internalAccess, capabilities = ["interne Entwürfe", "Übergabe an Prüfung"], guardrail = humanApproval, ...profile }) => ({
+const agent = ({
+    access = internalAccess,
+    capabilities = ["interne Entwürfe", "Übergabe an Prüfung"],
+    guardrail = humanApproval,
+    learning = "Nutzt bestätigtes Unternehmenswissen und aktive, versionierte Lernerkenntnisse.",
+    ...profile
+}) => ({
     ...profile,
     access,
     capabilities,
     guardrail,
+    learning,
 });
 
 export const aiAgentRegistry = [
@@ -18,6 +25,7 @@ export const aiAgentRegistry = [
     agent({ id: "social-growth", name: "Social Growth", area: "Social Media", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Plant Formate und Tests und wertet freigegebene Kennzahlen aus.", access: ["freigegebene Contententwürfe", "anonymisierte Kennzahlen"], capabilities: ["kanalspezifische Formate", "Caption- und Hook-Varianten", "Testhypothesen", "Lernschleife aus freigegebenen Kennzahlen"], guardrail: "Keine Planung oder Veröffentlichung auf einem Social-Media-Konto ohne gesonderte Freigabe" }),
     agent({ id: "sales-client-journey", name: "Sales & Client Journey", area: "Kundenreise", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Entwirft respektvolle Übergänge zwischen Angeboten.", access: ["freigegebene Angebotsdaten", "anonymisierte Rückmeldungen"] }),
     agent({ id: "analytics-learning", name: "Analytics & Learning", area: "Auswertung", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Trennt Beobachtung, Hypothese und Messlücke.", access: ["anonymisierte Pilotdaten", "freigegebene Kennzahlen"] }),
+    agent({ id: "learning-evals", name: "Learning & Evals", area: "Weiterentwicklung", provider: "OpenAI", providerRoute: "openai-review", purpose: "Formuliert prüfbare Verbesserungen und vergleicht sie mit bisherigen Ergebnissen.", access: ["freigegebene Prüfläufe", "aktive Playbook-Versionen", "bestätigtes Unternehmenswissen"], capabilities: ["Erfahrungsjournal", "Evaluationsplan", "Versionsvergleich", "Lernvorschläge"], guardrail: "Keine Vermutung wird als Unternehmenswissen gespeichert; nur bestätigte Lernversionen werden künftig als Regel verwendet.", learning: "Verbessert die Arbeitsweise anhand messbarer Ergebnisse, ohne Markenwissen oder Unternehmensfakten selbständig umzuschreiben." }),
     agent({ id: "editorial-teaching", name: "Editorial & Teaching", area: "Langform", provider: "Anthropic · Claude Sonnet 5", providerRoute: "anthropic-editorial", fallbackProvider: "OpenAI", purpose: "Bearbeitet lange Skripte, Workbooks und Erzähltexte als interne Entwürfe.", access: ["freigegebene Quellen", "anonymisierte Arbeitsdaten", "vorheriger Programmentwurf"], guardrail: "OpenAI-Zweitprüfung und menschliche Freigabe sind Pflicht" }),
     agent({ id: "brand-review", name: "Brand Review", area: "Marke", provider: "OpenAI", providerRoute: "openai-routine", purpose: "Prüft Ton, Bildbriefing und Spirit-Healing-Begriffe.", access: ["freigegebenes Markenwissen", "interne Text- und Bildbriefings"], capabilities: ["Tonprüfung", "Bildsprache und Motivgrenzen", "Gesundheitsclaim-Prüfung", "Freigabeempfehlung"] }),
     agent({ id: "visual-design", name: "Visual Design & Canva", area: "Gestaltung", provider: "OpenAI · GPT Image 2 + Canva", providerRoute: "openai-image-canva-handoff", purpose: "Erzeugt oder bearbeitet ein Motiv und überführt es anschließend in ein freigegebenes Canva-Markenlayout.", access: ["intern freigegebene Texte", "freigegebene Bildbriefings", "ausgewählte Canva-Markenvorlagen"], capabilities: ["GPT Image 2 für Motive und Bildbearbeitung", "Entwurfsqualität für günstige Varianten", "Finalqualität für ausgewählte Motive", "Canva-Layout und Formatadaption"], guardrail: "Jede kostenpflichtige Bilderzeugung, Canva-Erstellung und Veröffentlichung braucht die dafür vorgesehene Bestätigung" }),
@@ -32,6 +40,22 @@ const agentMap = new Map(aiAgentRegistry.map((agent) => [agent.id, agent]));
 
 export const aiWorkflowRegistry = [
     {
+        id: "team-meeting",
+        name: "Morgendliches Team-Meeting",
+        description: "Verteilt Tages-, Wochen- und Monatsaufgaben, benennt Abhängigkeiten und endet mit einem klaren Arbeitsplan.",
+        steps: [
+            "sh-director",
+            "operations-manager",
+            "strategy-growth",
+            "content-studio",
+            "social-growth",
+            "sales-client-journey",
+            "technical-operations",
+            "learning-evals",
+            "quality-controller",
+        ],
+    },
+    {
         id: "pilot-week-learning",
         name: "Pilotwoche auswerten",
         description: "Ordnet eine anonymisierte Woche, leitet Lernpunkte ab und endet vor jeder Außenaktion.",
@@ -39,6 +63,7 @@ export const aiWorkflowRegistry = [
             "sh-director",
             "knowledge-curator",
             "analytics-learning",
+            "learning-evals",
             "program-development",
             "research-fact-check",
             "content-studio",
@@ -55,6 +80,7 @@ export const aiWorkflowRegistry = [
             "sh-director",
             "knowledge-curator",
             "analytics-learning",
+            "learning-evals",
             "program-development",
             "editorial-teaching",
             "research-fact-check",
@@ -73,6 +99,7 @@ export const aiWorkflowRegistry = [
             "strategy-growth",
             "content-studio",
             "social-growth",
+            "learning-evals",
             "brand-review",
             "research-fact-check",
             "compliance-privacy",
@@ -208,24 +235,62 @@ const contentProjectResult = (contentBrief) => ({
     sourceWeeks: [],
     sources: [],
     externalActions: [],
+    learningProposals: [],
 });
 
-export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks = [], contentBrief = null }) => {
+const teamMeetingResult = (teamMeeting) => {
+    const priorities = [
+        ...listFromText(teamMeeting.dayPriorities),
+        ...listFromText(teamMeeting.weekPriorities),
+        ...listFromText(teamMeeting.monthPriorities),
+    ];
+    const defaultTasks = priorities.length > 0 ? priorities : ["Die wichtigsten Aufgaben für heute konkretisieren."];
+    return {
+        title: `Team-Meeting · ${teamMeeting.meetingDate}`,
+        executiveSummary: `${defaultTasks.length} Prioritäten wurden in einen internen Arbeitsplan überführt. Abhängigkeiten und offene Entscheidungen bleiben sichtbar.`,
+        signals: listFromText(teamMeeting.currentSignals),
+        recommendedAdjustments: [],
+        contentIdeas: [],
+        reviewNotes: ["Der Plan löst keine Außenaktion aus.", "Neue Unternehmensfakten werden erst nach gesonderter Bestätigung dauerhaft gespeichert."],
+        openDecisions: listFromText(teamMeeting.openDecisions),
+        assignments: defaultTasks.slice(0, 12).map((task, index) => ({
+            agentId: index % 2 === 0 ? "operations-manager" : "strategy-growth",
+            owner: index % 2 === 0 ? "Operations Manager" : "Strategy & Growth",
+            horizon: index < listFromText(teamMeeting.dayPriorities).length ? "heute" : "diese Woche",
+            priority: index < 3 ? "hoch" : "normal",
+            task,
+            doneWhen: "Ergebnis liegt als prüfbarer interner Arbeitsstand vor.",
+            dependsOn: "Keine offene Abhängigkeit dokumentiert.",
+        })),
+        learningProposals: [],
+        contentPackage: null,
+        programBlueprint: [],
+        sourceWeeks: [],
+        sources: [],
+        externalActions: [],
+    };
+};
+
+export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks = [], contentBrief = null, teamMeeting = null }) => {
     const workflow = workflowMap.get(workflowId);
     if (!workflow) throw new Error(`Unknown workflow: ${workflowId}`);
     if (workflowId === "pilot-week-learning" && !pilotWeek) throw new Error("Pilot week is required");
     if (workflowId === "core-product-development" && pilotWeeks.length === 0) throw new Error("Pilot weeks are required");
     if (workflowId === "content-project" && !contentBrief) throw new Error("Content brief is required");
+    if (workflowId === "team-meeting" && !teamMeeting) throw new Error("Team meeting is required");
 
     const contextLabel = workflowId === "pilot-week-learning"
         ? `Pilotwoche ${pilotWeek.weekNumber}`
         : workflowId === "content-project"
             ? `Content-Projekt „${contentBrief.projectName}“`
-            : `${pilotWeeks.length} gespeicherte Pilotwochen`;
+            : workflowId === "team-meeting"
+                ? `Team-Meeting am ${teamMeeting.meetingDate}`
+                : `${pilotWeeks.length} gespeicherte Pilotwochen`;
     const summaries = {
         "sh-director": `Auftrag und Freigabegrenzen für ${contextLabel} festgelegt.`,
         "knowledge-curator": "Eingaben als interne Quelle geordnet; keine fremden Quellen oder personenbezogenen Daten ergänzt.",
         "analytics-learning": "Beobachtungen, Deutungen und noch fehlende Messpunkte getrennt.",
+        "learning-evals": "Erfahrungen in prüfbare Lernvorschläge mit Erfolgskriterium und Versionsgrenze übersetzt.",
         "program-development": "Aus den geordneten Eingaben einen Programmarbeitsstand abgeleitet.",
         "editorial-teaching": "Langform, Lehrlogik und Erzählbogen als internen Arbeitsauftrag vorbereitet.",
         "research-fact-check": "Aussagen mit möglichem Quellen- oder Evidenzbedarf markiert.",
@@ -236,6 +301,9 @@ export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks 
         "compliance-privacy": "Datenschutz, sensible Aussagen und Außenwirkungsrisiken geprüft.",
         "independent-review": "Ergebnis unabhängig auf Widersprüche und unbelegte Schlussfolgerungen geprüft.",
         "quality-controller": "Restfragen gebündelt und Ergebnis zur menschlichen Entscheidung vorgelegt.",
+        "operations-manager": "Aufgaben nach Zeithorizont, Zuständigkeit und Abhängigkeit geordnet.",
+        "sales-client-journey": "Aufgaben entlang der Kundenreise eingeordnet; keine Kontaktaufnahme ausgelöst.",
+        "technical-operations": "Technische Arbeitspakete und sichere Übergaben benannt; kein Deployment ausgelöst.",
     };
 
     return {
@@ -251,6 +319,8 @@ export const buildMockWorkflowRun = ({ workflowId, pilotWeek = null, pilotWeeks 
             ? pilotResult(pilotWeek)
             : workflowId === "content-project"
                 ? contentProjectResult(contentBrief)
-                : coreProductResult(pilotWeeks),
+                : workflowId === "team-meeting"
+                    ? teamMeetingResult(teamMeeting)
+                    : coreProductResult(pilotWeeks),
     };
 };

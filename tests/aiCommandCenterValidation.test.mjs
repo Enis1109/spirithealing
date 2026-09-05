@@ -4,6 +4,8 @@ import {
     AiCommandCenterValidationError,
     normalizeBudgetSettings,
     normalizeImageDraftRequest,
+    normalizeKnowledgeEntry,
+    normalizeLearningDecision,
     normalizePilotWeek,
     normalizeRunDecision,
     normalizeWorkflowRequest,
@@ -91,4 +93,32 @@ test("requires a bounded image brief and explicit cost confirmation", () => {
     assert.deepEqual(normalizeImageDraftRequest({ briefIndex: "2", confirmCost: true }), { briefIndex: 2, confirmCost: true });
     assert.throws(() => normalizeImageDraftRequest({ briefIndex: 0, confirmCost: false }), AiCommandCenterValidationError);
     assert.throws(() => normalizeImageDraftRequest({ briefIndex: 8, confirmCost: true }), AiCommandCenterValidationError);
+});
+
+test("normalizes a morning team meeting", () => {
+    const normalized = normalizeWorkflowRequest({
+        workflowId: "team-meeting",
+        meetingDate: "2026-09-05",
+        dayPriorities: "Webinar prüfen",
+        weekPriorities: "Berlin-Kampagne",
+        monthPriorities: "",
+        currentSignals: "Eine neue Anfrage",
+        openDecisions: "",
+        constraints: "Keine Veröffentlichung ohne Freigabe",
+        anonymizationConfirmed: true,
+    });
+    assert.equal(normalized.teamMeeting.meetingDate, "2026-09-05");
+    assert.equal(normalized.teamMeeting.dayPriorities, "Webinar prüfen");
+});
+
+test("requires confirmed, sourced company knowledge and a valid learning decision", () => {
+    assert.deepEqual(normalizeKnowledgeEntry({
+        category: "marke",
+        title: "Linkstandard",
+        content: "Für kostenlose Inhalte gilt die freigegebene Gratis-Seite.",
+        sourceNote: "Team-Beschluss vom 05.09.2026",
+        confirmed: true,
+    }).category, "marke");
+    assert.throws(() => normalizeKnowledgeEntry({ category: "marke", title: "X", content: "Y", sourceNote: "Z", confirmed: false }), AiCommandCenterValidationError);
+    assert.deepEqual(normalizeLearningDecision({ approved: true }), { approved: true });
 });

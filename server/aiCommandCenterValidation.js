@@ -1,5 +1,6 @@
-const workflowIds = new Set(["core-product-development", "content-project"]);
+const workflowIds = new Set(["core-product-development", "content-project", "team-meeting"]);
 const contentChannels = new Set(["instagram", "facebook", "linkedin", "newsletter", "blog"]);
+const knowledgeCategories = new Set(["unternehmen", "marke", "angebote", "zielgruppen", "prozesse", "kennzahlen", "termine"]);
 
 const directIdentifierPatterns = [
     { type: "email", pattern: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/iu },
@@ -69,6 +70,26 @@ export const normalizePilotWeek = (body = {}) => {
 export const normalizeWorkflowRequest = (body = {}) => {
     const workflowId = String(body.workflowId || "").trim().toLowerCase();
     if (!workflowIds.has(workflowId)) throw new AiCommandCenterValidationError("workflowId");
+    if (workflowId === "team-meeting") {
+        if (body.anonymizationConfirmed !== true) {
+            throw new AiCommandCenterValidationError("anonymizationConfirmed", "required");
+        }
+        const teamMeeting = {
+            meetingDate: textValue(body.meetingDate, "meetingDate", { required: true, maxLength: 10 }),
+            dayPriorities: textValue(body.dayPriorities, "dayPriorities", { required: true, maxLength: 6000 }),
+            weekPriorities: textValue(body.weekPriorities, "weekPriorities", { maxLength: 6000 }),
+            monthPriorities: textValue(body.monthPriorities, "monthPriorities", { maxLength: 6000 }),
+            currentSignals: textValue(body.currentSignals, "currentSignals", { maxLength: 6000 }),
+            openDecisions: textValue(body.openDecisions, "openDecisions", { maxLength: 6000 }),
+            constraints: textValue(body.constraints, "constraints", { maxLength: 6000 }),
+            anonymizationConfirmed: true,
+        };
+        if (!/^\d{4}-\d{2}-\d{2}$/u.test(teamMeeting.meetingDate)) {
+            throw new AiCommandCenterValidationError("meetingDate");
+        }
+        assertAnonymized(teamMeeting);
+        return { workflowId, teamMeeting };
+    }
     if (workflowId !== "content-project") return { workflowId };
 
     if (body.anonymizationConfirmed !== true) {
@@ -93,6 +114,25 @@ export const normalizeWorkflowRequest = (body = {}) => {
     };
     assertAnonymized(contentBrief);
     return { workflowId, contentBrief };
+};
+
+export const normalizeKnowledgeEntry = (body = {}) => {
+    const category = String(body.category || "").trim().toLowerCase();
+    if (!knowledgeCategories.has(category)) throw new AiCommandCenterValidationError("category");
+    if (body.confirmed !== true) throw new AiCommandCenterValidationError("confirmed", "required");
+    const entry = {
+        category,
+        title: textValue(body.title, "title", { required: true, maxLength: 180 }),
+        content: textValue(body.content, "content", { required: true, maxLength: 12000 }),
+        sourceNote: textValue(body.sourceNote, "sourceNote", { required: true, maxLength: 500 }),
+    };
+    assertAnonymized(entry);
+    return entry;
+};
+
+export const normalizeLearningDecision = (body = {}) => {
+    if (typeof body.approved !== "boolean") throw new AiCommandCenterValidationError("approved");
+    return { approved: body.approved };
 };
 
 export const normalizeImageDraftRequest = (body = {}) => {

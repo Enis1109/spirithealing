@@ -494,6 +494,44 @@ const schemaStatements = [
         CONSTRAINT ai_asset_run_fk FOREIGN KEY (source_run_id) REFERENCES ai_workflow_runs(id) ON DELETE CASCADE,
         CONSTRAINT ai_asset_creator_fk FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE RESTRICT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+    `CREATE TABLE IF NOT EXISTS ai_company_knowledge (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        category VARCHAR(40) NOT NULL,
+        title VARCHAR(180) NOT NULL,
+        content LONGTEXT NOT NULL,
+        source_note VARCHAR(500) NOT NULL,
+        status VARCHAR(24) NOT NULL DEFAULT 'active',
+        version SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+        supersedes_id BIGINT UNSIGNED NULL,
+        created_by BIGINT UNSIGNED NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX ai_knowledge_status_idx (status, category, updated_at),
+        INDEX ai_knowledge_title_idx (category, title),
+        CONSTRAINT ai_knowledge_supersedes_fk FOREIGN KEY (supersedes_id) REFERENCES ai_company_knowledge(id) ON DELETE SET NULL,
+        CONSTRAINT ai_knowledge_creator_fk FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE RESTRICT
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+    `CREATE TABLE IF NOT EXISTS ai_learning_items (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        source_run_id BIGINT UNSIGNED NOT NULL,
+        agent_id VARCHAR(80) NOT NULL,
+        observation TEXT NOT NULL,
+        proposed_change TEXT NOT NULL,
+        success_metric VARCHAR(800) NOT NULL,
+        evaluation_plan TEXT NOT NULL,
+        risk_level VARCHAR(24) NOT NULL DEFAULT 'medium',
+        status VARCHAR(24) NOT NULL DEFAULT 'candidate',
+        playbook_version SMALLINT UNSIGNED NULL,
+        decided_by BIGINT UNSIGNED NULL,
+        decided_at DATETIME NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY ai_learning_run_agent_unique (source_run_id, agent_id),
+        INDEX ai_learning_status_idx (status, agent_id, created_at),
+        CONSTRAINT ai_learning_run_fk FOREIGN KEY (source_run_id) REFERENCES ai_workflow_runs(id) ON DELETE CASCADE,
+        CONSTRAINT ai_learning_decider_fk FOREIGN KEY (decided_by) REFERENCES members(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 ];
 
 const additiveColumns = [
