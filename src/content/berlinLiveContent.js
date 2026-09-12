@@ -15,7 +15,7 @@ export const berlinLiveContentFields = Object.freeze([
     field({ id: "hero.lead", group: "Einstieg", label: "Einleitung unter der Hauptüberschrift", value: "Zwei intensive Tage mit familiensystemischer Aufstellungsarbeit. Wir betrachten Bindungen, Rollen und wiederkehrende Dynamiken über Generationen hinweg und begleiten jede Aufstellung gemeinsam." }),
     field({ id: "hero.date", group: "Einstieg", label: "Datumsangabe", value: "9. und 10. Oktober 2026", compact: true }),
     field({ id: "hero.time", group: "Einstieg", label: "Uhrzeit", value: "jeweils 10–19 Uhr", compact: true }),
-    field({ id: "hero.location", group: "Einstieg", label: "Ortsangabe", value: "Berlin, Raum folgt", compact: true }),
+    field({ id: "hero.location", group: "Einstieg", label: "Ortsangabe", value: "Berlin", compact: true }),
     field({ id: "hero.cta", group: "Einstieg", label: "Große Schaltfläche", value: "Ticketarten ansehen", compact: true }),
     field({ id: "hero.capacity", group: "Einstieg", label: "Hinweis zur Platzzahl", value: "20 Plätze insgesamt\ndavon 6 mit eigener Aufstellung", compact: true }),
     field({ id: "hero.image-eyebrow", group: "Einstieg", label: "Bildzeile", value: "Zwei Leiterinnen, ein gemeinsamer Prozess", compact: true }),

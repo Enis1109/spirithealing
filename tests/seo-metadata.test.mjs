@@ -76,6 +76,9 @@ test("adds truthful structured data for the main offers", () => {
   const berlin = JSON.stringify(structuredDataForPath("/berlin-live", "de"))
   assert.match(berlin, /"Event"/u)
   assert.match(berlin, /2026-10-09/u)
+  assert.match(berlin, /Manoah-Zentrum/u)
+  assert.match(berlin, /Urbanstraße 118/u)
+  assert.match(berlin, /"maximumAttendeeCapacity":20/u)
 
   const rauhnaechte = JSON.stringify(structuredDataForPath("/rauhnaechte", "de"))
   assert.match(rauhnaechte, /"Course"/u)

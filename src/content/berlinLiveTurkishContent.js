@@ -9,7 +9,7 @@ export const berlinLiveTurkishDefaults = Object.freeze({
   "hero.lead": "İki gün boyunca aile sistemindeki görünmeyen dinamiklere, kuşaklar boyunca tekrarlanan ilişki örüntülerine ve bugün hâlâ taşıdığınız rollere birlikte bakıyoruz. Her aile dizimine birlikte rehberlik ediyor, süreç boyunca size eşlik ediyoruz.",
   "hero.date": "9 ve 10 Ekim 2026",
   "hero.time": "Her iki gün 10.00–19.00",
-  "hero.location": "Berlin · Mekân yakında açıklanacaktır",
+  "hero.location": "Berlin",
   "hero.cta": "Katılım seçeneklerini incele",
   "hero.capacity": "• Toplam 20 kişilik grup\n• 6 kişiye kendi aile dizimini açtırma imkânı",
   "hero.image-eyebrow": "İki uzman. Birlikte yönetilen tek bir aile dizimi süreci.",

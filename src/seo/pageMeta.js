@@ -395,10 +395,17 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
       image: [socialImageFor(meta)],
+      maximumAttendeeCapacity: 20,
       location: {
         "@type": "Place",
-        name: "Berlin",
-        address: { "@type": "PostalAddress", addressLocality: "Berlin", addressCountry: "DE" },
+        name: "Manoah-Zentrum",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Urbanstraße 118",
+          postalCode: "10967",
+          addressLocality: "Berlin",
+          addressCountry: "DE",
+        },
       },
       organizer: { "@id": organizationId },
       offers: [
