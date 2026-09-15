@@ -1,3 +1,5 @@
+import { berlinSeminarTitles } from "../content/berlinSeminarContent.js"
+
 export const siteUrl = "https://spirit-healing.tr"
 export const organizationId = `${siteUrl}/#organization`
 export const websiteId = `${siteUrl}/#website`
@@ -61,8 +63,8 @@ export const pageMeta = {
       description: "Aktuelle Spirit-Healing-Seminare, Vorträge und Begleitprogramme zu inneren Anteilen, Nervensystem, Beziehungsmustern und Energiearbeit.",
     },
     "/berlin-live": {
-      title: "Familienaufstellung Berlin 2026 | Spirit Healing",
-      description: "Familienaufstellung in Berlin am 9. und 10. Oktober 2026 mit Sabine und Selcan. Mit eigener Aufstellung oder als intensive Teilnahme buchbar.",
+      title: "Familienaufstellung Berlin: Intensivseminar | Spirit Healing",
+      description: "Zweitägiges Intensivseminar am 9.–10. Oktober 2026 im Manoah-Zentrum Berlin mit Sabine und Selcan. Intensivteilnahme 333 €, mit eigener Aufstellung 444 €.",
       ...berlinImage,
     },
     "/13-wochen-programm": {
@@ -132,8 +134,8 @@ export const pageMeta = {
     "/faq": { title: "Sıkça Sorulan Sorular | Spirit Healing", description: "Spirit Healing'in çalışma biçimi, yöntemleri, seansları, ücretleri ve travma bilgili yaklaşımı hakkında yanıtlar." },
     "/vortraege-seminare": { title: "Seminerler, Eğitimler ve Programlar | Spirit Healing", description: "İçsel parçalar, sinir sistemi, ilişki örüntüleri ve enerji çalışması üzerine güncel Spirit Healing seminerleri ve programları." },
     "/berlin-live": {
-      title: "Berlin’de Travma Duyarlı Aile ve Sistem Dizimi | Spirit Healing",
-      description: "9 ve 10 Ekim 2026 tarihlerinde Sabine ve Selcan ile Berlin’de iki günlük travma duyarlı aile ve sistem dizimi çalışmasına katılın.",
+      title: "Berlin’de Yoğun Aile Dizimi Semineri | Spirit Healing",
+      description: "9–10 Ekim 2026, Berlin Manoah-Zentrum: Sabine ve Selcan ile iki günlük yoğun aile dizimi semineri. Yoğun katılım 333 €, kendi diziminizle 444 €.",
       ...berlinImage,
       imageAlt: "Spirit Healing ile Berlin’de aile ve sistem dizimi",
     },
@@ -388,7 +390,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
     graph.push({
       "@type": "Event",
       "@id": `${url}#event`,
-      name: isTurkish ? "Berlin’de Travma Duyarlı Aile ve Sistem Dizimi" : "Familienaufstellung live in Berlin",
+      name: berlinSeminarTitles[isTurkish ? "tr" : "de"],
       description: meta.description,
       startDate: "2026-10-09T10:00:00+02:00",
       endDate: "2026-10-10T19:00:00+02:00",
@@ -409,7 +411,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       },
       organizer: { "@id": organizationId },
       offers: [
-        { "@type": "Offer", name: isTurkish ? "Grup ve temsilci katılımı" : "Intensivteilnahme", price: "333", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
+        { "@type": "Offer", name: isTurkish ? "Kendi diziminizi açtırmadan yoğun katılım" : "Intensivteilnahme ohne eigene Aufstellung", price: "333", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
         { "@type": "Offer", name: isTurkish ? "Kendi dizimiyle katılım" : "Platz mit eigener Aufstellung", price: "444", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
       ],
     })

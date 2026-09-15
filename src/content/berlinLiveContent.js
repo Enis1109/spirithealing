@@ -1,3 +1,5 @@
+import { berlinSeminarFields } from "./berlinSeminarContent.js";
+
 const field = ({ id, group, label, value, compact = false }) => ({
     id,
     key: `berlin.${id}`,
@@ -99,6 +101,7 @@ export const berlinLiveContentFields = Object.freeze([
     field({ id: "tickets.installment-note", group: "Tickets", label: "Hinweis zur Ratenzahlung", value: "Zwei Raten auch möglich", compact: true }),
     field({ id: "tickets.installment-cta", group: "Tickets", label: "Schaltfläche zur Ratenzahlung", value: "In 2 Raten buchen", compact: true }),
     field({ id: "tickets.priority-note", group: "Tickets", label: "Hinweis unter den Tickets", value: "Die bestehende Acht-Wochen-Gruppe erhält zuerst ein zeitlich begrenztes Vorbuchungsrecht. Anschließend werden verbleibende Plätze geöffnet." }),
+    ...berlinSeminarFields,
 ]);
 
 export const berlinLiveDefaults = Object.freeze(Object.fromEntries(

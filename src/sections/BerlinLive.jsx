@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom"
 import { usePublishedContent } from "@/content/ContentContext"
 import { getPublishedValue } from "@/content/contentValues"
 import { berlinLiveDefaults } from "@/content/berlinLiveContent"
+import { fullPriceCheckoutUrl, klarnaPaymentCopy } from "@/content/klarnaPayments"
 import {
   berlinLiveStaticTurkishTranslations,
   berlinLiveTurkishDefaults,
@@ -32,13 +33,6 @@ const nonEmptyLines = (value, fallback) => {
 const timelineFrom = (value, fallback, times = germanTimelineTimes) => {
   const labels = nonEmptyLines(value, fallback)
   return times.map((time, index) => [time, labels[index] || ""])
-}
-
-const stripeCheckoutUrls = {
-  ownConstellation: "https://book.stripe.com/00w4gB5NE7ClaFldfV83C07",
-  ownConstellationInstallment: "https://book.stripe.com/14AcN71xo1dX3cT8ZF83C09",
-  intensiveParticipation: "https://book.stripe.com/fZu8wReka2i19Bhgs783C08",
-  intensiveParticipationInstallment: "https://book.stripe.com/28E8wRb7Y4q914LcbR83C0b",
 }
 
 const SectionTitle = ({ eyebrow, title, intro, center = false }) => (
@@ -66,6 +60,7 @@ export const BerlinLive = () => {
   const searchParams = new URLSearchParams(search)
   const pageLanguage = searchParams.get("lang") === "tr" ? "tr" : "de"
   const isTurkish = pageLanguage === "tr"
+  const paymentCopy = klarnaPaymentCopy[pageLanguage]
   const defaults = isTurkish ? berlinLiveTurkishDefaults : berlinLiveDefaults
   const keyPrefix = isTurkish ? "berlin-tr" : "berlin"
   const text = (id) => getPublishedValue(content, `${keyPrefix}.${id}`, pageLanguage, defaults[id])
@@ -107,17 +102,15 @@ export const BerlinLive = () => {
     return `/berlin-live${query ? `?${query}` : ""}`
   }
 
-  const ownConstellationCheckoutUrl = import.meta.env.VITE_BERLIN_OWN_CONSTELLATION_CHECKOUT_URL
-    || stripeCheckoutUrls.ownConstellation
-  const ownConstellationInstallmentCheckoutUrl = import.meta.env.VITE_BERLIN_OWN_INSTALLMENT_CHECKOUT_URL
-    || stripeCheckoutUrls.ownConstellationInstallment
-  const intensiveParticipationCheckoutUrl = import.meta.env.VITE_BERLIN_INTENSIVE_CHECKOUT_URL
-    || stripeCheckoutUrls.intensiveParticipation
-  const intensiveParticipationInstallmentCheckoutUrl = import.meta.env.VITE_BERLIN_INTENSIVE_INSTALLMENT_CHECKOUT_URL
-    || stripeCheckoutUrls.intensiveParticipationInstallment
+  const ownConstellationCheckoutUrl = fullPriceCheckoutUrl(
+    "berlinOwn", import.meta.env.VITE_BERLIN_OWN_CONSTELLATION_CHECKOUT_URL,
+  )
+  const intensiveParticipationCheckoutUrl = fullPriceCheckoutUrl(
+    "berlinIntensive", import.meta.env.VITE_BERLIN_INTENSIVE_CHECKOUT_URL,
+  )
 
   return (
-    <main data-no-translate className="min-h-screen bg-[#fbf8f1] text-[#173c39]" style={{ color: colors.ink }}>
+    <main data-no-translate lang={pageLanguage} className="min-h-screen bg-[#fbf8f1] pb-24 text-[#173c39] sm:pb-0" style={{ color: colors.ink }}>
       <section className="relative isolate overflow-hidden border-b border-[#dbe7e1] bg-[#f8f5ed]">
         <div className="absolute -left-40 top-24 h-96 w-96 rounded-full bg-[#d8ebe3]/70 blur-3xl" aria-hidden="true" />
         <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#f2dfb9]/65 blur-3xl" aria-hidden="true" />
@@ -149,31 +142,34 @@ export const BerlinLive = () => {
                 })}
               </div>
               <button type="button" onClick={scrollToTickets} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
-                {text("hero.nav-cta")}
+                {text("seminar.cta")}
               </button>
             </div>
           </div>
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
             <div className="relative z-10">
-              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">{text("hero.eyebrow")}</p>
-              <h1 className="mt-5 max-w-4xl text-4xl font-bold leading-[1.06] text-[#173c39] sm:text-5xl lg:text-7xl">
-                {text("hero.title")}
+              <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#a67426]">{text("seminar.eyebrow")}</p>
+              <h1 className="mt-5 max-w-4xl text-[2.125rem] font-bold leading-[1.12] text-[#173c39] sm:text-5xl lg:text-6xl">
+                {text("seminar.title")}
               </h1>
               <p className="mt-7 max-w-2xl text-xl leading-9 text-[#3f5d59]">
                 <span className="font-semibold text-[#244b47]">{text("hero.lead-strong")}</span>{" "}
-                {text("hero.lead")}
+                {text("seminar.lead")}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />{text("hero.date")}</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Clock3 size={17} className="text-[#0f7d79]" />{text("hero.time")}</span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><MapPin size={17} className="text-[#0f7d79]" />{text("hero.location")}</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><MapPin size={17} className="shrink-0 text-[#0f7d79]" />{text("seminar.location")}</span>
               </div>
+              <p className="mt-3 text-base text-[#3f5d59]">{text("seminar.address")}</p>
+              <p className="mt-2 text-base font-semibold text-[#3f5d59]">{text("seminar.language-short")}</p>
+              <p className="mt-5 text-xl font-bold">{text("seminar.price")}</p>
 
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <button type="button" onClick={scrollToTickets} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
-                  {text("hero.cta")} <ArrowDown size={18} />
+                  {text("seminar.cta")} <ArrowDown size={18} />
                 </button>
                 <p className="whitespace-pre-line text-sm leading-6 text-[#5b706d]">{text("hero.capacity")}</p>
               </div>
@@ -189,6 +185,40 @@ export const BerlinLive = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="seminar-overview" className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-10">
+        <h2 id="seminar-overview" className="text-3xl font-bold">{text("seminar.overview-title")}</h2>
+        <p className="mt-4 max-w-3xl text-lg leading-8">{text("seminar.overview-intro")}</p>
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {[{id: "intensive", price: "333 €"}, {id: "own", price: "444 €"}].map((option) => (
+            <article key={option.id} className="flex flex-col rounded-3xl border border-[#cbded6] bg-white p-6 sm:p-8">
+              <h3 className="text-xl font-bold">{text(`seminar.${option.id}-label`)}</h3>
+              <p className="mt-4 text-3xl font-bold">{option.price} <span className="text-base font-normal">{text("tickets.duration")}</span></p>
+              <p className="mb-6 mt-4 text-base leading-7">{text(`seminar.${option.id}-summary`)}</p>
+              <a href={`#ticket-${option.id}`} className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full border border-[#0f7d79] px-5 py-3 text-center font-bold text-[#075a57]">{text("seminar.details-cta")}</a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+          <div className="overflow-hidden rounded-[2rem] border border-[#e1e6df] bg-white p-3 shadow-[0_20px_60px_rgba(31,75,70,0.12)]">
+            <img src="/ueberuns.jpeg" alt={staticText("Sabine Schmidt und Selcan Yilmaz")} className="h-[32rem] w-full rounded-[1.4rem] object-cover object-center" />
+          </div>
+          <div>
+            <SectionTitle
+              eyebrow={text("duo.eyebrow")}
+              title={text("duo.title")}
+              intro={text("duo.intro")}
+            />
+            <p className="mt-8 border-l-4 border-[#0f7d79] pl-6 text-lg leading-8 text-[#3f5b57]">
+              {text("duo.note")}
+            </p>
+            <a href="#tickets" className="mt-8 inline-flex min-h-12 items-center rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white">{text("seminar.cta")}</a>
           </div>
         </div>
       </section>
@@ -263,24 +293,6 @@ export const BerlinLive = () => {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-          <div className="overflow-hidden rounded-[2rem] border border-[#e1e6df] bg-white p-3 shadow-[0_20px_60px_rgba(31,75,70,0.12)]">
-            <img src="/ueberuns.jpeg" alt={staticText("Sabine Schmidt und Selcan Yilmaz")} className="h-[32rem] w-full rounded-[1.4rem] object-cover object-center" />
-          </div>
-          <div>
-            <SectionTitle
-              eyebrow={text("duo.eyebrow")}
-              title={text("duo.title")}
-              intro={text("duo.intro")}
-            />
-            <p className="mt-8 border-l-4 border-[#0f7d79] pl-6 text-lg leading-8 text-[#3f5b57]">
-              {text("duo.note")}
-            </p>
-          </div>
-        </div>
-      </section>
-
       <section className="bg-[#f4ead6] py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="grid gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
@@ -328,7 +340,7 @@ export const BerlinLive = () => {
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SectionTitle
             eyebrow={text("weekend.eyebrow")}
-            title={text("weekend.title")}
+            title={text("seminar.weekend-title")}
             intro={text("weekend.intro")}
           />
           <div className="mt-12 grid gap-6 lg:grid-cols-2">
@@ -344,6 +356,7 @@ export const BerlinLive = () => {
             </article>
           </div>
           <p className="mt-6 text-sm leading-6 text-[#607470]">{text("weekend.note")}</p>
+          <a href="#tickets" className="mt-8 inline-flex min-h-12 items-center rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white">{text("seminar.cta")}</a>
         </div>
       </section>
 
@@ -355,9 +368,9 @@ export const BerlinLive = () => {
           center
         />
         <div className="mx-auto mt-12 grid max-w-5xl gap-6 lg:grid-cols-2">
-          <article className="relative overflow-hidden rounded-[2rem] border-2 border-[#0f7d79] bg-white p-8 shadow-[0_22px_60px_rgba(15,125,121,0.13)] sm:p-10">
+          <article id="ticket-own" className="relative scroll-mt-8 overflow-hidden rounded-[2rem] border-2 border-[#0f7d79] bg-white p-8 shadow-[0_22px_60px_rgba(15,125,121,0.13)] sm:p-10">
             <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#0f7d79] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">{staticText("6 Plätze")}</span>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#0f7d79]">{text("tickets.own-label")}</p>
+            <p className="mt-5 text-base font-bold text-[#0f7d79]">{text("seminar.own-label")}</p>
             <p className="mt-5 text-5xl font-bold text-[#173c39]">444 €</p>
             <p className="mt-2 text-sm text-[#61736f]">{text("tickets.duration")}</p>
             <ul className="mt-8 space-y-4 text-[#3f5b57]">
@@ -373,15 +386,16 @@ export const BerlinLive = () => {
               </button>
             )}
             <div className="mt-6 border-t border-[#d6e3dc] pt-6">
-              <p className="text-center font-semibold text-[#536a66]">{text("tickets.installment-note")}</p>
-              <a href={ownConstellationInstallmentCheckoutUrl} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
-                {text("tickets.installment-cta")}
+              <p className="text-center font-semibold text-[#536a66]">{paymentCopy.title}</p>
+              <p className="mt-3 text-center text-sm leading-6 text-[#536a66]">{paymentCopy.note}</p>
+              <a href={ownConstellationCheckoutUrl} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
+                {paymentCopy.cta}
               </a>
             </div>
           </article>
 
-          <article className="rounded-[2rem] border border-[#d6e2dc] bg-[#f7faf8] p-8 sm:p-10">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#a67426]">{text("tickets.intensive-label")}</p>
+          <article id="ticket-intensive" className="scroll-mt-8 rounded-[2rem] border border-[#d6e2dc] bg-[#f7faf8] p-8 sm:p-10">
+            <p className="mt-5 text-base font-bold text-[#a67426]">{text("seminar.intensive-label")}</p>
             <p className="mt-5 text-5xl font-bold text-[#173c39]">333 €</p>
             <p className="mt-2 text-sm text-[#61736f]">{text("tickets.duration")}</p>
             <ul className="mt-8 space-y-4 text-[#3f5b57]">
@@ -397,17 +411,34 @@ export const BerlinLive = () => {
               </button>
             )}
             <div className="mt-6 border-t border-[#d6e3dc] pt-6">
-              <p className="text-center font-semibold text-[#536a66]">{text("tickets.installment-note")}</p>
-              <a href={intensiveParticipationInstallmentCheckoutUrl} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
-                {text("tickets.installment-cta")}
+              <p className="text-center font-semibold text-[#536a66]">{paymentCopy.title}</p>
+              <p className="mt-3 text-center text-sm leading-6 text-[#536a66]">{paymentCopy.note}</p>
+              <a href={intensiveParticipationCheckoutUrl} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
+                {paymentCopy.cta}
               </a>
             </div>
           </article>
         </div>
-        <div className="mx-auto mt-8 max-w-4xl rounded-2xl bg-[#f4ead6] px-6 py-5 text-center leading-7 text-[#4c615d]">
-          {text("tickets.priority-note")}
-        </div>
       </section>
+
+      <section className="mx-auto max-w-5xl px-5 pb-16 sm:px-8" aria-labelledby="practical-title">
+        <h2 id="practical-title" className="text-3xl font-bold">{text("seminar.practical-title")}</h2>
+        <p className="mt-5 text-lg font-semibold">{text("seminar.location")}</p>
+        <p className="mt-2 text-base">{text("seminar.address")}</p>
+        <div className="mt-8 divide-y divide-[#cbded6] border-y border-[#cbded6]">
+          {["language", "food", "role", "installment"].map((id) => (
+            <details key={id} className="py-5">
+              <summary className="cursor-pointer text-lg font-semibold">{text(`seminar.${id}-question`)}</summary>
+              <p className="mt-4 text-base leading-7">{id === "installment" ? paymentCopy.details : text(`seminar.${id}-answer`)}</p>
+            </details>
+          ))}
+        </div>
+        <a href="mailto:info@spirit-healing.tr" className="mt-6 inline-block break-words text-base underline underline-offset-4">{text("seminar.contact")}</a>
+      </section>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#cbded6] bg-[#fbf8f1] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:hidden">
+        <a href="#tickets" className="flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-4 py-3 text-center text-base font-bold text-white">{text("seminar.cta")}</a>
+      </div>
 
       <footer className="border-t border-[#d6e3dc] bg-white py-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 text-sm text-[#5d716d] sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10">

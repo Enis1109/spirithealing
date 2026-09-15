@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { fullPriceCheckoutUrl, klarnaPaymentCopy } from "@/content/klarnaPayments"
 import {
   ArrowDown,
   ArrowRight,
@@ -10,15 +11,9 @@ import {
 } from "lucide-react"
 
 const checkoutLinks = {
-  gemeinsamEinmalig: import.meta.env.VITE_ZEPTER_GEMEINSAM_CHECKOUT_URL || "https://book.stripe.com/5kQbJ3b7Yf4NeVB4Jp83C0J",
-  gemeinsamZweiRaten: import.meta.env.VITE_ZEPTER_GEMEINSAM_ZWEI_RATEN_URL || "https://book.stripe.com/cNi28t6RI9Kt00H4Jp83C0F",
-  gemeinsamDreiRaten: import.meta.env.VITE_ZEPTER_GEMEINSAM_DREI_RATEN_URL || "https://book.stripe.com/dRmaEZcc2bSB4gXa3J83C0G",
-  vertieftEinmalig: import.meta.env.VITE_ZEPTER_VERTIEFT_CHECKOUT_URL || "https://book.stripe.com/14A28t3Fwe0JeVB8ZF83C0K",
-  vertieftZweiRaten: import.meta.env.VITE_ZEPTER_VERTIEFT_ZWEI_RATEN_URL || "https://book.stripe.com/eVq5kF2Bs2i1aFl2Bh83C0N",
-  vertieftDreiRaten: import.meta.env.VITE_ZEPTER_VERTIEFT_DREI_RATEN_URL || "https://book.stripe.com/bJedRb1xo4q900H3Fl83C0M",
-  persoenlichEinmalig: import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_CHECKOUT_URL || "https://book.stripe.com/9B614pcc2e0J9Bhgs783C0W",
-  persoenlichZweiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_ZWEI_RATEN_URL || "https://book.stripe.com/7sY8wR1xo3m58xda3J83C0X",
-  persoenlichDreiRaten: import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_DREI_RATEN_URL || "https://book.stripe.com/4gM00l5NE6yhbJp3Fl83C0Z",
+  gemeinsamEinmalig: fullPriceCheckoutUrl("gemeinsam", import.meta.env.VITE_ZEPTER_GEMEINSAM_CHECKOUT_URL),
+  vertieftEinmalig: fullPriceCheckoutUrl("vertieft", import.meta.env.VITE_ZEPTER_VERTIEFT_CHECKOUT_URL),
+  persoenlichEinmalig: fullPriceCheckoutUrl("persoenlich", import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_CHECKOUT_URL),
 }
 
 const recurringScenes = [
@@ -76,8 +71,6 @@ const tiers = [
       "Vollständiges Rauhnachtsprogramm",
     ],
     checkout: checkoutLinks.gemeinsamEinmalig,
-    twoInstallments: { label: "2 × 816 €", total: "1.632 €", checkout: checkoutLinks.gemeinsamZweiRaten },
-    threeInstallments: { label: "3 × 544 €", total: "1.632 €", checkout: checkoutLinks.gemeinsamDreiRaten },
   },
   {
     name: "Vertiefter Weg",
@@ -94,8 +87,6 @@ const tiers = [
     ],
     featured: true,
     checkout: checkoutLinks.vertieftEinmalig,
-    twoInstallments: { label: "2 × 1.458 €", total: "2.916 €", checkout: checkoutLinks.vertieftZweiRaten },
-    threeInstallments: { label: "3 × 972 €", total: "2.916 €", checkout: checkoutLinks.vertieftDreiRaten },
   },
   {
     name: "Persönlicher Weg",
@@ -109,8 +100,6 @@ const tiers = [
       "Antwort auf jede persönliche Anfrage im vereinbarten privaten Nachrichtenrahmen, werktags innerhalb von 48 Stunden",
     ],
     checkout: checkoutLinks.persoenlichEinmalig,
-    twoInstallments: { label: "2 × 2.508 €", total: "5.016 €", checkout: checkoutLinks.persoenlichZweiRaten },
-    threeInstallments: { label: "3 × 1.672 €", total: "5.016 €", checkout: checkoutLinks.persoenlichDreiRaten },
   },
 ]
 
@@ -310,22 +299,22 @@ export const Zepter13 = () => {
                 {tier.featured && <span className="absolute right-6 top-0 -translate-y-1/2 rounded-full bg-[#0f7d79] px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">Empfohlene Vertiefung</span>}
                 <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{tier.name}</p>
                 <p className="mt-4 font-serif text-4xl font-semibold text-[#173c39]">{tier.price}</p>
-                <p className="mt-1 text-sm font-semibold text-[#6c7c78]">Einmalzahlung</p>
+                <p className="mt-1 text-sm font-semibold text-[#6c7c78]">Gesamtpreis</p>
                 <p className="mt-5 min-h-24 text-lg leading-8 text-[#506864]">{tier.intro}</p>
                 <ul className="mt-7 flex-1 space-y-4 border-t border-[#d9e3de] pt-6">
                   {tier.items.map((item) => <li key={item} className="flex gap-3 leading-7 text-[#365653]"><Check size={19} className="mt-1 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>)}
                 </ul>
                 <div className="mt-8 space-y-3">
-                  <a href={tier.checkout} target="_blank" rel="noopener noreferrer" className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition ${tier.featured ? "bg-[#0f7d79] text-white hover:bg-[#075a57]" : "bg-[#173c39] text-white hover:bg-[#0f7d79]"}`}>Einmalig {tier.price} buchen <ArrowRight size={18} /></a>
-                  <a href={tier.twoInstallments.checkout} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-[#0f7d79] bg-white px-6 py-3 font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">Mit {tier.twoInstallments.label} buchen <ArrowRight size={18} /></a>
-                  <a href={tier.threeInstallments.checkout} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#b9cfc7] bg-white px-6 py-3 font-bold text-[#31534f] transition hover:bg-[#edf5f1]">Mit {tier.threeInstallments.label} buchen <ArrowRight size={18} /></a>
-                  <p className="text-center text-xs leading-5 text-[#6d7e7a]">Raten-Gesamtpreis: {tier.threeInstallments.total}</p>
+                  <a href={tier.checkout} target="_blank" rel="noopener noreferrer" className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-center font-bold transition ${tier.featured ? "bg-[#0f7d79] text-white hover:bg-[#075a57]" : "bg-[#173c39] text-white hover:bg-[#0f7d79]"}`}>Für {tier.price} buchen <ArrowRight size={18} className="shrink-0" /></a>
+                  <p className="pt-3 text-center font-semibold text-[#31534f]">{klarnaPaymentCopy.de.title}</p>
+                  <p className="text-center text-sm leading-6 text-[#63736f]">{klarnaPaymentCopy.de.note}</p>
+                  <a href={tier.checkout} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#0f7d79] bg-white px-5 py-3 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">{klarnaPaymentCopy.de.cta}</a>
                 </div>
               </article>
             ))}
           </div>
           <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-[#d9c69f] bg-white/70 px-6 py-5 text-center text-sm leading-6 text-[#63736f]">
-            <p>Bei zwei Raten ist die zweite Rate nach 30 Tagen fällig. Bei drei Raten folgen die weiteren Zahlungen nach 30 und 60 Tagen. Die gesonderten Stripe-Zahlungslinks erhältst du rechtzeitig per E-Mail.</p>
+            <p>{klarnaPaymentCopy.de.details}</p>
             <p className="mt-2">Peer-Räume sind freiwillig. Die persönliche Nachrichtenbegleitung ist Prozessbegleitung im vereinbarten Rahmen und ersetzt keine Akut- oder Krisenhilfe.</p>
           </div>
         </div>
@@ -361,7 +350,7 @@ export const Zepter13 = () => {
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-3 text-sm font-semibold text-white/80">
             <span className="rounded-full border border-white/20 px-4 py-2.5">21. Oktober 2026 bis 13. Januar 2027</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">Rauhnachtsprogramm inklusive</span>
-            <span className="rounded-full border border-white/20 px-4 py-2.5">bis zu drei Raten</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">{klarnaPaymentCopy.de.short}</span>
           </div>
           <button type="button" onClick={scrollToBooking} className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 font-bold text-[#173c39] transition hover:bg-white">Teilnahme wählen <ArrowRight size={18} /></button>
         </div>

@@ -1,5 +1,6 @@
 // Turkish copy proofread by Selcan for the Berlin Live landing page.
 // This content is intentionally isolated from the disabled global language switch.
+import { berlinSeminarTurkishDefaults } from "./berlinSeminarContent.js";
 
 export const berlinLiveTurkishDefaults = Object.freeze({
   "hero.nav-cta": "Kontenjanı gör",
@@ -85,7 +86,8 @@ export const berlinLiveTurkishDefaults = Object.freeze({
   "tickets.duration": "İki günün tamamı için",
   "tickets.installment-note": "İki taksitle ödeme mümkündür.",
   "tickets.installment-cta": "İki taksitle kayıt ol",
-  "tickets.priority-note": "Mevcut sekiz haftalık programımızın katılımcılarına sınırlı bir süre için ön kayıt hakkı verilecektir. Ardından kalan yerler genel katılıma açılacaktır."
+  "tickets.priority-note": "Mevcut sekiz haftalık programımızın katılımcılarına sınırlı bir süre için ön kayıt hakkı verilecektir. Ardından kalan yerler genel katılıma açılacaktır.",
+  ...berlinSeminarTurkishDefaults,
 });
 
 export const berlinLiveStaticTurkishTranslations = Object.freeze({
