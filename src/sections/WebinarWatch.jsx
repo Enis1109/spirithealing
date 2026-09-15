@@ -85,8 +85,8 @@ export const WebinarWatch = () => {
       <div className="p-8 text-center sm:p-14">
         <LockKeyhole className="mx-auto h-12 w-12 text-[#9a7c28]" aria-hidden="true" />
         <h1 className="mt-5 font-serif text-4xl font-semibold">Dieser Zugangslink ist nicht gültig.</h1>
-        <p className="mx-auto mt-5 max-w-xl leading-7 text-[#58706c]">Öffne bitte den persönlichen Link aus deiner Bestätigungs-E-Mail oder wähle einen neuen Termin.</p>
-        <Link to="/vortrag-13-wochen-programm" className="mt-7 inline-flex rounded-full bg-[#d4af37] px-7 py-3 font-bold text-[#034f52]">Neuen Termin wählen</Link>
+        <p className="mx-auto mt-5 max-w-xl leading-7 text-[#58706c]">Öffne bitte den persönlichen Link aus deiner Bestätigungs-E-Mail oder fordere einen neuen Zugang an.</p>
+        <Link to="/vortrag-13-wochen-programm" className="mt-7 inline-flex rounded-full bg-[#d4af37] px-7 py-3 font-bold text-[#034f52]">Neuen Zugang anfordern</Link>
       </div>,
     )
   }
@@ -111,9 +111,9 @@ export const WebinarWatch = () => {
     return card(
       <div className="p-8 text-center sm:p-14">
         <Clock3 className="mx-auto h-12 w-12 text-[#9a7c28]" aria-hidden="true" />
-        <h1 className="mt-5 font-serif text-4xl font-semibold">Dein gewählter Zeitraum ist beendet.</h1>
-        <p className="mx-auto mt-5 max-w-xl leading-7 text-[#58706c]">Du kannst direkt einen neuen Zeitpunkt auswählen.</p>
-        <Link to="/vortrag-13-wochen-programm" className="mt-7 inline-flex rounded-full bg-[#d4af37] px-7 py-3 font-bold text-[#034f52]">Neuen Termin wählen</Link>
+        <h1 className="mt-5 font-serif text-4xl font-semibold">Dein Zugangszeitraum ist beendet.</h1>
+        <p className="mx-auto mt-5 max-w-xl leading-7 text-[#58706c]">Du kannst einen neuen kostenlosen Zugang anfordern und sofort starten.</p>
+        <Link to="/vortrag-13-wochen-programm" className="mt-7 inline-flex rounded-full bg-[#d4af37] px-7 py-3 font-bold text-[#034f52]">Neuen Zugang anfordern</Link>
       </div>,
     )
   }
@@ -127,6 +127,7 @@ export const WebinarWatch = () => {
           <h1 className="mt-1 font-serif text-3xl font-semibold">Wer schreibt dein inneres Drehbuch?</h1>
         </div>
       </div>
+      <p className="mb-5 text-sm leading-6 text-[#58706c]">Aufgezeichneter Vortrag · Starte das Video über die Wiedergabetaste. Dein Zugang gilt bis {formatDateTime(access.closesAt)} Uhr (deutsche Zeit).</p>
       {access.embedUrl ? (
         <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-lg">
           <iframe

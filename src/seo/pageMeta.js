@@ -75,7 +75,7 @@ export const pageMeta = {
     },
     "/vortrag-13-wochen-programm": {
       title: "Wer schreibt dein inneres Drehbuch? | Spirit Healing",
-      description: "Kostenloser Online-Vortrag über deine persönliche Matrix, unbewusste Rollen und wiederkehrende Muster. Wähle deinen Termin und erhalte deinen persönlichen Zugang.",
+      description: "Kostenloser aufgezeichneter Vortrag über deine persönliche Matrix, Rollen und Muster. Nach der Anmeldung sofort starten und sieben Tage lang ansehen.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -147,7 +147,7 @@ export const pageMeta = {
     },
     "/vortrag-13-wochen-programm": {
       title: "Wer schreibt dein inneres Drehbuch? | Spirit Healing",
-      description: "Kostenloser Online-Vortrag über deine persönliche Matrix, unbewusste Rollen und wiederkehrende Muster. Wähle deinen Termin und erhalte deinen persönlichen Zugang.",
+      description: "Kostenloser aufgezeichneter Vortrag über deine persönliche Matrix, Rollen und Muster. Nach der Anmeldung sofort starten und sieben Tage lang ansehen.",
       ...zepterImage,
       contentLanguage: "de",
     },

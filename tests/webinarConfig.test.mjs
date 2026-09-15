@@ -2,10 +2,38 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
     buildWebinarSlots,
+    createOnDemandWebinarSlot,
     getWebinarAccessState,
     getWebinarConfig,
     normalizeWebinarEmbedUrl,
 } from "../server/webinarConfig.js";
+
+test("on-demand access starts immediately and lasts seven days at database precision", () => {
+    const now = new Date("2026-09-15T12:34:56.789Z");
+    const config = getWebinarConfig({ WEBINAR_ACCESS_WINDOW_MINUTES: "240" });
+    const slot = createOnDemandWebinarSlot(now, config);
+    assert.equal(slot.id, "on-demand");
+    assert.equal(slot.startsAt, "2026-09-15T12:34:56.000Z");
+    assert.equal(slot.closesAt, "2026-09-22T12:34:56.000Z");
+    assert.equal(config.accessDays, 7);
+    assert.equal(getWebinarAccessState({ startsAt: slot.startsAt, expiresAt: slot.closesAt, now, config }).state, "open");
+    assert.equal(getWebinarAccessState({ startsAt: slot.startsAt, expiresAt: slot.closesAt, now: new Date("2026-09-22T12:34:56.001Z"), config }).state, "expired");
+});
+
+test("recorded expiry preserves a previous scheduled invitation", () => {
+    const config = getWebinarConfig({ WEBINAR_ACCESS_WINDOW_MINUTES: "1440" });
+    const access = getWebinarAccessState({
+        startsAt: "2026-09-16T08:00:00.000Z", expiresAt: "2026-09-16T12:00:00.000Z",
+        now: new Date("2026-09-16T12:00:01.000Z"), config,
+    });
+    assert.equal(access.state, "expired");
+    assert.equal(access.closesAt.toISOString(), "2026-09-16T12:00:00.000Z");
+});
+
+test("on-demand duration remains seven full days across the Berlin clock change", () => {
+    const slot = createOnDemandWebinarSlot(new Date("2026-10-24T12:00:00.000Z"), getWebinarConfig({}));
+    assert.equal(new Date(slot.closesAt) - new Date(slot.startsAt), 7 * 86_400_000);
+});
 
 test("does not offer webinar dates before Thursday, 3 September 2026 by default", () => {
     const config = getWebinarConfig({

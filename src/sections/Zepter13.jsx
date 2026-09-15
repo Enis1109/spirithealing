@@ -54,6 +54,7 @@ const included = [
   "Austausch in einer geschützten Spirit-Healing-Community",
   "Das vollständige Rauhnachtsprogramm innerhalb der gemeinsamen Reise",
   "Abschluss und persönlicher 90-Tage-Ausblick",
+  "Teilnahme am gemeinsamen Abschlusstreffen in Berlin nach dem 13-Wochen-Prozess",
 ]
 
 const tiers = [
@@ -69,6 +70,7 @@ const tiers = [
       "Aufzeichnungen, Workbook und Wochenimpulse",
       "Community-Begleitung; Fragen werden aufgegriffen, wenn sie für den Gruppenprozess relevant sind",
       "Vollständiges Rauhnachtsprogramm",
+      "Teilnahme am Abschlusstreffen in Berlin; Reise, Übernachtung und Verpflegung sind selbst zu bezahlen",
     ],
     checkout: checkoutLinks.gemeinsamEinmalig,
   },
@@ -277,11 +279,15 @@ export const Zepter13 = () => {
             title="Damit aus einer Erkenntnis eine neue Erfahrung werden kann"
             intro="Ein altes Drehbuch verändert sich nicht durch einen einzigen klugen Gedanken. Deshalb verbindet das Programm die gemeinsame Live-Arbeit mit dem Matrix-Gespräch, Körperwahrnehmung, kurzen Übungen und Raum für Integration."
           />
+          <div>
           <ul className="divide-y divide-[#cbdcd5] border-y border-[#cbdcd5]">
             {included.map((item) => (
               <li key={item} className="flex gap-4 py-5 text-lg font-semibold leading-8 text-[#31534f]"><CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>
             ))}
           </ul>
+          <p className="mt-6 text-sm leading-7 text-[#506864]">Die Live-Termine finden mittwochs um 19:30 Uhr deutscher Zeit statt und dauern etwa 90 Minuten. Plane zusätzlich etwa 30 Minuten täglich für Übungen und Integration ein. Wenn du an einem Live-Termin nicht teilnehmen kannst, steht dir die Aufzeichnung zur Verfügung.</p>
+          <p className="mt-5 text-sm leading-7 text-[#506864]">Die Teilnahme am Abschlusstreffen in Berlin ist in allen drei Begleitungswegen im Programmpreis enthalten. Reise, Übernachtung und Verpflegung sind selbst zu bezahlen. Der genaue Termin und Veranstaltungsort werden noch bekannt gegeben. Dieses Treffen findet nach dem 13-Wochen-Prozess statt und ist nicht das Intensivseminar am 9. und 10. Oktober 2026.</p>
+          </div>
         </div>
       </section>
 
