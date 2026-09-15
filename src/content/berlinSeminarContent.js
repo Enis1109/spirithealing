@@ -14,7 +14,7 @@ const entries = [
   ["intensive-label", "Intensivteilnahme ohne eigene Aufstellung", "Kendi diziminizi açtırmadan yoğun katılım"],
   ["intensive-summary", "Du nimmst am gesamten Seminar teil und kannst als Stellvertretung mitwirken. Eine eigene Aufstellung ist nicht enthalten.", "Seminerin tamamına katılır, dilerseniz temsilci olarak çalışmalarda yer alırsınız. Kendi aile diziminizin açılması bu seçeneğe dâhil değildir."],
   ["own-label", "Teilnahme mit eigener Aufstellung", "Kendi diziminizle katılım"],
-  ["own-summary", "Der gesamte Seminarrahmen und ein reservierter Aufstellungsprozess für dein persönliches Anliegen. Insgesamt sechs Aufstellungsplätze.", "Seminerin tamamına katılım ve kişisel konunuz için ayrılmış bir aile dizimi süreci. Kendi dizimini açtırmak isteyenler için toplam altı kişilik kontenjan."],
+  ["own-summary", "Der gesamte Seminarrahmen und ein reservierter Aufstellungsprozess für dein persönliches Anliegen. Von insgesamt sechs Aufstellungsplätzen sind noch vier buchbar.", "Seminerin tamamına katılım ve kişisel konunuz için ayrılmış bir aile dizimi süreci. Kendi dizimini açtırmak isteyenler için toplam altı yerden dördü hâlâ kayıt için açık."],
   ["details-cta", "Teilnahme und Zahlung ansehen", "Katılım ve ödeme bilgilerini inceleyin"],
   ["weekend-title", "Deine zwei Seminartage", "İki günlük seminer programınız"],
   ["practical-title", "Ort und praktische Fragen", "Yer ve pratik bilgiler"],

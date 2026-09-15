@@ -19,7 +19,7 @@ export const berlinLiveContentFields = Object.freeze([
     field({ id: "hero.time", group: "Einstieg", label: "Uhrzeit", value: "jeweils 10–19 Uhr", compact: true }),
     field({ id: "hero.location", group: "Einstieg", label: "Ortsangabe", value: "Berlin", compact: true }),
     field({ id: "hero.cta", group: "Einstieg", label: "Große Schaltfläche", value: "Ticketarten ansehen", compact: true }),
-    field({ id: "hero.capacity", group: "Einstieg", label: "Hinweis zur Platzzahl", value: "20 Plätze insgesamt\ndavon 6 mit eigener Aufstellung", compact: true }),
+    field({ id: "hero.capacity", group: "Einstieg", label: "Hinweis zur Platzzahl", value: "20 Plätze insgesamt\ndavon 6 mit eigener Aufstellung – noch 4 buchbar", compact: true }),
     field({ id: "hero.image-eyebrow", group: "Einstieg", label: "Bildzeile", value: "Zwei Leiterinnen, ein gemeinsamer Prozess", compact: true }),
     field({ id: "hero.image-text", group: "Einstieg", label: "Text auf dem Berlin-Bild", value: "Systemische Dynamik sehen, innere Reaktion verstehen und das Erlebte gemeinsam einordnen." }),
 

@@ -369,7 +369,7 @@ export const BerlinLive = () => {
         />
         <div className="mx-auto mt-12 grid max-w-5xl gap-6 lg:grid-cols-2">
           <article id="ticket-own" className="relative scroll-mt-8 overflow-hidden rounded-[2rem] border-2 border-[#0f7d79] bg-white p-8 shadow-[0_22px_60px_rgba(15,125,121,0.13)] sm:p-10">
-            <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#0f7d79] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">{staticText("6 Plätze")}</span>
+            <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#0f7d79] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">{staticText("Noch 4 Plätze")}</span>
             <p className="mt-5 text-base font-bold text-[#0f7d79]">{text("seminar.own-label")}</p>
             <p className="mt-5 text-5xl font-bold text-[#173c39]">444 €</p>
             <p className="mt-2 text-sm text-[#61736f]">{text("tickets.duration")}</p>
