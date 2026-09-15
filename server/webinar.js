@@ -2,9 +2,9 @@ import crypto from "node:crypto";
 import { database } from "./database.js";
 import { sendWebinarConfirmation, sendWebinarReminder } from "./mailer.js";
 import { registerNewsletterInterest } from "./newsletter.js";
-import { buildWebinarSlots, getWebinarAccessState, getWebinarConfig } from "./webinarConfig.js";
+import { buildWebinarSlots, createOnDemandWebinarSlot, getWebinarAccessState, getWebinarConfig, ON_DEMAND_SLOT_ID } from "./webinarConfig.js";
 
-const webinarPrivacyConsentVersion = "webinar-privacy-2026-09";
+const webinarPrivacyConsentVersion = "webinar-privacy-2026-09-15";
 const tokenHash = (token) => crypto.createHash("sha256").update(token).digest("hex");
 const toDatabaseDate = (date) => date.toISOString().slice(0, 19).replace("T", " ");
 const publicBaseUrl = () => String(
@@ -43,20 +43,23 @@ export const getAvailableWebinarSlots = (now = new Date()) => {
     return {
         title: config.title,
         timeZone: config.timeZone,
+        accessMode: "on-demand",
+        accessDays: config.accessDays,
         slots: buildWebinarSlots({ now, config }),
     };
 };
 
 export const registerForWebinar = async (form, now = new Date()) => {
     const config = getWebinarConfig();
-    const slot = findAvailableSlot(form.slotId, now);
+    const onDemand = form.slotId === ON_DEMAND_SLOT_ID;
+    const slot = onDemand ? createOnDemandWebinarSlot(now, config) : findAvailableSlot(form.slotId, now);
     if (!slot) {
         const error = new Error("Webinar slot is no longer available");
         error.code = "SLOT_UNAVAILABLE";
         throw error;
     }
 
-    const access = getWebinarAccessState({ startsAt: slot.startsAt, now, config });
+    const access = getWebinarAccessState({ startsAt: slot.startsAt, expiresAt: slot.closesAt, now, config });
     const expiresAt = access.closesAt;
 
     const [registration] = await database.execute(
@@ -122,12 +125,15 @@ export const registerForWebinar = async (form, now = new Date()) => {
         );
     }
 
+    let confirmationStatus = "sent";
     try {
         await sendWebinarConfirmation({
             name: form.name,
             email: form.email,
             slotLabel: slot.label,
             watchUrl,
+            onDemand,
+            closesAt: expiresAt.toISOString(),
         });
         await database.execute(
             `UPDATE webinar_registrations
@@ -141,11 +147,15 @@ export const registerForWebinar = async (form, now = new Date()) => {
              WHERE event_key = ? AND email = ?`,
             [config.eventKey, form.email],
         );
-        error.code = "EMAIL_DELIVERY";
-        throw error;
+        if (!onDemand) {
+            error.code = "EMAIL_DELIVERY";
+            throw error;
+        }
+        confirmationStatus = "failed";
+        console.error("On-demand webinar confirmation could not be sent");
     }
 
-    return { slot, watchUrl, newsletterStatus };
+    return { slot, watchUrl, newsletterStatus, confirmationStatus, onDemand, closesAt: expiresAt.toISOString() };
 };
 
 export const getWebinarAccess = async (rawToken, now = new Date()) => {
@@ -155,7 +165,8 @@ export const getWebinarAccess = async (rawToken, now = new Date()) => {
     if (!Number.isSafeInteger(registrationId) || registrationId < 1) return null;
     const [rows] = await database.execute(
         `SELECT id, name, access_token_hash,
-                DATE_FORMAT(selected_at, '%Y-%m-%dT%H:%i:%s.000Z') AS selected_at_iso
+                DATE_FORMAT(selected_at, '%Y-%m-%dT%H:%i:%s.000Z') AS selected_at_iso,
+                DATE_FORMAT(token_expires_at, '%Y-%m-%dT%H:%i:%s.000Z') AS token_expires_at_iso
          FROM webinar_registrations
          WHERE event_key = ? AND id = ?
          LIMIT 1`,
@@ -171,7 +182,7 @@ export const getWebinarAccess = async (rawToken, now = new Date()) => {
         startsAt,
         expectedHash: registration.access_token_hash,
     })) return null;
-    const access = getWebinarAccessState({ startsAt, now, config });
+    const access = getWebinarAccessState({ startsAt, expiresAt: registration.token_expires_at_iso, now, config });
 
     return {
         name: registration.name,

@@ -33,7 +33,7 @@ export const normalizeWebinarRegistration = (body = {}) => {
 
     const slotId = requiredText(body.slotId, "slotId", 40);
     const slotDate = new Date(slotId);
-    if (!Number.isFinite(slotDate.getTime()) || slotDate.toISOString() !== slotId) {
+    if (slotId !== "on-demand" && (!Number.isFinite(slotDate.getTime()) || slotDate.toISOString() !== slotId)) {
         throw new WebinarValidationError("slotId");
     }
 

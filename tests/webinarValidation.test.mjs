@@ -32,6 +32,22 @@ test("keeps newsletter consent voluntary", () => {
     }).newsletterConsent, false);
 });
 
+test("accepts immediate access without newsletter consent", () => {
+    const form = normalizeWebinarRegistration({
+        name: "Test Person", email: "test@example.com", slotId: "on-demand", privacyConsent: true,
+    });
+    assert.equal(form.slotId, "on-demand");
+    assert.equal(form.newsletterConsent, false);
+});
+
+test("rejects malformed slots and honeypot submissions", () => {
+    const form = { name: "Test", email: "test@example.com", slotId: "on-demand", privacyConsent: true };
+    for (const slotId of ["now", "", "2026-09-15", "not-a-date"]) {
+        assert.throws(() => normalizeWebinarRegistration({ ...form, slotId }), WebinarValidationError);
+    }
+    assert.throws(() => normalizeWebinarRegistration({ ...form, company: "spam" }), WebinarValidationError);
+});
+
 test("requires explicit privacy consent", () => {
     assert.throws(() => normalizeWebinarRegistration({
         name: "Sabine Schmidt",

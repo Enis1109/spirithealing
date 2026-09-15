@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { getWebinarEmailCopy } from "./webinarEmailCopy.js";
 
 const requiredVariables = ["SMTP_USER", "SMTP_PASSWORD", "SMTP_FROM"];
 const missingVariables = requiredVariables.filter((name) => !process.env[name]);
@@ -349,17 +350,10 @@ export const sendEventNotification = async ({ id, eventKey, name, email, newslet
     });
 };
 
-const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false }) => {
-    const subject = reminder
-        ? "In einer Stunde: Wer schreibt dein inneres Drehbuch?"
-        : "Dein Zugang: Wer schreibt dein inneres Drehbuch?";
-    const headline = reminder
-        ? "In einer Stunde beginnt dein Vortrag"
-        : "Dein Termin ist reserviert";
-    const intro = reminder
-        ? "Über deinen persönlichen Link kommst du direkt zum Vortrag „Wer schreibt dein inneres Drehbuch?“. Du kannst die Seite schon jetzt öffnen."
-        : "Dein Termin für den Online-Vortrag „Wer schreibt dein inneres Drehbuch?“ ist reserviert:";
-    const button = reminder ? "Zum Vortrag" : "Persönlichen Zugang öffnen";
+const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false, onDemand = false, closesAt }) => {
+    const { subject, headline, intro, accessLabel, button, note } = getWebinarEmailCopy({
+        reminder, onDemand, slotLabel, closesAt,
+    });
 
     await transporter.sendMail({
         from: process.env.SMTP_FROM,
@@ -371,11 +365,11 @@ const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false
             "",
             intro,
             "",
-            slotLabel,
+            accessLabel,
             "",
             watchUrl,
             "",
-            "Der Link führt dich zu deiner persönlichen Vortragsseite und gilt für den von dir gewählten Termin.",
+            note,
             "",
             "Von Herzen",
             "Sabine & Selcan",
@@ -392,12 +386,12 @@ const webinarEmail = async ({ name, email, slotLabel, watchUrl, reminder = false
                         <p style="margin:0 0 14px;font-size:18px">Hallo ${escapeHtml(name)},</p>
                         <p style="margin:0 0 22px">${escapeHtml(intro)}</p>
                         <div style="border:1px solid #d8bd60;border-radius:18px;background:#f8f0d6;padding:20px;text-align:center">
-                            <strong style="font-size:19px;color:#075f62">${escapeHtml(slotLabel)}</strong>
+                            <strong style="font-size:19px;color:#075f62">${escapeHtml(accessLabel)}</strong>
                         </div>
                         <p style="margin:28px 0;text-align:center">
                             <a href="${escapeHtml(watchUrl)}" style="display:inline-block;border-radius:999px;background:#d4af37;padding:14px 24px;color:#034f52;text-decoration:none;font-size:16px;font-weight:700">${escapeHtml(button)}</a>
                         </p>
-                        <p style="margin:0;font-size:13px;color:#607779">Der Link führt dich zu deiner persönlichen Vortragsseite und gilt für den von dir gewählten Termin.</p>
+                        <p style="margin:0;font-size:13px;color:#607779">${escapeHtml(note)}</p>
                         <p style="margin:24px 0 0;color:#557072">Von Herzen<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
                     </div>
                 </div>

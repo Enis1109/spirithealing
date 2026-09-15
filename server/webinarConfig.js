@@ -7,6 +7,8 @@ const DEFAULT_MIN_LEAD_MINUTES = 15;
 const DEFAULT_ACCESS_EARLY_MINUTES = 5;
 const DEFAULT_ACCESS_WINDOW_MINUTES = 240;
 const DEFAULT_VIDEO_URL = "https://vimeo.com/1223574981/ad820715ad";
+export const ON_DEMAND_SLOT_ID = "on-demand";
+export const ON_DEMAND_ACCESS_DAYS = 7;
 
 const dateTimeFormatter = (timeZone) => new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -111,6 +113,7 @@ export const getWebinarConfig = (environment = process.env) => {
     const slotHours = parseSlotHours(environment.WEBINAR_START_TIMES);
     return {
         eventKey: "zepter-13-webinar",
+        accessDays: ON_DEMAND_ACCESS_DAYS,
         title: "Wer schreibt dein inneres Drehbuch? – der Online-Vortrag",
         timeZone: environment.WEBINAR_TIME_ZONE || DEFAULT_TIME_ZONE,
         slotHours: slotHours.length > 0 ? slotHours : parseSlotHours(DEFAULT_SLOT_HOURS),
@@ -164,6 +167,17 @@ const formatSlot = (startsAt, config) => {
     };
 };
 
+export const createOnDemandWebinarSlot = (now = new Date(), config = getWebinarConfig()) => {
+    // DATETIME stores seconds. Sign the same instant that will be read back.
+    const startsAt = new Date(Math.floor(now.getTime() / 1000) * 1000);
+    return {
+        ...formatSlot(startsAt, config),
+        id: ON_DEMAND_SLOT_ID,
+        label: "Ab sofort",
+        closesAt: new Date(startsAt.getTime() + ON_DEMAND_ACCESS_DAYS * 86_400_000).toISOString(),
+    };
+};
+
 export const buildWebinarSlots = ({
     now = new Date(),
     config = getWebinarConfig(),
@@ -206,10 +220,13 @@ export const buildWebinarSlots = ({
     return slots;
 };
 
-export const getWebinarAccessState = ({ startsAt, now = new Date(), config = getWebinarConfig() }) => {
+export const getWebinarAccessState = ({ startsAt, expiresAt, now = new Date(), config = getWebinarConfig() }) => {
     const start = new Date(startsAt);
     const opensAt = new Date(start.getTime() - config.accessEarlyMinutes * 60_000);
-    const closesAt = new Date(start.getTime() + config.accessWindowMinutes * 60_000);
+    // Existing invitations keep their recorded expiry; new ones last seven days.
+    const closesAt = expiresAt
+        ? new Date(expiresAt)
+        : new Date(start.getTime() + config.accessWindowMinutes * 60_000);
 
     if (now < opensAt) return { state: "scheduled", opensAt, closesAt };
     if (now <= closesAt) return { state: "open", opensAt, closesAt };
