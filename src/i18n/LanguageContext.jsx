@@ -15,7 +15,7 @@ export const LanguageProvider = ({ children }) => {
     const [language, setLanguage] = useState(getInitialLanguage);
 
     useEffect(() => {
-        document.documentElement.lang = language;
+        // Route-specific language and metadata are owned by DocumentTranslator.
         window.localStorage.setItem("spirit-healing-language", language);
     }, [language]);
 

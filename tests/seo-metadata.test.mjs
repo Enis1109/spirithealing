@@ -60,10 +60,10 @@ test("keeps the reviewed Berlin Live language versions separate", () => {
   assert.equal(canonicalUrlForLanguage("/berlin-live", "de"), "https://spirit-healing.tr/berlin-live")
   assert.equal(canonicalUrlForLanguage("/berlin-live", "tr"), "https://spirit-healing.tr/berlin-live?lang=tr")
   assert.match(german.title, /Familienaufstellung Berlin/u)
-  assert.match(turkish.title, /Travma Duyarlı Aile ve Sistem Dizimi/u)
+  assert.match(turkish.title, /Yoğun Aile Dizimi Semineri/u)
 
   const structuredData = JSON.stringify(structuredDataForPath("/berlin-live", "tr"))
-  assert.match(structuredData, /Berlin’de Travma Duyarlı Aile ve Sistem Dizimi/u)
+  assert.match(structuredData, /Berlin’de İki Günlük Yoğun Aile Dizimi Semineri/u)
   assert.match(structuredData, /Kendi dizimiyle katılım/u)
   assert.match(structuredData, /berlin-live\?lang=tr#event/u)
 })
@@ -103,7 +103,7 @@ test("places route-specific SEO in the initial HTML response", () => {
 
   const berlinTurkish = injectSeoIntoDocument(shell, "/berlin-live?lang=tr")
   assert.match(berlinTurkish, /<html lang="tr">/u)
-  assert.match(berlinTurkish, /Berlin’de Travma Duyarlı Aile ve Sistem Dizimi/u)
+  assert.match(berlinTurkish, /Berlin’de İki Günlük Yoğun Aile Dizimi Semineri/u)
   assert.match(berlinTurkish, /rel="canonical" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)
   assert.match(berlinTurkish, /hreflang="de" href="https:\/\/spirit-healing\.tr\/berlin-live"/u)
   assert.match(berlinTurkish, /hreflang="tr" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)
