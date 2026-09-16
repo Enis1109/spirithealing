@@ -163,7 +163,6 @@ export const BerlinLive = () => {
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Clock3 size={17} className="text-[#0f7d79]" />{text("hero.time")}</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><MapPin size={17} className="shrink-0 text-[#0f7d79]" />{text("seminar.location")}</span>
               </div>
-              <p className="mt-3 text-base text-[#3f5d59]">{text("seminar.address")}</p>
               <p className="mt-2 text-base font-semibold text-[#3f5d59]">{text("seminar.language-short")}</p>
               <p className="mt-5 text-xl font-bold">{text("seminar.price")}</p>
 
@@ -424,7 +423,6 @@ export const BerlinLive = () => {
       <section className="mx-auto max-w-5xl px-5 pb-16 sm:px-8" aria-labelledby="practical-title">
         <h2 id="practical-title" className="text-3xl font-bold">{text("seminar.practical-title")}</h2>
         <p className="mt-5 text-lg font-semibold">{text("seminar.location")}</p>
-        <p className="mt-2 text-base">{text("seminar.address")}</p>
         <div className="mt-8 divide-y divide-[#cbded6] border-y border-[#cbded6]">
           {["language", "food", "role", "installment"].map((id) => (
             <details key={id} className="py-5">

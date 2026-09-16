@@ -10,7 +10,7 @@ test("covers every editable Berlin Live field with an isolated Turkish default",
   const fieldIds = berlinLiveContentFields.map((field) => field.id)
   assert.ok(fieldIds.length >= 84)
   assert.deepEqual(Object.keys(berlinLiveTurkishDefaults), fieldIds)
-  assert.equal(Object.values(berlinLiveTurkishDefaults).every((value) => value.trim().length > 0), true)
+  assert.equal(Object.entries(berlinLiveTurkishDefaults).every(([id, value]) => id === "seminar.address" ? value === "" : value.trim().length > 0), true)
 })
 
 test("keeps the reviewed Turkish copy and all fixed page labels", () => {

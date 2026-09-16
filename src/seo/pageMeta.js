@@ -64,7 +64,7 @@ export const pageMeta = {
     },
     "/berlin-live": {
       title: "Familienaufstellung Berlin: Intensivseminar | Spirit Healing",
-      description: "Zweitägiges Intensivseminar am 9.–10. Oktober 2026 im Manoah-Zentrum Berlin mit Sabine und Selcan. Intensivteilnahme 333 €, mit eigener Aufstellung 444 €.",
+      description: "Zweitägiges Intensivseminar am 9.–10. Oktober 2026 in Berlin-Kreuzberg mit Sabine und Selcan. Intensivteilnahme 333 €, mit eigener Aufstellung 444 €.",
       ...berlinImage,
     },
     "/13-wochen-programm": {
@@ -135,7 +135,7 @@ export const pageMeta = {
     "/vortraege-seminare": { title: "Seminerler, Eğitimler ve Programlar | Spirit Healing", description: "İçsel parçalar, sinir sistemi, ilişki örüntüleri ve enerji çalışması üzerine güncel Spirit Healing seminerleri ve programları." },
     "/berlin-live": {
       title: "Berlin’de Yoğun Aile Dizimi Semineri | Spirit Healing",
-      description: "9–10 Ekim 2026, Berlin Manoah-Zentrum: Sabine ve Selcan ile iki günlük yoğun aile dizimi semineri. Yoğun katılım 333 €, kendi diziminizle 444 €.",
+      description: "9–10 Ekim 2026, Berlin-Kreuzberg: Sabine ve Selcan ile iki günlük yoğun aile dizimi semineri. Yoğun katılım 333 €, kendi diziminizle 444 €.",
       ...berlinImage,
       imageAlt: "Spirit Healing ile Berlin’de aile ve sistem dizimi",
     },
@@ -400,12 +400,10 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       maximumAttendeeCapacity: 20,
       location: {
         "@type": "Place",
-        name: "Manoah-Zentrum",
+        name: "Berlin-Kreuzberg",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Urbanstraße 118",
-          postalCode: "10967",
-          addressLocality: "Berlin",
+          addressLocality: "Berlin-Kreuzberg",
           addressCountry: "DE",
         },
       },
