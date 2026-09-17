@@ -10,6 +10,7 @@ import { usePublishedContent } from "@/content/ContentContext"
 import { getPublishedValue } from "@/content/contentValues"
 import { berlinLiveDefaults } from "@/content/berlinLiveContent"
 import { fullPriceCheckoutUrl, klarnaPaymentCopy } from "@/content/klarnaPayments"
+import { BerlinMeasurementSettings, useBerlinMeasurement } from "@/components/BerlinMeasurement"
 import {
   berlinLiveStaticTurkishTranslations,
   berlinLiveTurkishDefaults,
@@ -57,6 +58,7 @@ const Timeline = ({ entries }) => (
 export const BerlinLive = () => {
   const { content } = usePublishedContent()
   const { search } = useLocation()
+  const measurement = useBerlinMeasurement(search)
   const searchParams = new URLSearchParams(search)
   const pageLanguage = searchParams.get("lang") === "tr" ? "tr" : "de"
   const isTurkish = pageLanguage === "tr"
@@ -102,12 +104,14 @@ export const BerlinLive = () => {
     return `/berlin-live${query ? `?${query}` : ""}`
   }
 
-  const ownConstellationCheckoutUrl = fullPriceCheckoutUrl(
+  const ownBaseCheckoutUrl = fullPriceCheckoutUrl(
     "berlinOwn", import.meta.env.VITE_BERLIN_OWN_CONSTELLATION_CHECKOUT_URL,
   )
-  const intensiveParticipationCheckoutUrl = fullPriceCheckoutUrl(
+  const intensiveBaseCheckoutUrl = fullPriceCheckoutUrl(
     "berlinIntensive", import.meta.env.VITE_BERLIN_INTENSIVE_CHECKOUT_URL,
   )
+  const ownConstellationCheckoutUrl = measurement.enabled ? measurement.checkout('berlinOwn') : ownBaseCheckoutUrl
+  const intensiveParticipationCheckoutUrl = measurement.enabled ? measurement.checkout('berlinIntensive') : intensiveBaseCheckoutUrl
 
   return (
     <main data-no-translate lang={pageLanguage} className="min-h-screen bg-[#fbf8f1] pb-24 text-[#173c39] sm:pb-0" style={{ color: colors.ink }}>
@@ -376,7 +380,7 @@ export const BerlinLive = () => {
               {ownTicketItems.map((item) => <li key={item} className="flex gap-3 leading-7"><Check size={20} className="mt-1 shrink-0 text-[#0f7d79]" />{item}</li>)}
             </ul>
             {ownConstellationCheckoutUrl ? (
-              <a href={ownConstellationCheckoutUrl} className="mt-9 block w-full rounded-full bg-[#0f7d79] px-6 py-4 text-center font-bold text-white transition hover:bg-[#075a57]">
+              <a href={ownConstellationCheckoutUrl} onClick={() => measurement.click('berlinOwn')} className="mt-9 block w-full rounded-full bg-[#0f7d79] px-6 py-4 text-center font-bold text-white transition hover:bg-[#075a57]">
                 {text("tickets.own-cta")}
               </a>
             ) : (
@@ -387,7 +391,7 @@ export const BerlinLive = () => {
             <div className="mt-6 border-t border-[#d6e3dc] pt-6">
               <p className="text-center font-semibold text-[#536a66]">{paymentCopy.title}</p>
               <p className="mt-3 text-center text-sm leading-6 text-[#536a66]">{paymentCopy.note}</p>
-              <a href={ownConstellationCheckoutUrl} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
+              <a href={ownConstellationCheckoutUrl} onClick={() => measurement.click('berlinOwn')} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
                 {paymentCopy.cta}
               </a>
             </div>
@@ -401,7 +405,7 @@ export const BerlinLive = () => {
               {intensiveTicketItems.map((item) => <li key={item} className="flex gap-3 leading-7"><Check size={20} className="mt-1 shrink-0 text-[#0f7d79]" />{item}</li>)}
             </ul>
             {intensiveParticipationCheckoutUrl ? (
-              <a href={intensiveParticipationCheckoutUrl} className="mt-9 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-4 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
+              <a href={intensiveParticipationCheckoutUrl} onClick={() => measurement.click('berlinIntensive')} className="mt-9 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-4 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
                 {text("tickets.intensive-cta")}
               </a>
             ) : (
@@ -412,7 +416,7 @@ export const BerlinLive = () => {
             <div className="mt-6 border-t border-[#d6e3dc] pt-6">
               <p className="text-center font-semibold text-[#536a66]">{paymentCopy.title}</p>
               <p className="mt-3 text-center text-sm leading-6 text-[#536a66]">{paymentCopy.note}</p>
-              <a href={intensiveParticipationCheckoutUrl} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
+              <a href={intensiveParticipationCheckoutUrl} onClick={() => measurement.click('berlinIntensive')} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
                 {paymentCopy.cta}
               </a>
             </div>
@@ -445,6 +449,7 @@ export const BerlinLive = () => {
             <p className="font-bold text-[#075a57]">Spirit Healing</p>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <BerlinMeasurementSettings state={measurement}/>
             <a href="/impressum" className="hover:text-[#0f7d79]">{staticText("Impressum")}</a>
             <a href="/datenschutz" className="hover:text-[#0f7d79]">{staticText("Datenschutz")}</a>
           </div>

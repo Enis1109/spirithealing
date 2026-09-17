@@ -151,6 +151,11 @@ import {
 } from "./server/validation.js";
 import { metadataForPath } from "./src/seo/pageMeta.js";
 import { injectSeoIntoDocument } from "./server/frontendSeo.js";
+import { initializeBerlinMeasurement, recordMeasurement, startBerlinMeasurementCleanup,
+    berlinMeasurementSummary } from "./server/berlinMeasurement.js";
+import { berlinWebhookConfig, registerBerlinWebhook } from "./server/berlinWebhook.js";
+import { eraseBerlinPayment, berlinPaymentHash } from "./server/berlinErasure.js";
+import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -191,6 +196,11 @@ app.use((request, response, next) => {
     });
     next();
 });
+// Raw-body verification MUST precede the JSON parser. Disabled until deployed and tested.
+const berlinMeasurementEnabled = process.env.BERLIN_MEASUREMENT_ENABLED === "true";
+const berlinWebhookSettings = berlinWebhookConfig(process.env);
+registerBerlinWebhook(app, { db: database, config: berlinWebhookSettings,
+    ready: async () => { await startupPromise; return !startupError; } });
 app.use(express.json({ limit: "64kb", type: "application/json" }));
 
 app.get("/robots.txt", (_request, response) => {
@@ -773,6 +783,62 @@ app.get("/api/members/session", async (request, response) => {
         },
         programs: await getProgramsForMember(member),
     });
+});
+
+app.post("/api/berlin/measurement/consent", analyticsLimiter, adminSameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    if (!berlinMeasurementEnabled) return response.status(503).json({ ok: false });
+    try {
+        await startupPromise;
+        if (startupError) return response.status(503).json({ ok: false });
+        const ok = await registerConsent(database, request.body);
+        return response.status(ok ? 201 : 400).json({ ok });
+    } catch { return response.status(503).json({ ok: false }); }
+});
+app.post("/api/berlin/measurement/revoke", analyticsLimiter, adminSameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    if (!berlinMeasurementEnabled) return response.status(503).json({ ok: false });
+    try {
+        await startupPromise;
+        if (startupError) return response.status(503).json({ ok: false });
+        await revokeConsent(database, request.body?.receipt);
+        return response.json({ ok: true });
+    } catch { return response.status(503).json({ ok: false }); }
+});
+
+app.post("/api/berlin/measurement/events", analyticsLimiter, adminSameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    if (!berlinMeasurementEnabled) return response.status(503).json({ ok: false });
+    try {
+        await startupPromise;
+        if (startupError) return response.status(503).json({ ok: false });
+        const ok = await recordMeasurement(database, request.body);
+        return response.status(ok ? 202 : 400).json({ ok });
+    } catch { return response.status(503).json({ ok: false }); }
+});
+
+app.get("/api/admin/berlin/measurement", async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    if (!berlinMeasurementEnabled) return response.status(503).json({ ok: false });
+    try { return response.json({ ok: true, ...await berlinMeasurementSummary(database) }); }
+    catch { return response.status(503).json({ ok: false }); }
+});
+
+app.post("/api/admin/berlin/measurement/erase", adminSameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    if (!berlinMeasurementEnabled) return response.status(503).json({ ok: false });
+    if (request.body?.confirmation !== "ERASE_ANALYTICS_ONLY") return response.status(400).json({ ok: false });
+    try { berlinPaymentHash(request.body?.paymentIntent); }
+    catch { return response.status(400).json({ ok: false }); }
+    try {
+        await startupPromise;
+        if (startupError) return response.status(503).json({ ok: false });
+        return response.json({ ok: true, ...await eraseBerlinPayment(database, request.body.paymentIntent) });
+    } catch { return response.status(503).json({ ok: false }); }
 });
 
 app.post("/api/analytics/funnel", analyticsLimiter, sameOriginOnly, async (request, response) => {
@@ -1626,7 +1692,9 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    if (berlinMeasurementEnabled) await initializeBerlinMeasurement(database);
     await initializeDefaultPrograms();
+    if (berlinMeasurementEnabled) startBerlinMeasurementCleanup(database);
     startWebinarReminderWorker();
 };
 

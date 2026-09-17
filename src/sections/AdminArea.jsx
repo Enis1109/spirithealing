@@ -30,6 +30,7 @@ import { AdminPrograms } from "@/sections/AdminPrograms";
 import { AdminOnboarding } from "@/sections/AdminOnboarding";
 import { AdminScheduleSurvey } from "@/sections/AdminScheduleSurvey";
 import { AdminAiCommandCenter } from "@/sections/AdminAiCommandCenter";
+import { BerlinErasureForm } from "@/components/BerlinErasureForm";
 
 const emptySnapshot = { entries: [], revisions: [] };
 
@@ -475,6 +476,7 @@ export const AdminArea = () => {
                                 <label className="relative block w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6b8585]" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Suchen …" className="min-h-12 w-full rounded-full border border-[#0f8b8d]/25 bg-white pl-12 pr-4 outline-none focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" /></label>
                             </div>
 
+                            {activeTab === "berlin" && <BerlinErasureForm requestJson={requestJson} />}
                             {["pages", "berlin"].includes(activeTab) && (
                                 <div className="space-y-8">
                                     {[...new Set(filteredPages.map((item) => item.group))].map((group) => (

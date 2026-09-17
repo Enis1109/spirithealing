@@ -291,14 +291,16 @@ export const Daten = () => {
                             von Videos). Andere Cookies können zur Auswertung des Nutzerverhaltens oder zu Werbezwecken<br/>
                             verwendet werden.<br/><br/>
                             Cookies, die zur Durchführung des elektronischen Kommunikationsvorgangs, zur Bereitstellung<br/>
-                            bestimmter, von Ihnen erwünschter Funktionen (z. B. für die Warenkorbfunktion) oder zur Optimierung der<br/>
-                            Website (z. B. Cookies zur Messung des Webpublikums) erforderlich sind (notwendige Cookies), werden auf<br/>
+                            bestimmter, von Ihnen ausdrücklich erwünschter Funktionen (z. B. für die Warenkorbfunktion)<br/>
+                            unbedingt erforderlich sind (notwendige Cookies), werden auf<br/>
                             Grundlage von Art. 6 Abs. 1 lit. f DSGVO gespeichert, sofern keine andere Rechtsgrundlage angegeben wird.<br/>
                             Der Websitebetreiber hat ein berechtigtes Interesse an der Speicherung von notwendigen Cookies zur<br/>
                             technisch fehlerfreien und optimierten Bereitstellung seiner Dienste. Sofern eine Einwilligung zur<br/>
                             Speicherung von Cookies und vergleichbaren Wiedererkennungstechnologien abgefragt wurde, erfolgt die<br/>
                             Verarbeitung ausschließlich auf Grundlage dieser Einwilligung (Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1<br/>
                             TDDDG); die Einwilligung ist jederzeit widerrufbar.<br/><br/>
+                            Die freiwillige Werbemessung gehört nicht zu den technisch notwendigen Funktionen. Für sie gelten<br/>
+                            gesonderte Einwilligungs- und Datenschutzhinweise.<br/><br/>
                             Sie können Ihren Browser so einstellen, dass Sie über das Setzen von Cookies informiert werden und<br/>
                             Cookies nur im Einzelfall erlauben, die Annahme von Cookies für bestimmte Fälle oder generell ausschließen<br/>
                             sowie das automatische Löschen der Cookies beim Schließen des Browsers aktivieren. Bei der<br/>
@@ -409,6 +411,61 @@ export const Daten = () => {
                             auffordern, Ihre Einwilligung zur Speicherung widerrufen oder der Zweck für die Datenspeicherung entfällt<br/>
                             (z. B. nach abgeschlossener Bearbeitung Ihres Anliegens). Zwingende gesetzliche Bestimmungen –<br/>
                             insbesondere gesetzliche Aufbewahrungsfristen – bleiben unberührt.<br/>
+                        </p>
+                        <h3 id="berlin-messung" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Freiwillige Werbemessung für das Berliner Seminar</h3>
+                        <p className="text-md">
+                            Wenn Sie die Werbemessung auf unserer Berlin-Seite erlauben, erfassen wir Seitenbesuche und Buchungsklicks
+                            sowie neutrale Anzeigenkennungen. Eine zufällig erzeugte Kennung verbindet Ihre Zustimmung mit dem Zahlungslink
+                            bei Stripe. Nur mit einem noch gültigen, nicht widerrufenen Zustimmungsnachweis übernehmen wir eine Zahlung
+                            zusätzlich in unsere Werbeauswertung: gebuchtes Angebot, Betrag, Währung, Zahlungskennungen und zugehörige
+                            Erstattungs- oder Rückbuchungsinformationen. Namen, E-Mail-Adressen, Kartendaten und persönliche Anliegen
+                            werden aus den Zahlungsnachrichten nicht in diese Auswertung übernommen. Sie können ohne Zustimmung genauso buchen.
+                        </p>
+                        <p className="text-md">
+                            Grundlage der freiwilligen Auswertung ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO;
+                            für die einwilligungsabhängige Speicherung auf Ihrem Gerät gilt § 25 Abs. 1 TDDDG.
+                            Ihre Auswahl wird im Browser gespeichert und gilt höchstens 90 Tage. Auf unserem Server speichern wir
+                            einen Prüfnachweis mit Zeitpunkt, Textversion und einem Hash der zufälligen Kennung. Die Auswertungsdaten
+                            bleiben höchstens 90 Tage gespeichert, längstens bis zum Ablauf oder Widerruf dieses Nachweises;
+                            die automatische Fristbereinigung läuft stündlich. Die zusätzliche Auswertung wird bei unserem Website-Hoster verarbeitet.
+                        </p>
+                        <p className="text-md">
+                            Unter „Mess-Einstellungen“ auf der Berlin-Seite können Sie Ihre Einwilligung jederzeit widerrufen.
+                            Nach bestätigtem Widerruf löschen wir die mit diesem Nachweis verbundenen zusätzlichen Besuchs-, Klick- und
+                            Zahlungszuordnungen. Ein gesperrter Nachweis bleibt bis zu seinem Ablauf bestehen, damit verspätete
+                            Zahlungsnachrichten keine neue Zuordnung erzeugen. Ist der Browsernachweis nicht mehr vorhanden,
+                            wenden Sie sich an info@spirit-healing.tr. Zur Zuordnung genügt die betreffende Buchungs- oder Zahlungsreferenz;
+                            senden Sie uns keine vollständigen Kartendaten oder Angaben zu persönlichen Anliegen.
+                            Bei einer einzelnen Zahlungslöschung speichern wir für 90 Tage einen gehashten Löschvermerk.
+                            Die Zahlung, Ihre Teilnahme und gesetzlich erforderliche Buchhaltungsunterlagen bleiben unverändert.
+                            Die Rechtmäßigkeit der Verarbeitung vor dem Widerruf bleibt unberührt.
+                        </p>
+                        <p className="text-md">
+                            Aus Sicherungskopien verschwinden gelöschte Daten mit deren regulärer Überschreibung.
+                            Bei einer Wiederherstellung müssen spätere Löschungen vor einer erneuten Nutzung der Auswertung berücksichtigt werden.
+                            Die hier beschriebene eigene Werbemessung übermittelt keine Besuchs- oder Kaufereignisse an Meta.
+                        </p>
+                        <h3 id="stripe-zahlungen" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Zahlungsabwicklung über Stripe</h3>
+                        <p className="text-md">
+                            Für die angebotenen Online-Zahlungen verwenden wir Stripe. Beim Öffnen der Zahlungsseite verlassen Sie unsere Website.
+                            Stripe verarbeitet die dort eingegebenen Kontakt-, Rechnungs- und Zahlungsangaben sowie technische Daten für die Abwicklung
+                            und Absicherung der gewählten Zahlung. Abhängig von der gewählten Zahlungsart sind weitere Zahlungsdienstleister beteiligt.
+                            Wir erhalten Angaben zum gebuchten Angebot, Zahlungsstatus, Betrag und zu den für die Buchung erforderlichen Kontaktdaten.
+                            Die von Ihnen bei Stripe eingegebenen vollständigen Kartendaten werden nicht in unserer Website-Datenbank gespeichert.
+                        </p>
+                        <p className="text-md">
+                            Wir verwenden die erforderlichen Zahlungsinformationen zur Durchführung der Buchung und des Vertrags
+                            gemäß Art. 6 Abs. 1 lit. b DSGVO und zur Erfüllung gesetzlicher Pflichten gemäß Art. 6 Abs. 1 lit. c DSGVO.
+                            Eine Zahlung ist keine Einwilligung in Werbung. Gesetzlich erforderliche Zahlungs- und Buchhaltungsunterlagen
+                            werden unabhängig von einer freiwilligen Werbeauswertung aufbewahrt.
+                        </p>
+                        <p className="text-md">
+                            Stripe verarbeitet Daten je nach Vorgang als Auftragsverarbeiter oder eigenständig Verantwortlicher.
+                            Daten können außerhalb des Europäischen Wirtschaftsraums verarbeitet werden.
+                            Die jeweils zuständigen Stripe-Gesellschaften, Zwecke, Rechte und Übermittlungsgrundlagen beschreibt Stripe im
+                            <a className="underline" href="https://stripe.com/legal/privacy-center"> Privacy Center</a> und in seiner
+                            <a className="underline" href="https://stripe.com/privacy"> Datenschutzerklärung</a>.
+                            Für Fragen zu unserer Verarbeitung erreichen Sie Fatma Selcan Yilmaz unter info@spirit-healing.tr.
                         </p>
                         <h2 className="text-xl md:text-2xl leading-tight  font-bold text-primary">5. Soziale Medien
                         </h2>
