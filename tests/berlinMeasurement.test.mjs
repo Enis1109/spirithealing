@@ -70,7 +70,7 @@ test('pixel adapter no personal data, automatic config off, exactly one PageView
   assert.deepEqual(win.fbq.queue[1],['set','autoConfig',false,'123456789']);
   revokeMeta(win); startMetaPageView({win,doc,pixelId:'123456789'});
   assert.equal(scripts.length,1);
-  assert.equal(win.fbq.queue.filter(c=>c[0]==='trackSingle').length,1);
+  assert.equal(win.fbq.queue.filter(c=>c[0]==='trackSingle').length,0);
   assert.equal(win.fbq.queue.some(c=>c.includes('Purchase')),false);
   assert.equal(startMetaPageView({win:{fbq(){}},doc,pixelId:'999999'}),false);
 });

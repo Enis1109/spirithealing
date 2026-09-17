@@ -445,6 +445,59 @@ export const Daten = () => {
                             Bei einer Wiederherstellung müssen spätere Löschungen vor einer erneuten Nutzung der Auswertung berücksichtigt werden.
                             Die hier beschriebene eigene Werbemessung übermittelt keine Besuchs- oder Kaufereignisse an Meta.
                         </p>
+                        <h3 id="berlin-meta" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Gesonderte Einwilligung: Meta-Pixel und Conversions API</h3>
+                        <p className="text-md">
+                            Auf der öffentlichen Seite „Berlin live“ verwenden wir Meta-Pixel und Conversions API nur nach Ihrer
+                            gesonderten Zustimmung in den „Mess-Einstellungen“. Empfänger ist Meta Platforms Ireland Limited,
+                            Block J, Serpentine Avenue, Dublin 4, Irland (Anschrift gemäß den Meta-Business-Tools-Bedingungen).
+                            Die Messung dient dazu, die Wirkung unserer Facebook- und Instagram-Werbung anhand von Seitenaufrufen
+                            zu prüfen und die Anzeigenauslieferung zu verbessern. Meta kann diese Aufrufe Ihrem Facebook- oder
+                            Instagram-Konto zuordnen und für Werbemessung und Anzeigenoptimierung verarbeiten.
+                            Sie können Meta unabhängig von unserer eigenen Werbeauswertung erlauben oder beide Messungen ablehnen.
+                            Frühere Zustimmungen zur eigenen Auswertung aktivieren Meta nicht. Eine Buchung ist ohne beide Messungen möglich.
+                        </p>
+                        <p className="text-md">
+                            Wir übermitteln ausschließlich das Ereignis „PageView“: Seitenadresse, Zeitpunkt, eine zufällige
+                            Ereigniskennung, IP-Adresse und Browserangaben. Der Browser-Pixel kann zusätzlich technische Kennungen
+                            und Cookies verwenden, insbesondere _fbp und bei einem Anzeigenklick _fbc. Browser und Server verwenden
+                            dieselbe Ereigniskennung, damit Meta denselben Seitenaufruf nicht doppelt zählt.
+                            Über die Conversions API senden wir keine Kampagnenparameter, Referrer-Adressen oder Cookiekennungen.
+                            Wir senden keine Käufe, Beträge, Zahlungskennungen, Namen, E-Mail-Adressen, Telefonnummern,
+                            Formularinhalte, Gesundheitsangaben oder persönlichen Anliegen an Meta.
+                            Automatischer erweiterter Abgleich und automatische Ereigniserkennung sind ausgeschaltet.
+                            Auf Mitglieder-, Fragebogen-, Therapie- und Zahlungsseiten ist diese Meta-Messung nicht eingebunden.
+                        </p>
+                        <p className="text-md">
+                            Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO; für die einwilligungsabhängige
+                            Speicherung und den Zugriff auf Ihr Endgerät gilt § 25 Abs. 1 TDDDG. Die Auswahl gilt höchstens 90 Tage.
+                            Für ihren Nachweis speichern wir beim Website-Hoster eine gehashte Zufallskennung, Textversion und
+                            Zustimmungs- bzw. Widerrufszeitpunkte bis zum Ablauf des Nachweises. Technische Versandvermerke werden
+                            nach zwei Tagen entfernt. Die Fristbereinigung läuft stündlich. IP-Adresse und Browserangaben werden
+                            für die direkte Übermittlung verwendet, aber nicht zusätzlich in diesen Meta-Messtabellen gespeichert.
+                            Meta darf Ereignisdaten nach seinen <a className="underline" href="https://www.facebook.com/legal/terms/businesstools">Business-Tools-Bedingungen</a>
+                            bis zu zwei Jahre speichern. Weitere Angaben zur Speicherung stehen in Metas Datenschutzrichtlinie.
+                        </p>
+                        <p className="text-md">
+                            Unter „Mess-Einstellungen“ können Sie die Meta-Einwilligung jederzeit widerrufen. Die Browsermessung
+                            wird sofort gestoppt; nach Bestätigung des Servers erfolgen auch von dort keine weiteren Übertragungen
+                            unter diesem Nachweis. Unsere Versandvermerke werden gelöscht und die von unserer Website gesetzten
+                            Meta-Cookies entfernt. Bereits an Meta übermittelte Daten werden dadurch nicht automatisch gelöscht.
+                            Ihre Rechte hinsichtlich dieser Daten können Sie bei Meta oder bei uns unter info@spirit-healing.tr
+                            geltend machen. Die Rechtmäßigkeit früherer Verarbeitungen bleibt vom Widerruf unberührt.
+                        </p>
+                        <p className="text-md">
+                            Die Erhebung und Übermittlung fallen unter die gemeinsame Verantwortlichkeit mit Meta Ireland gemäß
+                            Art. 26 DSGVO. Der <a className="underline" href="https://www.facebook.com/legal/controller_addendum">Zusatz für Verantwortliche</a>
+                            regelt die Aufgabenverteilung: Wir informieren über die Messung und richten sie entsprechend Ihrer
+                            Einwilligung ein; Meta ermöglicht insbesondere die Ausübung Ihrer Rechte hinsichtlich der dort
+                            gespeicherten Daten. Die anschließende Verarbeitung durch Meta gehört nicht zur gemeinsamen Verarbeitung.
+                            Kontaktangaben, Rechtsgrundlagen der Verarbeitung durch Meta und Informationen zu Ihren Rechten stehen in der
+                            <a className="underline" href="https://www.facebook.com/about/privacy"> Datenschutzrichtlinie von Meta</a>.
+                            Eine Verarbeitung in den USA ist möglich. Angaben zu den dafür eingesetzten Garantien und zum
+                            EU-US Data Privacy Framework finden Sie in Metas
+                            <a className="underline" href="https://www.facebook.com/privacy/policies/data_privacy_framework"> Offenlegung zum Datenschutzrahmen</a>
+                            und im <a className="underline" href="https://www.facebook.com/legal/EU_data_transfer_addendum">Datenübermittlungszusatz</a>.
+                        </p>
                         <h3 id="stripe-zahlungen" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Zahlungsabwicklung über Stripe</h3>
                         <p className="text-md">
                             Für die angebotenen Online-Zahlungen verwenden wir Stripe. Beim Öffnen der Zahlungsseite verlassen Sie unsere Website.

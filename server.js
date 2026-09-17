@@ -156,6 +156,7 @@ import { initializeBerlinMeasurement, recordMeasurement, startBerlinMeasurementC
 import { berlinWebhookConfig, registerBerlinWebhook } from "./server/berlinWebhook.js";
 import { eraseBerlinPayment, berlinPaymentHash } from "./server/berlinErasure.js";
 import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
+import { metaConfig, metaOriginAllowed, initializeMeta, cleanMeta, registerMetaConsent, revokeMetaConsent, sendMetaPageView } from "./server/berlinMeta.js";
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -198,6 +199,7 @@ app.use((request, response, next) => {
 });
 // Raw-body verification MUST precede the JSON parser. Disabled until deployed and tested.
 const berlinMeasurementEnabled = process.env.BERLIN_MEASUREMENT_ENABLED === "true";
+const berlinMetaSettings = metaConfig(process.env);
 const berlinWebhookSettings = berlinWebhookConfig(process.env);
 registerBerlinWebhook(app, { db: database, config: berlinWebhookSettings,
     ready: async () => { await startupPromise; return !startupError; } });
@@ -783,6 +785,34 @@ app.get("/api/members/session", async (request, response) => {
         },
         programs: await getProgramsForMember(member),
     });
+});
+
+app.get("/api/berlin/meta/status", (_request, response) => {
+    response.set("Cache-Control", "no-store");
+    response.json({ enabled: berlinMetaSettings.enabled });
+});
+app.post("/api/berlin/meta/:action", analyticsLimiter, adminSameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    if (!metaOriginAllowed(request.get("origin"), productionOrigin, process.env.NODE_ENV || 'production')) return response.status(403).json({ ok: false });
+    const action = request.params.action;
+    // Withdrawal remains available when the transmission switch is disabled.
+    if (!berlinMetaSettings.enabled && action !== "revoke") return response.status(503).json({ ok:false });
+    try {
+        if (action === "consent") {
+            const ok = await registerMetaConsent(database,request.body?.consent);
+            return response.status(ok ? 201 : 400).json({ok});
+        }
+        if (action === "revoke") {
+            await revokeMetaConsent(database,request.body?.receipt);
+            return response.json({ok:true});
+        }
+        if (action === "pageview") {
+            const result = await sendMetaPageView(database,berlinMetaSettings,request.body,
+                {ip:request.ip,userAgent:request.get("user-agent")});
+            return response.status(result.status).json({ok:result.ok});
+        }
+        return response.status(404).json({ok:false});
+    } catch { return response.status(503).json({ok:false}); }
 });
 
 app.post("/api/berlin/measurement/consent", analyticsLimiter, adminSameOriginOnly, async (request, response) => {
@@ -1692,9 +1722,12 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    await initializeMeta(database);
     if (berlinMeasurementEnabled) await initializeBerlinMeasurement(database);
     await initializeDefaultPrograms();
     if (berlinMeasurementEnabled) startBerlinMeasurementCleanup(database);
+    const metaCleanup = setInterval(() => cleanMeta(database).catch(() => console.error("Meta retention cleanup failed")), 3600000);
+    metaCleanup.unref();
     startWebinarReminderWorker();
 };
 

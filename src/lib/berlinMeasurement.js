@@ -95,7 +95,14 @@ export function startMetaPageView({ win, doc, pixelId }) {
   return true;
 }
 
-export function revokeMeta(win) { if (typeof win.fbq === 'function') win.fbq('consent', 'revoke'); }
+export function revokeMeta(win) {
+  if (typeof win.fbq !== 'function') return;
+  if (!win.fbq.callMethod && Array.isArray(win.fbq.queue)) {
+    win.fbq.queue = win.fbq.queue.filter(args => !['track', 'trackSingle', 'trackCustom', 'trackSingleCustom'].includes(args[0])
+      && !(args[0] === 'consent' && args[1] === 'grant'));
+  }
+  win.fbq('consent', 'revoke');
+}
 
 export function clearMetaCookies(doc, hostname) {
   const domains = hostname.endsWith('.spirit-healing.tr') || hostname === 'spirit-healing.tr'
