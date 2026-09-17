@@ -138,12 +138,15 @@ test('configuration fails closed and accepts only own HTTPS origin in production
   for(const value of [undefined,'null','http://localhost:1234','https://spirit-healing.tr.evil.example']) assert.equal(metaOriginAllowed(value,origin),false);
   assert.equal(metaOriginAllowed(origin,origin),true);
   assert.equal(metaOriginAllowed('https://www.spirit-healing.tr',origin),true);
+  assert.equal(metaOriginAllowed(origin,'https://www.spirit-healing.tr'),true);
+  assert.equal(metaOriginAllowed('https://www.spirit-healing.tr','https://www.spirit-healing.tr'),true);
+  assert.equal(metaOriginAllowed('https://www.www.spirit-healing.tr','https://www.spirit-healing.tr'),false);
 });
 test('retention removes old delivery markers and expired consent; no client token integration',async()=>{
   const calls=[];await cleanMeta({execute:async sql=>{calls.push(sql);}});
   assert.ok(calls[0].includes('INTERVAL 2 DAY'));assert.ok(calls[1].includes('expires_at<=UTC_TIMESTAMP()'));
   const component=readFileSync(new URL('../src/components/BerlinMeasurement.jsx',import.meta.url),'utf8');
   assert.equal(component.includes('META_CAPI_ACCESS_TOKEN'),false);
-  assert.ok(component.includes('Nur Meta-Seitenaufrufe erlauben'));
+  assert.ok(component.includes('Meta-Werbemessung'));
   assert.ok(component.includes('metaReceipt: next.metaReceipt')); // retained before registration awaits
 });

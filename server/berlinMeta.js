@@ -30,7 +30,8 @@ export function metaConfig(env) {
 }
 export function metaOriginAllowed(origin, productionOrigin, mode = 'production') {
   if (typeof origin !== 'string') return false;
-  return origin === productionOrigin || origin === productionOrigin.replace('https://', 'https://www.')
+  const canonicalOrigin = productionOrigin.replace(/^https:\/\/www\./, 'https://');
+  return origin === canonicalOrigin || origin === canonicalOrigin.replace('https://', 'https://www.')
     || (mode !== 'production' && /^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin));
 }
 export async function cleanMeta(db) {

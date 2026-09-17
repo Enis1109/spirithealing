@@ -430,7 +430,7 @@ export const Daten = () => {
                             die automatische Fristbereinigung läuft stündlich. Die zusätzliche Auswertung wird bei unserem Website-Hoster verarbeitet.
                         </p>
                         <p className="text-md">
-                            Unter „Mess-Einstellungen“ auf der Berlin-Seite können Sie Ihre Einwilligung jederzeit widerrufen.
+                            Unter „Cookie-Einstellungen“ auf der Berlin-Seite können Sie Ihre Einwilligung jederzeit widerrufen.
                             Nach bestätigtem Widerruf löschen wir die mit diesem Nachweis verbundenen zusätzlichen Besuchs-, Klick- und
                             Zahlungszuordnungen. Ein gesperrter Nachweis bleibt bis zu seinem Ablauf bestehen, damit verspätete
                             Zahlungsnachrichten keine neue Zuordnung erzeugen. Ist der Browsernachweis nicht mehr vorhanden,
@@ -448,7 +448,7 @@ export const Daten = () => {
                         <h3 id="berlin-meta" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Gesonderte Einwilligung: Meta-Pixel und Conversions API</h3>
                         <p className="text-md">
                             Auf der öffentlichen Seite „Berlin live“ verwenden wir Meta-Pixel und Conversions API nur nach Ihrer
-                            gesonderten Zustimmung in den „Mess-Einstellungen“. Empfänger ist Meta Platforms Ireland Limited,
+                            Zustimmung im Cookie-Pop-up. Unter „Einstellungen“ können Sie Meta getrennt auswählen. Empfänger ist Meta Platforms Ireland Limited,
                             Block J, Serpentine Avenue, Dublin 4, Irland (Anschrift gemäß den Meta-Business-Tools-Bedingungen).
                             Die Messung dient dazu, die Wirkung unserer Facebook- und Instagram-Werbung anhand von Seitenaufrufen
                             zu prüfen und die Anzeigenauslieferung zu verbessern. Meta kann diese Aufrufe Ihrem Facebook- oder
@@ -478,7 +478,7 @@ export const Daten = () => {
                             bis zu zwei Jahre speichern. Weitere Angaben zur Speicherung stehen in Metas Datenschutzrichtlinie.
                         </p>
                         <p className="text-md">
-                            Unter „Mess-Einstellungen“ können Sie die Meta-Einwilligung jederzeit widerrufen. Die Browsermessung
+                            Unter „Cookie-Einstellungen“ können Sie die Meta-Einwilligung jederzeit widerrufen. Die Browsermessung
                             wird sofort gestoppt; nach Bestätigung des Servers erfolgen auch von dort keine weiteren Übertragungen
                             unter diesem Nachweis. Unsere Versandvermerke werden gelöscht und die von unserer Website gesetzten
                             Meta-Cookies entfernt. Bereits an Meta übermittelte Daten werden dadurch nicht automatisch gelöscht.
