@@ -20,7 +20,8 @@ export function useBerlinMeasurement(search) {
   const [consent, setConsent] = useState(() => {
     try { return enabled ? loadConsent(window.localStorage) : null; } catch { return null; }
   });
-  const [open, setOpen] = useState(enabled && (!consent || (!consent.analytics && consent.receipt) || (!consent.meta && consent.metaReceipt)));
+  // Settings are only opened explicitly in the footer, never over the landing page.
+  const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [sessionId] = useState(() => crypto.randomUUID());
@@ -128,16 +129,9 @@ export function useBerlinMeasurement(search) {
 }
 
 export function BerlinMeasurementSettings({ state }) {
-  const dialog = useRef(null);
   const [details, setDetails] = useState(false);
   const [analytics, setAnalytics] = useState(state.consent?.analytics === true);
   const [meta, setMeta] = useState(state.consent?.meta === true);
-  useEffect(() => {
-    const element = dialog.current;
-    if (!element) return;
-    if (state.open && !element.open) element.showModal();
-    else if (!state.open && element.open) element.close();
-  }, [state.open, state.enabled]);
   const reopen = () => {
     setAnalytics(state.consent?.analytics === true);
     setMeta(state.consent?.meta === true);
@@ -146,11 +140,11 @@ export function BerlinMeasurementSettings({ state }) {
   };
   const button = 'rounded-lg border border-[#0f7d79] bg-white px-4 py-3 text-sm font-semibold text-[#173c39] hover:bg-[#edf5f3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f7d79]';
   if (!state.enabled) return null;
-  return <>
-    <button type="button" onClick={reopen} className="underline">Cookie-Einstellungen</button>
-    <dialog ref={dialog} aria-labelledby="berlin-cookie-title" aria-describedby="berlin-cookie-summary"
-      onCancel={event => { if (state.busy) event.preventDefault(); else state.setOpen(false); }}
-      className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border border-[#c69543]/40 bg-white p-5 text-left text-[#173c39] shadow-2xl backdrop:bg-black/45 sm:p-7">
+  return <div>
+    <button type="button" onClick={() => state.open ? state.setOpen(false) : reopen()}
+      disabled={state.busy} aria-expanded={state.open} aria-controls="berlin-cookie-settings" className="underline">Cookie-Einstellungen</button>
+    {state.open && <section id="berlin-cookie-settings" aria-labelledby="berlin-cookie-title" aria-describedby="berlin-cookie-summary"
+      className="mt-4 max-w-xl rounded-2xl border border-[#c69543]/40 bg-white p-5 text-left text-[#173c39] sm:p-7">
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-[#0f7d79]">Spirit Healing</p>
         <h2 id="berlin-cookie-title" className="mt-2 text-2xl font-bold">{details ? 'Cookie-Einstellungen' : 'Cookies & Datenschutz'}</h2>
@@ -182,6 +176,6 @@ export function BerlinMeasurementSettings({ state }) {
         </fieldset>
         {state.busy && <p role="status" className="mt-2 text-sm">Auswahl wird gespeichert …</p>}
       </div>
-    </dialog>
-  </>;
+    </section>}
+  </div>;
 }

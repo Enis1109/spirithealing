@@ -116,11 +116,11 @@ export const BerlinLive = () => {
   return (
     <main data-no-translate lang={pageLanguage} className="min-h-screen bg-[#fbf8f1] pb-24 text-[#173c39] sm:pb-0" style={{ color: colors.ink }}>
       <section className="relative isolate overflow-hidden border-b border-[#dbe7e1] bg-[#f8f5ed]">
-        <div className="absolute -left-40 top-24 h-96 w-96 rounded-full bg-[#d8ebe3]/70 blur-3xl" aria-hidden="true" />
-        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#f2dfb9]/65 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -left-40 top-24 h-96 w-96 rounded-full bg-[#d8ebe3]/70 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full bg-[#f2dfb9]/65 blur-3xl" aria-hidden="true" />
 
         <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 lg:px-10 lg:pb-24">
-          <div className="flex items-center justify-between gap-4">
+          <div className="relative z-10 flex items-center justify-between gap-4">
             <a href="/" aria-label={staticText("Zur Spirit-Healing-Startseite")} className="inline-flex items-center gap-3">
               <img src="/Logo-tuerkis.jpeg" alt="Spirit Healing" className="h-12 w-12 rounded-full object-cover shadow-sm" />
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
