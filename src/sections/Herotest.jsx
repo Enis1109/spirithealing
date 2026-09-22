@@ -2,7 +2,7 @@ import { ArrowRight, Calendar1, ChevronDown, ChevronLeft, ChevronRight, Instagra
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { MemberWelcomeModal } from "@/components/MemberWelcomeModal";
+import { LiveTalkHomeNotice } from "@/components/LiveTalkHomeNotice";
 import { usePublishedContent } from "@/content/ContentContext";
 import { getPublishedValue } from "@/content/contentValues";
 
@@ -227,7 +227,6 @@ export const Herotest = () => {
     const [activeTestimonial, setActiveTestimonial] = useState(0);
     const [testimonialExpanded, setTestimonialExpanded] = useState(false);
     const [testimonialPaused, setTestimonialPaused] = useState(false);
-    const [memberModalOpen, setMemberModalOpen] = useState(false);
     const activeReview = testimonial.reviews[activeTestimonial];
     const testimonialNeedsExpansion = activeReview.paragraphs.join(" ").length > 700;
 
@@ -256,34 +255,7 @@ export const Herotest = () => {
         return () => window.clearInterval(timer);
     }, [testimonial.reviews.length, testimonialExpanded, testimonialPaused]);
 
-    useEffect(() => {
-        if (sessionStorage.getItem("spirit-member-popup-dismissed") === "yes") return undefined;
-
-        let active = true;
-        let timer;
-        fetch("/api/members/session", { headers: { Accept: "application/json" } })
-            .then((response) => {
-                if (!active) return;
-                if (response.ok) return;
-                timer = window.setTimeout(() => active && setMemberModalOpen(true), 650);
-            })
-            .catch(() => {
-                timer = window.setTimeout(() => active && setMemberModalOpen(true), 650);
-            });
-
-        return () => {
-            active = false;
-            window.clearTimeout(timer);
-        };
-    }, []);
-
-    const closeMemberModal = useCallback(() => {
-        setMemberModalOpen(false);
-        sessionStorage.setItem("spirit-member-popup-dismissed", "yes");
-    }, []);
-
     return <section id="hero" className="home-page relative overflow-hidden">
-        <MemberWelcomeModal language={language} open={memberModalOpen} onClose={closeMemberModal} />
         <div className="relative z-10 w-full">
             <div className="relative isolate bg-[url('/herobg.jpeg')] bg-center bg-cover">
                 <div className="absolute inset-0 -z-10 bg-linear-to-r from-surface/95 via-surface/70 to-surface/10" aria-hidden="true"/>
@@ -319,6 +291,7 @@ export const Herotest = () => {
             <div className="glass rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
                 <div className="container mx-auto px-4 sm:px-6">
                     <div className="space-y-8 py-8 pb-16 items-center justify-center">
+                        <LiveTalkHomeNotice />
                         <div className="glow-border flex rounded-2xl bg-card/70 p-5 sm:p-8">
                             <div className="grid gap-4 lg:flex">
                                 <div className="flex items-center justify-center md:px-1 ">

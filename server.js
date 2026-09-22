@@ -12,7 +12,11 @@ import {
     sendOnboardingConfirmation,
     sendOnboardingNotification,
     sendZepterBankTransferConfirmation,
+    sendLiveTalkEmail,
 } from "./server/mailer.js";
+import { createLiveTalkService, initializeLiveTalk, startLiveTalkWorker } from "./server/liveTalk.js";
+import { initializeNewsletterCampaigns, newsletterCampaignOverview } from "./server/newsletterCampaigns.js";
+import { normalizeLiveRegistration } from "./server/liveTalkConfig.js";
 import {
     activateMemberAccess,
     authenticateMember,
@@ -159,6 +163,9 @@ import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
 import { metaConfig, metaOriginAllowed, initializeMeta, cleanMeta, registerMetaConsent, revokeMetaConsent, sendMetaPageView } from "./server/berlinMeta.js";
 
 const app = express();
+const liveTalkService = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
+    newsletter: registerNewsletterInterest, secret: process.env.WEBINAR_TOKEN_SECRET || process.env.NEWSLETTER_TOKEN_SECRET,
+    baseUrl: process.env.PUBLIC_BASE_URL || "https://spirit-healing.tr" });
 const port = Number(process.env.PORT || 3000);
 const productionOrigin = new URL(process.env.PUBLIC_BASE_URL || "https://www.spirit-healing.tr").origin;
 const zepterLandingOrigins = new Set(
@@ -409,6 +416,56 @@ app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, resp
 app.get("/api/webinar/slots", (_request, response) => {
     response.set("Cache-Control", "no-store");
     return response.json({ ok: true, ...getAvailableWebinarSlots() });
+});
+
+app.get("/api/live-talk", async (_request, response) => {
+    response.set("Cache-Control", "no-store");
+    try { return response.json({ ok: true, event: await liveTalkService.publicInfo() }); }
+    catch { return response.status(503).json({ ok: false, error: "unavailable" }); }
+});
+app.post("/api/live-talk/register", submissionLimiter, sameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    try { return response.status(202).json({ ok: true, ...await liveTalkService.register(normalizeLiveRegistration(request.body)) }); }
+    catch (error) {
+        if (error instanceof WebinarValidationError) return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        if (error.code === "closed") return response.status(409).json({ ok: false, error: "closed" });
+        if (error.code === "full") return response.status(409).json({ ok: false, error: "full" });
+        console.error("Live talk registration could not be saved");
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+// Tokens arrive in POST bodies from a URL fragment, never in access logs or referrers.
+app.post("/api/live-talk/access", analyticsLimiter, sameOriginOnly, async (request, response) => {
+    response.set({ "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" });
+    try {
+        const access = await liveTalkService.access(request.body?.token);
+        return access ? response.json({ ok: true, access }) : response.status(404).json({ ok: false, error: "invalid_access" });
+    } catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.post("/api/live-talk/cancel", submissionLimiter, sameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    try {
+        return await liveTalkService.cancel(request.body?.token)
+            ? response.json({ ok: true }) : response.status(404).json({ ok: false, error: "invalid_access" });
+    } catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.get("/api/admin/live-talk", async (request, response) => {
+    if (!await getAdminMember(request, response)) return;
+    try { return response.json({ ok: true, ...await liveTalkService.adminInfo() }); }
+    catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.get("/api/admin/newsletter-campaigns", async (request, response) => {
+    if (!await getAdminMember(request, response)) return;
+    response.set("Cache-Control", "no-store");
+    try { return response.json({ ok: true, ...await newsletterCampaignOverview(database) }); }
+    catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.put("/api/admin/live-talk", adminSameOriginOnly, async (request, response) => {
+    if (!await getAdminMember(request, response)) return;
+    try {
+        await liveTalkService.configure(request.body || {});
+        return response.json({ ok: true, ...await liveTalkService.adminInfo() });
+    } catch (error) { return response.status(error.code === "validation" ? 400 : 500).json({ ok: false, error: error.code === "validation" ? "validation" : "server" }); }
 });
 
 app.post("/api/webinar/register", submissionLimiter, sameOriginOnly, async (request, response) => {
@@ -1722,6 +1779,8 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    await initializeLiveTalk(database);
+    await initializeNewsletterCampaigns(database);
     await initializeMeta(database);
     if (berlinMeasurementEnabled) await initializeBerlinMeasurement(database);
     await initializeDefaultPrograms();
@@ -1729,6 +1788,7 @@ const initializeServices = async () => {
     const metaCleanup = setInterval(() => cleanMeta(database).catch(() => console.error("Meta retention cleanup failed")), 3600000);
     metaCleanup.unref();
     startWebinarReminderWorker();
+    startLiveTalkWorker(liveTalkService);
 };
 
 startupPromise = initializeServices().catch((error) => {

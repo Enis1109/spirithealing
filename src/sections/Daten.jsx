@@ -347,6 +347,25 @@ export const Daten = () => {
                             nach 30 Tagen ab. Eine Nutzung Ihrer Daten für den Newsletter erfolgt nur nach einer gesonderten,<br/>
                             freiwilligen Auswahl oder einem eindeutigen Klick auf den Newsletter-Button in der Zugangs-E-Mail.<br/>
                         </p>
+                        <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Anmeldung zum Live-Vortrag am 6. Oktober 2026</h3>
+                        <p className="text-md">
+                            Für die Anmeldung speichern wir Name, E-Mail-Adresse, Anmeldezeitpunkt, den bestätigten Datenschutzhinweis,
+                            den Status der Teilnahme und den Versandstatus der Terminnachrichten auf unserem Hostinger-System.
+                            Mit Ihrer Einwilligung senden wir die Bestätigung mit Zoom-Zugang und Kalendereintrag sowie Erinnerungen
+                            am Vortag und eine Stunde vor Beginn. Über den persönlichen Link in der E-Mail können Sie absagen;
+                            dann werden keine weiteren Terminerinnerungen versendet. Die veranstaltungsbezogenen Anmeldedaten
+                            werden spätestens 90 Tage nach dem Vortrag automatisch gelöscht. Eine freiwillige Newsletter-Anmeldung
+                            wird getrennt erfasst, separat per E-Mail bestätigt und bleibt unabhängig von der Vortragsanmeldung widerrufbar.
+                        </p>
+                        <p className="text-md">
+                            Der Live-Vortrag findet über Zoom statt. Erst beim Öffnen des Teilnahmelinks verbinden Sie sich mit Zoom.
+                            Dabei verarbeitet Zoom unter anderem den angezeigten Namen, technische Verbindungsdaten und die von Ihnen
+                            freigegebenen Audio-, Video- und Chat-Inhalte. Ihr Anzeigename und Ihre Beiträge können für andere Teilnehmende
+                            sichtbar sein. Kamera und Mikrofon können ausgeschaltet bleiben. Automatische Aufzeichnung und automatische
+                            KI-Mitschriften sind für diesen Termin ausgeschaltet. Informationen des Anbieters finden Sie in der
+                            {" "}<a href="https://www.zoom.com/de/trust/privacy/privacy-statement/" target="_blank" rel="noreferrer" className="underline">Datenschutzerklärung von Zoom</a>.
+                            Bei Fragen oder zur Löschung Ihrer Anmeldung schreiben Sie an info@spirit-healing.tr.
+                        </p>
                         <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Eigene Erfolgsmessung für den kostenlosen Mitgliederbereich
                         </h3>
                         <p className="text-md">

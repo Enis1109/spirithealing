@@ -79,6 +79,14 @@ export const pageMeta = {
       ...zepterImage,
       contentLanguage: "de",
     },
+    "/live-vortrag": {
+      title: "Live-Vortrag am 6. Oktober: Dein inneres Drehbuch | Spirit Healing",
+      description: "Kostenloser Live-Vortrag mit Sabine und Selcan am 6. Oktober 2026 um 19:30 Uhr deutscher Zeit. Persönliche Matrix, alte Bindungen und das 13-Wochen-Programm.",
+      ...zepterImage,
+      contentLanguage: "de",
+    },
+    "/live-vortrag/zugang": { title: "Dein Live-Vortrag | Spirit Healing", description: "Persönlicher Zugang zum Live-Vortrag.", noindex: true },
+    "/admin/live-vortrag": { title: "Vortragsverwaltung | Spirit Healing", description: "Geschützte Verwaltung des Live-Vortrags.", noindex: true },
     "/vortrag-13-wochen-programm/ansehen": {
       title: "Dein Online-Vortrag | Spirit Healing",
       description: "Persönlicher Zugang zum Spirit-Healing-Online-Vortrag.",
@@ -193,6 +201,7 @@ export const indexablePaths = Object.freeze([
   "/berlin-live",
   "/13-wochen-programm",
   "/vortrag-13-wochen-programm",
+  "/live-vortrag",
   "/rauhnaechte",
   "/gratis-meditationen",
   "/kontakt",

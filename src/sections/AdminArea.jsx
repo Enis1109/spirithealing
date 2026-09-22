@@ -428,6 +428,7 @@ export const AdminArea = () => {
                             <button key={id} type="button" onClick={() => { setActiveTab(id); setSearch(""); }} className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-bold transition lg:justify-start ${activeTab === id ? "bg-[#0f8b8d] text-white" : "text-[#4e6d6e] hover:bg-[#eaf4f1]"}`}>{createElement(icon, { className: "h-5 w-5" })}<span>{label}</span></button>
                         ))}
                     </nav>
+                    <Link to="/admin/live-vortrag" className="mt-2 flex min-h-12 items-center rounded-2xl px-3 text-sm font-bold text-[#4e6d6e] hover:bg-[#eaf4f1]">Live-Vortrag · Anmeldung & Versand</Link>
                     <div className="mt-3 hidden rounded-2xl bg-[#eaf4f1] p-4 text-sm leading-6 text-[#4e6d6e] lg:block">
                         <ShieldCheck className="mb-2 h-5 w-5 text-[#0f8b8d]" /> {activeTab === "ai" ? "KI-Ergebnisse bleiben intern. Außenaktionen sind gesperrt." : "Änderungen bleiben als Entwurf unsichtbar, bis „Veröffentlichen“ gewählt wird."}
                     </div>

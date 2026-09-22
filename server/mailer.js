@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { getWebinarEmailCopy } from "./webinarEmailCopy.js";
+import { liveEmail, liveCalendar } from "./liveTalkConfig.js";
 
 const requiredVariables = ["SMTP_USER", "SMTP_PASSWORD", "SMTP_FROM"];
 const missingVariables = requiredVariables.filter((name) => !process.env[name]);
@@ -26,6 +27,16 @@ const escapeHtml = (value) => String(value)
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+
+export const sendLiveTalkEmail = async (details) => {
+    const copy = liveEmail(details);
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM, to: details.email, replyTo: notificationRecipient,
+        subject: copy.subject, text: copy.text, messageId: details.messageId,
+        html: `<div style="background:#edf4f0;padding:28px 12px;font-family:Arial,sans-serif;color:#173c39"><div style="max-width:620px;margin:auto;background:#fffaf2;padding:32px;border-radius:20px"><p style="color:#806519;letter-spacing:2px">SPIRIT HEALING</p><h1 style="font-family:Georgia,serif;font-size:28px">${escapeHtml(copy.subject)}</h1><div style="white-space:pre-wrap;line-height:1.7">${escapeHtml(copy.text)}</div><p style="margin:28px 0"><a href="${escapeHtml(details.joinUrl)}" style="display:inline-block;background:#d4af37;color:#034f52;padding:14px 24px;border-radius:24px;text-decoration:none;font-weight:bold">Zum Live-Vortrag in Zoom</a></p><p><a href="${escapeHtml(details.manageUrl)}" style="color:#087478">Anmeldung ansehen oder absagen</a></p></div></div>`,
+        attachments: details.kind === "confirmation" ? [{ filename: "Spirit-Healing-Live-6-Oktober.ics", content: liveCalendar(details.joinUrl), contentType: "text/calendar; charset=utf-8; method=PUBLISH" }] : [],
+    });
+};
 
 export const sendContactNotification = async ({ id, name, email, phone, topic, message, newsletterConsent }) => {
     const lines = [
