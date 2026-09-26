@@ -299,6 +299,7 @@ const contentDefinitions = {
             tr: "Öz liderliğin için düşünme soruları ve egzersizlerden oluşan dokuz sayfa.",
         },
         meta: "PDF · 9 Seiten",
+        image: "/images/workbooks/wer-entscheidet-dein-leben.png?v=20260926",
         icon: FileText,
     },
     premiumMeditations: {
