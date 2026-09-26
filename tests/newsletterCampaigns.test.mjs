@@ -43,13 +43,17 @@ test("overview counts only confirmed active German contacts, without exporting c
     assert.equal(result.sendingEnabled, false);
 });
 
-test("homepage uses inline live notice and does not automatically open the old popup", () => {
+test("public pages use the live-talk popup and the homepage has no fixed notice", () => {
     const home = readFileSync(new URL("../src/sections/Herotest.jsx", import.meta.url), "utf8");
-    const notice = readFileSync(new URL("../src/components/LiveTalkHomeNotice.jsx", import.meta.url), "utf8");
-    assert.match(home, /<LiveTalkHomeNotice \/>/u);
-    assert.doesNotMatch(home, /MemberWelcomeModal|memberModalOpen|spirit-member-popup-dismissed/u);
-    assert.match(notice, /19:30–20:30 Uhr deutscher Zeit/u);
-    assert.match(notice, /\/vortrag-13-wochen-programm/u);
-    assert.match(notice, /\/gratis-meditationen/u);
-    assert.doesNotMatch(notice, /Türkei|role="dialog"/u);
+    const app = readFileSync(new URL("../src/App.jsx", import.meta.url), "utf8");
+    const popup = readFileSync(new URL("../src/components/LiveTalkPopup.jsx", import.meta.url), "utf8");
+    assert.doesNotMatch(home, /LiveTalkHomeNotice|LiveTalkPopup/u);
+    assert.match(app, /showLiveTalkPopup && <LiveTalkPopup\/>/u);
+    assert.match(app, /!isWebinarApp && !isAdminApp && !isOnboardingApp && !isScheduleSurveyApp && !isMemberApp/u);
+    assert.match(popup, /spirit-live-talk-popup-dismissed/u);
+    assert.match(popup, /19:30–20:30 Uhr deutscher Zeit/u);
+    assert.match(popup, /\/live-vortrag/u);
+    assert.match(popup, /\/vortrag-13-wochen-programm/u);
+    assert.match(popup, /\/gratis-meditationen/u);
+    assert.doesNotMatch(popup, /Türkei/u);
 });
