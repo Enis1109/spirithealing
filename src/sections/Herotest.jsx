@@ -2,7 +2,6 @@ import { ArrowRight, Calendar1, ChevronDown, ChevronLeft, ChevronRight, Instagra
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { LiveTalkHomeNotice } from "@/components/LiveTalkHomeNotice";
 import { usePublishedContent } from "@/content/ContentContext";
 import { getPublishedValue } from "@/content/contentValues";
 
@@ -291,7 +290,6 @@ export const Herotest = () => {
             <div className="glass rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
                 <div className="container mx-auto px-4 sm:px-6">
                     <div className="space-y-8 py-8 pb-16 items-center justify-center">
-                        <LiveTalkHomeNotice />
                         <div className="glow-border flex rounded-2xl bg-card/70 p-5 sm:p-8">
                             <div className="grid gap-4 lg:flex">
                                 <div className="flex items-center justify-center md:px-1 ">

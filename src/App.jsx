@@ -17,6 +17,7 @@ import { Daten } from "@/sections/Daten"
 import { DocumentTranslator } from "@/i18n/DocumentTranslator"
 import { useLanguage } from "@/i18n/LanguageContext"
 import { WebsiteAssistant } from "@/components/WebsiteAssistant"
+import { LiveTalkPopup } from "@/components/LiveTalkPopup"
 import { BerlinLive } from "@/sections/BerlinLive"
 import { Zepter13 } from "@/sections/Zepter13"
 import { Rauhnaechte } from "@/sections/Rauhnaechte"
@@ -67,6 +68,7 @@ function App() {
   const isMemberApp = location.pathname.startsWith("/mitglieder")
     || isCampaignLanding;
   const isStandaloneApp = isMemberApp || isAdminApp || isOnboardingApp || isScheduleSurveyApp || isBerlinLanding || isZepter13Landing || isRauhnaechteLanding || isWebinarApp;
+  const showLiveTalkPopup = !isWebinarApp && !isAdminApp && !isOnboardingApp && !isScheduleSurveyApp && !isMemberApp;
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
@@ -121,6 +123,7 @@ function App() {
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
+      {showLiveTalkPopup && <LiveTalkPopup/>}
       {!isStandaloneApp && <WebsiteAssistant/>}
     </div>
   )
