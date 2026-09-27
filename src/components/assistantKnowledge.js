@@ -76,9 +76,9 @@ const intents = [
     {
         id: "member_details",
         priority: 72,
-        terms: ["wie lang ist der vortrag", "61 minuten", "wie viele seiten", "neun seiten", "9 seiten", "premium inhalte", "premium bereich", "premium mitglied", "was kommt noch"],
+        terms: ["wie lang ist der vortrag", "61 minuten", "wie viele seiten", "neun seiten", "9 seiten", "vertiefung", "premium inhalte", "premium bereich", "premium mitglied", "was kommt noch"],
         answer: {
-            text: "Der Vortrag im Mitgliederbereich dauert 61 Minuten. Das dazugehörige Workbook umfasst neun Seiten mit Reflexionsfragen und Übungen zur Selbstführung. Weitere Prozess-Meditationen, vertiefende Vorträge und besondere Live-Räume sind als Premium-Inhalte in Vorbereitung.",
+            text: "Der Vortrag im Mitgliederbereich dauert 61 Minuten. Das dazugehörige Workbook umfasst neun Seiten mit Reflexionsfragen und Übungen zur Selbstführung. Weitere Prozess-Meditationen, vertiefende Vorträge und besondere Live-Räume sind im Bereich „Vertiefung“ in Vorbereitung.",
             links: [{ label: "Inhalte im Mitgliederbereich ansehen", href: `${SITE}/mitglieder` }],
         },
     },
@@ -623,8 +623,8 @@ const turkishContent = {
         text: "Ücretsiz üye alanında “Bırakmak ve Arınmak”, “Yeniden Doğuş” ve “Ben Işığım” adlı üç rehberli meditasyon, “Hayatına aslında kim karar veriyor?” sunumunun kaydı ve ona eşlik eden çalışma kitabı bulunuyor.",
     },
     member_details: {
-        terms: ["sunum ne kadar uzun", "sunum kaç dakika", "sunum kac dakika", "61 dakika", "kaç sayfa", "kac sayfa", "dokuz sayfa", "9 sayfa", "premium içerik", "premium icerik", "premium alan", "daha neler gelecek"],
-        text: "Üye alanındaki sunum 61 dakikadır. Ona eşlik eden çalışma kitabı, öz liderlik için düşünme soruları ve egzersizler içeren dokuz sayfadan oluşur. Yeni süreç meditasyonları, derinleştirici sunumlar ve özel canlı buluşmalar Premium içerik olarak hazırlanmaktadır.",
+        terms: ["sunum ne kadar uzun", "sunum kaç dakika", "sunum kac dakika", "61 dakika", "kaç sayfa", "kac sayfa", "dokuz sayfa", "9 sayfa", "derinleşme", "derinlesme", "premium içerik", "premium icerik", "premium alan", "daha neler gelecek"],
+        text: "Üye alanındaki sunum 61 dakikadır. Ona eşlik eden çalışma kitabı, öz liderlik için düşünme soruları ve egzersizler içeren dokuz sayfadan oluşur. Yeni süreç meditasyonları, derinleştirici sunumlar ve özel canlı buluşmalar “Derinleşme” alanında hazırlanmaktadır.",
     },
     meditation_difference: {
         terms: ["meditasyonların farkı", "meditasyonlarin farki", "meditasyonun farkı", "meditasyonun farki", "hangi meditasyon", "bırakmak ve arınmak", "birakmak ve arinmak", "yeniden doğuş meditasyonu", "yeniden dogus meditasyonu"],

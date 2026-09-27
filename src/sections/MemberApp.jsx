@@ -52,7 +52,7 @@ const appCopy = {
         programOpen: "Programm öffnen",
         programPreview: "Admin-Vorschau",
         freePlan: "Kostenloser Zugang",
-        premiumPlan: "Premium-Mitgliedschaft",
+        premiumPlan: "Vertiefung",
         heroEyebrow: "Dein nächster Schritt",
         heroTitle: "Nimm dir heute Zeit für das, was in dir gehört werden möchte.",
         heroText: "Deine Inhalte bleiben an einem Ort. Du kannst jederzeit zurückkehren und in deinem eigenen Tempo weitergehen.",
@@ -75,7 +75,7 @@ const appCopy = {
         ready: "Bereit",
         soon: "Demnächst",
         free: "Kostenlos",
-        premium: "Premium",
+        premium: "Vertiefung",
         favoriteAdd: "Zu Favoriten hinzufügen",
         favoriteRemove: "Aus Favoriten entfernen",
         start: "Öffnen",
@@ -117,8 +117,8 @@ const appCopy = {
         installButton: "App installieren",
         installManual: "Öffne im Browser „Teilen“ und wähle „Zum Home-Bildschirm“.",
         premiumTitle: "Mehr Raum für deinen Prozess",
-        premiumText: "Die Premium-Mediathek mit regelmäßig neuen Meditationen, Vertiefungen und exklusiven Live-Räumen wird vorbereitet.",
-        premiumCta: "Premium wählen",
+        premiumText: "Der Bereich „Vertiefung“ mit neuen Meditationen, Vorträgen und Live-Räumen wird vorbereitet.",
+        premiumCta: "Vertiefung wählen",
         premiumInterest: "Interesse vormerken",
         premiumIncluded: ["Neue Meditationen", "Vertiefende Vorträge", "Exklusive Live-Räume"],
         newsletter: "E-Mail-Impulse erhalten",
@@ -154,7 +154,7 @@ const appCopy = {
         programOpen: "Programı aç",
         programPreview: "Yönetici önizlemesi",
         freePlan: "Ücretsiz erişim",
-        premiumPlan: "Premium üyelik",
+        premiumPlan: "Derinleşme",
         heroEyebrow: "Bir sonraki adımın",
         heroTitle: "Bugün içinde duyulmak isteyen şeye alan aç.",
         heroText: "Tüm içeriklerin tek bir yerde. İstediğin zaman geri dönüp kendi hızında devam edebilirsin.",
@@ -177,7 +177,7 @@ const appCopy = {
         ready: "Hazır",
         soon: "Yakında",
         free: "Ücretsiz",
-        premium: "Premium",
+        premium: "Derinleşme",
         favoriteAdd: "Favorilere ekle",
         favoriteRemove: "Favorilerden çıkar",
         start: "Aç",
@@ -219,8 +219,8 @@ const appCopy = {
         installButton: "Uygulamayı yükle",
         installManual: "Tarayıcıda “Paylaş” menüsünü aç ve “Ana Ekrana Ekle”yi seç.",
         premiumTitle: "Sürecin için daha fazla alan",
-        premiumText: "Düzenli yeni meditasyonlar, derinleştirme içerikleri ve özel canlı buluşmalar içeren Premium alan hazırlanıyor.",
-        premiumCta: "Premium seç",
+        premiumText: "Yeni meditasyonlar, seminerler ve canlı buluşmalar içeren “Derinleşme” alanı hazırlanıyor.",
+        premiumCta: "Derinleşmeyi seç",
         premiumInterest: "İlgimi bildir",
         premiumIncluded: ["Yeni meditasyonlar", "Derinleştirici seminerler", "Özel canlı buluşmalar"],
         newsletter: "E-posta ilhamları al",
@@ -302,31 +302,19 @@ const contentDefinitions = {
         image: "/images/workbooks/wer-entscheidet-dein-leben.png?v=20260926",
         icon: FileText,
     },
-    premiumMeditations: {
-        key: "premium-neue-meditationen",
-        type: "meditation",
-        access: "premium",
-        status: "soon",
-        title: { de: "Neue Prozess-Meditationen", tr: "Yeni süreç meditasyonları" },
-        description: {
-            de: "Regelmäßig neue geführte Räume für unterschiedliche Themen und Prozessphasen.",
-            tr: "Farklı konular ve süreç aşamaları için düzenli yeni rehberli alanlar.",
-        },
-        meta: "Premium",
-        icon: Sparkles,
-    },
-    premiumTalks: {
+    deepening: {
         key: "premium-vertiefungen",
         type: "talk",
+        types: ["meditation", "talk"],
         access: "premium",
         status: "soon",
-        title: { de: "Vertiefende Vorträge & Live-Räume", tr: "Derinleştirici seminerler & canlı buluşmalar" },
+        title: { de: "Vertiefung", tr: "Derinleşme" },
         description: {
-            de: "Neue fachliche Impulse, Übungen und ausgewählte Aufzeichnungen für Mitglieder.",
-            tr: "Üyeler için yeni uzmanlık içerikleri, egzersizler ve seçilmiş kayıtlar.",
+            de: "Neue Prozess-Meditationen, vertiefende Vorträge und Live-Räume werden für dich vorbereitet.",
+            tr: "Yeni süreç meditasyonları, derinleştirici seminerler ve canlı buluşmalar senin için hazırlanıyor.",
         },
-        meta: "Premium",
-        icon: Crown,
+        meta: { de: "Meditationen & Vorträge", tr: "Meditasyonlar & seminerler" },
+        icon: Sparkles,
     },
 };
 
@@ -378,7 +366,7 @@ const ContentCard = ({
 }) => {
     const Icon = item.icon;
     const favorite = Boolean(state?.favorite);
-    const locked = item.access === "premium" && !isPremiumMember;
+    const locked = item.status !== "soon" && item.access === "premium" && !isPremiumMember;
     const available = item.available && item.status !== "soon";
 
     return (
@@ -481,8 +469,7 @@ export const MemberApp = ({
         { ...contentDefinitions.loslassen, available: meditations.loslassenAvailable, mediaUrl: "/api/members/meditations/loslassen", downloadUrl: "/api/members/meditations/loslassen?download=1" },
         { ...contentDefinitions.wiedergeburt, available: meditations.wiedergeburtAvailable, mediaUrl: "/api/members/meditations/wiedergeburt", downloadUrl: "/api/members/meditations/wiedergeburt?download=1" },
         { ...contentDefinitions.workbook, available: workbookAvailable, downloadUrl: "/api/members/workbook" },
-        { ...contentDefinitions.premiumMeditations, available: false },
-        { ...contentDefinitions.premiumTalks, available: false },
+        { ...contentDefinitions.deepening, available: false },
     ]), [meditations, recordingAvailable, recordingEmbedUrl, workbookAvailable]);
 
     const availableItems = items.filter((item) => item.available);
@@ -492,7 +479,7 @@ export const MemberApp = ({
         if (activeFilter === "all") return true;
         if (activeFilter === "favorites") return Boolean(contentState[item.key]?.favorite);
         if (activeFilter === "completed") return contentState[item.key]?.progress === "completed";
-        return item.type === activeFilter;
+        return item.type === activeFilter || item.types?.includes(activeFilter);
     });
     const continueItem = availableItems.find((item) => contentState[item.key]?.progress === "started")
         || availableItems[0]
