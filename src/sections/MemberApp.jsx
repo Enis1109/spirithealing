@@ -27,6 +27,7 @@ import {
     UsersRound,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getUpcomingMemberEvents } from "@/content/memberEvents";
 
 const bookingLinks = {
     introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
@@ -88,11 +89,11 @@ const appCopy = {
         bookIntro: "Kostenlos kennenlernen",
         bookSession: "Persönliche Begleitung wählen",
         eventsTitle: "Vorträge & gemeinsame Räume",
-        eventsIntro: "Hier findest du Aufzeichnungen und künftig alle neuen Live-Termine an einem Ort.",
+        eventsIntro: "Hier findest du unsere Live-Termine, Programme, die wöchentliche Erfahrungsgruppe und Aufzeichnungen an einem Ort.",
         recording: "Jetzt verfügbar",
         eventArchive: "Aufzeichnung ansehen",
-        futureEvent: "Nächste Live-Termine",
-        futureEventText: "Neue Vorträge, Übungsgruppen und Seminare werden hier veröffentlicht. Auf Wunsch informieren wir dich per E-Mail.",
+        futureEvent: "Live-Termine & gemeinsame Räume",
+        eventRecordings: "Aufzeichnungen",
         eventPage: "Alle Veranstaltungen",
         contactForEvents: "Über neue Termine informieren",
         supportEyebrow: "Nicht allein weitergehen",
@@ -190,11 +191,11 @@ const appCopy = {
         bookIntro: "Ücretsiz tanış",
         bookSession: "Kişisel destek seç",
         eventsTitle: "Seminerler & ortak alanlar",
-        eventsIntro: "Kayıtları ve gelecekteki tüm canlı etkinlikleri burada bulabilirsin.",
+        eventsIntro: "Canlı buluşmalarımızı, programlarımızı, haftalık deneyim grubumuzu ve kayıtları burada bulabilirsin.",
         recording: "Şimdi erişilebilir",
         eventArchive: "Kaydı izle",
-        futureEvent: "Sonraki canlı etkinlikler",
-        futureEventText: "Yeni seminerler, çalışma grupları ve eğitimler burada yayınlanacak. İstersen e-posta ile haber veririz.",
+        futureEvent: "Canlı buluşmalar & ortak alanlar",
+        eventRecordings: "Kayıtlar",
         eventPage: "Tüm etkinlikler",
         contactForEvents: "Yeni tarihleri bildir",
         supportEyebrow: "Tek başına devam etmek zorunda değilsin",
@@ -801,7 +802,30 @@ export const MemberApp = ({
                 <h1 className="mt-2 font-serif text-4xl font-bold text-[#123e3d] sm:text-5xl">{copy.eventsTitle}</h1>
                 <p className="mt-3 max-w-3xl text-lg leading-8 text-[#547875]">{copy.eventsIntro}</p>
             </section>
-            <section className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <section className="mt-8" aria-label={copy.futureEvent}>
+                <div className="grid gap-5 xl:grid-cols-2">
+                    {getUpcomingMemberEvents().map((event) => {
+                        const entry = event[language];
+                        return (
+                            <article key={event.id} className="flex flex-col rounded-[2rem] border border-[#b8d9d4] bg-white p-6 shadow-[0_18px_50px_rgba(28,96,91,0.08)] sm:p-8">
+                                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#168e91]">{entry.kind}</p>
+                                <h2 className="mt-3 font-serif text-2xl font-bold leading-tight text-[#123e3d] sm:text-3xl">{entry.title}</h2>
+                                <div className="mt-5 rounded-2xl bg-[#edf6f3] p-4 text-[#315b58]">
+                                    <p className="flex items-start gap-2 font-bold"><CalendarDays className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />{entry.date}</p>
+                                    <p className="mt-2 text-sm">{entry.time}</p>
+                                    <p className="mt-1 text-sm">{entry.place}</p>
+                                </div>
+                                <p className="mb-6 mt-5 flex-1 leading-7 text-[#547875]">{entry.text}</p>
+                                <Link to={event.href} className="inline-flex min-h-12 items-center justify-between gap-3 rounded-2xl bg-[#168e91] px-5 py-3 font-bold text-white transition hover:bg-[#107376]">
+                                    {entry.action}<ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
+                                </Link>
+                            </article>
+                        );
+                    })}
+                </div>
+            </section>
+            <section className="mt-10" aria-label={copy.eventRecordings}>
+                <h2 className="mb-5 font-serif text-2xl font-bold text-[#123e3d]">{copy.eventRecordings}</h2>
                 <article className="overflow-hidden rounded-[2rem] bg-[#123e3d] text-white shadow-xl">
                     <div className="relative aspect-[16/8] overflow-hidden">
                         <img src="/breachright.jpeg" alt="" className="h-full w-full object-cover opacity-70" />
@@ -810,23 +834,10 @@ export const MemberApp = ({
                     </div>
                     <div className="p-6 sm:p-8">
                         <p className="text-sm font-bold text-[#f1d277]">26. Juli 2026 · 61 Min.</p>
-                        <h2 className="mt-2 font-serif text-3xl font-bold">{localized(contentDefinitions.talk.title, language)}</h2>
+                        <h3 className="mt-2 font-serif text-3xl font-bold">{localized(contentDefinitions.talk.title, language)}</h3>
                         <button type="button" onClick={() => openItem(items[0])} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 font-bold text-[#123e3d]">
                             {copy.eventArchive}<PlayCircle className="h-5 w-5" />
                         </button>
-                    </div>
-                </article>
-                <article className="flex flex-col rounded-[2rem] border border-[#b8d9d4] bg-white p-7 shadow-sm sm:p-8">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e3f4f0] text-[#168e91]"><CalendarDays className="h-6 w-6" /></span>
-                    <h2 className="mt-6 font-serif text-3xl font-bold text-[#123e3d]">{copy.futureEvent}</h2>
-                    <p className="mt-4 flex-1 leading-7 text-[#547875]">{copy.futureEventText}</p>
-                    <div className="mt-7 space-y-3">
-                        <Link to="/vortraege-seminare" className="flex min-h-11 items-center justify-between rounded-full bg-[#168e91] px-5 py-2.5 font-bold text-white">
-                            {copy.eventPage}<ChevronRight className="h-5 w-5" />
-                        </Link>
-                        <Link to="/kontakt" className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#b8d9d4] px-5 py-2.5 font-bold text-[#315b58]">
-                            <Mail className="h-4 w-4" />{copy.contactForEvents}
-                        </Link>
                     </div>
                 </article>
             </section>

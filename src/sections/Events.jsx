@@ -1,6 +1,7 @@
-import { ArrowRight, CalendarDays, Clock3, LockKeyhole, MailCheck, MapPin, MonitorPlay, Sparkles, UsersRound } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3, LockKeyhole, MailCheck, MapPin, MonitorPlay, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { getUpcomingMemberEvents } from "@/content/memberEvents";
 
 const content = {
     de: {
@@ -11,7 +12,7 @@ const content = {
             intro: "Am 9. und 10. Oktober 2026 begleiten wir eine kleine Gruppe durch zwei Tage familiensystemischer Aufstellungsarbeit. Nach einer fachlich-therapeutischen Einführung arbeiten wir mit eigenen Anliegen und als Stellvertretende in der Gruppe.",
             date: "9. und 10. Oktober 2026",
             time: "jeweils 10–19 Uhr",
-            place: "Berlin · Raum folgt",
+            place: "Berlin-Kreuzberg",
             places: "20 Plätze insgesamt · davon 6 mit eigener Aufstellung",
             action: "Zur Familienaufstellung in Berlin",
         },
@@ -83,7 +84,7 @@ const content = {
             intro: "9 ve 10 Ekim 2026 tarihlerinde küçük bir grupla iki günlük aile sistemi dizimi çalışması yapacağız. Uzmanlık temelli terapötik girişin ardından kişisel konularla ve grup içindeki temsilci rolleriyle çalışacağız.",
             date: "9 ve 10 Ekim 2026",
             time: "her iki gün 10:00–19:00",
-            place: "Berlin · Mekân daha sonra açıklanacak",
+            place: "Berlin-Kreuzberg",
             places: "Toplam 20 kişilik yer · 6 kişiye kendi dizimi için ayrılmış yer",
             action: "Berlin aile dizimi sayfasına git",
         },
@@ -149,9 +150,32 @@ const content = {
     },
 };
 
+const UpcomingEventCard = ({ event, language }) => {
+    if (!event) return null;
+    const entry = event[language];
+    return (
+        <article className="rounded-[2rem] border border-[#d8bd86]/40 bg-[#112f34] p-6 text-white shadow-xl shadow-black/15 sm:p-10" aria-label={entry.title}>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f1d7a0]">{entry.kind}</p>
+            <h2 className="mt-3 max-w-3xl font-serif text-3xl font-bold leading-tight sm:text-4xl">{entry.title}</h2>
+            <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold text-[#f1d7a0]">
+                <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 shrink-0" aria-hidden="true" />{entry.date}</span>
+                <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 shrink-0" aria-hidden="true" />{entry.time}</span>
+                <span className="inline-flex items-center gap-2"><MonitorPlay className="h-4 w-4 shrink-0" aria-hidden="true" />{entry.place}</span>
+            </div>
+            <p className="mt-5 max-w-3xl leading-7 text-white/85">{entry.text}</p>
+            <Link to={event.href} className="mt-7 inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#f1d7a0] px-6 py-3 text-center font-bold text-[#173c39] transition hover:bg-white">
+                {entry.action}<ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
+            </Link>
+        </article>
+    );
+};
+
 export const Events = () => {
     const { language } = useLanguage();
     const copy = content[language];
+    const upcoming = getUpcomingMemberEvents();
+    const liveTalk = upcoming.find(event => event.id === "live-talk-2026-10-06");
+    const experienceGroup = upcoming.find(event => event.id === "weekly-experience-group");
 
     const facts = [
         { icon: CalendarDays, label: copy.dateLabel, value: copy.date },
@@ -167,6 +191,11 @@ export const Events = () => {
 
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
+            {liveTalk && (
+                <section className="mx-auto w-[calc(100%-2rem)] max-w-6xl py-8 sm:py-10">
+                    <UpcomingEventCard event={liveTalk} language={language} />
+                </section>
+            )}
             <section className="border-b border-white/10 bg-card py-8 text-[#173c39] sm:py-10">
                 <article className="mx-auto grid w-[calc(100%-2rem)] max-w-6xl overflow-hidden rounded-[2rem] bg-[#f8f5ed] shadow-xl shadow-black/10 md:grid-cols-[1fr_18rem] lg:grid-cols-[1fr_21rem]">
                     <div className="p-6 sm:p-8 lg:p-10">
@@ -301,20 +330,7 @@ export const Events = () => {
                     </div>
                 </section>
 
-                <section className="rounded-[2rem] border border-primary/35 bg-[#0B777A] p-6 shadow-2xl shadow-black/15 sm:p-10 lg:p-12">
-                    <div className="max-w-3xl">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-                            <Sparkles className="h-6 w-6" aria-hidden="true" />
-                        </div>
-                        <p className="mt-6 text-sm font-bold uppercase tracking-[0.18em] text-primary">{copy.futureEyebrow}</p>
-                        <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">{copy.futureTitle}</h2>
-                        <p className="mt-5 text-lg leading-8 text-white/80">{copy.futureText}</p>
-                        <Link to="/kontakt" className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-surface">
-                            {copy.contact}
-                            <ArrowRight className="h-5 w-5" aria-hidden="true" />
-                        </Link>
-                    </div>
-                </section>
+                <UpcomingEventCard event={experienceGroup} language={language} />
             </div>
 
             <footer className="flex items-center justify-center gap-2 px-4 pt-2 text-sm text-white/75">
