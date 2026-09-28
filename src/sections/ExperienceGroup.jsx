@@ -102,7 +102,7 @@ export function ExperienceGroup({ member }) {
             <div className="max-w-xl px-7 py-10 sm:px-10 sm:py-14 lg:max-w-[65%]">
             <UsersRound className="mb-5 h-8 w-8 text-[#f1d277]" />
             <p className="text-sm font-bold uppercase tracking-widest text-[#f1d277]">Spirit Healing</p>
-            <h1 className="mt-3 font-serif text-4xl sm:text-5xl">Deine Erfahrungsgruppe</h1>
+            <h1 className="mt-3 break-words font-serif text-[clamp(1.75rem,7vw,2.25rem)] sm:text-5xl">Deine Erfahrungsgruppe</h1>
             <p className="mt-5 flex items-center gap-2"><CalendarDays className="h-5 w-5" />Sonntags um 19 Uhr · deutsche Zeit</p>
             <p className="mt-3 max-w-2xl leading-7 text-white/85">Hier findest du die freigegebenen Aufzeichnungen und Handouts unserer gemeinsamen Treffen.</p>
             </div>
