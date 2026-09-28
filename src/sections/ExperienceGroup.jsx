@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CalendarDays, Download, PlayCircle, UsersRound } from 'lucide-react';
+import { readExperienceDescription, writeExperienceDescription } from '../lib/experienceDescription.js';
 
 const endpoint = '/api/members/experience';
 const dateText = value => new Intl.DateTimeFormat('de-DE', {
@@ -51,6 +52,7 @@ export function ExperienceGroup({ member }) {
         action(async () => {
             await jsonPost('/api/admin/experience/sessions', {
                 ...fields, occurredAt: toUTC(fields.occurredAt), reviewed: fields.reviewed === 'on',
+                summary: writeExperienceDescription(fields.monthTopic, fields.summary),
             });
             form.reset(); setEditing(null); setNotice('Treffen gespeichert. Es wurde keine Nachricht versendet.');
         });
@@ -90,16 +92,20 @@ export function ExperienceGroup({ member }) {
         const date = new Date(value);
         return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
     };
-    const sessions = (data?.sessions || []).filter(session =>
+    const sessions = (data?.sessions || []).map(session => ({ ...session, ...readExperienceDescription(session.summary) })).filter(session =>
         `${dateText(session.occurredAt)} ${session.title} ${session.summary} ${session.handouts.map(h => h.title).join(' ')}`.toLowerCase().includes(search.toLowerCase())
         && (filter !== 'handouts' || session.handouts.length > 0));
     return <section className="space-y-7">
-        <header className="rounded-[2rem] bg-[#123e3d] p-7 text-white sm:p-10">
+        <header className="relative isolate overflow-hidden rounded-[2rem] bg-[#123e3d] text-white">
+            <img src="/images/experience-rose-2026-09.png" alt="" width="1536" height="1024" fetchPriority="high" className="absolute inset-0 -z-20 h-full w-full object-cover object-[64%_center] sm:object-center" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#092c31]/95 via-[#092c31]/80 to-transparent sm:via-[#092c31]/50" />
+            <div className="max-w-xl px-7 py-10 sm:px-10 sm:py-14 lg:max-w-[65%]">
             <UsersRound className="mb-5 h-8 w-8 text-[#f1d277]" />
             <p className="text-sm font-bold uppercase tracking-widest text-[#f1d277]">Spirit Healing</p>
             <h1 className="mt-3 font-serif text-4xl sm:text-5xl">Deine Erfahrungsgruppe</h1>
             <p className="mt-5 flex items-center gap-2"><CalendarDays className="h-5 w-5" />Sonntags um 19 Uhr · deutsche Zeit</p>
             <p className="mt-3 max-w-2xl leading-7 text-white/85">Hier findest du die freigegebenen Aufzeichnungen und Handouts unserer gemeinsamen Treffen.</p>
+            </div>
         </header>
         {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
         {notice && <p role="status" className="rounded-xl bg-white p-4">{notice}</p>}
@@ -131,12 +137,16 @@ export function ExperienceGroup({ member }) {
                     <div className="mb-4 flex items-center justify-between gap-3"><h2 className="font-serif text-2xl">{player.title}</h2><button onClick={() => setPlayer(null)}>Schließen</button></div>
                     <iframe className="aspect-video w-full rounded-xl" title={player.title} src={player.url} allow="fullscreen; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
                 </article>}
-                <div className="grid gap-5 xl:grid-cols-2">{sessions.map(session => <article key={session.id} className="rounded-2xl border border-[#b8d9d4] bg-white p-6">
-                    <p className="text-sm text-[#547875]">{dateText(session.occurredAt)}{data.adminPreview ? ` · ${{ draft: 'Entwurf', published: 'Veröffentlicht', archived: 'Archiviert' }[session.status] || session.status} · Nr. ${session.id}` : ''}</p>
-                    <h2 className="mt-3 font-serif text-2xl">{session.title}</h2><p className="mt-3 whitespace-pre-line leading-7">{session.summary}</p>
-                    {session.recordingAvailable && <button disabled={busy} className={`${buttonClass} mt-5`} onClick={() => openVideo(session)}><PlayCircle className="h-5 w-5" />Aufzeichnung ansehen</button>}
+                <div className="grid gap-5 xl:grid-cols-2">{sessions.map(session => <article key={session.id} className="flex flex-col rounded-2xl border border-[#b8d9d4] bg-white p-6 shadow-sm">
+                    <p className="text-sm text-[#547875]">{dateText(session.occurredAt)}</p>
+                    {session.monthTopic && <p className="mt-4 border-l-2 border-[#d8bf74] pl-3 text-sm font-semibold text-[#356d68]">Monatsthema · {session.monthTopic}</p>}
+                    <h2 className="mt-3 font-serif text-2xl leading-snug">{session.title}</h2>
+                    {session.description && <p className="mt-3 whitespace-pre-line text-[0.95rem] leading-6 text-[#42625f]">{session.description}</p>}
+                    <div className="mt-auto pt-5">
+                    {session.recordingAvailable && <button disabled={busy} className={buttonClass} onClick={() => openVideo(session)}><PlayCircle className="h-5 w-5" />Aufzeichnung ansehen</button>}
                     <div className="mt-4 space-y-2">{session.handouts.map(handout => <a key={handout.id} className="flex min-h-11 items-center gap-2 font-semibold underline" href={handout.url}><Download className="h-4 w-4" />{handout.title}</a>)}</div>
-                    {member.role === 'admin' && <button className={`${buttonClass} mt-4`} onClick={() => setEditing(session)}>Treffen bearbeiten</button>}
+                    {member.role === 'admin' && <button className="mt-4 block min-h-11 text-sm text-[#547875] underline underline-offset-4" onClick={() => setEditing(session)}>Treffen bearbeiten</button>}
+                    </div>
                 </article>)}</div>
                 {!sessions.length && <p className="rounded-2xl bg-white p-6">Hier erscheinen deine freigegebenen Treffen und Handouts, sobald sie bereitstehen.</p>}
             </>}
@@ -156,7 +166,8 @@ export function ExperienceGroup({ member }) {
                 <label>Datum und Beginn des Treffens<input className={fieldClass} name="occurredAt" type="datetime-local" step="1" defaultValue={editing ? localInput(editing.occurredAt) : ''} required /></label>
                 <label>Titel<input className={fieldClass} name="title" defaultValue={editing?.title || ''} required maxLength="180" /></label>
                 <label>Status<select className={fieldClass} name="status" defaultValue={editing?.status || 'draft'}><option value="draft">Entwurf</option><option value="published">Veröffentlicht</option><option value="archived">Archiviert / nicht sichtbar</option></select></label>
-                <label className="sm:col-span-2">Beschreibung<textarea className={fieldClass} name="summary" maxLength="4000" defaultValue={editing?.summary || ''} /></label>
+                <label className="sm:col-span-2">Monatsthema<input className={fieldClass} name="monthTopic" maxLength="180" defaultValue={readExperienceDescription(editing?.summary).monthTopic} /></label>
+                <label className="sm:col-span-2">Beschreibung<textarea className={fieldClass} name="summary" maxLength="3600" defaultValue={readExperienceDescription(editing?.summary).description} /><span className="mt-1 block text-sm text-[#547875]">Ein bis zwei kurze Sätze zum Thema dieses Abends.</span></label>
                 <label>Vimeo-Video-ID<input className={fieldClass} name="vimeoId" inputMode="numeric" defaultValue={editing?.vimeoId || ''} /></label>
                 <label>Vimeo-Hash bei nicht gelisteten Videos<input className={fieldClass} name="vimeoHash" defaultValue={editing?.vimeoHash || ''} /></label>
                 <label className="sm:col-span-2"><input type="checkbox" name="reviewed" /> Inhalt und Freigabe für den vorgesehenen Teilnehmerkreis sind geprüft.</label>
