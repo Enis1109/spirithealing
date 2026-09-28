@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { database, initializeDatabase } from "./server/database.js";
+import { createExperienceService, initializeExperienceGroup } from './server/experienceGroup.js';
+import { registerExperienceRoutes } from './server/experienceRoutes.js';
+import { createExperienceReminderService, initializeExperienceReminders, startExperienceReminderWorker } from './server/experienceReminders.js';
 import {
     sendContactNotification,
     sendMemberAccessEmail,
@@ -13,6 +16,7 @@ import {
     sendOnboardingNotification,
     sendZepterBankTransferConfirmation,
     sendLiveTalkEmail,
+    sendExperienceReminder,
 } from "./server/mailer.js";
 import { createLiveTalkService, initializeLiveTalk, startLiveTalkWorker } from "./server/liveTalk.js";
 import { initializeNewsletterCampaigns, newsletterCampaignOverview } from "./server/newsletterCampaigns.js";
@@ -282,6 +286,14 @@ const getAdminMember = async (request, response) => {
     }
     return member;
 };
+
+const experienceEnabled = process.env.EXPERIENCE_GROUP_ENABLED === 'true';
+const experienceService = createExperienceService({ db: database,
+    joinUrl: experienceEnabled ? process.env.EXPERIENCE_ZOOM_JOIN_URL : null });
+const experienceReminders = createExperienceReminderService({ db: database, sendMail: sendExperienceReminder,
+    enabled: experienceEnabled && process.env.EXPERIENCE_REMINDERS_ENABLED === 'true' });
+registerExperienceRoutes(app, { service: experienceService, getMember: getMemberFromRequest,
+    sameOrigin: adminSameOriginOnly, enabled: experienceEnabled, reminders: experienceReminders });
 
 const zepterLandingOnly = (request, response, next) => {
     const origin = request.get("origin");
@@ -841,6 +853,7 @@ app.get("/api/members/session", async (request, response) => {
             ichBinLichtAvailable: await ichBinLichtIsAvailable(),
         },
         programs: await getProgramsForMember(member),
+        experienceAvailable: experienceEnabled,
     });
 });
 
@@ -1779,6 +1792,11 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    if (experienceEnabled) {
+        await initializeExperienceGroup(database);
+        await initializeExperienceReminders(database);
+        startExperienceReminderWorker(experienceReminders);
+    }
     await initializeLiveTalk(database);
     await initializeNewsletterCampaigns(database);
     await initializeMeta(database);

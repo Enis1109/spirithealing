@@ -1,4 +1,5 @@
 import { createElement, useEffect, useMemo, useState } from "react";
+import { ExperienceGroup } from './ExperienceGroup';
 import {
     ArrowRight,
     BookOpen,
@@ -42,6 +43,7 @@ const appCopy = {
         nav: {
             home: "Start",
             library: "Mediathek",
+            experience: "Erfahrungsgruppe",
             events: "Termine",
             support: "Begleitung",
             account: "Konto",
@@ -144,6 +146,7 @@ const appCopy = {
         nav: {
             home: "Ana Sayfa",
             library: "İçerikler",
+            experience: "Deneyim grubu",
             events: "Etkinlikler",
             support: "Destek",
             account: "Hesap",
@@ -320,6 +323,7 @@ const contentDefinitions = {
 };
 
 const navIcons = {
+    experience: UsersRound,
     home: Home,
     library: Library,
     events: CalendarDays,
@@ -429,11 +433,12 @@ export const MemberApp = ({
     meditations,
     initialContentState,
     premiumCheckoutUrl,
+    experienceAvailable = false,
     programs = [],
     onLogout,
 }) => {
     const copy = appCopy[language];
-    const allowedViews = new Set(["home", "library", "events", "support", "account"]);
+    const allowedViews = new Set(["home", "library", "events", "support", "account", ...(experienceAvailable ? ['experience'] : [])]);
     const requestedView = new URLSearchParams(window.location.search).get("tab");
     const [activeView, setActiveView] = useState(allowedViews.has(requestedView) ? requestedView : "home");
     const [activeFilter, setActiveFilter] = useState("all");
@@ -535,7 +540,7 @@ export const MemberApp = ({
         setInstallPrompt(null);
     };
 
-    const navEntries = Object.keys(copy.nav);
+    const navEntries = Object.keys(copy.nav).filter(view => view !== 'experience' || experienceAvailable);
 
     const sidebar = (
         <aside className="hidden min-h-screen w-64 shrink-0 border-r border-[#c6e0dc] bg-[#f7fbfa] px-5 py-7 lg:flex lg:flex-col">
@@ -578,7 +583,7 @@ export const MemberApp = ({
     );
 
     const mobileNavigation = (
-        <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-[#bddbd6] bg-white/95 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-12px_30px_rgba(32,89,84,0.08)] backdrop-blur-xl lg:hidden" aria-label="App Navigation">
+        <nav className="fixed inset-x-0 bottom-0 z-40 grid border-t border-[#bddbd6] bg-white/95 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-12px_30px_rgba(32,89,84,0.08)] backdrop-blur-xl lg:hidden" style={{ gridTemplateColumns: `repeat(${navEntries.length}, minmax(0, 1fr))` }} aria-label="App Navigation">
             {navEntries.map((view) => {
                 const Icon = navIcons[view];
                 return (
@@ -1023,6 +1028,7 @@ export const MemberApp = ({
         events: eventsView,
         support: supportView,
         account: accountView,
+        experience: experienceAvailable ? <ExperienceGroup member={member} /> : homeView,
     }[activeView];
 
     return (

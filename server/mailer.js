@@ -21,6 +21,24 @@ const transporter = nodemailer.createTransport({
 
 const notificationRecipient = process.env.CONTACT_NOTIFICATION_TO || "info@spirit-healing.tr";
 
+// Group reminders hold a membership lock until SMTP handoff. Bound network
+// stalls without changing timeouts for any of the existing mail workflows.
+const experienceTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+    port: Number(process.env.SMTP_PORT || 465),
+    secure: String(process.env.SMTP_SECURE ?? 'true') !== 'false',
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+    connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 30000,
+});
+
+export const sendExperienceReminder = async ({ email, subject, text, html, messageId }) => {
+    const result = await experienceTransporter.sendMail({ from: process.env.SMTP_FROM, to: email,
+        replyTo: notificationRecipient, subject, text, html, messageId });
+    if (!result.accepted?.some(address => String(address).toLowerCase() === email.toLowerCase())) {
+        throw new Error('experience_recipient_not_accepted');
+    }
+};
+
 const escapeHtml = (value) => String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")

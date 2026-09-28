@@ -209,6 +209,7 @@ export const MemberArea = () => {
     const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false, ichBinLichtAvailable: false });
     const [contentState, setContentState] = useState([]);
     const [premiumCheckoutUrl, setPremiumCheckoutUrl] = useState("");
+    const [experienceAvailable, setExperienceAvailable] = useState(false);
     const [programs, setPrograms] = useState([]);
     const [submitState, setSubmitState] = useState("idle");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
@@ -267,6 +268,7 @@ export const MemberArea = () => {
                     setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false, ichBinLichtAvailable: false });
                     setContentState(result.contentState || []);
                     setPremiumCheckoutUrl(result.premiumCheckoutUrl || "");
+                    setExperienceAvailable(result.experienceAvailable === true);
                     setPrograms(result.programs || []);
                     setSessionState("member");
                 } else {
@@ -440,6 +442,7 @@ export const MemberArea = () => {
                 meditations={meditations}
                 initialContentState={contentState}
                 premiumCheckoutUrl={premiumCheckoutUrl}
+                experienceAvailable={experienceAvailable}
                 programs={programs}
                 onLogout={logout}
             />
