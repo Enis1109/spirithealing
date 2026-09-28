@@ -112,7 +112,7 @@ export function ExperienceGroup({ member }) {
                 {data.access.plan === 'annual' && <p className="mt-2">Dein Jahreszugang endet automatisch. Es gibt keine automatische erneute Abbuchung.</p>}
             </div> : !data.adminPreview && <div className="rounded-2xl bg-white p-6">
                 <h2 className="font-serif text-2xl">Deine Erfahrungsgruppe ist noch nicht freigeschaltet.</h2>
-                <p className="mt-3">69 € monatlich oder 599 € für zwölf Monate. Der Jahreszugang verlängert sich nicht automatisch.</p>
+                <p className="mt-3">88 € monatlich oder einmalig 888 € für zwölf Monate. Der Jahreszugang verlängert sich nicht automatisch.</p>
                 <p className="mt-3">Die Online-Buchung wird eingerichtet. Wenn du bereits teilnimmst, schreib uns für die Zuordnung deines Zugangs.</p>
                 <a className={`${buttonClass} mt-5`} href="mailto:info@spirit-healing.tr">Zugang klären</a>
             </div>}
@@ -182,7 +182,7 @@ export function ExperienceGroup({ member }) {
             <form onSubmit={grant} className="mt-8 grid gap-4 border-t pt-6 sm:grid-cols-2">
                 <h3 className="text-xl font-bold sm:col-span-2">Bestehendes Mitglied zuordnen</h3>
                 <label>E-Mail des aktivierten Kontos<input className={fieldClass} name="email" type="email" required /></label>
-                <label>Zugangsart<select className={fieldClass} name="plan"><option value="existing">Bestehende Vereinbarung</option><option value="monthly">Monatlich · 69 €</option><option value="annual">Jährlich · 599 €</option></select></label>
+                <label>Zugangsart<select className={fieldClass} name="plan"><option value="existing">Bestehende Vereinbarung</option><option value="monthly">Monatlich · 88 €</option><option value="annual">Zwölf Monate · einmalig 888 €</option></select></label>
                 <label>Zugang ab<input className={fieldClass} name="startsAt" type="datetime-local" required /></label>
                 <label>Zugangsende (bei bestehender Vereinbarung vorerst leer möglich)<input className={fieldClass} name="endsAt" type="datetime-local" /></label>
                 <label>Inhalte ab (leer: Zugangsbeginn)<input className={fieldClass} name="contentFrom" type="datetime-local" /></label>

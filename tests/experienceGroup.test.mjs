@@ -15,8 +15,10 @@ const member = { id: 1, role: 'member' };
 const admin = { id: 2, role: 'admin' };
 
 test('exact prices and annual non-recurring configuration', () => {
-    assert.equal(experiencePlans.monthly.amount, 6900);
-    assert.equal(experiencePlans.annual.amount, 59900);
+    assert.equal(experiencePlans.monthly.amount, 8800);
+    assert.equal(experiencePlans.annual.amount, 88800);
+    assert.equal(experiencePlans.monthly.recurring, true);
+    assert.equal(experiencePlans.annual.months, 12);
     assert.equal(experiencePlans.annual.recurring, false);
 });
 test('access starts inclusive, expires exclusive and fails closed', () => {

@@ -1,8 +1,8 @@
 // These rules are independent of payments. Payment adapters must pass verified
 // payment events, never client-supplied dates or Checkout success redirects.
 export const experiencePlans = Object.freeze({
-    monthly: Object.freeze({ amount: 6900, currency: 'eur', months: 1, recurring: true }),
-    annual: Object.freeze({ amount: 59900, currency: 'eur', months: 12, recurring: false }),
+    monthly: Object.freeze({ amount: 8800, currency: 'eur', months: 1, recurring: true }),
+    annual: Object.freeze({ amount: 88800, currency: 'eur', months: 12, recurring: false }),
 });
 
 // Keep the private recurring-meeting link in server configuration, never in a
