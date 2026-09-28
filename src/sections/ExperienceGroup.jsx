@@ -105,7 +105,7 @@ export function ExperienceGroup({ member }) {
         {notice && <p role="status" className="rounded-xl bg-white p-4">{notice}</p>}
         {!data && !error && <p role="status">Dein Gruppenbereich wird geladen …</p>}
         {data && <>
-            {data.adminPreview && <p className="rounded-xl bg-[#fff6dc] p-4">Admin-Vorschau · Entwürfe sind nur für euch sichtbar. Buchung und automatischer Versand sind noch nicht aktiviert.</p>}
+            {data.adminPreview && <p className="rounded-xl bg-[#fff6dc] p-4">Admin-Vorschau · Entwürfe sind nur für euch sichtbar. Den Erinnerungsversand könnt ihr unten in der Verwaltung prüfen.</p>}
             {data.active ? <div className="rounded-2xl border border-[#b8d9d4] bg-white p-6">
                 <p className="font-bold">{data.access.endsAt ? `Dein Zugang läuft bis ${dateText(data.access.endsAt)}.` : 'Dein Zugang als bestehendes Gruppenmitglied ist aktiv.'}</p>
                 <p className="mt-2">{data.access.fullArchive ? 'Für dich ist das gesamte freigegebene Archiv zugänglich.' : `Du siehst die Inhalte ab deinem Einstieg am ${dateText(data.access.contentFrom)}.`}</p>
@@ -132,7 +132,7 @@ export function ExperienceGroup({ member }) {
                     <iframe className="aspect-video w-full rounded-xl" title={player.title} src={player.url} allow="fullscreen; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
                 </article>}
                 <div className="grid gap-5 xl:grid-cols-2">{sessions.map(session => <article key={session.id} className="rounded-2xl border border-[#b8d9d4] bg-white p-6">
-                    <p className="text-sm text-[#547875]">{dateText(session.occurredAt)}{data.adminPreview ? ` · ${session.status} · Nr. ${session.id}` : ''}</p>
+                    <p className="text-sm text-[#547875]">{dateText(session.occurredAt)}{data.adminPreview ? ` · ${{ draft: 'Entwurf', published: 'Veröffentlicht', archived: 'Archiviert' }[session.status] || session.status} · Nr. ${session.id}` : ''}</p>
                     <h2 className="mt-3 font-serif text-2xl">{session.title}</h2><p className="mt-3 whitespace-pre-line leading-7">{session.summary}</p>
                     {session.recordingAvailable && <button disabled={busy} className={`${buttonClass} mt-5`} onClick={() => openVideo(session)}><PlayCircle className="h-5 w-5" />Aufzeichnung ansehen</button>}
                     <div className="mt-4 space-y-2">{session.handouts.map(handout => <a key={handout.id} className="flex min-h-11 items-center gap-2 font-semibold underline" href={handout.url}><Download className="h-4 w-4" />{handout.title}</a>)}</div>
