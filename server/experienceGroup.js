@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { activeAccess, canReadSession, experiencePlans, instant, normalizeExperienceGrant,
+import { activeAccess, canReadSession, canReadRecording, experiencePlans, instant, normalizeExperienceGrant,
     normalizeExperienceSession, ExperienceValidationError, renewalReminder, normalizeExperienceJoinUrl } from './experiencePolicy.js';
 
 export const initializeExperienceGroup = async (db) => {
@@ -115,7 +115,7 @@ export const createExperienceService = ({ db, clock = () => new Date(), joinUrl 
                 const [handouts] = await db.execute('SELECT id, title FROM experience_handouts WHERE session_id = ? ORDER BY id', [row.id]);
                 sessions.push({ id: Number(row.id), title: row.title, summary: row.summary,
                     occurredAt: isoDate(row.occurred_at), status: row.status,
-                    recordingAvailable: Boolean(row.vimeo_id),
+                    recordingAvailable: Boolean(row.vimeo_id) && (admin || canReadRecording(access, row, clock())),
                     handouts: handouts.map(item => ({ id: Number(item.id), title: item.title,
                         url: `/api/members/experience/handouts/${item.id}` })),
                     ...(admin ? { vimeoId: row.vimeo_id, vimeoHash: row.vimeo_hash } : {}),
@@ -129,6 +129,8 @@ export const createExperienceService = ({ db, clock = () => new Date(), joinUrl 
         },
         async recording(member, id) {
             const session = await authorizedSession(member, id);
+            if (session && member.role !== 'admin'
+                && !canReadRecording(await accessFor(member.id), session, clock())) return null;
             return session ? experienceEmbedUrl(session) : null;
         },
         async handout(member, id) {

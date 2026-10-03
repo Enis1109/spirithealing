@@ -1,5 +1,7 @@
 // These rules are independent of payments. Payment adapters must pass verified
 // payment events, never client-supplied dates or Checkout success redirects.
+import { hasExperienceHandoutPreRelease } from '../src/lib/experienceDescription.js';
+
 export const experiencePlans = Object.freeze({
     monthly: Object.freeze({ amount: 8800, currency: 'eur', months: 1, recurring: true }),
     annual: Object.freeze({ amount: 88800, currency: 'eur', months: 12, recurring: false }),
@@ -33,9 +35,14 @@ export const activeAccess = (access, now = new Date()) => Boolean(access
 export const canReadSession = (access, session, now = new Date()) => Boolean(
     activeAccess(access, now) && session.status === 'published'
     && instant(session.published_at) <= instant(now)
-    && instant(session.occurred_at) <= instant(now)
+    && Number.isFinite(instant(session.occurred_at))
+    && (instant(session.occurred_at) <= instant(now) || hasExperienceHandoutPreRelease(session.summary))
     && (access.full_archive === true || access.full_archive === 1
         || instant(session.occurred_at) >= instant(access.content_from)));
+
+// A handout preview never releases the associated recording ahead of its date.
+export const canReadRecording = (access, session, now = new Date()) => Boolean(
+    canReadSession(access, session, now) && instant(session.occurred_at) <= instant(now));
 
 export const addCalendarMonths = (value, months) => {
     const result = new Date(instant(value));

@@ -15,6 +15,8 @@ Bestätigte Bestandsmitglieder können mit `plan=existing`, `fullArchive=true` u
 
 Neue Mitglieder benötigen einen konkreten Zugangszeitraum; ihr Inhaltsbeginn ist der vereinbarte Einstiegszeitpunkt. Für die Sichtbarkeit zählt das Datum des Treffens, nicht der spätere Import. Gesperrte, abgelaufene, zukünftige und unveröffentlichte Inhalte bleiben auch beim direkten Abruf gesperrt.
 
+Für ein ausdrücklich gewähltes veröffentlichtes Treffen kann „Thema und Handouts schon vor dem Termin freigeben“ aktiviert werden. Nur dessen Beschreibung und geschützte Handouts werden dann für aktive Gruppenmitglieder vorab sichtbar. Der tatsächliche Termin bleibt unverändert; Aufzeichnungen werden erst ab dem Termin freigegeben. Entwürfe, archivierte Treffen, noch zukünftige Veröffentlichungen und gesperrte Mitgliedschaften bleiben ausgeschlossen. Die optionale Vorabfreigabe wird als geschützte Metadatenzeile im bestehenden Beschreibungsfeld gespeichert und nicht im Beschreibungstext angezeigt; es ist keine Datenbankmigration nötig.
+
 ## Archiv übernehmen
 
 1. Den privaten Zoom-Katalog über die Adminoberfläche als Entwürfe importieren. Ein erneuter Import legt keine Duplikate an.

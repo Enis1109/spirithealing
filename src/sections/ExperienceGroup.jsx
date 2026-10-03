@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CalendarDays, Download, PlayCircle, UsersRound } from 'lucide-react';
-import { readExperienceDescription, writeExperienceDescription } from '../lib/experienceDescription.js';
+import { hasExperienceHandoutPreRelease, readExperienceDescription, writeExperienceDescription } from '../lib/experienceDescription.js';
 
 const endpoint = '/api/members/experience';
 const dateText = value => new Intl.DateTimeFormat('de-DE', {
@@ -52,7 +52,7 @@ export function ExperienceGroup({ member }) {
         action(async () => {
             await jsonPost('/api/admin/experience/sessions', {
                 ...fields, occurredAt: toUTC(fields.occurredAt), reviewed: fields.reviewed === 'on',
-                summary: writeExperienceDescription(fields.monthTopic, fields.summary),
+                summary: writeExperienceDescription(fields.monthTopic, fields.summary, fields.handoutPreRelease === 'on'),
             });
             form.reset(); setEditing(null); setNotice('Treffen gespeichert. Es wurde keine Nachricht versendet.');
         });
@@ -168,6 +168,7 @@ export function ExperienceGroup({ member }) {
                 <label>Status<select className={fieldClass} name="status" defaultValue={editing?.status || 'draft'}><option value="draft">Entwurf</option><option value="published">Veröffentlicht</option><option value="archived">Archiviert / nicht sichtbar</option></select></label>
                 <label className="sm:col-span-2">Monatsthema<input className={fieldClass} name="monthTopic" maxLength="180" defaultValue={readExperienceDescription(editing?.summary).monthTopic} /></label>
                 <label className="sm:col-span-2">Beschreibung<textarea className={fieldClass} name="summary" maxLength="3600" defaultValue={readExperienceDescription(editing?.summary).description} /><span className="mt-1 block text-sm text-[#547875]">Ein bis zwei kurze Sätze zum Thema dieses Abends.</span></label>
+                <label className="sm:col-span-2"><input type="checkbox" name="handoutPreRelease" defaultChecked={hasExperienceHandoutPreRelease(editing?.summary)} /> Thema und Handouts schon vor dem Termin freigeben<span className="mt-1 block text-sm text-[#547875]">Nur bei veröffentlichten Treffen und für freigeschaltete Gruppenmitglieder. Aufzeichnungen bleiben bis zum Termin gesperrt.</span></label>
                 <label>Vimeo-Video-ID<input className={fieldClass} name="vimeoId" inputMode="numeric" defaultValue={editing?.vimeoId || ''} /></label>
                 <label>Vimeo-Hash bei nicht gelisteten Videos<input className={fieldClass} name="vimeoHash" defaultValue={editing?.vimeoHash || ''} /></label>
                 <label className="sm:col-span-2"><input type="checkbox" name="reviewed" /> Inhalt und Freigabe für den vorgesehenen Teilnehmerkreis sind geprüft.</label>

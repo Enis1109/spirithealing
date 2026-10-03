@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { activeAccess, canReadSession, addCalendarMonths, annualRenewal, renewalReminder,
+import { activeAccess, canReadSession, canReadRecording, addCalendarMonths, annualRenewal, renewalReminder,
     normalizeExperienceSession, normalizeExperienceGrant, normalizeExperienceJoinUrl, utcInput, experiencePlans } from '../server/experiencePolicy.js';
 import { createExperienceService } from '../server/experienceGroup.js';
 import { registerExperienceRoutes } from '../server/experienceRoutes.js';
 import express from 'express';
+import { writeExperienceDescription } from '../src/lib/experienceDescription.js';
 
 const now = new Date('2026-09-28T10:00:00Z');
 const access = { member_id: 1, plan: 'annual', status: 'active', starts_at: '2026-09-20 00:00:00.000',
@@ -40,6 +41,22 @@ test('legacy access includes historical approved meetings, not drafts or future 
     for (const change of [{ status: 'draft' }, { status: 'archived' }, { published_at: null },
         { published_at: '2026-09-29 00:00:00' }, { occurred_at: '2026-10-04 17:00:00' }]) {
         assert.equal(canReadSession(legacy, { ...meeting, ...change }, now), false);
+    }
+});
+test('explicit preview releases a published future topic and handouts, not recordings', () => {
+    const upcoming = { ...meeting, occurred_at: '2026-10-04 17:00:00.000',
+        summary: writeExperienceDescription('Testthema', 'Beschreibung.', true) };
+    assert.equal(canReadSession(access, upcoming, now), true);
+    assert.equal(canReadRecording(access, upcoming, now), false);
+    assert.equal(canReadRecording(access, upcoming, new Date('2026-10-04T17:00:00Z')), true);
+    assert.equal(canReadSession(access, { ...upcoming, summary: 'Beschreibung.' }, now), false);
+    for (const change of [{ status: 'draft' }, { status: 'archived' }, { published_at: null },
+        { published_at: '2026-10-05 00:00:00' }, { occurred_at: 'broken' }]) {
+        assert.equal(canReadSession({ ...access, full_archive: 1 }, { ...upcoming, ...change }, now), false);
+    }
+    for (const invalidAccess of [null, { ...access, status: 'revoked' }, { ...access, ends_at: now.toISOString() },
+        { ...access, starts_at: '2026-10-01 00:00:00' }, { ...access, content_from: '2026-10-05 00:00:00' }]) {
+        assert.equal(canReadSession(invalidAccess, upcoming, now), false);
     }
 });
 test('existing monthly group may remain open-ended pending manual payment reconciliation', () => {
@@ -111,7 +128,7 @@ test('only explicitly chosen existing-member grants accept an empty end date', (
     assert.throws(() => normalizeExperienceGrant({ ...body, endsAt: 'bad' }));
 });
 
-const serviceFor = (membership = access, sessions = [meeting], joinUrl = null) => {
+const serviceFor = (membership = access, sessions = [meeting], joinUrl = null, at = now) => {
     const calls = [];
     const db = { async execute(query, params) {
         const sql = typeof query === 'string' ? query : query.sql; calls.push(sql);
@@ -122,7 +139,7 @@ const serviceFor = (membership = access, sessions = [meeting], joinUrl = null) =
         if (sql.includes('experience_handouts')) return [[{ id: 8, title: 'Handout' }]];
         throw new Error('unexpected_query');
     } };
-    return { service: createExperienceService({ db, clock: () => now, joinUrl }), calls };
+    return { service: createExperienceService({ db, clock: () => at, joinUrl }), calls };
 };
 
 test('live link accepts only HTTPS Zoom meeting links and rejects lookalike hosts', () => {
@@ -218,6 +235,57 @@ test('direct recording and handout requests cannot bypass old-meeting restrictio
     assert.equal(await service.handout(member, 8), null);
     assert.equal(calls.some(sql => sql.includes('file_bytes FROM')), false);
     assert.match(await service.recording(admin, 1), /^https:\/\/player.vimeo.com\/video\/123456789\?dnt=1&h=abcdef12$/);
+});
+test('future preview appears once with a downloadable PDF and never exposes a premature video', async () => {
+    const upcoming = { ...meeting, occurred_at: '2026-10-04 17:00:00.000',
+        summary: writeExperienceDescription('Testthema', 'Beschreibung.', true) };
+    const { service } = serviceFor(access, [upcoming]);
+    const overview = await service.overview(member);
+    assert.equal(overview.sessions.length, 1);
+    assert.equal(overview.sessions[0].occurredAt, '2026-10-04T17:00:00.000Z');
+    assert.equal(overview.sessions[0].recordingAvailable, false);
+    assert.equal(overview.sessions[0].vimeoHash, undefined);
+    assert.equal(overview.sessions[0].handouts[0].url, '/api/members/experience/handouts/8');
+    assert.match((await service.handout(member, 8)).toString(), /^%PDF-/);
+    assert.equal(await service.recording(member, 1), null);
+    const after = serviceFor(access, [upcoming], null, new Date('2026-10-04T17:00:00Z')).service;
+    assert.equal((await after.overview(member)).sessions[0].recordingAvailable, true);
+    assert.match(await after.recording(member, 1), /^https:\/\/player\.vimeo\.com\//);
+    for (const membership of [null, { ...access, status: 'revoked' }, { ...access, ends_at: now.toISOString() }]) {
+        const blocked = serviceFor(membership, [upcoming]).service;
+        assert.deepEqual((await blocked.overview(member)).sessions, []);
+        assert.equal(await blocked.handout(member, 8), null);
+        assert.equal(await blocked.recording(member, 1), null);
+    }
+    const archived = serviceFor(access, [{ ...upcoming, status: 'archived' }]).service;
+    assert.deepEqual((await archived.overview(member)).sessions, []);
+    assert.equal(await archived.handout(member, 8), null);
+});
+test('HTTP preview permits the protected PDF but denies future recording and anonymous requests', async t => {
+    const upcoming = { ...meeting, occurred_at: '2026-10-04 17:00:00.000',
+        summary: writeExperienceDescription('Testthema', 'Beschreibung.', true) };
+    const { service } = serviceFor(access, [upcoming]);
+    const app = express();
+    registerExperienceRoutes(app, { service, enabled: true,
+        getMember: async req => req.headers['x-test-role'] === 'admin' ? admin : req.headers['x-test-role'] === 'member' ? member : null,
+        sameOrigin: (_req, _res, next) => next() });
+    const server = app.listen(0, '127.0.0.1');
+    await new Promise(resolve => server.once('listening', resolve));
+    t.after(() => new Promise(resolve => { server.closeAllConnections(); server.close(resolve); }));
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const headers = { 'x-test-role': 'member' };
+    const overview = await fetch(base + '/api/members/experience', { headers });
+    assert.equal(overview.status, 200);
+    assert.equal((await overview.json()).sessions[0].recordingAvailable, false);
+    const pdf = await fetch(base + '/api/members/experience/handouts/8', { headers });
+    assert.equal(pdf.status, 200);
+    assert.match(await pdf.text(), /^%PDF-/);
+    assert.equal(pdf.headers.get('cache-control'), 'no-store');
+    const videoPath = '/api/members/experience/sessions/1/recording';
+    assert.equal((await fetch(base + videoPath, { headers })).status, 404);
+    for (const path of ['/api/members/experience', '/api/members/experience/handouts/8', videoPath])
+        assert.equal((await fetch(base + path)).status, 401);
+    assert.equal((await fetch(base + videoPath, { headers: { 'x-test-role': 'admin' } })).status, 200);
 });
 test('expired members cannot download handouts or obtain video URLs', async () => {
     const { service } = serviceFor({ ...access, ends_at: now.toISOString() });
