@@ -1,9 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { liveTalk, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
+import { liveTalk, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
+    zoomMeetingIdFromJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
 
 const joinUrl = "https://us06web.zoom.us/j/12345678901?pwd=test-only";
+const passcode = "084526";
 const secret = "test-only-secret-at-least-thirty-two-characters";
 const form = { name: "Testperson", email: "test@example.test", privacyConsent: true, newsletterConsent: false };
 const now = new Date("2026-09-22T12:00:00Z");
@@ -24,6 +26,9 @@ test("validation rejects missing consent, bad email, honeypot and header injecti
 });
 test("Zoom URL allows only HTTPS participant links, never host or spoofed URLs", () => {
     assert.equal(validateZoomJoinUrl(joinUrl), joinUrl);
+    assert.equal(zoomMeetingIdFromJoinUrl(joinUrl), "12345678901");
+    assert.equal(validateZoomPasscode(passcode), passcode);
+    assert.equal(validateZoomPasscode("bad code"), null);
     for (const bad of ["http://zoom.us/j/12345678901?pwd=x", "https://zoom.us.evil.test/j/12345678901?pwd=x", "https://zoom.us/s/12345678901?zak=x", "https://zoom.us/j/12345678901?pwd=x&zak=y", "https://evil@zoom.us/j/12345678901?pwd=x", "https://zoom.us/j/12345678901"]) assert.equal(validateZoomJoinUrl(bad), null);
 });
 test("personal tokens cannot be changed or signed with another secret", () => {
@@ -40,8 +45,10 @@ test("calendar uses correct UTC and folding; mail contains no marketing or fake 
     assert.match(calendar, /DTEND:20261006T183000Z/);
     assert.ok(calendar.split("\r\n").every(line => Buffer.byteLength(line) <= 74));
     for (const kind of ["confirmation", "day", "hour"]) {
-        const mail = liveEmail({ name: "Test", kind, joinUrl, manageUrl: "https://spirit-healing.tr/live-vortrag/zugang#token=test" });
+        const mail = liveEmail({ name: "Test", kind, joinUrl, meetingId: "12345678901", passcode, manageUrl: "https://spirit-healing.tr/live-vortrag/zugang#token=test" });
         assert.ok(mail.text.includes(joinUrl));
+        assert.match(mail.text, /Meeting-ID: 12345678901/);
+        assert.match(mail.text, /Kenncode: 084526/);
         assert.match(mail.text, /absagen/);
         assert.doesNotMatch(mail.text, /Restplätze|1555|Replay ansehen|Türkei|20:45|21:45/);
     }
@@ -49,11 +56,11 @@ test("calendar uses correct UTC and folding; mail contains no marketing or fake 
 
 // Isolated repository double exercises the service branches without real contacts or mail.
 function fixture() {
-    const state = { regs: [], jobs: [], sent: [], newsletter: [], config: { join_url: joinUrl, enabled: 1 }, failures: [], rollback: false };
+    const state = { regs: [], jobs: [], sent: [], newsletter: [], config: { join_url: joinUrl, passcode, enabled: 1 }, failures: [], rollback: false };
     const execute = async (raw, p = []) => {
         const q = raw.replace(/\s+/g, " ").trim();
         const result = value => [value];
-        if (q.startsWith("CREATE TABLE") || q.startsWith("INSERT IGNORE INTO live_talk_settings")) return result({ affectedRows: 0 });
+        if (q.startsWith("CREATE TABLE") || q.startsWith("ALTER TABLE") || q.startsWith("INSERT IGNORE INTO live_talk_settings")) return result({ affectedRows: 0 });
         if (q.startsWith("SELECT join_url")) return result([state.config]);
         if (q.startsWith("SELECT event_key FROM")) return result([{ event_key: liveTalk.key }]);
         if (q.startsWith("SELECT COUNT(*)")) return result([{ total: state.regs.filter(r => r.status === "active").length }]);
@@ -82,7 +89,7 @@ function fixture() {
         if (q.startsWith("UPDATE live_talk_mail SET status = 'sent'")) { state.jobs.find(j => j.id === p[0]).status = "sent"; return result({ affectedRows: 1 }); }
         if (q.startsWith("UPDATE live_talk_mail SET status = 'skipped'")) { state.jobs.find(j => j.id === p[0]).status = "skipped"; return result({ affectedRows: 1 }); }
         if (q.startsWith("DELETE FROM live_talk_registrations")) { state.regs = []; state.jobs = []; return result({ affectedRows: 1 }); }
-        if (q.startsWith("UPDATE live_talk_settings")) { state.config = { join_url: p[0], enabled: p[1] }; return result({ affectedRows: 1 }); }
+        if (q.startsWith("UPDATE live_talk_settings")) { state.config = { join_url: p[0], passcode: p[1], enabled: p[2] }; return result({ affectedRows: 1 }); }
         throw new Error("Uncovered SQL: " + q);
     };
     const connection = { execute, beginTransaction: async () => {}, commit: async () => {}, rollback: async () => { state.rollback = true; }, release() {} };
@@ -100,6 +107,8 @@ test("schema initializes disabled; registrations queue once and mail worker does
     await service.processMail(now); assert.equal(state.sent.length, 1);
     assert.match(state.sent[0].manageUrl, /#token=/);
     assert.equal(state.sent[0].joinUrl, joinUrl);
+    assert.equal(state.sent[0].meetingId, "12345678901");
+    assert.equal(state.sent[0].passcode, passcode);
     await service.processMail(new Date("2026-10-05T17:30:00Z"));
     await service.processMail(new Date("2026-10-06T16:30:00Z"));
     assert.deepEqual(state.sent.map(m => m.kind), ["confirmation", "day", "hour"]);
@@ -108,9 +117,9 @@ test("newsletter opt-in is separate and optional, disabled/ended events reject s
     const { state, service } = fixture();
     await service.register({ ...form, newsletterConsent: true }, now);
     assert.equal(state.newsletter.length, 1); assert.equal(state.regs[0].newsletter_status, "pending");
-    await service.configure({ joinUrl, enabled: false });
+    await service.configure({ joinUrl, passcode, enabled: false });
     await assert.rejects(() => service.register(form, now), { code: "closed" });
-    await service.configure({ joinUrl, enabled: true });
+    await service.configure({ joinUrl, passcode, enabled: true });
     await assert.rejects(() => service.register(form, new Date(liveTalk.startsAt)), { code: "closed" });
     assert.equal((await service.publicInfo(now)).joinUrl, undefined);
 });

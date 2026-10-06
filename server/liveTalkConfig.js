@@ -31,6 +31,16 @@ export const validateZoomJoinUrl = (value) => {
     } catch { return null; }
 };
 
+export const zoomMeetingIdFromJoinUrl = (value) => {
+    const joinUrl = validateZoomJoinUrl(value);
+    return joinUrl ? new URL(joinUrl).pathname.split("/").pop() : null;
+};
+
+export const validateZoomPasscode = (value) => {
+    const passcode = String(value || "").trim();
+    return /^[A-Za-z0-9@*_-]{1,32}$/u.test(passcode) ? passcode : null;
+};
+
 export const makeLiveToken = (id, secret) => {
     if (String(secret || "").length < 32) throw new Error("Live talk token secret missing");
     const payload = `${liveTalk.key}:${id}`;
@@ -76,7 +86,7 @@ export const liveCalendar = (joinUrl) => [
     "END:VEVENT", "END:VCALENDAR", "",
 ].map(foldIcs).join("\r\n");
 
-export const liveEmail = ({ name, kind, joinUrl, manageUrl }) => {
+export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl }) => {
     const subject = kind === "day" ? "Morgen: dein Live-Vortrag mit Sabine & Selcan"
         : kind === "hour" ? "In einer Stunde beginnt unser Live-Vortrag"
             : "Deine Anmeldung: Live-Vortrag am 6. Oktober";
@@ -87,6 +97,8 @@ export const liveEmail = ({ name, kind, joinUrl, manageUrl }) => {
         `Hallo ${name},`, "", intro, "", liveTalk.title, liveTalk.label,
         "auf Deutsch · kostenlos", "",
         "Zum Live-Vortrag in Zoom:", joinUrl, "",
+        `Meeting-ID: ${meetingId}`,
+        `Kenncode: ${passcode}`, "",
         "Plane etwa 60 Minuten ein. Wir lassen dich zum Beginn aus dem Warteraum herein. Kamera und Mikrofon kannst du zunächst ausgeschaltet lassen.",
         "", "Du brauchst keine Vorkenntnisse und musst den aufgezeichneten Vortrag vorher nicht gesehen haben.",
         "", "Falls die Schaltfläche nicht funktioniert, kopiere den vollständigen Zoom-Link in deinen Browser. Bitte gib deinen Zugang nicht öffentlich weiter.",

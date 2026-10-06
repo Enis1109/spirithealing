@@ -1,14 +1,20 @@
 import crypto from "node:crypto";
-import { liveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl } from "./liveTalkConfig.js";
+import { liveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl,
+    validateZoomPasscode, zoomMeetingIdFromJoinUrl } from "./liveTalkConfig.js";
 
 const sqlDate = (date) => new Date(date).toISOString().slice(0, 19).replace("T", " ");
 
 // Separate tables keep the existing seven-day recording access untouched.
 export const initializeLiveTalk = async (db) => {
     await db.execute(`CREATE TABLE IF NOT EXISTS live_talk_settings (
-        event_key VARCHAR(80) PRIMARY KEY, join_url VARCHAR(1024) NULL,
+        event_key VARCHAR(80) PRIMARY KEY, join_url VARCHAR(1024) NULL, passcode VARCHAR(32) NULL,
         enabled BOOLEAN NOT NULL DEFAULT FALSE, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+    try {
+        await db.execute("ALTER TABLE live_talk_settings ADD COLUMN passcode VARCHAR(32) NULL AFTER join_url");
+    } catch (error) {
+        if (error?.code !== "ER_DUP_FIELDNAME") throw error;
+    }
     await db.execute(`CREATE TABLE IF NOT EXISTS live_talk_registrations (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, event_key VARCHAR(80) NOT NULL,
         name VARCHAR(100) NOT NULL, email VARCHAR(254) NOT NULL,
@@ -30,8 +36,10 @@ export const initializeLiveTalk = async (db) => {
 
 export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUrl = "https://spirit-healing.tr" }) => {
     const settings = async () => {
-        const [rows] = await db.execute("SELECT join_url, enabled FROM live_talk_settings WHERE event_key = ?", [liveTalk.key]);
-        return { joinUrl: validateZoomJoinUrl(rows[0]?.join_url), enabled: Boolean(rows[0]?.enabled) };
+        const [rows] = await db.execute("SELECT join_url, passcode, enabled FROM live_talk_settings WHERE event_key = ?", [liveTalk.key]);
+        const joinUrl = validateZoomJoinUrl(rows[0]?.join_url);
+        return { joinUrl, meetingId: zoomMeetingIdFromJoinUrl(joinUrl),
+            passcode: validateZoomPasscode(rows[0]?.passcode), enabled: Boolean(rows[0]?.enabled) };
     };
     const publicInfo = async (now = new Date()) => {
         const config = await settings();
@@ -107,7 +115,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             AND attempted_at < DATE_SUB(?, INTERVAL 10 MINUTE)`, [sqlDate(now)]);
         if (now >= new Date(liveTalk.startsAt)) return;
         const config = await settings();
-        if (!config.enabled || !config.joinUrl) return;
+        if (!config.enabled || !config.joinUrl || !config.meetingId || !config.passcode) return;
         const [jobs] = await db.execute(`SELECT m.id FROM live_talk_mail m
             JOIN live_talk_registrations r ON r.id = m.registration_id
             WHERE r.event_key = ? AND r.status = 'active' AND m.status IN ('pending','failed')
@@ -135,7 +143,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             }
             try {
                 const token = makeLiveToken(row.id, secret);
-                await sendMail({ ...row, joinUrl: config.joinUrl,
+                await sendMail({ ...row, joinUrl: config.joinUrl, meetingId: config.meetingId, passcode: config.passcode,
                     manageUrl: `${baseUrl.replace(/\/$/u, "")}/live-vortrag/zugang#token=${token}`,
                     messageId: `<${liveTalk.key}.${row.id}.${row.kind}@spirit-healing.tr>` });
             } catch (error) {
@@ -155,10 +163,11 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             LEFT JOIN live_talk_mail m ON m.registration_id = r.id WHERE r.event_key = ? ORDER BY r.created_at DESC, m.id`, [liveTalk.key]);
         return { ...liveTalk, ...config, registrations };
     };
-    const configure = async ({ joinUrl, enabled }) => {
+    const configure = async ({ joinUrl, passcode, enabled }) => {
         const validated = validateZoomJoinUrl(joinUrl);
-        if (!validated || typeof enabled !== "boolean") throw Object.assign(new Error("Invalid configuration"), { code: "validation" });
-        await db.execute("UPDATE live_talk_settings SET join_url = ?, enabled = ? WHERE event_key = ?", [validated, enabled ? 1 : 0, liveTalk.key]);
+        const validatedPasscode = validateZoomPasscode(passcode);
+        if (!validated || !validatedPasscode || typeof enabled !== "boolean") throw Object.assign(new Error("Invalid configuration"), { code: "validation" });
+        await db.execute("UPDATE live_talk_settings SET join_url = ?, passcode = ?, enabled = ? WHERE event_key = ?", [validated, validatedPasscode, enabled ? 1 : 0, liveTalk.key]);
     };
     return { publicInfo, register, access, cancel, processMail, adminInfo, configure };
 };
