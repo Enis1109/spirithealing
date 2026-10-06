@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { memberEvents, getUpcomingMemberEvents } from "../src/content/memberEvents.js";
 
-test("members have all four current events, with German and Turkish copy", () => {
-    assert.equal(getUpcomingMemberEvents(new Date("2026-09-27T10:00:00Z")).length, 4);
+test("members have four general events and thirteen live evenings, with German and Turkish copy", () => {
+    assert.equal(getUpcomingMemberEvents(new Date("2026-09-27T10:00:00Z")).length, 17);
     for (const event of memberEvents) {
         assert.ok(event.href.startsWith("/"));
         for (const language of ["de", "tr"]) {
@@ -36,6 +36,11 @@ test("Berlin location is district only and the group uses the confirmed Sunday t
 
 test("past dated events disappear while the weekly group remains", () => {
     const ids = getUpcomingMemberEvents(new Date("2026-10-11T10:00:00Z")).map(e => e.id);
-    assert.deepEqual(ids, ["zepter-13-2026", "weekly-experience-group"]);
+    assert.deepEqual(ids, ["zepter-13-2026", "weekly-experience-group", ...Array.from({ length: 13 }, (_, index) => `program-live-${index + 1}`)]);
     assert.deepEqual(getUpcomingMemberEvents(new Date("2027-02-04T00:00:00Z")).map(e => e.id), ["weekly-experience-group"]);
+});
+
+test("live evening expires at 21:00 German winter time", () => {
+    assert.ok(getUpcomingMemberEvents(new Date("2026-11-11T19:59:59Z")).some(event => event.id === "program-live-1"));
+    assert.equal(getUpcomingMemberEvents(new Date("2026-11-11T20:00:00Z")).some(event => event.id === "program-live-1"), false);
 });
