@@ -88,19 +88,26 @@ export const liveCalendar = (joinUrl) => [
 
 export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl }) => {
     const subject = kind === "day" ? "Morgen: dein Live-Vortrag mit Sabine & Selcan"
-        : kind === "hour" ? "In einer Stunde beginnt unser Live-Vortrag"
+        : kind === "hour" ? "Gleich ist es so weit – wir freuen uns auf dich"
             : "Deine Anmeldung: Live-Vortrag am 6. Oktober";
     const intro = kind === "confirmation" ? "Du bist für unseren kostenlosen Live-Vortrag angemeldet."
         : kind === "day" ? "Morgen treffen wir uns live. Hier findest du deinen Zugang noch einmal."
-            : "Um 19:30 Uhr deutscher Zeit beginnt unser gemeinsamer Abend. Hier ist dein Zugang.";
+            : "Gleich ist es so weit. In einer Stunde öffnen wir den Raum für unseren gemeinsamen Live-Abend.";
+    const personalInvitation = kind === "hour" ? [
+        "Wir freuen uns sehr darauf, diesen Abend mit dir zu verbringen. Gemeinsam schauen wir auf deine persönliche Matrix, auf die Rollen und inneren Drehbücher, die dein Leben unbewusst mitgestalten, und auf den Weg zurück zu deinem Selbst und deiner Schöpferkraft.",
+        "",
+        "Vielleicht bringst du eine Frage mit, die dich gerade nicht loslässt. Vielleicht möchtest du einfach erleben, was geschieht, wenn du dein inneres Drehbuch aus einer neuen Perspektive betrachtest. Du musst nichts vorbereiten und keine Vorkenntnisse mitbringen. Komm genauso, wie du gerade bist.",
+        "",
+    ] : [];
     return { subject, text: [
-        `Hallo ${name},`, "", intro, "", liveTalk.title, liveTalk.label,
+        `Hallo ${name},`, "", intro, "", ...personalInvitation, liveTalk.title, liveTalk.label,
         "auf Deutsch · kostenlos", "",
-        "Zum Live-Vortrag in Zoom:", joinUrl, "",
+        "Hier kommst du direkt in unseren Zoom-Raum:", joinUrl, "",
+        "Wenn du Zoom lieber manuell öffnest:",
         `Meeting-ID: ${meetingId}`,
         `Kenncode: ${passcode}`, "",
         "Plane etwa 60 Minuten ein. Wir lassen dich zum Beginn aus dem Warteraum herein. Kamera und Mikrofon kannst du zunächst ausgeschaltet lassen.",
-        "", "Du brauchst keine Vorkenntnisse und musst den aufgezeichneten Vortrag vorher nicht gesehen haben.",
+        "", ...(kind === "hour" ? ["Wir sind gespannt auf diesen gemeinsamen Abend und freuen uns darauf, dich gleich im Raum zu begrüßen."] : ["Du brauchst keine Vorkenntnisse und musst den aufgezeichneten Vortrag vorher nicht gesehen haben."]),
         "", "Falls die Schaltfläche nicht funktioniert, kopiere den vollständigen Zoom-Link in deinen Browser. Bitte gib deinen Zugang nicht öffentlich weiter.",
         "", "Von Herzen", "Sabine & Selcan", "Spirit Healing", "",
         "Anmeldung ansehen oder absagen:", manageUrl,

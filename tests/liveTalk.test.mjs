@@ -51,6 +51,11 @@ test("calendar uses correct UTC and folding; mail contains no marketing or fake 
         assert.match(mail.text, /Kenncode: 084526/);
         assert.match(mail.text, /absagen/);
         assert.doesNotMatch(mail.text, /Restplätze|1555|Replay ansehen|Türkei|20:45|21:45/);
+        if (kind === "hour") {
+            assert.equal(mail.subject, "Gleich ist es so weit – wir freuen uns auf dich");
+            assert.match(mail.text, /Komm genauso, wie du gerade bist/);
+            assert.match(mail.text, /gleich im Raum zu begrüßen/);
+        }
     }
 });
 
