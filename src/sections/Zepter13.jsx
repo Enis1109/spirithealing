@@ -44,11 +44,12 @@ const shifts = [
 ]
 
 const included = [
-  "13 Wochen geführter Prozess mit einem wöchentlichen Live-Termin",
-  "Ein begleitetes Matrix-Gespräch zu Beginn, in dem dein unbewusstes Drehbuch sichtbar werden darf",
+  "Onboarding ab 21. Oktober mit Vorbereitung auf deinen persönlichen Prozess",
+  "13-Wochen-Programm mit einem wöchentlichen gemeinsamen Online-Termin",
+  "Ein begleitetes Matrix-Gespräch im Onboarding, in dem dein unbewusstes Drehbuch sichtbar werden darf",
   "Dein persönlicher Start- und Integrationsplan",
   "Tägliche energetische Begleitung mit Tagesimpuls und Meditationen, die aus dem aktuellen Gruppenprozess entstehen",
-  "Aufzeichnungen der Live-Termine",
+  "Aufzeichnungen der gemeinsamen Termine",
   "Begleitendes Workbook mit Übungen und Reflexionsfragen",
   "Kurze Impulse für die Umsetzung zwischen den Terminen",
   "Austausch in einer geschützten Spirit-Healing-Community",
@@ -63,8 +64,8 @@ const tiers = [
     price: "1.555 €",
     intro: "Der vollständige Prozess im gemeinsamen Spirit-Healing-Raum.",
     items: [
-      "Alle 13 wöchentlichen Live-Termine",
-      "Matrix-Gespräch zu Beginn",
+      "Onboarding ab 21. Oktober und alle 13 wöchentlichen Online-Termine des Programms",
+      "Matrix-Gespräch im Onboarding",
       "Persönlicher Start- und Integrationsplan",
       "Tägliche energetische Begleitung mit Tagesimpuls und aus der Gruppe entstehenden Meditationen",
       "Aufzeichnungen, Workbook und Wochenimpulse",
@@ -137,7 +138,7 @@ export const Zepter13 = () => {
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
             <div className="relative z-10">
-              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">13 Wochen · live online · mit Sabine &amp; Selcan</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">Onboarding ab 21. Oktober · 13-Wochen-Programm · mit Sabine &amp; Selcan</p>
               <h1 className="mt-5 max-w-4xl font-serif text-5xl font-semibold leading-[0.98] text-[#173c39] sm:text-6xl lg:text-8xl">
                 Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?
               </h1>
@@ -155,7 +156,8 @@ export const Zepter13 = () => {
               </div>
 
               <div className="mt-9 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />21. Oktober 2026 bis 13. Januar 2027</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />Onboarding ab 21. Oktober 2026</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />Programm: 11. November 2026 bis 3. Februar 2027</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Clock3 size={17} className="text-[#0f7d79]" />vollständiges Rauhnachtsprogramm inklusive</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Check size={17} className="text-[#0f7d79]" />keine Vorkenntnisse nötig</span>
               </div>
@@ -171,6 +173,30 @@ export const Zepter13 = () => {
                 </figcaption>
               </figure>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#d5e4dd] bg-[#edf5f1] py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <SectionTitle
+            eyebrow="Der zeitliche Rahmen"
+            title="Am 21. Oktober beginnt dein Onboarding. Am 11. November beginnt das 13-Wochen-Programm."
+            intro="Die Vorbereitung und der gemeinsame 13-Wochen-Prozess gehören zusammen. Gleichzeitig bleibt klar, wann welcher Teil beginnt."
+          />
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            <article className="rounded-[2rem] border border-[#c8dcd3] bg-white p-7 sm:p-9">
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#a67426]">Ab 21. Oktober 2026</p>
+              <h2 className="mt-4 font-serif text-3xl font-semibold text-[#173c39]">Onboarding und persönliche Vorbereitung</h2>
+              <p className="mt-5 text-lg leading-8 text-[#506864]">In dieser Zeit beginnen die Matrix-Gespräche. Du erhältst deinen Zugang, wir bereiten deinen persönlichen Start vor und richten den Blick auf die wiederkehrende Szene, die du mitbringst. Während des Onboardings ist der Einstieg weiterhin möglich.</p>
+              <p className="mt-5 font-semibold leading-7 text-[#31534f]">Wer früh dabei ist, hat mehr Zeit für das Matrix-Gespräch und die Vorbereitung vor dem gemeinsamen Programm.</p>
+            </article>
+            <article className="rounded-[2rem] bg-[#173c39] p-7 text-white sm:p-9">
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f1d7a0]">11. November 2026 bis 3. Februar 2027</p>
+              <h2 className="mt-4 font-serif text-3xl font-semibold">13-Wochen-Programm</h2>
+              <p className="mt-5 text-lg leading-8 text-white/78">Am 11. November beginnt für alle der gemeinsame 13-Wochen-Prozess. Er führt durch Weihnachten, die Rauhnächte und den Jahreswechsel bis zum letzten gemeinsamen Termin am 3. Februar 2027.</p>
+              <p className="mt-5 font-semibold leading-7 text-white">Das vollständige Rauhnachtsprogramm bleibt in allen drei Begleitungswegen enthalten.</p>
+            </article>
           </div>
         </div>
       </section>
@@ -277,7 +303,7 @@ export const Zepter13 = () => {
           <SectionTitle
             eyebrow="Im Programm enthalten"
             title="Damit aus einer Erkenntnis eine neue Erfahrung werden kann"
-            intro="Ein altes Drehbuch verändert sich nicht durch einen einzigen klugen Gedanken. Deshalb verbindet das Programm die gemeinsame Live-Arbeit mit dem Matrix-Gespräch, Körperwahrnehmung, kurzen Übungen und Raum für Integration."
+            intro="Ein altes Drehbuch verändert sich nicht durch einen einzigen klugen Gedanken. Deshalb verbindet das Programm die gemeinsamen Online-Termine mit dem Matrix-Gespräch, Körperwahrnehmung, kurzen Übungen und Raum für Integration."
           />
           <div>
           <ul className="divide-y divide-[#cbdcd5] border-y border-[#cbdcd5]">
@@ -285,8 +311,8 @@ export const Zepter13 = () => {
               <li key={item} className="flex gap-4 py-5 text-lg font-semibold leading-8 text-[#31534f]"><CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>
             ))}
           </ul>
-          <p className="mt-6 text-sm leading-7 text-[#506864]">Die Live-Termine finden mittwochs um 19:30 Uhr deutscher Zeit statt und dauern etwa 90 Minuten. Plane zusätzlich etwa 30 Minuten täglich für Übungen und Integration ein. Wenn du an einem Live-Termin nicht teilnehmen kannst, steht dir die Aufzeichnung zur Verfügung.</p>
-          <p className="mt-5 text-sm leading-7 text-[#506864]">Die Teilnahme am Abschlusstreffen in Berlin ist in allen drei Begleitungswegen im Programmpreis enthalten. Reise, Übernachtung und Verpflegung sind selbst zu bezahlen. Der genaue Termin und Veranstaltungsort werden noch bekannt gegeben. Dieses Treffen findet nach dem 13-Wochen-Prozess statt und ist nicht das Intensivseminar am 9. und 10. Oktober 2026.</p>
+          <p className="mt-6 text-sm leading-7 text-[#506864]">Die gemeinsamen Online-Termine des Programms finden mittwochs um 19:30 Uhr deutscher Zeit statt und dauern etwa 90 Minuten. Plane zusätzlich etwa 30 Minuten täglich für Übungen und Integration ein. Wenn du an einem Termin nicht teilnehmen kannst, steht dir die Aufzeichnung zur Verfügung.</p>
+          <p className="mt-5 text-sm leading-7 text-[#506864]">Die Teilnahme am Abschlusstreffen in Berlin ist in allen drei Begleitungswegen im Programmpreis enthalten. Reise, Übernachtung und Verpflegung sind selbst zu bezahlen. Der genaue Termin und Veranstaltungsort werden noch bekannt gegeben. Das Abschlusstreffen ist ein eigener Bestandteil des 13-Wochen-Programms.</p>
           </div>
         </div>
       </section>
@@ -354,7 +380,8 @@ export const Zepter13 = () => {
             light
           />
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-3 text-sm font-semibold text-white/80">
-            <span className="rounded-full border border-white/20 px-4 py-2.5">21. Oktober 2026 bis 13. Januar 2027</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">Onboarding ab 21. Oktober 2026</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">Programm: 11. November 2026 bis 3. Februar 2027</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">Rauhnachtsprogramm inklusive</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">{klarnaPaymentCopy.de.short}</span>
           </div>

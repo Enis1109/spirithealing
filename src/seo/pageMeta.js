@@ -69,7 +69,7 @@ export const pageMeta = {
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
-      description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. 13 Wochen mit Matrix-Gespräch, Live-Begleitung und Rauhnächten.",
+      description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. 13 Wochen mit Matrix-Gespräch, Online-Begleitung und Rauhnächten.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -149,7 +149,7 @@ export const pageMeta = {
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
-      description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. Mit Matrix-Gespräch, Live-Begleitung und Rauhnächten.",
+      description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. Mit Matrix-Gespräch, Online-Begleitung und Rauhnächten.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -435,8 +435,8 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       hasCourseInstance: {
         "@type": "CourseInstance",
         courseMode: "online",
-        startDate: "2026-10-21",
-        endDate: "2027-01-13",
+        startDate: "2026-11-11",
+        endDate: "2027-02-03",
         inLanguage: "de",
       },
       offers: [

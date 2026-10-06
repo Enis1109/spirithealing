@@ -49,13 +49,13 @@ export const memberEvents = [
     },
     {
         id: "zepter-13-2026",
-        endsAt: "2027-01-13T22:59:59Z",
+        endsAt: "2027-02-03T22:59:59Z",
         href: "/13-wochen-programm",
         de: {
             kind: "13-Wochen-Programm",
             title: "Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?",
-            date: "21. Oktober 2026 bis 13. Januar 2027",
-            time: "Programmstart am 21. Oktober",
+            date: "Onboarding ab 21. Oktober 2026 · Programm bis 3. Februar 2027",
+            time: "13 Wochen ab 11. November 2026",
             place: "Mit Sabine & Selcan",
             text: "Erkenne, welche unbewusste Matrix deine Rollen, Beziehungen und Entscheidungen lenkt. Mit persönlichem Matrix-Gespräch, täglicher energetischer Begleitung und vollständigem Rauhnachtsprogramm.",
             action: "13-Wochen-Programm entdecken",
@@ -63,8 +63,8 @@ export const memberEvents = [
         tr: {
             kind: "13 haftalık program",
             title: "Başrolde sensin. Peki senaryonu kim yazıyor?",
-            date: "21 Ekim 2026 – 13 Ocak 2027",
-            time: "Program başlangıcı: 21 Ekim",
+            date: "Başlangıç süreci 21 Ekim 2026 · Ana program 3 Şubat 2027’ye kadar",
+            time: "13 hafta, 11 Kasım 2026’dan itibaren",
             place: "Sabine ve Selcan ile",
             text: "Rollerini, ilişkilerini ve kararlarını yönlendiren bilinçdışı matrisi fark et. Kişisel matris görüşmesi, günlük enerjetik eşlik ve eksiksiz Rauhnächte programıyla.",
             action: "13 haftalık programı keşfet",

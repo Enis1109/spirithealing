@@ -211,10 +211,10 @@ export const Rauhnaechte = () => {
               </div>
             </div>
             <div className="px-7 py-10 sm:px-10 lg:py-12">
-              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">21. Oktober 2026 bis 13. Januar 2027</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">Onboarding ab 21. Oktober · Programm 11. November 2026 bis 3. Februar 2027</p>
               <h3 className="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-5xl">Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?</h3>
               <p className="mt-6 text-lg leading-8 text-white/82">Du verteilst die Rollen. Du triffst die Entscheidungen. Und trotzdem wiederholen sich dieselben Szenen. Solange deine innere Matrix im Verborgenen wirkt, führt ein altes Drehbuch Regie.</p>
-              <p className="mt-5 text-lg leading-8 text-white/82">Das 13-Wochen-Programm lädt dich ein, diese Matrix sichtbar zu machen und das Zepter wieder selbst zu übernehmen. Die Rauhnächte verbinden sich darin mit deinem Prozess und werden bis zur Integrationswoche am 13. Januar weitergeführt.</p>
+              <p className="mt-5 text-lg leading-8 text-white/82">Das 13-Wochen-Programm lädt dich ein, diese Matrix sichtbar zu machen und das Zepter wieder selbst zu übernehmen. Die Rauhnächte verbinden sich darin mit deinem Prozess. Das Programm führt die Integration anschließend bis zum 3. Februar 2027 weiter.</p>
               <Link to="/13-wochen-programm" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#f1d7a0] px-6 py-3 font-bold text-[#173c39] transition hover:bg-white">13-Wochen-Programm entdecken <ArrowRight className="h-5 w-5" aria-hidden="true" /></Link>
             </div>
           </div>

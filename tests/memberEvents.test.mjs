@@ -14,11 +14,13 @@ test("members have all four current events, with German and Turkish copy", () =>
     }
 });
 
-test("live introduction and programme start are separate dates and destinations", () => {
+test("live introduction, onboarding and programme are separate dates and destinations", () => {
     assert.equal(memberEvents[0].href, "/live-vortrag");
     assert.match(memberEvents[0].de.date, /6\. Oktober 2026/);
     assert.equal(memberEvents[2].href, "/13-wochen-programm");
-    assert.match(memberEvents[2].de.date, /21\. Oktober 2026/);
+    assert.match(memberEvents[2].de.date, /Onboarding ab 21\. Oktober 2026/);
+    assert.match(memberEvents[2].de.time, /11\. November 2026/);
+    assert.match(memberEvents[2].de.date, /3\. Februar 2027/);
 });
 
 test("Berlin location is district only and the group uses the confirmed Sunday time", () => {
@@ -35,5 +37,5 @@ test("Berlin location is district only and the group uses the confirmed Sunday t
 test("past dated events disappear while the weekly group remains", () => {
     const ids = getUpcomingMemberEvents(new Date("2026-10-11T10:00:00Z")).map(e => e.id);
     assert.deepEqual(ids, ["zepter-13-2026", "weekly-experience-group"]);
-    assert.deepEqual(getUpcomingMemberEvents(new Date("2027-02-01T00:00:00Z")).map(e => e.id), ["weekly-experience-group"]);
+    assert.deepEqual(getUpcomingMemberEvents(new Date("2027-02-04T00:00:00Z")).map(e => e.id), ["weekly-experience-group"]);
 });
