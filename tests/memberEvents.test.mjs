@@ -28,9 +28,9 @@ test("Berlin location is district only and the group uses the confirmed Sunday t
     assert.match(memberEvents[1].tr.place, /^Berlin-Kreuzberg/);
     assert.doesNotMatch(JSON.stringify(memberEvents), /Manoa|Urbanstraße|10967/);
     assert.equal(memberEvents[3].de.date, "Jeden Sonntag");
-    assert.equal(memberEvents[3].de.time, "19:00 Uhr");
+    assert.equal(memberEvents[3].de.time, "19:00–21:30 Uhr · deutsche Zeit");
     assert.equal(memberEvents[3].tr.date, "Her pazar");
-    assert.equal(memberEvents[3].tr.time, "Saat 19:00");
+    assert.equal(memberEvents[3].tr.time, "19:00–21:30 · Almanya saati");
     assert.equal(memberEvents[3].href, "/kontakt");
 });
 
