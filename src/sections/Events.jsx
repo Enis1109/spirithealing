@@ -2,6 +2,7 @@ import { ArrowRight, CalendarDays, Clock3, LockKeyhole, MailCheck, MapPin, Monit
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getUpcomingMemberEvents } from "@/content/memberEvents";
+import { EventCalendar } from "@/components/EventCalendar";
 
 const content = {
     de: {
@@ -191,6 +192,7 @@ export const Events = () => {
 
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
+            <EventCalendar />
             {liveTalk && (
                 <section className="mx-auto w-[calc(100%-2rem)] max-w-6xl py-8 sm:py-10">
                     <UpcomingEventCard event={liveTalk} language={language} />
@@ -270,7 +272,7 @@ export const Events = () => {
                             <span className="h-2 w-2 animate-pulse rounded-full bg-primary" aria-hidden="true" />
                             {copy.live}
                         </div>
-                        <h1 className="mt-5 text-4xl font-bold leading-[1.06] sm:text-5xl lg:text-6xl">{copy.title}</h1>
+                        <h2 className="mt-5 text-4xl font-bold leading-[1.06] sm:text-5xl lg:text-6xl">{copy.title}</h2>
                         <p className="mt-5 max-w-3xl text-xl font-semibold leading-8 text-primary">{copy.subtitle}</p>
                         <p className="mt-5 max-w-2xl text-lg leading-8 text-white/82">{copy.intro}</p>
                     </div>

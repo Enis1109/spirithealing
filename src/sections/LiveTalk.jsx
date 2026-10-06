@@ -38,15 +38,15 @@ export const LiveTalkRegistration = () => {
     </Shell>;
 };
 
-export const LiveTalkAccess = () => {
+export const LiveTalkAccess = ({ endpoint = "/api/live-talk" }) => {
     const [token] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get("token") || "");
     const [access, setAccess] = useState(null);
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false);
-    useEffect(() => { submitForm("/api/live-talk/access", { token }).then(r => setAccess(r.access)).catch(() => setMessage("Dieser Zugang ist ungültig oder nicht mehr verfügbar. Bitte schreibe an info@spirit-healing.tr.")); }, [token]);
+    useEffect(() => { submitForm(`${endpoint}/access`, { token }).then(r => setAccess(r.access)).catch(() => setMessage("Dieser Zugang ist ungültig oder nicht mehr verfügbar. Bitte schreibe an info@spirit-healing.tr.")); }, [token, endpoint]);
     const cancel = async () => {
         setBusy(true);
-        try { await submitForm("/api/live-talk/cancel", { token }); setAccess(a => ({ ...a, status: "cancelled", joinUrl: null })); }
+        try { await submitForm(`${endpoint}/cancel`, { token }); setAccess(a => ({ ...a, status: "cancelled", joinUrl: null })); }
         catch { setMessage("Die Absage konnte nicht gespeichert werden. Bitte versuche es erneut."); }
         finally { setBusy(false); }
     };
