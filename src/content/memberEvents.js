@@ -1,5 +1,5 @@
 // Dates and wording match the published Berlin and live-talk pages (27 September 2026).
-// Weekly group: Sunday at 19:00, confirmed by Sabine on 27 September 2026.
+// Weekly group: Sunday 19:00–21:30 German time, confirmed by Sabine on 6 October 2026.
 export const memberEvents = [
     {
         id: "live-talk-2026-10-06",
@@ -77,7 +77,7 @@ export const memberEvents = [
             kind: "Wöchentlich gemeinsam",
             title: "Unsere Erfahrungsgruppe",
             date: "Jeden Sonntag",
-            time: "19:00 Uhr",
+            time: "19:00–21:30 Uhr · deutsche Zeit",
             place: "Online über Zoom",
             text: "Ein gemeinsamer Raum für angeleitete Selbsterfahrung, Anteilearbeit und Austausch. Wir kommen an, widmen uns dem Thema des Abends und vertiefen es in Übungen und gemeinsamer Reflexion.",
             action: "Teilnahme erfragen",
@@ -86,7 +86,7 @@ export const memberEvents = [
             kind: "Her hafta birlikte",
             title: "Deneyim grubumuz",
             date: "Her pazar",
-            time: "Saat 19:00",
+            time: "19:00–21:30 · Almanya saati",
             place: "Zoom üzerinden",
             text: "Rehberli öz deneyim, içsel parçalar çalışması ve paylaşım için ortak bir alan. Birlikte akşamın konusuna yöneliyor, çalışmalar ve ortak değerlendirmeyle derinleşiyoruz.",
             action: "Katılım bilgilerini sor",
