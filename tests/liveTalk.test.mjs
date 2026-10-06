@@ -49,6 +49,7 @@ test("calendar uses correct UTC and folding; mail contains no marketing or fake 
         assert.ok(mail.text.includes(joinUrl));
         assert.match(mail.text, /Meeting-ID: 12345678901/);
         assert.match(mail.text, /Kenncode: 084526/);
+        assert.match(mail.text, /Deine Kamera darf gerne eingeschaltet sein\. Dein Mikrofon bleibt zunächst stumm\./);
         assert.match(mail.text, /absagen/);
         assert.doesNotMatch(mail.text, /Restplätze|1555|Replay ansehen|Türkei|20:45|21:45/);
         if (kind === "hour") {

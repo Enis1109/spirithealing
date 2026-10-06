@@ -106,7 +106,7 @@ export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl 
         "Wenn du Zoom lieber manuell öffnest:",
         `Meeting-ID: ${meetingId}`,
         `Kenncode: ${passcode}`, "",
-        "Plane etwa 60 Minuten ein. Wir lassen dich zum Beginn aus dem Warteraum herein. Kamera und Mikrofon kannst du zunächst ausgeschaltet lassen.",
+        "Plane etwa 60 Minuten ein. Wir lassen dich zum Beginn aus dem Warteraum herein. Deine Kamera darf gerne eingeschaltet sein. Dein Mikrofon bleibt zunächst stumm.",
         "", ...(kind === "hour" ? ["Wir sind gespannt auf diesen gemeinsamen Abend und freuen uns darauf, dich gleich im Raum zu begrüßen."] : ["Du brauchst keine Vorkenntnisse und musst den aufgezeichneten Vortrag vorher nicht gesehen haben."]),
         "", "Falls die Schaltfläche nicht funktioniert, kopiere den vollständigen Zoom-Link in deinen Browser. Bitte gib deinen Zugang nicht öffentlich weiter.",
         "", "Von Herzen", "Sabine & Selcan", "Spirit Healing", "",
