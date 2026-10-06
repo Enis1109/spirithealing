@@ -1,3 +1,5 @@
+import { programLiveEvents } from "./replayFunnel.js";
+
 // Dates and wording match the published Berlin and live-talk pages (27 September 2026).
 // Weekly group: Sunday 19:00–21:30 German time, confirmed by Sabine on 6 October 2026.
 export const memberEvents = [
@@ -55,7 +57,7 @@ export const memberEvents = [
             kind: "13-Wochen-Programm",
             title: "Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?",
             date: "Onboarding ab 21. Oktober 2026 · Programm bis 3. Februar 2027",
-            time: "13 Wochen ab 11. November 2026",
+            time: "Ab 11. November 2026 · mittwochs 19:30–21:00 Uhr · deutsche Zeit",
             place: "Mit Sabine & Selcan",
             text: "Erkenne, welche unbewusste Matrix deine Rollen, Beziehungen und Entscheidungen lenkt. Mit persönlichem Matrix-Gespräch, täglicher energetischer Begleitung und vollständigem Rauhnachtsprogramm.",
             action: "13-Wochen-Programm entdecken",
@@ -64,7 +66,7 @@ export const memberEvents = [
             kind: "13 haftalık program",
             title: "Başrolde sensin. Peki senaryonu kim yazıyor?",
             date: "Başlangıç süreci 21 Ekim 2026 · Ana program 3 Şubat 2027’ye kadar",
-            time: "13 hafta, 11 Kasım 2026’dan itibaren",
+            time: "11 Kasım 2026’dan itibaren · çarşamba 19:30–21:00 · Almanya saati",
             place: "Sabine ve Selcan ile",
             text: "Rollerini, ilişkilerini ve kararlarını yönlendiren bilinçdışı matrisi fark et. Kişisel matris görüşmesi, günlük enerjetik eşlik ve eksiksiz Rauhnächte programıyla.",
             action: "13 haftalık programı keşfet",
@@ -92,6 +94,29 @@ export const memberEvents = [
             action: "Katılım bilgilerini sor",
         },
     },
+    ...programLiveEvents.map((event, index) => ({
+        id: event.id,
+        endsAt: `${event.date}T20:00:00Z`,
+        href: event.href,
+        de: {
+            kind: "13-Wochen-Programm",
+            title: `Live-Abend ${index + 1} mit Sabine & Selcan`,
+            date: new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${event.date}T12:00:00Z`)),
+            time: "19:30–21:00 Uhr · deutsche Zeit",
+            place: "Online über Zoom",
+            text: "Unser gemeinsamer Mittwochabend für Teilnehmende des 13-Wochen-Programms.",
+            action: "Zum 13-Wochen-Programm",
+        },
+        tr: {
+            kind: "13 haftalık program",
+            title: `Sabine ve Selcan ile ${index + 1}. canlı buluşma`,
+            date: new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${event.date}T12:00:00Z`)),
+            time: "19:30–21:00 · Almanya saati",
+            place: "Zoom üzerinden",
+            text: "13 haftalık program katılımcıları için ortak çarşamba akşamımız.",
+            action: "13 haftalık programa git",
+        },
+    })),
 ];
 
 export const getUpcomingMemberEvents = (now = new Date()) => memberEvents.filter(
