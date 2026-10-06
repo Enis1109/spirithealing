@@ -11,20 +11,22 @@ import { Contact } from "@/sections/Contact"
 import { Events } from "@/sections/Events"
 import { NewsletterStatus } from "@/sections/NewsletterStatus"
 import { BookingHub } from "@/sections/BookingHub"
-import { Route, Routes, useLocation } from "react-router-dom"
+import { Navigate, Route, Routes, useLocation } from "react-router-dom"
+import { LiveReplay } from "@/sections/LiveReplay"
+import { LiveTalkSecond } from "@/sections/LiveTalkSecond"
 import { Imp } from "@/sections/Imp"
 import { Daten } from "@/sections/Daten"
 import { DocumentTranslator } from "@/i18n/DocumentTranslator"
 import { useLanguage } from "@/i18n/LanguageContext"
 import { WebsiteAssistant } from "@/components/WebsiteAssistant"
-import { LiveTalkPopup } from "@/components/LiveTalkPopup"
+import { ReplayPopup } from "@/components/ReplayPopup"
 import { BerlinLive } from "@/sections/BerlinLive"
 import { Zepter13 } from "@/sections/Zepter13"
 import { Rauhnaechte } from "@/sections/Rauhnaechte"
 import { NotFound } from "@/sections/NotFound"
 import { WebinarRegistration } from "@/sections/WebinarRegistration"
 import { WebinarWatch } from "@/sections/WebinarWatch"
-import { LiveTalkRegistration, LiveTalkAccess } from "@/sections/LiveTalk"
+import { LiveTalkAccess } from "@/sections/LiveTalk"
 const AdminLiveTalk = lazy(() => import("@/sections/AdminLiveTalk").then(module => ({ default: module.AdminLiveTalk })));
 
 const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => ({ default: module.MemberArea })));
@@ -68,7 +70,7 @@ function App() {
   const isMemberApp = location.pathname.startsWith("/mitglieder")
     || isCampaignLanding;
   const isStandaloneApp = isMemberApp || isAdminApp || isOnboardingApp || isScheduleSurveyApp || isBerlinLanding || isZepter13Landing || isRauhnaechteLanding || isWebinarApp;
-  const showLiveTalkPopup = !isWebinarApp && !isAdminApp && !isOnboardingApp && !isScheduleSurveyApp && !isMemberApp;
+  const showLiveTalkPopup = location.pathname === "/";
 
   return (
     <div className="min-h-screen min-w-screen overflow-x-hidden">
@@ -90,7 +92,11 @@ function App() {
         <Route path="/13-wochen-programm" element={<Zepter13/>}/>
         <Route path="/rauhnaechte" element={<Rauhnaechte/>}/>
         <Route path="/vortrag-13-wochen-programm" element={<WebinarRegistration/>}/>
-        <Route path="/live-vortrag" element={<LiveTalkRegistration/>}/>
+        <Route path="/live-vortrag" element={<Navigate to={`/live-vortrag/aufzeichnung${location.search}`} replace/>}/>
+        <Route path="/live-vortrag/aufzeichnung" element={<LiveReplay/>}/>
+        <Route path="/live-vortrag/20-oktober" element={<LiveTalkSecond/>}/>
+        <Route path="/live-vortrag/20-oktober/zugang" element={<LiveTalkAccess endpoint="/api/live-talk-2"/>}/>
+        <Route path="/admin/live-vortrag-2" element={<Suspense fallback={<p>Vortragsverwaltung wird geladen …</p>}><AdminLiveTalk endpoint="/api/admin/live-talk-2" heading="Zweites Live am 20. Oktober" registrationPath="/live-vortrag/20-oktober"/></Suspense>}/>
         <Route path="/live-vortrag/zugang" element={<LiveTalkAccess/>}/>
         <Route path="/admin/live-vortrag" element={<Suspense fallback={<p>Vortragsverwaltung wird geladen …</p>}><AdminLiveTalk/></Suspense>}/>
         <Route path="/vortrag-13-wochen-programm/ansehen" element={<WebinarWatch/>}/>
@@ -123,7 +129,7 @@ function App() {
         <Route path="/datenschutz" element={<PrivacyPage/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
-      {showLiveTalkPopup && <LiveTalkPopup/>}
+      {showLiveTalkPopup && <ReplayPopup/>}
       {!isStandaloneApp && <WebsiteAssistant/>}
     </div>
   )

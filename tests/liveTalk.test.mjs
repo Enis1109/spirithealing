@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { liveTalk, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
+import { liveTalk, liveTalk2, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
     zoomMeetingIdFromJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
 
@@ -61,7 +61,7 @@ test("calendar uses correct UTC and folding; mail contains no marketing or fake 
 });
 
 // Isolated repository double exercises the service branches without real contacts or mail.
-function fixture() {
+function fixture(event = liveTalk) {
     const state = { regs: [], jobs: [], sent: [], newsletter: [], config: { join_url: joinUrl, passcode, enabled: 1 }, failures: [], rollback: false };
     const execute = async (raw, p = []) => {
         const q = raw.replace(/\s+/g, " ").trim();
@@ -100,7 +100,7 @@ function fixture() {
     };
     const connection = { execute, beginTransaction: async () => {}, commit: async () => {}, rollback: async () => { state.rollback = true; }, release() {} };
     const db = { execute, getConnection: async () => connection };
-    const service = createLiveTalkService({ db, secret, newsletter: async f => { state.newsletter.push(f); return "pending"; }, sendMail: async mail => { if (state.failures.length) throw state.failures.shift(); state.sent.push(mail); } });
+    const service = createLiveTalkService({ db, secret, event, newsletter: async f => { state.newsletter.push(f); return "pending"; }, sendMail: async mail => { if (state.failures.length) throw state.failures.shift(); state.sent.push(mail); } });
     return { state, service, db };
 }
 test("schema initializes disabled; registrations queue once and mail worker does not repeat", async () => {
@@ -159,4 +159,24 @@ test("capacity keeps two host places free and rejects overbooking", async () => 
     await assert.rejects(() => service.register(form, now), {code:"full"});
     assert.equal(state.jobs.length, 0);
     assert.equal(state.rollback, true);
+});
+
+test("second live accepts new registrations after the first event, sends once and uses its own access path", async () => {
+    const { state, service } = fixture(liveTalk2);
+    const october7 = new Date("2026-10-07T10:00:00Z");
+    await service.register(form, october7);
+    await service.register(form, october7);
+    assert.equal(state.regs.length, 1); assert.equal(state.jobs.length, 3);
+    await service.processMail(october7); await service.processMail(october7);
+    assert.equal(state.sent.length, 1);
+    assert.equal(state.sent[0].event.key, liveTalk2.key);
+    assert.match(state.sent[0].manageUrl, /\/20-oktober\/zugang#token=/);
+    assert.equal((await service.access(makeLiveToken(1, secret), october7)), null);
+    const token = makeLiveToken(1, secret, liveTalk2);
+    assert.equal((await service.access(token, october7)).key, liveTalk2.key);
+    await service.processMail(new Date("2026-10-19T18:00Z"));
+    await service.processMail(new Date("2026-10-20T17:00Z"));
+    assert.deepEqual(state.sent.map(m => m.kind), ["confirmation", "day", "hour"]);
+    assert.equal(await service.cancel(token), true);
+    assert.equal((await service.access(token, october7)).joinUrl, null);
 });

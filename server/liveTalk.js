@@ -1,11 +1,11 @@
 import crypto from "node:crypto";
-import { liveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl,
+import { liveTalk as defaultLiveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl,
     validateZoomPasscode, zoomMeetingIdFromJoinUrl } from "./liveTalkConfig.js";
 
 const sqlDate = (date) => new Date(date).toISOString().slice(0, 19).replace("T", " ");
 
 // Separate tables keep the existing seven-day recording access untouched.
-export const initializeLiveTalk = async (db) => {
+export const initializeLiveTalk = async (db, liveTalk = defaultLiveTalk) => {
     await db.execute(`CREATE TABLE IF NOT EXISTS live_talk_settings (
         event_key VARCHAR(80) PRIMARY KEY, join_url VARCHAR(1024) NULL, passcode VARCHAR(32) NULL,
         enabled BOOLEAN NOT NULL DEFAULT FALSE, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -34,7 +34,7 @@ export const initializeLiveTalk = async (db) => {
     await db.execute("INSERT IGNORE INTO live_talk_settings (event_key) VALUES (?)", [liveTalk.key]);
 };
 
-export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUrl = "https://spirit-healing.tr" }) => {
+export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUrl = "https://spirit-healing.tr", event: liveTalk = defaultLiveTalk }) => {
     const settings = async () => {
         const [rows] = await db.execute("SELECT join_url, passcode, enabled FROM live_talk_settings WHERE event_key = ?", [liveTalk.key]);
         const joinUrl = validateZoomJoinUrl(rows[0]?.join_url);
@@ -43,12 +43,12 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
     };
     const publicInfo = async (now = new Date()) => {
         const config = await settings();
-        return { ...liveTalk, ready: config.enabled && Boolean(config.joinUrl) && now < new Date(liveTalk.startsAt) };
+        return { ...liveTalk, ready: config.enabled && Boolean(config.joinUrl) && Boolean(config.passcode) && now < new Date(liveTalk.startsAt) };
     };
     const register = async (form, now = new Date()) => {
         if (!(await publicInfo(now)).ready) throw Object.assign(new Error("Registration closed"), { code: "closed" });
         // Also validate the signing configuration before accepting registrations.
-        makeLiveToken(1, secret);
+        makeLiveToken(1, secret, liveTalk);
         const connection = await db.getConnection();
         let id, isNew = false;
         try {
@@ -66,7 +66,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             isNew = insert.affectedRows === 1;
             const [rows] = await connection.execute("SELECT id, status FROM live_talk_registrations WHERE event_key = ? AND email = ? FOR UPDATE", [liveTalk.key, form.email]);
             id = rows[0].id;
-            if (isNew) for (const mail of liveMailSchedule(now)) {
+            if (isNew) for (const mail of liveMailSchedule(now, liveTalk)) {
                 await connection.execute("INSERT INTO live_talk_mail (registration_id, kind, due_at) VALUES (?, ?, ?)", [id, mail.kind, sqlDate(mail.dueAt)]);
             }
             await connection.commit();
@@ -82,7 +82,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         return { accepted: true };
     };
     const access = async (token, now = new Date()) => {
-        const id = readLiveToken(token, secret);
+        const id = readLiveToken(token, secret, liveTalk);
         if (!id || now >= new Date(liveTalk.deleteAfter)) return null;
         const [rows] = await db.execute("SELECT id, name, status FROM live_talk_registrations WHERE id = ? AND event_key = ?", [id, liveTalk.key]);
         if (!rows.length) return null;
@@ -91,7 +91,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             joinUrl: rows[0].status === "active" && config.enabled && now < new Date(liveTalk.endsAt) ? config.joinUrl : null };
     };
     const cancel = async (token) => {
-        const id = readLiveToken(token, secret);
+        const id = readLiveToken(token, secret, liveTalk);
         if (!id) return false;
         const connection = await db.getConnection();
         try {
@@ -142,9 +142,9 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
                 continue;
             }
             try {
-                const token = makeLiveToken(row.id, secret);
-                await sendMail({ ...row, joinUrl: config.joinUrl, meetingId: config.meetingId, passcode: config.passcode,
-                    manageUrl: `${baseUrl.replace(/\/$/u, "")}/live-vortrag/zugang#token=${token}`,
+                const token = makeLiveToken(row.id, secret, liveTalk);
+                await sendMail({ ...row, event: liveTalk, joinUrl: config.joinUrl, meetingId: config.meetingId, passcode: config.passcode,
+                    manageUrl: `${baseUrl.replace(/\/$/u, "")}${liveTalk.accessPath || "/live-vortrag/zugang"}#token=${token}`,
                     messageId: `<${liveTalk.key}.${row.id}.${row.kind}@spirit-healing.tr>` });
             } catch (error) {
                 // Only definite SMTP rejections are retried; network uncertainty is surfaced to owners.
