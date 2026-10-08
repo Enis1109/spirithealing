@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CalendarDays, Download, PlayCircle, UsersRound } from 'lucide-react';
-import { hasExperienceHandoutPreRelease, readExperienceDescription, writeExperienceDescription } from '../lib/experienceDescription.js';
+import { experienceDescriptionParts, hasExperienceHandoutPreRelease, readExperienceDescription, writeExperienceDescription } from '../lib/experienceDescription.js';
 
 const endpoint = '/api/members/experience';
 const dateText = value => new Intl.DateTimeFormat('de-DE', {
@@ -155,7 +155,9 @@ export function ExperienceGroup({ member }) {
                     <p className="text-sm text-[#547875]">{dateText(session.occurredAt)}</p>
                     {session.monthTopic && <p className="mt-4 border-l-2 border-[#d8bf74] pl-3 text-sm font-semibold text-[#356d68]">Monatsthema · {session.monthTopic}</p>}
                     <h2 className="mt-3 font-serif text-2xl leading-snug">{session.title}</h2>
-                    {session.description && <p className="mt-3 whitespace-pre-line text-[0.95rem] leading-6 text-[#42625f]">{session.description}</p>}
+                    {session.description && <p className="mt-3 whitespace-pre-line text-[0.95rem] leading-6 text-[#42625f]">{experienceDescriptionParts(session.description).map((part, index) => part.href
+                        ? <a key={index} href={part.href} target="_blank" rel="noopener noreferrer" className="break-words font-semibold text-[#0b7e80] underline underline-offset-4">{part.text}</a>
+                        : part.text)}</p>}
                     <div className="mt-auto pt-5">
                     {session.recordingAvailable && <button disabled={busy} className={buttonClass} onClick={() => openVideo(session)}><PlayCircle className="h-5 w-5" />Aufzeichnung ansehen</button>}
                     <div className="mt-4 space-y-2">{session.handouts.map(handout => <div key={handout.id} className="flex flex-wrap items-center gap-x-4">

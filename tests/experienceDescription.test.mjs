@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { hasExperienceHandoutPreRelease, readExperienceDescription, writeExperienceDescription } from '../src/lib/experienceDescription.js';
+import { experienceDescriptionParts, hasExperienceHandoutPreRelease, readExperienceDescription, writeExperienceDescription } from '../src/lib/experienceDescription.js';
 
 test('legacy descriptions are preserved, including embedded topic mentions', () => {
     for (const description of ['', 'Ein Abend zum Austausch.', 'Text\nMonatsthema: bleibt im Text', '  Unveränderter Text']) {
@@ -39,4 +39,31 @@ test('preview is opt-in and an embedded or altered heading is not a release', ()
     }
     assert.equal(hasExperienceHandoutPreRelease(writeExperienceDescription('', 'Text', 'true')), false);
     assert.deepEqual(readExperienceDescription(writeExperienceDescription('', '', true)), { monthTopic: '', description: '' });
+});
+
+test('named HTTPS book links become clickable parts without changing surrounding text or query parameters', () => {
+    const url = 'https://www.dropbox.com/scl/fi/synthetic/book.pdf?rlkey=synthetic&dl=0';
+    const text = `Ein Abend.\n\n[Buch herunterladen (Dropbox)](${url})\nDie Bücherliste bleibt.`;
+    assert.deepEqual(experienceDescriptionParts(text), [{ text: 'Ein Abend.\n\n' },
+        { text: 'Buch herunterladen (Dropbox)', href: url }, { text: '\nDie Bücherliste bleibt.' }]);
+    const saved = writeExperienceDescription('Testthema', text, true);
+    assert.equal(readExperienceDescription(saved).description, text);
+    assert.equal(hasExperienceHandoutPreRelease(saved), true);
+});
+
+test('plain descriptions and unsupported or unsafe markup stay text, never executable HTML', () => {
+    for (const text of ['', 'Plain text', '<script>alert(1)</script>', '[Bad](javascript:alert(1))',
+        '[Bad](data:text/html,example)', '[Bad](file:///private/book.pdf)', '[Bad](http://example.test)',
+        '[Bad](https://user:secret@example.test/book.pdf)', '[Bad](https://)', '[Incomplete](https://example.test']) {
+        assert.deepEqual(experienceDescriptionParts(text), [{ text }]);
+    }
+    assert.deepEqual(experienceDescriptionParts(null), [{ text: '' }]);
+    assert.deepEqual(experienceDescriptionParts('[<img src=x onerror=alert()>](https://example.test/book.pdf)'),
+        [{ text: '<img src=x onerror=alert()>', href: 'https://example.test/book.pdf' }]);
+});
+
+test('multiple HTTPS links preserve order and invalid entries between links remain visible text', () => {
+    assert.deepEqual(experienceDescriptionParts('[First](https://example.test/1) [Invalid](http://example.test) [Second](https://example.test/2)'),
+        [{ text: 'First', href: 'https://example.test/1' }, { text: ' [Invalid](http://example.test) ' },
+            { text: 'Second', href: 'https://example.test/2' }]);
 });

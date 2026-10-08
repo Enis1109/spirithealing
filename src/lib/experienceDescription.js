@@ -21,3 +21,20 @@ export function writeExperienceDescription(monthTopic, description, handoutPreRe
     const editorial = topic ? `Monatsthema: ${topic}\n\n${body}`.trim() : body;
     return handoutPreRelease === true ? `${handoutPreReleaseHeading}\n${editorial}`.trim() : editorial;
 }
+
+// Only named HTTPS links are supported. Everything else remains escaped text in React.
+export function experienceDescriptionParts(value = '') {
+    const description = String(value ?? '');
+    const parts = [];
+    let position = 0;
+    for (const match of description.matchAll(/\[([^\]\r\n]{1,180})\]\((https:\/\/[^\s)]+)\)/g)) {
+        let url;
+        try { url = new URL(match[2]); } catch { continue; }
+        if (url.protocol !== 'https:' || url.username || url.password) continue;
+        if (match.index > position) parts.push({ text: description.slice(position, match.index) });
+        parts.push({ text: match[1], href: url.href });
+        position = match.index + match[0].length;
+    }
+    if (position < description.length || !parts.length) parts.push({ text: description.slice(position) });
+    return parts;
+}
