@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CalendarDays, Download, PlayCircle, UsersRound } from 'lucide-react';
 import { hasExperienceHandoutPreRelease, readExperienceDescription, writeExperienceDescription } from '../lib/experienceDescription.js';
 
@@ -29,6 +29,13 @@ export function ExperienceGroup({ member }) {
     const [notice, setNotice] = useState('');
     const [editing, setEditing] = useState(null);
     const [reminderInfo, setReminderInfo] = useState(null);
+    const [removingHandout, setRemovingHandout] = useState(null);
+    const removalDialog = useRef(null);
+    useEffect(() => {
+        const dialog = removalDialog.current;
+        if (removingHandout && dialog && !dialog.open) dialog.showModal();
+        return () => { if (dialog?.open) dialog.close(); };
+    }, [removingHandout]);
     const refresh = () => request(endpoint).then(setData);
     useEffect(() => { let active = true; request(endpoint).then(value => {
         if (active) setData(value);
@@ -45,6 +52,13 @@ export function ExperienceGroup({ member }) {
     });
     const jsonPost = (url, body) => request(url, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    });
+    const setHandoutVisibility = (session, handout, visible) => action(async () => {
+        await jsonPost(`/api/admin/experience/sessions/${session.id}/handouts/${handout.id}/visibility`, {
+            visible, title: handout.title,
+        });
+        setRemovingHandout(null);
+        setNotice(visible ? 'PDF wiederhergestellt.' : 'PDF aus dem Mitgliederbereich entfernt. Das Original bleibt für eine Wiederherstellung erhalten.');
     });
     const saveSession = event => {
         event.preventDefault(); const form = event.currentTarget;
@@ -144,13 +158,33 @@ export function ExperienceGroup({ member }) {
                     {session.description && <p className="mt-3 whitespace-pre-line text-[0.95rem] leading-6 text-[#42625f]">{session.description}</p>}
                     <div className="mt-auto pt-5">
                     {session.recordingAvailable && <button disabled={busy} className={buttonClass} onClick={() => openVideo(session)}><PlayCircle className="h-5 w-5" />Aufzeichnung ansehen</button>}
-                    <div className="mt-4 space-y-2">{session.handouts.map(handout => <a key={handout.id} className="flex min-h-11 items-center gap-2 font-semibold underline" href={handout.url}><Download className="h-4 w-4" />{handout.title}</a>)}</div>
+                    <div className="mt-4 space-y-2">{session.handouts.map(handout => <div key={handout.id} className="flex flex-wrap items-center gap-x-4">
+                        <a className="flex min-h-11 flex-1 items-center gap-2 font-semibold underline" href={handout.url}><Download className="h-4 w-4 shrink-0" />{handout.title}</a>
+                        {member.role === 'admin' && <button disabled={busy} aria-label={`PDF „${handout.title}“ entfernen`} className="min-h-11 text-sm text-[#547875] underline" onClick={() => setRemovingHandout({ session, handout })}>Entfernen</button>}
+                    </div>)}</div>
+                    {member.role === 'admin' && session.removedHandouts?.length > 0 && <details className="mt-4 text-sm text-[#547875]">
+                        <summary className="cursor-pointer">Entfernte PDFs ({session.removedHandouts.length})</summary>
+                        {session.removedHandouts.map(handout => <div key={handout.id} className="mt-2 flex flex-wrap items-center gap-3">
+                            <span className="flex-1">{handout.title}</span>
+                            <button disabled={busy} className="min-h-11 underline" aria-label={`PDF „${handout.title}“ wiederherstellen`} onClick={() => setHandoutVisibility(session, handout, true)}>Wiederherstellen</button>
+                        </div>)}
+                    </details>}
                     {member.role === 'admin' && <button className="mt-4 block min-h-11 text-sm text-[#547875] underline underline-offset-4" onClick={() => setEditing(session)}>Treffen bearbeiten</button>}
                     </div>
                 </article>)}</div>
                 {!sessions.length && <p className="rounded-2xl bg-white p-6">Hier erscheinen deine freigegebenen Treffen und Handouts, sobald sie bereitstehen.</p>}
             </>}
         </>}
+        {member.role === 'admin' && removingHandout && <dialog ref={removalDialog} aria-labelledby="remove-handout-title" onCancel={event => { event.preventDefault(); if (!busy) setRemovingHandout(null); }} className="fixed inset-0 m-auto max-h-[90vh] w-[calc(100%-2.5rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-6 text-[#123e3d] shadow-xl backdrop:bg-black/50">
+                <h2 id="remove-handout-title" className="font-serif text-2xl">Diese PDF entfernen?</h2>
+                <p className="mt-4 font-semibold">{removingHandout.handout.title}</p>
+                <p className="mt-2 text-sm text-[#547875]">{dateText(removingHandout.session.occurredAt)} · {removingHandout.session.title}</p>
+                <p className="mt-4">Die PDF verschwindet aus dem Mitgliederbereich und ist auch über ihren bisherigen Link nicht mehr abrufbar. Das Original bleibt erhalten und kann unter „Entfernte PDFs“ wiederhergestellt werden.</p>
+                <div className="mt-5 flex flex-wrap gap-4">
+                    <button disabled={busy} className={buttonClass} onClick={() => setHandoutVisibility(removingHandout.session, removingHandout.handout, false)}>PDF entfernen</button>
+                    <button disabled={busy} className="min-h-11 underline" onClick={() => setRemovingHandout(null)}>Abbrechen</button>
+                </div>
+        </dialog>}
         {member.role === 'admin' && <details open={editing ? true : undefined} className="rounded-2xl border border-[#d8bf74] bg-white p-6">
             <summary className="cursor-pointer text-lg font-bold">Erfahrungsgruppe verwalten</summary>
             <p className="mt-4 text-sm">Zeitangaben in den Formularen beziehen sich auf die Zeitzone dieses Geräts. Speicherung erfolgt mit eindeutigem Zeitpunkt.</p>

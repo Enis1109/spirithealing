@@ -77,6 +77,16 @@ test('real MySQL: group archive, private files, audited grants and reminder dedu
     assert.deepEqual(await service.handout(legacy, handout), pdf);
     assert.equal(await service.handout(newcomer, handout), null);
     assert.equal(await service.recording(newcomer, imported[0].id), null);
+    const replacement = await service.uploadHandout(admin, imported[0].id, 'Current handout', Buffer.from('%PDF-1.7 replacement'));
+    await service.setHandoutVisibility(admin, imported[0].id, handout, { title: 'Archiv-Handout', visible: false });
+    assert.equal(await service.handout(legacy, handout), null);
+    assert.deepEqual((await service.overview(legacy)).sessions.find(s => s.id === imported[0].id).handouts.map(h => h.id), [replacement]);
+    assert.equal((await service.overview(legacy)).sessions[0].removedHandouts, undefined);
+    assert.deepEqual((await service.overview(admin)).sessions.find(s => s.id === imported[0].id).removedHandouts.map(h => h.id), [handout]);
+    assert.equal(await service.uploadHandout(admin, imported[0].id, 'Archiv-Handout', pdf), handout);
+    assert.equal(await service.handout(legacy, handout), null);
+    await service.setHandoutVisibility(admin, imported[0].id, handout, { title: 'Archiv-Handout', visible: true });
+    assert.deepEqual(await service.handout(legacy, handout), pdf);
     const [[audit]] = await db.execute('SELECT COUNT(*) AS n FROM experience_access_audit');
     assert.equal(audit.n, 2);
     const sent = [];

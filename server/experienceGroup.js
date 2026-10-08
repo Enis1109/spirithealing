@@ -24,6 +24,11 @@ export const initializeExperienceGroup = async (db) => {
           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
           CONSTRAINT experience_handout_session_fk FOREIGN KEY (session_id) REFERENCES experience_sessions(id)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+        `CREATE TABLE IF NOT EXISTS experience_removed_handouts (
+          handout_id BIGINT UNSIGNED PRIMARY KEY, removed_by BIGINT UNSIGNED NOT NULL,
+          removed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT experience_removed_handout_fk FOREIGN KEY (handout_id) REFERENCES experience_handouts(id)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
         `CREATE TABLE IF NOT EXISTS experience_access_audit (
           id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT, member_id BIGINT UNSIGNED NOT NULL,
           actor_id BIGINT UNSIGNED NOT NULL, reason VARCHAR(500) NOT NULL,
@@ -112,13 +117,17 @@ export const createExperienceService = ({ db, clock = () => new Date(), joinUrl 
             const visible = rows.filter(row => admin || canReadSession(access, row, clock()));
             const sessions = [];
             for (const row of visible) {
-                const [handouts] = await db.execute('SELECT id, title FROM experience_handouts WHERE session_id = ? ORDER BY id', [row.id]);
+                const [handouts] = await db.execute(`SELECT id, title,
+                    EXISTS (SELECT 1 FROM experience_removed_handouts WHERE handout_id = experience_handouts.id) AS removed
+                    FROM experience_handouts WHERE session_id = ? ORDER BY id`, [row.id]);
+                const mapHandout = item => ({ id: Number(item.id), title: item.title,
+                    url: `/api/members/experience/handouts/${item.id}` });
                 sessions.push({ id: Number(row.id), title: row.title, summary: row.summary,
                     occurredAt: isoDate(row.occurred_at), status: row.status,
                     recordingAvailable: Boolean(row.vimeo_id) && (admin || canReadRecording(access, row, clock())),
-                    handouts: handouts.map(item => ({ id: Number(item.id), title: item.title,
-                        url: `/api/members/experience/handouts/${item.id}` })),
-                    ...(admin ? { vimeoId: row.vimeo_id, vimeoHash: row.vimeo_hash } : {}),
+                    handouts: handouts.filter(item => !Number(item.removed)).map(mapHandout),
+                    ...(admin ? { vimeoId: row.vimeo_id, vimeoHash: row.vimeo_hash,
+                        removedHandouts: handouts.filter(item => Number(item.removed)).map(mapHandout) } : {}),
                 });
             }
             return { active, adminPreview: admin, access: mapAccess(access), sessions, plans: experiencePlans, liveAvailable: Boolean(liveUrl) };
@@ -134,7 +143,8 @@ export const createExperienceService = ({ db, clock = () => new Date(), joinUrl 
             return session ? experienceEmbedUrl(session) : null;
         },
         async handout(member, id) {
-            const [rows] = await db.execute('SELECT id, session_id, title FROM experience_handouts WHERE id = ?', [id]);
+            const [rows] = await db.execute(`SELECT id, session_id, title FROM experience_handouts WHERE id = ?
+                AND NOT EXISTS (SELECT 1 FROM experience_removed_handouts WHERE handout_id = experience_handouts.id)`, [id]);
             if (!rows[0] || !await authorizedSession(member, rows[0].session_id)) return null;
             const [files] = await db.execute('SELECT file_bytes FROM experience_handouts WHERE id = ?', [id]);
             return files[0]?.file_bytes || null;
@@ -171,6 +181,29 @@ export const createExperienceService = ({ db, clock = () => new Date(), joinUrl 
                 const [result] = await conn.execute('INSERT INTO experience_handouts (session_id, title, file_bytes) VALUES (?, ?, ?)', [sessionId, title, bytes]);
                 await conn.execute('UPDATE experience_handout_imports SET handout_id=? WHERE session_id=? AND file_hash=?', [result.insertId, sessionId, hash]);
                 await conn.commit(); return Number(result.insertId);
+            } catch (error) { await conn.rollback(); throw error; }
+            finally { conn.release(); }
+        },
+        async setHandoutVisibility(member, sessionId, handoutId, body) {
+            if (member.role !== 'admin') throw new ExperienceValidationError('role');
+            if (typeof body?.visible !== 'boolean' || typeof body?.title !== 'string')
+                throw new ExperienceValidationError('handout');
+            const conn = await db.getConnection();
+            try {
+                await conn.beginTransaction();
+                const [[handout]] = await conn.execute(
+                    'SELECT id, title FROM experience_handouts WHERE id = ? AND session_id = ? FOR UPDATE', [handoutId, sessionId]);
+                if (!handout) throw new ExperienceValidationError('handout');
+                if (handout.title !== body.title) throw new ExperienceValidationError('handout_changed');
+                if (body.visible) {
+                    await conn.execute('DELETE FROM experience_removed_handouts WHERE handout_id = ?', [handoutId]);
+                } else {
+                    // Retain the private PDF and import identity so removal is reversible and reuploads stay deduplicated.
+                    await conn.execute('INSERT IGNORE INTO experience_removed_handouts (handout_id, removed_by) VALUES (?, ?)',
+                        [handoutId, member.id]);
+                }
+                await conn.commit();
+                return { id: Number(handoutId), visible: body.visible };
             } catch (error) { await conn.rollback(); throw error; }
             finally { conn.release(); }
         },

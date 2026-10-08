@@ -63,6 +63,10 @@ export const registerExperienceRoutes = (app, { service, getMember, sameOrigin, 
             const member = await identify(req, res, true); if (!member) return;
             res.json({ ok: true, id: await service.uploadHandout(member, id(req.params.id), String(req.query.title || '').trim(), req.body) });
         }));
+    app.post('/api/admin/experience/sessions/:id/handouts/:handoutId/visibility', sameOrigin, guarded(async (req, res) => {
+        const member = await identify(req, res, true); if (!member) return;
+        res.json({ ok: true, ...await service.setHandoutVisibility(member, id(req.params.id), id(req.params.handoutId), req.body) });
+    }));
     app.get('/api/admin/experience/reminders', guarded(async (req, res) => {
         const member = await identify(req, res, true); if (!member) return;
         res.json({ ok: true, ...(reminders ? await reminders.overview() : { sendingEnabled: false, jobs: [] }),
