@@ -1,4 +1,5 @@
 // Hosts-only replacement and new thumbnail confirmed in the video task on 6 October.
+import { constellationDays, constellationTime, constellationPlace } from "./constellationDays.js";
 export const replayFunnel = Object.freeze({
     path: "/live-vortrag/aufzeichnung", title: "Wer schreibt dein inneres Drehbuch?",
     image: "/images/live-drehbuch-2026-10-06.jpg",
@@ -19,7 +20,13 @@ export const programLiveEvents = Array.from({ length: 13 }, (_, index) => ({
 export const publicEvents = [
     { id: "july-recording", date: "2026-07-26", title: "Wer entscheidet eigentlich dein Leben?", detail: "Vortrag mit Workbook im kostenlosen Mitgliederbereich", href: "/gratis-meditationen", replay: true },
     { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Erster Live-Abend mit Sabine & Selcan · Aufzeichnungsbereich und Workbook", href: replayFunnel.path, replay: true },
-    { id: "berlin", date: "2026-10-09", lastDate: "2026-10-10", time: "10–19", title: "Intensivseminar für Familienaufstellung", detail: "9. und 10. Oktober · Berlin-Kreuzberg", href: "/berlin-live" },
+    ...constellationDays.map((day) => ({
+        id: `constellation-${day.id}`, date: day.date, ...(constellationTime ? { time: constellationTime } : {}),
+        title: `Aufstellungsarbeit mit Sabine & Selcan · ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
+        detail: [day.language === "tr" ? "Türkisch" : "Deutsch", constellationPlace].filter(Boolean).join(" · "),
+        href: `/berlin-live${day.language === "tr" ? "?lang=tr" : ""}#tag-${day.id}`,
+        action: "Termin und Teilnahme ansehen",
+    })),
     { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine Erfahrungen mit Anteilen", detail: "Zweiter Live-Abend mit Sabine & Selcan · online", href: replayFunnel.nextLivePath },
     { id: "onboarding", date: "2026-10-21", title: "Dein Einstieg ins 13-Wochen-Programm", detail: "Beginn des Onboardings und der persönlichen Matrix-Gespräche", href: "/13-wochen-programm" },
     ...programLiveEvents,

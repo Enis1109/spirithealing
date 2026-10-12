@@ -1,4 +1,4 @@
-import { berlinSeminarTitles } from "../content/berlinSeminarContent.js"
+import { constellationCapacity, constellationDays, constellationPlace, constellationTime, constellationTicketPrices } from "../content/constellationDays.js"
 
 export const siteUrl = "https://spirit-healing.tr"
 export const organizationId = `${siteUrl}/#organization`
@@ -63,8 +63,8 @@ export const pageMeta = {
       description: "Aktuelle Spirit-Healing-Seminare, Vorträge und Begleitprogramme zu inneren Anteilen, Nervensystem, Beziehungsmustern und Energiearbeit.",
     },
     "/berlin-live": {
-      title: "Familienaufstellung Berlin: Intensivseminar | Spirit Healing",
-      description: "Zweitägiges Intensivseminar am 9.–10. Oktober 2026 in Berlin-Kreuzberg mit Sabine und Selcan. Intensivteilnahme 333 €, mit eigener Aufstellung 444 €.",
+      title: "Aufstellungsarbeit im Dezember und Januar | Spirit Healing",
+      description: "Aufstellungsarbeit in Berlin-Kreuzberg mit Sabine und Selcan: 12./13. Dezember 2026 und 30./31. Januar 2027, 10–19 Uhr. Türkisch oder Deutsch. Tickets: 22 €, 44 € oder 160 €.",
       ...berlinImage,
     },
     "/13-wochen-programm": {
@@ -153,8 +153,8 @@ export const pageMeta = {
     "/faq": { title: "Sıkça Sorulan Sorular | Spirit Healing", description: "Spirit Healing'in çalışma biçimi, yöntemleri, seansları, ücretleri ve travma bilgili yaklaşımı hakkında yanıtlar." },
     "/vortraege-seminare": { title: "Seminerler, Eğitimler ve Programlar | Spirit Healing", description: "İçsel parçalar, sinir sistemi, ilişki örüntüleri ve enerji çalışması üzerine güncel Spirit Healing seminerleri ve programları." },
     "/berlin-live": {
-      title: "Berlin’de Yoğun Aile Dizimi Semineri | Spirit Healing",
-      description: "9–10 Ekim 2026, Berlin-Kreuzberg: Sabine ve Selcan ile iki günlük yoğun aile dizimi semineri. Yoğun katılım 333 €, kendi diziminizle 444 €.",
+      title: "Aralık ve Ocak aylarında dizim çalışması | Spirit Healing",
+      description: "Berlin-Kreuzberg’de Sabine ve Selcan ile dizim çalışması: 12/13 Aralık 2026 ve 30/31 Ocak 2027, 10:00–19:00. Türkçe veya Almanca. Günlük ücret: 22 €, 44 € ya da 160 €.",
       ...berlinImage,
       imageAlt: "Spirit Healing ile Berlin’de aile ve sistem dizimi",
     },
@@ -409,32 +409,35 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
 
   if (normalizedPath === "/berlin-live") {
     const isTurkish = language === "tr"
-    graph.push({
+    const location = constellationPlace ? {
+      "@type": "Place",
+      name: constellationPlace,
+      address: { "@type": "PostalAddress", addressLocality: constellationPlace, addressCountry: "DE" },
+    } : undefined
+    graph.push(...constellationDays.map((day) => ({
       "@type": "Event",
-      "@id": `${url}#event`,
-      name: berlinSeminarTitles[isTurkish ? "tr" : "de"],
+      "@id": `${url}#tag-${day.id}`,
+      name: isTurkish ? `Dizim çalışması · ${day.id} · ${day.language === "tr" ? "Türkçe" : "Almanca"}` : `Aufstellungsarbeit · ${day.id} · ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
       description: meta.description,
-      startDate: "2026-10-09T10:00:00+02:00",
-      endDate: "2026-10-10T19:00:00+02:00",
+      startDate: constellationTime ? `${day.date}T10:00:00+01:00` : day.date,
+      endDate: constellationTime ? `${day.date}T19:00:00+01:00` : day.date,
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
       image: [socialImageFor(meta)],
-      maximumAttendeeCapacity: 20,
-      location: {
-        "@type": "Place",
-        name: "Berlin-Kreuzberg",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Berlin-Kreuzberg",
-          addressCountry: "DE",
-        },
-      },
+      maximumAttendeeCapacity: constellationCapacity.total,
+      ...(location ? { location } : {}),
       organizer: { "@id": organizationId },
-      offers: [
-        { "@type": "Offer", name: isTurkish ? "Kendi diziminizi açtırmadan yoğun katılım" : "Intensivteilnahme ohne eigene Aufstellung", price: "333", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
-        { "@type": "Offer", name: isTurkish ? "Kendi dizimiyle katılım" : "Platz mit eigener Aufstellung", price: "444", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: `${url}#tickets` },
-      ],
-    })
+      offers: ["returning", "new", "own"].map((type) => ({
+        "@type": "Offer",
+        name: isTurkish
+          ? ({ returning: "Temsilci · önceki katılımcı veya Spirit Healing üyesi", new: "Temsilci · yeni katılımcı", own: "Kendi dizimi" })[type]
+          : ({ returning: "Stellvertretung · früher dabei oder Spirit Healing zugehörig", new: "Stellvertretung · neu dabei", own: "Eigene Aufstellung" })[type],
+        price: String(constellationTicketPrices[type]),
+        priceCurrency: "EUR",
+        availability: day.links[type] ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+        url: day.links[type] || `${url}#tag-${day.id}`,
+      })),
+    })))
   }
 
   if (normalizedPath === "/13-wochen-programm") {

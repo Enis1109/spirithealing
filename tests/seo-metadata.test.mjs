@@ -59,13 +59,13 @@ test("keeps the reviewed Berlin Live language versions separate", () => {
 
   assert.equal(canonicalUrlForLanguage("/berlin-live", "de"), "https://spirit-healing.tr/berlin-live")
   assert.equal(canonicalUrlForLanguage("/berlin-live", "tr"), "https://spirit-healing.tr/berlin-live?lang=tr")
-  assert.match(german.title, /Familienaufstellung Berlin/u)
-  assert.match(turkish.title, /Yoğun Aile Dizimi Semineri/u)
+  assert.match(german.title, /Aufstellungsarbeit im Dezember und Januar/u)
+  assert.match(turkish.title, /Aralık ve Ocak aylarında dizim çalışması/u)
 
   const structuredData = JSON.stringify(structuredDataForPath("/berlin-live", "tr"))
-  assert.match(structuredData, /Berlin’de İki Günlük Yoğun Aile Dizimi Semineri/u)
-  assert.match(structuredData, /Kendi dizimiyle katılım/u)
-  assert.match(structuredData, /berlin-live\?lang=tr#event/u)
+  assert.match(structuredData, /Dizim çalışması/u)
+  assert.match(structuredData, /Kendi dizimi/u)
+  assert.match(structuredData, /berlin-live\?lang=tr#tag-2026-12-12/u)
 })
 
 test("adds truthful structured data for the main offers", () => {
@@ -75,10 +75,11 @@ test("adds truthful structured data for the main offers", () => {
 
   const berlin = JSON.stringify(structuredDataForPath("/berlin-live", "de"))
   assert.match(berlin, /"Event"/u)
-  assert.match(berlin, /2026-10-09/u)
+  for (const date of ["2026-12-12", "2026-12-13", "2027-01-30", "2027-01-31"]) assert.match(berlin, new RegExp(date, "u"))
   assert.match(berlin, /Berlin-Kreuzberg/u)
   assert.doesNotMatch(berlin, /Manoah|Urbanstraße|10967/u)
-  assert.match(berlin, /"maximumAttendeeCapacity":20/u)
+  assert.equal((berlin.match(/"maximumAttendeeCapacity":20/gu) || []).length, 4)
+  for (const price of ["22", "44", "160"]) assert.match(berlin, new RegExp(`"price":"${price}"`, "u"))
 
   const rauhnaechte = JSON.stringify(structuredDataForPath("/rauhnaechte", "de"))
   assert.match(rauhnaechte, /"Course"/u)
@@ -103,7 +104,7 @@ test("places route-specific SEO in the initial HTML response", () => {
 
   const berlinTurkish = injectSeoIntoDocument(shell, "/berlin-live?lang=tr")
   assert.match(berlinTurkish, /<html lang="tr">/u)
-  assert.match(berlinTurkish, /Berlin’de İki Günlük Yoğun Aile Dizimi Semineri/u)
+  assert.match(berlinTurkish, /Aralık ve Ocak aylarında dizim çalışması/u)
   assert.match(berlinTurkish, /rel="canonical" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)
   assert.match(berlinTurkish, /hreflang="de" href="https:\/\/spirit-healing\.tr\/berlin-live"/u)
   assert.match(berlinTurkish, /hreflang="tr" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)

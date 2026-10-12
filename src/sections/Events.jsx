@@ -8,14 +8,14 @@ const content = {
     de: {
         eyebrow: "Vorträge & Seminare",
         berlin: {
-            eyebrow: "Neu · Live in Berlin",
-            title: "Familienaufstellung live in Berlin",
-            intro: "Am 9. und 10. Oktober 2026 begleiten wir eine kleine Gruppe durch zwei Tage familiensystemischer Aufstellungsarbeit. Nach einer fachlich-therapeutischen Einführung arbeiten wir mit eigenen Anliegen und als Stellvertretende in der Gruppe.",
-            date: "9. und 10. Oktober 2026",
+            eyebrow: "Aufstellungsarbeit mit Sabine und Selcan",
+            title: "Vier einzelne Aufstellungstage",
+            intro: "Am 12. und 13. Dezember 2026 sowie am 30. und 31. Januar 2027 arbeiten wir mit Aufstellungen. Die Samstage sind auf Türkisch, die Sonntage auf Deutsch. Jeder Tag ist einzeln buchbar.",
+            date: "12./13. Dezember · 30./31. Januar",
             time: "jeweils 10–19 Uhr",
             place: "Berlin-Kreuzberg",
-            places: "20 Plätze insgesamt · davon 6 mit eigener Aufstellung",
-            action: "Zur Familienaufstellung in Berlin",
+            places: "Stellvertretung 22 € oder 44 € · eigene Aufstellung 160 € pro Tag",
+            action: "Termine und Teilnahme ansehen",
         },
         live: "Aufzeichnung des Live-Vortrags",
         title: "Wer entscheidet eigentlich dein Leben?",
@@ -80,14 +80,14 @@ const content = {
     tr: {
         eyebrow: "Seminerler & Eğitimler",
         berlin: {
-            eyebrow: "Yeni · Berlin'de yüz yüze",
-            title: "Berlin'de aile dizimi çalışması",
-            intro: "9 ve 10 Ekim 2026 tarihlerinde küçük bir grupla iki günlük aile sistemi dizimi çalışması yapacağız. Uzmanlık temelli terapötik girişin ardından kişisel konularla ve grup içindeki temsilci rolleriyle çalışacağız.",
-            date: "9 ve 10 Ekim 2026",
-            time: "her iki gün 10:00–19:00",
+            eyebrow: "Sabine ve Selcan ile dizim çalışması",
+            title: "Dört ayrı dizim günü",
+            intro: "12 ve 13 Aralık 2026 ile 30 ve 31 Ocak 2027 tarihlerinde dizim çalışması yapacağız. Cumartesi günleri Türkçe, pazar günleri Almanca olacak. Her gün ayrı ayrı rezerve edilir.",
+            date: "12/13 Aralık · 30/31 Ocak",
+            time: "her gün 10:00–19:00",
             place: "Berlin-Kreuzberg",
-            places: "Toplam 20 kişilik yer · 6 kişiye kendi dizimi için ayrılmış yer",
-            action: "Berlin aile dizimi sayfasına git",
+            places: "Temsilci olarak 22 € veya 44 € · kendi dizimi 160 € / gün",
+            action: "Tarihleri ve katılımı gör",
         },
         live: "Canlı seminerin kaydı",
         title: "Hayatına aslında kim karar veriyor?",
@@ -188,7 +188,7 @@ export const Events = () => {
         { icon: CalendarDays, value: copy.berlin.date },
         { icon: Clock3, value: copy.berlin.time },
         { icon: MapPin, value: copy.berlin.place },
-    ];
+    ].filter(({ value }) => value);
 
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
@@ -216,7 +216,7 @@ export const Events = () => {
                             })}
                         </div>
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                            <Link to="/berlin-live" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white transition hover:bg-[#075a57]">
+                            <Link to={language === "tr" ? "/berlin-live?lang=tr" : "/berlin-live"} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white transition hover:bg-[#075a57]">
                                 {copy.berlin.action}
                                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
                             </Link>

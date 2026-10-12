@@ -287,6 +287,18 @@ export const Herotest = () => {
                         </div>
                     </div>
             </div>
+            <div className="bg-[#f8f5ed] px-4 py-7 text-[#173c39] sm:px-6">
+                <div className="mx-auto flex max-w-6xl flex-col gap-5 rounded-3xl border border-[#cbded6] bg-white p-6 shadow-sm sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <p className="text-sm font-bold text-[#0f7d79]">{language === "tr" ? "Sabine ve Selcan ile dizim çalışması" : "Aufstellungsarbeit mit Sabine und Selcan"}</p>
+                        <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{language === "tr" ? "Aralık ve Ocak için dört ayrı gün" : "Vier einzelne Tage im Dezember und Januar"}</h2>
+                        <p className="mt-3 leading-7 text-[#49635f]">{language === "tr" ? "Berlin-Kreuzberg, her gün 10:00–19:00. 12 Aralık ve 30 Ocak Türkçe · 13 Aralık ve 31 Ocak Almanca. Temsilci olarak veya kendi diziminizle katılabilirsiniz." : "Berlin-Kreuzberg, jeweils 10–19 Uhr. 12. Dezember und 30. Januar auf Türkisch · 13. Dezember und 31. Januar auf Deutsch. Teilnahme als Stellvertretung oder mit eigener Aufstellung."}</p>
+                    </div>
+                    <Link to={language === "tr" ? "/berlin-live?lang=tr" : "/berlin-live"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3 text-center font-bold text-white hover:bg-[#075a57]">
+                        {language === "tr" ? "Tarihleri ve fiyatları gör" : "Termine und Preise ansehen"}<ArrowRight className="h-5 w-5" aria-hidden="true" />
+                    </Link>
+                </div>
+            </div>
             <div className="glass rounded-t-4xl pb-8 -mt-8 shadow-[0px_-1px_5px_10px_rgba(0,0,0,0.3)] animate-fade-in animation-delay-400">
                 <div className="container mx-auto px-4 sm:px-6">
                     <div className="space-y-8 py-8 pb-16 items-center justify-center">

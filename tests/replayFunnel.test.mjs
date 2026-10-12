@@ -6,12 +6,13 @@ import { metadataForPath } from "../src/seo/pageMeta.js";
 import { liveTalk, liveTalk2, makeLiveToken, readLiveToken, liveMailSchedule, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
 
-test("calendar uses Berlin day boundaries and spans both Berlin seminar days", () => {
+test("calendar uses Berlin day boundaries and lists all four constellation days", () => {
     assert.equal(berlinDate(new Date("2026-10-06T22:30:00Z")), "2026-10-07");
     const cells = monthCells(2026, 9); assert.equal(cells[3], "2026-10-01"); assert.equal(cells.filter(Boolean).length, 31); assert.equal(cells.length % 7, 0);
-    assert.ok(eventsOnDay("2026-10-09").some(e => e.id === "berlin"));
-    assert.ok(eventsOnDay("2026-10-10").some(e => e.id === "berlin"));
-    assert.equal(eventsOnDay("2026-10-11").some(e => e.id === "berlin"), false);
+    assert.deepEqual(["2026-12-12", "2026-12-13", "2027-01-30", "2027-01-31"].map(day =>
+        eventsOnDay(day).find(e => e.id === `constellation-${day}`)?.date),
+    ["2026-12-12", "2026-12-13", "2027-01-30", "2027-01-31"]);
+    assert.equal(eventsOnDay("2026-10-09").some(e => e.id === "berlin"), false);
     assert.equal(eventsOnDay("2026-10-06")[0].href, replayFunnel.path);
     assert.equal(eventIsPast(eventsOnDay("2026-10-06")[0], new Date("2026-10-07T10:00Z")), true);
 });

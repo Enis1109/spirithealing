@@ -1,459 +1,164 @@
-import {
-  ArrowDown,
-  CalendarDays,
-  Check,
-  Clock3,
-  MapPin,
-} from "lucide-react"
+import { ArrowRight, CalendarDays, MapPin, Clock3 } from "lucide-react"
 import { useLocation } from "react-router-dom"
-import { usePublishedContent } from "@/content/ContentContext"
-import { getPublishedValue } from "@/content/contentValues"
-import { berlinLiveDefaults } from "@/content/berlinLiveContent"
-import { fullPriceCheckoutUrl, klarnaPaymentCopy } from "@/content/klarnaPayments"
-import { BerlinMeasurementSettings, useBerlinMeasurement } from "@/components/BerlinMeasurement"
+import { BerlinLegacyConsentRevoke } from "@/components/BerlinLegacyConsentRevoke"
 import {
-  berlinLiveStaticTurkishTranslations,
-  berlinLiveTurkishDefaults,
-} from "@/content/berlinLiveTurkishContent"
+  constellationDays,
+  constellationPlace,
+  constellationTime,
+  constellationTicketPrices,
+  constellationCapacity,
+} from "@/content/constellationDays"
 
-const colors = {
-  ink: "#173c39",
-  teal: "#0f7d79",
-  tealDark: "#075a57",
-  gold: "#c69543",
-  paper: "#fbf8f1",
+const copy = {
+  de: {
+    back: "Zur Spirit-Healing-Startseite",
+    language: "Seitensprache",
+    eyebrow: "Aufstellungsarbeit mit Sabine und Selcan",
+    title: "Vier Tage für Aufstellungsarbeit",
+    intro: "Im Dezember und Januar arbeiten wir an vier einzelnen Tagen mit Aufstellungen. Die türkischsprachigen und deutschsprachigen Tage sind getrennt buchbar.",
+    dates: "12. und 13. Dezember 2026 · 30. und 31. Januar 2027",
+    timeSuffix: " Uhr",
+    choose: "Termin und Teilnahme wählen",
+    daysTitle: "Wähle deinen Tag",
+    daysIntro: "Jeder Termin gilt für einen Tag. Wähle zuerst das Datum und dann die passende Form der Teilnahme.",
+    capacity: `${constellationCapacity.total} Plätze pro Tag, davon höchstens ${constellationCapacity.own} eigene Aufstellungen. Die beiden Stellvertretungs-Preise teilen sich ${constellationCapacity.representative} Plätze.`,
+    languageName: { de: "Deutsch", tr: "Türkisch" },
+    returning: "Stellvertretung · bereits verbunden",
+    returningDescription: "Für Menschen, die beim vergangenen Aufstellungsseminar dabei waren oder schon zu Spirit Healing gehören.",
+    returningCheckout: "Der Preis von 22 € wird beim Buchen automatisch eingesetzt. Bitte wähle ihn nur, wenn du zu dieser Gruppe gehörst.",
+    new: "Stellvertretung · neu dabei",
+    newDescription: "Für Menschen, die noch nicht bei einer Aufstellung mit uns waren und uns noch nicht kennen.",
+    own: "Eigene Aufstellung",
+    ownDescription: "Für Menschen, die sich an diesem Tag selbst aufstellen lassen möchten.",
+    perDay: "pro Person und Tag",
+    book: "Diesen Platz buchen",
+    unavailable: "Buchung noch nicht freigeschaltet",
+    questions: "Fragen zu deiner Teilnahme?",
+    contact: "Schreib uns an info@spirit-healing.tr.",
+    imprint: "Impressum",
+    privacy: "Datenschutz",
+  },
+  tr: {
+    back: "Spirit Healing ana sayfasına dön",
+    language: "Sayfa dili",
+    eyebrow: "Sabine ve Selcan ile dizim çalışması",
+    title: "Dört ayrı dizim günü",
+    intro: "Aralık ve Ocak aylarında dört ayrı günde dizim çalışması yapacağız. Türkçe ve Almanca günler ayrı ayrı rezerve edilir.",
+    dates: "12 ve 13 Aralık 2026 · 30 ve 31 Ocak 2027",
+    timeSuffix: "",
+    choose: "Tarih ve katılım biçimini seç",
+    daysTitle: "Katılacağınız günü seçin",
+    daysIntro: "Her rezervasyon tek bir gün içindir. Önce tarihi, ardından katılım biçimini seçin.",
+    capacity: `Her gün ${constellationCapacity.total} yer var. Bunların en fazla ${constellationCapacity.own} tanesi kendi dizimi içindir. İki temsilcilik fiyatı toplam ${constellationCapacity.representative} yeri paylaşır.`,
+    languageName: { de: "Almanca", tr: "Türkçe" },
+    returning: "Temsilci olarak · daha önce katılanlar",
+    returningDescription: "Önceki dizim seminerine katılmış olanlar veya zaten Spirit Healing’e dahil olanlar için.",
+    returningCheckout: "22 € tutarındaki fiyat ödeme sırasında otomatik uygulanır. Lütfen bu seçeneği yalnızca bu gruba dahilseniz seçin.",
+    new: "Temsilci olarak · yeni katılanlar",
+    newDescription: "Daha önce bizimle dizime katılmamış ve bizi henüz tanımayanlar için.",
+    own: "Kendi dizimin",
+    ownDescription: "O gün kendi dizimini açtırmak isteyenler için.",
+    perDay: "kişi başına, bir gün için",
+    book: "Bu yeri rezerve et",
+    unavailable: "Rezervasyon henüz açılmadı",
+    questions: "Katılımla ilgili sorun mu var?",
+    contact: "info@spirit-healing.tr adresine yazın.",
+    imprint: "Künye",
+    privacy: "Gizlilik",
+  },
 }
 
-const germanTimelineTimes = ["10:00–13:00", "13:00–14:00", "14:00–ca. 19:00"]
+const ticketTypes = ["returning", "new", "own"]
 
-const nonEmptyLines = (value, fallback) => {
-  const lines = String(value || "").split("\n").map((line) => line.trim()).filter(Boolean)
-  return lines.length ? lines : String(fallback || "").split("\n").map((line) => line.trim()).filter(Boolean)
+function formattedDate(date, language) {
+  const timestamp = new Date(`${date}T12:00:00Z`)
+  return new Intl.DateTimeFormat(language === "tr" ? "tr-TR" : "de-DE", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Berlin",
+  }).format(timestamp)
 }
-
-const timelineFrom = (value, fallback, times = germanTimelineTimes) => {
-  const labels = nonEmptyLines(value, fallback)
-  return times.map((time, index) => [time, labels[index] || ""])
-}
-
-const SectionTitle = ({ eyebrow, title, intro, center = false }) => (
-  <header className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
-    <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[#a67426]">{eyebrow}</p>
-    <h2 className="mt-4 text-3xl font-bold leading-tight text-[#173c39] sm:text-4xl lg:text-5xl">{title}</h2>
-    {intro && <p className="mt-5 text-lg leading-8 text-[#49635f]">{intro}</p>}
-  </header>
-)
-
-const Timeline = ({ entries }) => (
-  <div className="mt-7 divide-y divide-[#d9e5df] border-y border-[#d9e5df]">
-    {entries.map(([time, label]) => (
-      <div key={`${time}-${label}`} className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-5">
-        <p className="font-bold text-[#0f7d79]">{time}</p>
-        <p className="leading-7 text-[#395653]">{label}</p>
-      </div>
-    ))}
-  </div>
-)
 
 export const BerlinLive = () => {
-  const { content } = usePublishedContent()
   const { search } = useLocation()
-  const measurement = useBerlinMeasurement(search)
-  const searchParams = new URLSearchParams(search)
-  const pageLanguage = searchParams.get("lang") === "tr" ? "tr" : "de"
-  const isTurkish = pageLanguage === "tr"
-  const paymentCopy = klarnaPaymentCopy[pageLanguage]
-  const defaults = isTurkish ? berlinLiveTurkishDefaults : berlinLiveDefaults
-  const keyPrefix = isTurkish ? "berlin-tr" : "berlin"
-  const text = (id) => getPublishedValue(content, `${keyPrefix}.${id}`, pageLanguage, defaults[id])
-  const staticText = (german) => isTurkish
-    ? berlinLiveStaticTurkishTranslations[german] || german
-    : german
-  const timelineTimes = germanTimelineTimes.map(staticText)
-  const friday = timelineFrom(text("weekend.friday-lines"), defaults["weekend.friday-lines"], timelineTimes)
-  const saturday = timelineFrom(text("weekend.saturday-lines"), defaults["weekend.saturday-lines"], timelineTimes)
-  const ownQuestions = nonEmptyLines(text("own.questions"), defaults["own.questions"])
-  const ownTicketItems = nonEmptyLines(text("tickets.own-items"), defaults["tickets.own-items"])
-  const intensiveTicketItems = nonEmptyLines(text("tickets.intensive-items"), defaults["tickets.intensive-items"])
-  const systemItems = [1, 2, 3, 4].map((number) => ({
-    id: number,
-    eyebrow: text(`system.item-${number}-eyebrow`),
-    title: text(`system.item-${number}-title`),
-    body: text(`system.item-${number}-text`),
-  }))
-  const processSteps = [1, 2, 3, 4].map((number) => ({
-    number: String(number).padStart(2, "0"),
-    title: text(`process.step-${number}-title`),
-    body: text(`process.step-${number}-text`),
-  }))
-  const groupItems = [1, 2, 3].map((number) => ({
-    id: number,
-    title: text(`group.item-${number}-title`),
-    body: text(`group.item-${number}-text`),
-  }))
-
-  const scrollToTickets = () => {
-    document.getElementById("tickets")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
-
-  const languageHref = (nextLanguage) => {
-    const nextParams = new URLSearchParams(searchParams)
-    if (nextLanguage === "tr") nextParams.set("lang", "tr")
-    else nextParams.delete("lang")
-    const query = nextParams.toString()
-    return `/berlin-live${query ? `?${query}` : ""}`
-  }
-
-  const ownBaseCheckoutUrl = fullPriceCheckoutUrl(
-    "berlinOwn", import.meta.env.VITE_BERLIN_OWN_CONSTELLATION_CHECKOUT_URL,
-  )
-  const intensiveBaseCheckoutUrl = fullPriceCheckoutUrl(
-    "berlinIntensive", import.meta.env.VITE_BERLIN_INTENSIVE_CHECKOUT_URL,
-  )
-  const ownConstellationCheckoutUrl = measurement.enabled ? measurement.checkout('berlinOwn') : ownBaseCheckoutUrl
-  const intensiveParticipationCheckoutUrl = measurement.enabled ? measurement.checkout('berlinIntensive') : intensiveBaseCheckoutUrl
+  const language = new URLSearchParams(search).get("lang") === "tr" ? "tr" : "de"
+  const t = copy[language]
 
   return (
-    <main data-no-translate lang={pageLanguage} className="min-h-screen bg-[#fbf8f1] pb-24 text-[#173c39] sm:pb-0" style={{ color: colors.ink }}>
-      <section className="relative isolate overflow-hidden border-b border-[#dbe7e1] bg-[#f8f5ed]">
-        <div className="pointer-events-none absolute -left-40 top-24 h-96 w-96 rounded-full bg-[#d8ebe3]/70 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full bg-[#f2dfb9]/65 blur-3xl" aria-hidden="true" />
-
+    <main data-no-translate lang={language} className="min-h-screen bg-[#fbf8f1] text-[#173c39]">
+      <header className="border-b border-[#dbe7e1] bg-[#f8f5ed]">
         <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 lg:px-10 lg:pb-24">
-          <div className="relative z-10 flex items-center justify-between gap-4">
-            <a href="/" aria-label={staticText("Zur Spirit-Healing-Startseite")} className="inline-flex items-center gap-3">
-              <img src="/Logo-tuerkis.jpeg" alt="Spirit Healing" className="h-12 w-12 rounded-full object-cover shadow-sm" />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <a href="/" aria-label={t.back} className="inline-flex items-center gap-3">
+              <img src="/Logo-tuerkis.jpeg" alt="" className="h-12 w-12 rounded-full object-cover" />
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
             </a>
-            <div className="flex items-center gap-3">
-              <div className="inline-flex rounded-full border border-[#0f7d79]/30 bg-white/90 p-1 shadow-sm" role="group" aria-label={isTurkish ? "Sayfa dili" : "Seitensprache"}>
-                {[
-                  { code: "de", label: "DE", title: "Deutsch" },
-                  { code: "tr", label: "TR", title: "Türkçe" },
-                ].map((option) => {
-                  const active = pageLanguage === option.code
+            <div className="inline-flex rounded-full border border-[#0f7d79]/30 bg-white p-1" role="group" aria-label={t.language}>
+              <a href="/berlin-live" aria-current={language === "de" ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm font-bold ${language === "de" ? "bg-[#0f7d79] text-white" : "text-[#075a57]"}`}>DE</a>
+              <a href="/berlin-live?lang=tr" aria-current={language === "tr" ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm font-bold ${language === "tr" ? "bg-[#0f7d79] text-white" : "text-[#075a57]"}`}>TR</a>
+            </div>
+          </div>
+
+          <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+            <div>
+              <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#a67426]">{t.eyebrow}</p>
+              <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">{t.title}</h1>
+              <p className="mt-7 max-w-2xl text-xl leading-9 text-[#3f5d59]">{t.intro}</p>
+              <div className="mt-8 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white px-4 py-2.5"><CalendarDays size={18} aria-hidden="true" />{t.dates}</span>
+                {constellationPlace && <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white px-4 py-2.5"><MapPin size={18} aria-hidden="true" />{constellationPlace}</span>}
+                {constellationTime && <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white px-4 py-2.5"><Clock3 size={18} aria-hidden="true" />{constellationTime}{t.timeSuffix}</span>}
+              </div>
+              <a href="#termine" className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white hover:bg-[#075a57]">{t.choose}<ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+            <div className="overflow-hidden rounded-[2rem] border-8 border-white shadow-[0_26px_70px_rgba(31,75,70,0.18)]">
+              <img src="/familie/berlin.jpeg" alt="" className="h-80 w-full object-cover object-center lg:h-[29rem]" />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section id="termine" className="mx-auto max-w-7xl scroll-mt-8 px-5 py-16 sm:px-8 lg:px-10">
+        <h2 className="text-3xl font-bold sm:text-4xl">{t.daysTitle}</h2>
+        <p className="mt-4 max-w-3xl text-lg leading-8 text-[#49635f]">{t.daysIntro}</p>
+        <p className="mt-2 max-w-3xl text-base leading-7 text-[#49635f]">{t.capacity}</p>
+        <div className="mt-10 space-y-8">
+          {constellationDays.map((day) => (
+            <article key={day.id} id={`tag-${day.id}`} className="scroll-mt-8 rounded-[2rem] border border-[#cbded6] bg-white p-6 shadow-sm sm:p-9">
+              <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-[#d6e3dc] pb-6">
+                <h3 className="text-2xl font-bold sm:text-3xl">{formattedDate(day.date, language)}</h3>
+                <p className="rounded-full bg-[#edf5f1] px-4 py-2 text-sm font-bold text-[#075a57]">{t.languageName[day.language]}</p>
+              </div>
+              <div className="mt-7 grid gap-5 lg:grid-cols-3">
+                {ticketTypes.map((type) => {
+                  const checkoutUrl = day.links[type]
                   return (
-                    <a
-                      key={option.code}
-                      href={languageHref(option.code)}
-                      title={option.title}
-                      aria-current={active ? "page" : undefined}
-                      className={`min-w-11 rounded-full px-3 py-2 text-xs font-extrabold tracking-[0.12em] transition ${active ? "bg-[#0f7d79] text-white shadow-sm" : "text-[#075a57] hover:bg-[#edf5f1]"}`}
-                    >
-                      {option.label}
-                    </a>
+                    <div key={type} className="flex flex-col rounded-2xl border border-[#d6e3dc] bg-[#fbf8f1] p-6">
+                      <h4 className="text-lg font-bold">{t[type]}</h4>
+                      <p className="mt-4 text-4xl font-bold">{constellationTicketPrices[type]} €</p>
+                      <p className="mt-1 text-sm text-[#61736f]">{t.perDay}</p>
+                      <p className="mb-6 mt-5 leading-7 text-[#3f5b57]">{t[`${type}Description`]}</p>
+                      {type === "returning" && <p className="mb-5 text-sm leading-6 text-[#49635f]">{t.returningCheckout}</p>}
+                      {checkoutUrl ? (
+                        <a href={checkoutUrl} className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-5 py-3 text-center font-bold text-white hover:bg-[#075a57]">{t.book}</a>
+                      ) : (
+                        <span className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full bg-[#dce8e2] px-5 py-3 text-center font-semibold text-[#4b6561]">{t.unavailable}</span>
+                      )}
+                    </div>
                   )
                 })}
               </div>
-              <button type="button" onClick={scrollToTickets} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
-                {text("seminar.cta")}
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
-            <div className="relative z-10">
-              <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#a67426]">{text("seminar.eyebrow")}</p>
-              <h1 className="mt-5 max-w-4xl text-[2.125rem] font-bold leading-[1.12] text-[#173c39] sm:text-5xl lg:text-6xl">
-                {text("seminar.title")}
-              </h1>
-              <p className="mt-7 max-w-2xl text-xl leading-9 text-[#3f5d59]">
-                <span className="font-semibold text-[#244b47]">{text("hero.lead-strong")}</span>{" "}
-                {text("seminar.lead")}
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />{text("hero.date")}</span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Clock3 size={17} className="text-[#0f7d79]" />{text("hero.time")}</span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><MapPin size={17} className="shrink-0 text-[#0f7d79]" />{text("seminar.location")}</span>
-              </div>
-              <p className="mt-2 text-base font-semibold text-[#3f5d59]">{text("seminar.language-short")}</p>
-              <p className="mt-5 text-xl font-bold">{text("seminar.price")}</p>
-
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <button type="button" onClick={scrollToTickets} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
-                  {text("seminar.cta")} <ArrowDown size={18} />
-                </button>
-                <p className="whitespace-pre-line text-sm leading-6 text-[#5b706d]">{text("hero.capacity")}</p>
-              </div>
-            </div>
-
-            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-              <div className="absolute -inset-4 rotate-2 rounded-[2rem] border border-[#d8c08d]/60 bg-[#f4e8cf]" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-[2rem] border-8 border-white bg-white shadow-[0_26px_70px_rgba(31,75,70,0.18)]">
-                <img src="/familie/berlin.jpeg" alt={staticText("Blick über Berlin bei Abendlicht")} className="h-[30rem] w-full object-cover object-center" />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#173c39]/90 via-[#173c39]/50 to-transparent px-7 pb-7 pt-24 text-white">
-                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#f1d7a0]">{text("hero.image-eyebrow")}</p>
-                  <p className="mt-2 text-xl font-semibold leading-8">{text("hero.image-text")}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="seminar-overview" className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-10">
-        <h2 id="seminar-overview" className="text-3xl font-bold">{text("seminar.overview-title")}</h2>
-        <p className="mt-4 max-w-3xl text-lg leading-8">{text("seminar.overview-intro")}</p>
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
-          {[{id: "intensive", price: "333 €"}, {id: "own", price: "444 €"}].map((option) => (
-            <article key={option.id} className="flex flex-col rounded-3xl border border-[#cbded6] bg-white p-6 sm:p-8">
-              <h3 className="text-xl font-bold">{text(`seminar.${option.id}-label`)}</h3>
-              <p className="mt-4 text-3xl font-bold">{option.price} <span className="text-base font-normal">{text("tickets.duration")}</span></p>
-              <p className="mb-6 mt-4 text-base leading-7">{text(`seminar.${option.id}-summary`)}</p>
-              <a href={`#ticket-${option.id}`} className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full border border-[#0f7d79] px-5 py-3 text-center font-bold text-[#075a57]">{text("seminar.details-cta")}</a>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-          <div className="overflow-hidden rounded-[2rem] border border-[#e1e6df] bg-white p-3 shadow-[0_20px_60px_rgba(31,75,70,0.12)]">
-            <img src="/ueberuns.jpeg" alt={staticText("Sabine Schmidt und Selcan Yilmaz")} className="h-[32rem] w-full rounded-[1.4rem] object-cover object-center" />
-          </div>
-          <div>
-            <SectionTitle
-              eyebrow={text("duo.eyebrow")}
-              title={text("duo.title")}
-              intro={text("duo.intro")}
-            />
-            <p className="mt-8 border-l-4 border-[#0f7d79] pl-6 text-lg leading-8 text-[#3f5b57]">
-              {text("duo.note")}
-            </p>
-            <a href="#tickets" className="mt-8 inline-flex min-h-12 items-center rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white">{text("seminar.cta")}</a>
-          </div>
-        </div>
+      <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
+        <h2 className="text-2xl font-bold">{t.questions}</h2>
+        <p className="mt-3 text-lg"><a href="mailto:info@spirit-healing.tr" className="underline underline-offset-4">{t.contact}</a></p>
       </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-          <div className="lg:sticky lg:top-10 lg:self-start">
-            <SectionTitle
-              eyebrow={text("system.eyebrow")}
-              title={text("system.title")}
-              intro={text("system.intro")}
-            />
-            <p className="mt-9 border-l-4 border-[#c69543] pl-6 text-xl font-semibold leading-9 text-[#244b47]">
-              {text("system.note")}
-            </p>
-          </div>
-
-          <div className="divide-y divide-[#cbdcd5] border-y border-[#cbdcd5]">
-            {systemItems.map((item) => (
-              <article key={item.id} className="py-9 first:pt-0 last:pb-0 lg:py-11">
-                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#a67426]">{item.eyebrow}</p>
-                <h3 className="mt-3 text-2xl font-bold leading-tight text-[#173c39] sm:text-3xl">{item.title}</h3>
-                <p className="mt-5 text-lg leading-8 text-[#4b6561]">{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-[#d7e4de] bg-[#edf5f1] py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <SectionTitle
-            eyebrow={text("process.eyebrow")}
-            title={text("process.title")}
-            intro={text("process.intro")}
-          />
-
-          <div className="mt-14 grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16">
-            <div>
-              <div className="overflow-hidden rounded-[2rem] border-8 border-white shadow-[0_20px_55px_rgba(31,75,70,0.14)]">
-                <img src="/familie/aust.jpeg" alt={staticText("Aufstellungsarbeit in einer Gruppe")} className="h-[32rem] w-full object-cover object-center" />
-              </div>
-              <p className="mt-7 text-lg leading-8 text-[#47625e]">
-                {text("process.image-note")}
-              </p>
-            </div>
-
-            <ol className="divide-y divide-[#bfd4ca] border-y border-[#bfd4ca]">
-              {processSteps.map((step) => (
-                <li key={step.number} className="grid gap-4 py-8 first:pt-0 last:pb-0 sm:grid-cols-[3.5rem_1fr] lg:py-9">
-                  <span className="text-3xl font-bold text-[#c69543]">{step.number}</span>
-                  <div>
-                    <h3 className="text-2xl font-bold text-[#173c39]">{step.title}</h3>
-                    <p className="mt-3 leading-8 text-[#49645f]">{step.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div className="mt-14 grid overflow-hidden rounded-[2rem] bg-[#173c39] text-white lg:grid-cols-[0.72fr_1.28fr]">
-            <div className="bg-[#0f7d79] px-7 py-10 sm:px-10 lg:py-12">
-              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#f1d7a0]">{text("process.method-eyebrow")}</p>
-              <h3 className="mt-4 text-3xl font-bold leading-tight">{text("process.method-title")}</h3>
-            </div>
-            <div className="px-7 py-10 sm:px-10 lg:py-12">
-              <p className="text-lg leading-8 text-white/90">
-                {text("process.method-text")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#f4ead6] py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="grid gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
-            <div>
-              <SectionTitle
-                eyebrow={text("own.eyebrow")}
-                title={text("own.title")}
-                intro={text("own.intro")}
-              />
-              <p className="mt-8 text-lg leading-8 text-[#536762]">
-                {text("own.note")}
-              </p>
-            </div>
-
-            <div className="border-y border-[#d3bc91]">
-              {ownQuestions.map((question) => (
-                <p key={question} className="border-b border-[#d3bc91] py-6 text-xl font-semibold leading-8 text-[#244b47] last:border-b-0 sm:text-2xl sm:leading-9">
-                  {question}
-                </p>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="grid gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
-          <SectionTitle
-            eyebrow={text("group.eyebrow")}
-            title={text("group.title")}
-            intro={text("group.intro")}
-          />
-          <div className="divide-y divide-[#cbdcd5] border-y border-[#cbdcd5]">
-            {groupItems.map((item) => (
-              <div key={item.id} className="py-8 first:pt-0 last:pb-0">
-                <h3 className="text-2xl font-bold text-[#173c39]">{item.title}</h3>
-                <p className="mt-4 text-lg leading-8 text-[#506864]">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-[#d5e4dd] bg-[#edf5f1] py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <SectionTitle
-            eyebrow={text("weekend.eyebrow")}
-            title={text("seminar.weekend-title")}
-            intro={text("weekend.intro")}
-          />
-          <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            <article className="rounded-3xl border border-[#ccded6] bg-white p-7 sm:p-9">
-              <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{text("weekend.friday-date")}</p>
-              <h3 className="mt-3 text-2xl font-bold">{text("weekend.friday-title")}</h3>
-              <Timeline entries={friday} />
-            </article>
-            <article className="rounded-3xl border border-[#ccded6] bg-white p-7 sm:p-9">
-              <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{text("weekend.saturday-date")}</p>
-              <h3 className="mt-3 text-2xl font-bold">{text("weekend.saturday-title")}</h3>
-              <Timeline entries={saturday} />
-            </article>
-          </div>
-          <p className="mt-6 text-sm leading-6 text-[#607470]">{text("weekend.note")}</p>
-          <a href="#tickets" className="mt-8 inline-flex min-h-12 items-center rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white">{text("seminar.cta")}</a>
-        </div>
-      </section>
-
-      <section id="tickets" className="scroll-mt-8 mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <SectionTitle
-          eyebrow={text("tickets.eyebrow")}
-          title={text("tickets.title")}
-          intro={text("tickets.intro")}
-          center
-        />
-        <div className="mx-auto mt-12 grid max-w-5xl gap-6 lg:grid-cols-2">
-          <article id="ticket-own" className="relative scroll-mt-8 overflow-hidden rounded-[2rem] border-2 border-[#0f7d79] bg-white p-8 shadow-[0_22px_60px_rgba(15,125,121,0.13)] sm:p-10">
-            <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#0f7d79] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">{staticText("Nur noch 1 Platz")}</span>
-            <p className="mt-5 text-base font-bold text-[#0f7d79]">{text("seminar.own-label")}</p>
-            <p className="mt-5 text-5xl font-bold text-[#173c39]">444 €</p>
-            <p className="mt-2 text-sm text-[#61736f]">{text("tickets.duration")}</p>
-            <ul className="mt-8 space-y-4 text-[#3f5b57]">
-              {ownTicketItems.map((item) => <li key={item} className="flex gap-3 leading-7"><Check size={20} className="mt-1 shrink-0 text-[#0f7d79]" />{item}</li>)}
-            </ul>
-            {ownConstellationCheckoutUrl ? (
-              <a href={ownConstellationCheckoutUrl} onClick={() => measurement.click('berlinOwn')} className="mt-9 block w-full rounded-full bg-[#0f7d79] px-6 py-4 text-center font-bold text-white transition hover:bg-[#075a57]">
-                {text("tickets.own-cta")}
-              </a>
-            ) : (
-              <button type="button" disabled className="mt-9 w-full cursor-not-allowed rounded-full bg-[#0f7d79]/70 px-6 py-4 font-bold text-white">
-                {staticText("Buchung wird freigeschaltet")}
-              </button>
-            )}
-            <div className="mt-6 border-t border-[#d6e3dc] pt-6">
-              <p className="text-center font-semibold text-[#536a66]">{paymentCopy.title}</p>
-              <p className="mt-3 text-center text-sm leading-6 text-[#536a66]">{paymentCopy.note}</p>
-              <a href={ownConstellationCheckoutUrl} onClick={() => measurement.click('berlinOwn')} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
-                {paymentCopy.cta}
-              </a>
-            </div>
-          </article>
-
-          <article id="ticket-intensive" className="relative scroll-mt-8 overflow-hidden rounded-[2rem] border border-[#d6e2dc] bg-[#f7faf8] p-8 sm:p-10">
-            <span className="absolute right-0 top-0 rounded-bl-2xl bg-[#c69543] px-5 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[#173c39]">{staticText("Noch 5 Plätze")}</span>
-            <p className="mt-5 text-base font-bold text-[#a67426]">{text("seminar.intensive-label")}</p>
-            <p className="mt-5 text-5xl font-bold text-[#173c39]">333 €</p>
-            <p className="mt-2 text-sm text-[#61736f]">{text("tickets.duration")}</p>
-            <ul className="mt-8 space-y-4 text-[#3f5b57]">
-              {intensiveTicketItems.map((item) => <li key={item} className="flex gap-3 leading-7"><Check size={20} className="mt-1 shrink-0 text-[#0f7d79]" />{item}</li>)}
-            </ul>
-            {intensiveParticipationCheckoutUrl ? (
-              <a href={intensiveParticipationCheckoutUrl} onClick={() => measurement.click('berlinIntensive')} className="mt-9 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-4 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
-                {text("tickets.intensive-cta")}
-              </a>
-            ) : (
-              <button type="button" disabled className="mt-9 w-full cursor-not-allowed rounded-full border border-[#0f7d79]/50 bg-white px-6 py-4 font-bold text-[#0f7d79]/70">
-                {staticText("Buchung wird freigeschaltet")}
-              </button>
-            )}
-            <div className="mt-6 border-t border-[#d6e3dc] pt-6">
-              <p className="text-center font-semibold text-[#536a66]">{paymentCopy.title}</p>
-              <p className="mt-3 text-center text-sm leading-6 text-[#536a66]">{paymentCopy.note}</p>
-              <a href={intensiveParticipationCheckoutUrl} onClick={() => measurement.click('berlinIntensive')} className="mt-4 block w-full rounded-full border border-[#0f7d79] bg-white px-6 py-3.5 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">
-                {paymentCopy.cta}
-              </a>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-5 pb-16 sm:px-8" aria-labelledby="practical-title">
-        <h2 id="practical-title" className="text-3xl font-bold">{text("seminar.practical-title")}</h2>
-        <p className="mt-5 text-lg font-semibold">{text("seminar.location")}</p>
-        <div className="mt-8 divide-y divide-[#cbded6] border-y border-[#cbded6]">
-          {["language", "food", "role", "installment"].map((id) => (
-            <details key={id} className="py-5">
-              <summary className="cursor-pointer text-lg font-semibold">{text(`seminar.${id}-question`)}</summary>
-              <p className="mt-4 text-base leading-7">{id === "installment" ? paymentCopy.details : text(`seminar.${id}-answer`)}</p>
-            </details>
-          ))}
-        </div>
-        <a href="mailto:info@spirit-healing.tr" className="mt-6 inline-block break-words text-base underline underline-offset-4">{text("seminar.contact")}</a>
-      </section>
-
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#cbded6] bg-[#fbf8f1] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:hidden">
-        <a href="#tickets" className="flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-4 py-3 text-center text-base font-bold text-white">{text("seminar.cta")}</a>
-      </div>
-
-      <footer className="border-t border-[#d6e3dc] bg-white py-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 text-sm text-[#5d716d] sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10">
-          <div className="flex items-center gap-3">
-            <img src="/Logo-tuerkis.jpeg" alt="" className="h-10 w-10 rounded-full object-cover" />
-            <p className="font-bold text-[#075a57]">Spirit Healing</p>
-          </div>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <BerlinMeasurementSettings state={measurement}/>
-            <a href="/impressum" className="hover:text-[#0f7d79]">{staticText("Impressum")}</a>
-            <a href="/datenschutz" className="hover:text-[#0f7d79]">{staticText("Datenschutz")}</a>
-          </div>
+      <footer className="border-t border-[#d6e3dc] bg-white py-9">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 text-sm text-[#5d716d] sm:px-8 lg:px-10">
+          <span className="font-bold text-[#075a57]">Spirit Healing</span>
+          <div className="flex flex-wrap gap-6"><a href="/impressum">{t.imprint}</a><a href="/datenschutz">{t.privacy}</a><BerlinLegacyConsentRevoke /></div>
         </div>
       </footer>
     </main>

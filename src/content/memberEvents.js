@@ -1,6 +1,6 @@
 import { programLiveEvents } from "./replayFunnel.js";
+import { constellationDays, constellationPlace, constellationTime } from "./constellationDays.js";
 
-// Dates and wording match the published Berlin and live-talk pages (27 September 2026).
 // Weekly group: Sunday 19:00–21:30 German time, confirmed by Sabine on 6 October 2026.
 export const memberEvents = [
     {
@@ -26,29 +26,29 @@ export const memberEvents = [
             action: "Ücretsiz canlı seminere kaydol",
         },
     },
-    {
-        id: "berlin-2026-10",
-        endsAt: "2026-10-10T17:00:00Z",
-        href: "/berlin-live",
+    ...constellationDays.map((day) => ({
+        id: `constellation-${day.id}`,
+        endsAt: `${day.date}T18:00:00Z`,
+        href: `/berlin-live${day.language === "tr" ? "?lang=tr" : ""}#tag-${day.id}`,
         de: {
-            kind: "Zweitägiges Intensivseminar",
-            title: "Familienaufstellung in Berlin-Kreuzberg",
-            date: "9. und 10. Oktober 2026",
-            time: "Jeweils 10–19 Uhr · deutsche Zeit",
-            place: "Berlin-Kreuzberg · auf Deutsch",
-            text: "Wir verbinden familiensystemische Aufstellungsarbeit mit Anteilearbeit und Energiearbeit. Sabine und Selcan begleiten jede Aufstellung gemeinsam. Du kannst mit eigener Aufstellung oder als Stellvertretung teilnehmen.",
-            action: "Seminar und Teilnahme ansehen",
+            kind: "Aufstellungsarbeit",
+            title: `Aufstellungstag auf ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
+            date: new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${day.date}T12:00:00Z`)),
+            time: constellationTime ? `${constellationTime} Uhr · deutsche Zeit` : "",
+            place: constellationPlace || "",
+            text: "Mit Sabine und Selcan. Teilnahme als Stellvertretung oder mit eigener Aufstellung; jeder Tag ist einzeln buchbar.",
+            action: "Termin und Teilnahme ansehen",
         },
         tr: {
-            kind: "İki günlük yoğun seminer",
-            title: "Berlin-Kreuzberg’de aile dizimi",
-            date: "9 ve 10 Ekim 2026",
-            time: "Her iki gün 10:00–19:00 · Almanya saati",
-            place: "Berlin-Kreuzberg · Almanca",
-            text: "Aile dizimini içsel parçalar çalışması ve enerji çalışmasıyla birleştiriyoruz. Sabine ve Selcan her dizime birlikte rehberlik ediyor. Kendi diziminle veya temsilci olarak katılabilirsin.",
-            action: "Semineri ve katılım seçeneklerini incele",
+            kind: "Dizim çalışması",
+            title: `${day.language === "tr" ? "Türkçe" : "Almanca"} dizim günü`,
+            date: new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${day.date}T12:00:00Z`)),
+            time: constellationTime ? `${constellationTime} · Almanya saati` : "",
+            place: constellationPlace || "",
+            text: "Sabine ve Selcan ile. Temsilci olarak veya kendi diziminizle katılabilirsiniz; her gün ayrı rezerve edilir.",
+            action: "Tarihi ve katılımı gör",
         },
-    },
+    })),
     {
         id: "zepter-13-2026",
         endsAt: "2027-02-03T22:59:59Z",

@@ -38,7 +38,11 @@ test("landing pages no longer advertise merchant installments or separate instal
   for (const file of ["BerlinLive", "Zepter13"]) {
     const source = readFileSync(new URL(`../src/sections/${file}.jsx`, import.meta.url), "utf8");
     assert.doesNotMatch(source, /THREE_INSTALLMENTS|ZWEI_RATEN|DREI_RATEN|threeInstallments|twoInstallments|Raten-Gesamtpreis|bis zu drei Raten|InstallmentCheckoutUrl/);
-    assert.match(source, /fullPriceCheckoutUrl/);
-    assert.match(source, /klarnaPaymentCopy/);
+    if (file === "Zepter13") {
+      assert.match(source, /fullPriceCheckoutUrl/);
+      assert.match(source, /klarnaPaymentCopy/);
+    } else {
+      assert.doesNotMatch(source, /fullPriceCheckoutUrl|klarnaPaymentCopy/u);
+    }
   }
 });

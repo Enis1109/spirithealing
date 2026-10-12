@@ -433,6 +433,11 @@ export const Daten = () => {
                         </p>
                         <h3 id="berlin-messung" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Freiwillige Werbemessung für das Berliner Seminar</h3>
                         <p className="text-md">
+                            Die folgenden Angaben betreffen die frühere Berliner Seminarkampagne. Auf der aktuellen Seite für die
+                            Aufstellungstage im Dezember 2026 und Januar 2027 ist diese freiwillige Werbemessung nicht aktiv.
+                            Noch bestehende Einwilligungen aus der früheren Kampagne können Sie dort widerrufen.
+                        </p>
+                        <p className="text-md">
                             Wenn Sie die Werbemessung auf unserer Berlin-Seite erlauben, erfassen wir Seitenbesuche und Buchungsklicks
                             sowie neutrale Anzeigenkennungen. Eine zufällig erzeugte Kennung verbindet Ihre Zustimmung mit dem Zahlungslink
                             bei Stripe. Nur mit einem noch gültigen, nicht widerrufenen Zustimmungsnachweis übernehmen wir eine Zahlung
@@ -449,7 +454,7 @@ export const Daten = () => {
                             die automatische Fristbereinigung läuft stündlich. Die zusätzliche Auswertung wird bei unserem Website-Hoster verarbeitet.
                         </p>
                         <p className="text-md">
-                            Unter „Cookie-Einstellungen“ auf der Berlin-Seite können Sie Ihre Einwilligung jederzeit widerrufen.
+                            Unter „Frühere Werbeeinwilligung widerrufen“ auf der Berlin-Seite können Sie eine noch bestehende Einwilligung widerrufen.
                             Nach bestätigtem Widerruf löschen wir die mit diesem Nachweis verbundenen zusätzlichen Besuchs-, Klick- und
                             Zahlungszuordnungen. Ein gesperrter Nachweis bleibt bis zu seinem Ablauf bestehen, damit verspätete
                             Zahlungsnachrichten keine neue Zuordnung erzeugen. Ist der Browsernachweis nicht mehr vorhanden,
@@ -466,8 +471,8 @@ export const Daten = () => {
                         </p>
                         <h3 id="berlin-meta" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Gesonderte Einwilligung: Meta-Pixel und Conversions API</h3>
                         <p className="text-md">
-                            Auf der öffentlichen Seite „Berlin live“ verwenden wir Meta-Pixel und Conversions API nur nach Ihrer
-                            Zustimmung im Cookie-Pop-up. Unter „Einstellungen“ können Sie Meta getrennt auswählen. Empfänger ist Meta Platforms Ireland Limited,
+                            Während der früheren Berliner Seminarkampagne verwendeten wir Meta-Pixel und Conversions API nur nach Ihrer
+                            Zustimmung im Cookie-Pop-up. Dort konnten Sie Meta getrennt auswählen. Empfänger ist Meta Platforms Ireland Limited,
                             Block J, Serpentine Avenue, Dublin 4, Irland (Anschrift gemäß den Meta-Business-Tools-Bedingungen).
                             Die Messung dient dazu, die Wirkung unserer Facebook- und Instagram-Werbung anhand von Seitenaufrufen
                             zu prüfen und die Anzeigenauslieferung zu verbessern. Meta kann diese Aufrufe Ihrem Facebook- oder
@@ -497,7 +502,7 @@ export const Daten = () => {
                             bis zu zwei Jahre speichern. Weitere Angaben zur Speicherung stehen in Metas Datenschutzrichtlinie.
                         </p>
                         <p className="text-md">
-                            Unter „Cookie-Einstellungen“ können Sie die Meta-Einwilligung jederzeit widerrufen. Die Browsermessung
+                            Unter „Frühere Werbeeinwilligung widerrufen“ auf der Berlin-Seite können Sie eine noch bestehende Meta-Einwilligung widerrufen. Die Browsermessung
                             wird sofort gestoppt; nach Bestätigung des Servers erfolgen auch von dort keine weiteren Übertragungen
                             unter diesem Nachweis. Unsere Versandvermerke werden gelöscht und die von unserer Website gesetzten
                             Meta-Cookies entfernt. Bereits an Meta übermittelte Daten werden dadurch nicht automatisch gelöscht.

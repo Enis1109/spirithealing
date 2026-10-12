@@ -113,12 +113,8 @@ test("the helper contains no browser state, network or payment API side effects"
   assert.doesNotMatch(source, /\b(?:fetch|XMLHttpRequest|localStorage|sessionStorage)\b|document\.cookie|checkout\.sessions\.create/u);
 });
 
-test("page has no consent-free campaign reference fallback", () => {
+test("new page does not send old campaign references or October checkout links", () => {
   const source = readFileSync(new URL("../src/sections/BerlinLive.jsx", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /campaignReferencesEnabled|buildBerlinCheckoutUrl/);
-  assert.match(source, /measurement.enabled \? measurement.checkout\('berlinOwn'\) : ownBaseCheckoutUrl/);
-  assert.match(source, /measurement.enabled \? measurement.checkout\('berlinIntensive'\) : intensiveBaseCheckoutUrl/);
-  for (const variable of ["ownConstellationCheckoutUrl", "intensiveParticipationCheckoutUrl"]) {
-    assert.equal(source.split(`href={${variable}}`).length - 1, 2);
-  }
+  assert.doesNotMatch(source, /campaignReferencesEnabled|buildBerlinCheckoutUrl|fullPriceCheckoutUrl|berlinOwn|berlinIntensive/);
+  assert.match(source, /const checkoutUrl = day\.links\[type\]/u);
 });
