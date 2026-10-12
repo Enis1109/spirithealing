@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const constellationThemes = [
     { number: "01", image: "/familie/Herzmensch2.PNG", title: "Unbewusste Loyalitäten", text: "Bindungen, die stärker wirken können als der eigene bewusste Entschluss." },
     { number: "02", image: "/familie/binden.PNG", title: "Bindungen im Familiensystem", text: "Nähe, Distanz und Verantwortung, die über Generationen weitergegeben werden." },
@@ -9,7 +11,11 @@ const constellationThemes = [
 export const Fam = () => {
     
     return (
-        <section id="about" className="relative overflow-hidden">
+        <section id="familienaufstellung" className="relative overflow-hidden">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-card p-6">
+                <p className="max-w-2xl leading-7">Unsere Aufstellungsarbeit mit Sabine und Selcan. Erfahre mehr über unsere gemeinsame Arbeit und die Live-Aufstellungen.</p>
+                <Link to="/aufstellungsarbeit" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground">Zur Aufstellungsarbeit</Link>
+            </div>
             <div className="mb-4 overflow-hidden rounded-2xl border border-white/10 bg-[#0B777A]">
                 <div className="grid md:grid-cols-2">
                     <div className="pt-16 pb-8 md:pl-8 max-md:text-center">
@@ -92,7 +98,7 @@ export const Fam = () => {
                         <div className="flex -mt-12 items-center justify-center">
                             <img src="/traumasensibel/Blume.png" className="w-26 h-24 rounded-full"/>
                         </div>
-                        <p className="text-muted-foreground -mt-8 text-center pb-2">Unsere Aufstellungen finden online sowie vor Ort in Berlin und Antalya statt.
+                        <p className="text-muted-foreground -mt-8 text-center pb-2">Unsere Aufstellungen finden online sowie vor Ort in Berlin-Kreuzberg und Antalya statt.
                         </p>
                         <p className="text-muted-foreground text-center pb-2">Vor Ort in:
                         </p>
@@ -105,7 +111,7 @@ export const Fam = () => {
                                     </div>
                                     <div className="flex pt-2 items-center justify-center ">
                                         <p className="text-sm text-center text-muted-foreground">
-                                            Berlin
+                                            Berlin-Kreuzberg
                                         </p>
                                     </div>
                                 </div>

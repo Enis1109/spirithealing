@@ -14,3 +14,14 @@ export const constellationTicketPrices = {
 export const constellationPlace = "Berlin-Kreuzberg"
 export const constellationTime = "10:00–19:00"
 export const constellationCapacity = { total: 20, representative: 15, own: 5 }
+
+export const constellationDayPath = (day, language = day.language) =>
+  `/berlin-live/${day.id}${language === "tr" ? "?lang=tr" : ""}`
+
+export const isConstellationPath = (pathname) => pathname === "/aufstellungsarbeit"
+  || pathname === "/berlin-live" || pathname.startsWith("/berlin-live/")
+
+export const constellationDate = (date, language = "de") => new Intl.DateTimeFormat(
+  language === "tr" ? "tr-TR" : "de-DE",
+  { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Berlin" },
+).format(new Date(`${date}T12:00:00Z`))

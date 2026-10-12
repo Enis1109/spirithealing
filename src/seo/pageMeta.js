@@ -1,4 +1,4 @@
-import { constellationCapacity, constellationDays, constellationPlace, constellationTime, constellationTicketPrices } from "../content/constellationDays.js"
+import { constellationCapacity, constellationDays, constellationPlace, constellationTime, constellationTicketPrices, constellationDate, constellationDayPath, isConstellationPath } from "../content/constellationDays.js"
 
 export const siteUrl = "https://spirit-healing.tr"
 export const organizationId = `${siteUrl}/#organization`
@@ -62,8 +62,13 @@ export const pageMeta = {
       title: "Seminare, Vorträge & Programme | Spirit Healing",
       description: "Aktuelle Spirit-Healing-Seminare, Vorträge und Begleitprogramme zu inneren Anteilen, Nervensystem, Beziehungsmustern und Energiearbeit.",
     },
+    "/aufstellungsarbeit": {
+      title: "Aufstellungsarbeit mit Sabine und Selcan | Spirit Healing",
+      description: "Unsere Aufstellungsarbeit: familiensystemische Dynamiken, innere Anteile und Energiearbeit mit Sabine und Selcan. Erfahre mehr und finde die Live-Termine in Berlin-Kreuzberg.",
+      image: "/ueberuns.jpeg", imageAlt: "Sabine Schmidt und Selcan Yilmaz", imageWidth: "1280", imageHeight: "853",
+    },
     "/berlin-live": {
-      title: "Aufstellungsarbeit im Dezember und Januar | Spirit Healing",
+      title: "Live-Aufstellung in Berlin: Termine & Plätze | Spirit Healing",
       description: "Aufstellungsarbeit in Berlin-Kreuzberg mit Sabine und Selcan: 12./13. Dezember 2026 und 30./31. Januar 2027, 10–19 Uhr. Türkisch oder Deutsch. Tickets: 22 €, 44 € oder 160 €.",
       ...berlinImage,
     },
@@ -152,8 +157,13 @@ export const pageMeta = {
     "/termin-buchen": { title: "Çevrim İçi Randevu Al | Spirit Healing", description: "Ücretsiz tanışma görüşmesi, bireysel seans veya Sabine ve Selcan ile ortak çalışma için çevrim içi randevu alın." },
     "/faq": { title: "Sıkça Sorulan Sorular | Spirit Healing", description: "Spirit Healing'in çalışma biçimi, yöntemleri, seansları, ücretleri ve travma bilgili yaklaşımı hakkında yanıtlar." },
     "/vortraege-seminare": { title: "Seminerler, Eğitimler ve Programlar | Spirit Healing", description: "İçsel parçalar, sinir sistemi, ilişki örüntüleri ve enerji çalışması üzerine güncel Spirit Healing seminerleri ve programları." },
+    "/aufstellungsarbeit": {
+      title: "Sabine ve Selcan ile dizim çalışması | Spirit Healing",
+      description: "Sabine ve Selcan ile aile sistemi, içsel parçalar ve enerji çalışması. Çalışma biçimimizi tanıyın ve Berlin-Kreuzberg’deki canlı dizim tarihlerini inceleyin.",
+      image: "/ueberuns.jpeg", imageAlt: "Sabine Schmidt ve Selcan Yilmaz", imageWidth: "1280", imageHeight: "853",
+    },
     "/berlin-live": {
-      title: "Aralık ve Ocak aylarında dizim çalışması | Spirit Healing",
+      title: "Berlin’de canlı dizim: tarihler ve kontenjan | Spirit Healing",
       description: "Berlin-Kreuzberg’de Sabine ve Selcan ile dizim çalışması: 12/13 Aralık 2026 ve 30/31 Ocak 2027, 10:00–19:00. Türkçe veya Almanca. Günlük ücret: 22 €, 44 € ya da 160 €.",
       ...berlinImage,
       imageAlt: "Spirit Healing ile Berlin’de aile ve sistem dizimi",
@@ -209,7 +219,9 @@ export const indexablePaths = Object.freeze([
   "/termin-buchen",
   "/faq",
   "/vortraege-seminare",
+  "/aufstellungsarbeit",
   "/berlin-live",
+  ...constellationDays.map(day => `/berlin-live/${day.id}`),
   "/13-wochen-programm",
   "/vortrag-13-wochen-programm",
   "/live-vortrag",
@@ -232,6 +244,16 @@ export const normalizePathname = (pathname = "/") => {
 
 export const metadataForPath = (pathname, language = "de") => {
   const normalizedPath = normalizePathname(pathname)
+  const day = constellationDays.find(item => normalizedPath === `/berlin-live/${item.id}`)
+  if (day) {
+    const date = constellationDate(day.date, language).replace(/^[^,]+, /u, "")
+    return { ...berlinImage, pathname: normalizedPath, notFound: false,
+      title: language === "tr" ? `${date} · Berlin dizim günü | Spirit Healing` : `${date} · Aufstellung in Berlin | Spirit Healing`,
+      description: language === "tr"
+        ? `${date}: Sabine ve Selcan ile ${day.language === "tr" ? "Türkçe" : "Almanca"} dizim çalışması. Berlin-Kreuzberg, 10:00–19:00. Temsilci 22 € veya 44 €, kendi dizimi 160 €.`
+        : `${date}: Aufstellungstag mit Sabine und Selcan auf ${day.language === "tr" ? "Türkisch" : "Deutsch"}. Berlin-Kreuzberg, 10–19 Uhr. Stellvertretung 22 € oder 44 €, eigene Aufstellung 160 €.`,
+    }
+  }
   const exact = pageMeta[language]?.[normalizedPath] || pageMeta.de[normalizedPath]
   if (exact) return { ...exact, pathname: normalizedPath, notFound: false }
 
@@ -257,7 +279,7 @@ export const canonicalUrlFor = (pathname) => {
 
 export const canonicalUrlForLanguage = (pathname, language = "de") => {
   const canonical = canonicalUrlFor(pathname)
-  return normalizePathname(pathname) === "/berlin-live" && language === "tr"
+  return isConstellationPath(normalizePathname(pathname)) && language === "tr"
     ? `${canonical}?lang=tr`
     : canonical
 }
@@ -265,7 +287,9 @@ export const canonicalUrlForLanguage = (pathname, language = "de") => {
 export const socialImageFor = (meta) => meta.image ? new URL(meta.image, siteUrl).href : defaultSocialImage
 
 const breadcrumbParents = {
-  "/berlin-live": "/vortraege-seminare",
+  "/aufstellungsarbeit": "/",
+  "/berlin-live": "/aufstellungsarbeit",
+  ...Object.fromEntries(constellationDays.map(day => [`/berlin-live/${day.id}`, "/berlin-live"])),
   "/13-wochen-programm": "/vortraege-seminare",
   "/rauhnaechte": "/vortraege-seminare",
   "/termin-buchen": "/prices",
@@ -281,7 +305,9 @@ const breadcrumbLabels = {
     "/termin-buchen": "Termin buchen",
     "/faq": "Häufige Fragen",
     "/vortraege-seminare": "Vorträge & Seminare",
-    "/berlin-live": "Familienaufstellung Berlin",
+    "/aufstellungsarbeit": "Aufstellungsarbeit",
+    "/berlin-live": "Live-Aufstellung in Berlin",
+    ...Object.fromEntries(constellationDays.map(day => [`/berlin-live/${day.id}`, constellationDate(day.date, "de")])),
     "/13-wochen-programm": "13-Wochen-Programm",
     "/rauhnaechte": "Rauhnächte 2026/2027",
     "/gratis-meditationen": "Kostenlose Meditationen",
@@ -298,7 +324,9 @@ const breadcrumbLabels = {
     "/termin-buchen": "Randevu Al",
     "/faq": "Sıkça Sorulan Sorular",
     "/vortraege-seminare": "Seminerler ve Eğitimler",
-    "/berlin-live": "Berlin Aile Dizimi",
+    "/aufstellungsarbeit": "Dizim çalışması",
+    "/berlin-live": "Berlin’de canlı dizim",
+    ...Object.fromEntries(constellationDays.map(day => [`/berlin-live/${day.id}`, constellationDate(day.date, "tr")])),
     "/13-wochen-programm": "13-Wochen-Programm",
     "/rauhnaechte": "Rauhnächte 2026/2027",
     "/gratis-meditationen": "Ücretsiz Meditasyonlar",
@@ -342,8 +370,10 @@ const website = {
 
 const breadcrumbFor = (pathname, language) => {
   if (pathname === "/") return null
-  const parent = breadcrumbParents[pathname]
-  const paths = parent ? ["/", parent, pathname] : ["/", pathname]
+  const paths = [pathname]
+  let parent = breadcrumbParents[pathname]
+  while (parent && parent !== "/") { paths.unshift(parent); parent = breadcrumbParents[parent] }
+  paths.unshift("/")
   const breadcrumbUrl = canonicalUrlForLanguage(pathname, language)
   return {
     "@type": "BreadcrumbList",
@@ -352,7 +382,7 @@ const breadcrumbFor = (pathname, language) => {
       "@type": "ListItem",
       position: index + 1,
       name: breadcrumbLabels[language]?.[path] || breadcrumbLabels.de[path] || "Spirit Healing",
-      item: path === pathname ? breadcrumbUrl : canonicalUrlFor(path),
+      item: path === pathname ? breadcrumbUrl : canonicalUrlForLanguage(path, language),
     })),
   }
 }
@@ -407,16 +437,18 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
     })
   }
 
-  if (normalizedPath === "/berlin-live") {
+  if (normalizedPath === "/berlin-live" || normalizedPath.startsWith("/berlin-live/")) {
     const isTurkish = language === "tr"
     const location = constellationPlace ? {
       "@type": "Place",
       name: constellationPlace,
       address: { "@type": "PostalAddress", addressLocality: constellationPlace, addressCountry: "DE" },
     } : undefined
-    graph.push(...constellationDays.map((day) => ({
+    const eventDays = normalizedPath === "/berlin-live" ? constellationDays : constellationDays.filter(day => normalizedPath === `/berlin-live/${day.id}`)
+    graph.push(...eventDays.map((day) => ({
       "@type": "Event",
-      "@id": `${url}#tag-${day.id}`,
+      "@id": `${siteUrl}${constellationDayPath(day, language)}#event`,
+      url: `${siteUrl}${constellationDayPath(day, language)}`,
       name: isTurkish ? `Dizim çalışması · ${day.id} · ${day.language === "tr" ? "Türkçe" : "Almanca"}` : `Aufstellungsarbeit · ${day.id} · ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
       description: meta.description,
       startDate: constellationTime ? `${day.date}T10:00:00+01:00` : day.date,
@@ -434,8 +466,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
           : ({ returning: "Stellvertretung · früher dabei oder Spirit Healing zugehörig", new: "Stellvertretung · neu dabei", own: "Eigene Aufstellung" })[type],
         price: String(constellationTicketPrices[type]),
         priceCurrency: "EUR",
-        availability: day.links[type] ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-        url: day.links[type] || `${url}#tag-${day.id}`,
+        url: day.links[type] || `${siteUrl}${constellationDayPath(day, language)}`,
       })),
     })))
   }

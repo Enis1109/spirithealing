@@ -1,5 +1,5 @@
 // Hosts-only replacement and new thumbnail confirmed in the video task on 6 October.
-import { constellationDays, constellationTime, constellationPlace } from "./constellationDays.js";
+import { constellationDays, constellationTime, constellationPlace, constellationDayPath } from "./constellationDays.js";
 export const replayFunnel = Object.freeze({
     path: "/live-vortrag/aufzeichnung", title: "Wer schreibt dein inneres Drehbuch?",
     image: "/images/live-drehbuch-2026-10-06.jpg",
@@ -22,9 +22,10 @@ export const publicEvents = [
     { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Erster Live-Abend mit Sabine & Selcan · Aufzeichnungsbereich und Workbook", href: replayFunnel.path, replay: true },
     ...constellationDays.map((day) => ({
         id: `constellation-${day.id}`, date: day.date, ...(constellationTime ? { time: constellationTime } : {}),
+        constellationDayId: day.id,
         title: `Aufstellungsarbeit mit Sabine & Selcan · ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
         detail: [day.language === "tr" ? "Türkisch" : "Deutsch", constellationPlace].filter(Boolean).join(" · "),
-        href: `/berlin-live${day.language === "tr" ? "?lang=tr" : ""}#tag-${day.id}`,
+        href: constellationDayPath(day),
         action: "Termin und Teilnahme ansehen",
     })),
     { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine Erfahrungen mit Anteilen", detail: "Zweiter Live-Abend mit Sabine & Selcan · online", href: replayFunnel.nextLivePath },

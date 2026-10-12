@@ -21,6 +21,8 @@ import { useLanguage } from "@/i18n/LanguageContext"
 import { WebsiteAssistant } from "@/components/WebsiteAssistant"
 import { ReplayPopup } from "@/components/ReplayPopup"
 import { BerlinLive } from "@/sections/BerlinLive"
+import { ConstellationWork } from "@/sections/ConstellationWork"
+import { isConstellationPath } from "@/content/constellationDays"
 import { Zepter13 } from "@/sections/Zepter13"
 import { Rauhnaechte } from "@/sections/Rauhnaechte"
 import { NotFound } from "@/sections/NotFound"
@@ -60,7 +62,7 @@ const PrivacyPage = () => {
 function App() {
   const location = useLocation();
   const isCampaignLanding = location.pathname === "/gratis-meditationen";
-  const isBerlinLanding = location.pathname === "/berlin-live";
+  const isBerlinLanding = isConstellationPath(location.pathname);
   const isZepter13Landing = location.pathname === "/13-wochen-programm";
   const isRauhnaechteLanding = location.pathname === "/rauhnaechte";
   const isWebinarApp = location.pathname.startsWith("/vortrag-13-wochen-programm") || location.pathname.startsWith("/live-vortrag");
@@ -89,6 +91,8 @@ function App() {
         <Route path="/kontakt" element={<Contact/>}/>
         <Route path="/newsletter/status" element={<NewsletterStatus/>}/>
         <Route path="/berlin-live" element={<BerlinLive/>}/>
+        <Route path="/berlin-live/:dayId" element={<BerlinLive/>}/>
+        <Route path="/aufstellungsarbeit" element={<ConstellationWork/>}/>
         <Route path="/13-wochen-programm" element={<Zepter13/>}/>
         <Route path="/rauhnaechte" element={<Rauhnaechte/>}/>
         <Route path="/vortrag-13-wochen-programm" element={<WebinarRegistration/>}/>

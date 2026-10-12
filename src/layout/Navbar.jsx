@@ -8,6 +8,7 @@ const navLinks = {
     de: [
         { href: "/coaching", label: "Prozessbegleitung" },
         { href: "/therapie", label: "Integrative Therapie" },
+        { href: "/aufstellungsarbeit", label: "Aufstellungsarbeit" },
         { href: "/about", label: "Über uns" },
         { href: "/vortraege-seminare", label: "Vorträge & Seminare" },
         { href: "/mitglieder", label: "Mitgliederbereich", member: true },
@@ -17,6 +18,7 @@ const navLinks = {
     tr: [
         { href: "/coaching", label: "Süreç Danışmanlığı" },
         { href: "/therapie", label: "Bütüncül Terapi" },
+        { href: "/aufstellungsarbeit?lang=tr", label: "Dizim çalışması" },
         { href: "/about", label: "Hakkımızda" },
         { href: "/vortraege-seminare", label: "Seminerler & Eğitimler" },
         { href: "/mitglieder", label: "Üye alanı", member: true },
@@ -84,7 +86,7 @@ export const Navbar = () => {
                 </span>
             </Link>
             {/*Navbar pc */}
-            <div className="hidden xl:flex gap-1">
+            <div className="hidden 2xl:flex gap-1">
                 <div className="glass rounded-full px-2 py-1 flex items-center gap-1">
                     {links.map((link) => (
                         <Link 
@@ -100,7 +102,7 @@ export const Navbar = () => {
                     ))}
                 </div>
             </div>
-            <div className="hidden xl:flex items-center gap-3">
+            <div className="hidden 2xl:flex items-center gap-3">
                         {LANGUAGE_SWITCHER_ENABLED && <LanguageSwitcher language={language} setLanguage={setLanguage}/>}
                         <Button size="sm" to="/termin-buchen">
                             {language === "tr" ? "Randevu al" : "Termin buchen"}
@@ -108,7 +110,7 @@ export const Navbar = () => {
                     </div>
             <button
                 type="button"
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-surface/65 p-2 text-muted-foreground shadow-sm xl:hidden"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-surface/65 p-2 text-muted-foreground shadow-sm 2xl:hidden"
                 onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                 aria-label={isMobileMenuOpen
                     ? (language === "tr" ? "Menüyü kapat" : "Menü schließen")
@@ -120,7 +122,7 @@ export const Navbar = () => {
             </button>
         </nav>
         {isMobileMenuOpen && (
-            <div id="mobile-navigation" className="glass-strong animate-fade-in xl:hidden">
+            <div id="mobile-navigation" className="glass-strong animate-fade-in 2xl:hidden">
                 <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-3 px-6 py-6">
                     {links.map((link) => (
                             <Link 

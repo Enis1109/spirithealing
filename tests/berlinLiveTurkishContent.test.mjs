@@ -16,11 +16,11 @@ test("covers every editable Berlin Live field with an isolated Turkish default",
 
 test("new page has separate German and Turkish booking copy", () => {
   const source = readFileSync(new URL("../src/sections/BerlinLive.jsx", import.meta.url), "utf8")
-  assert.match(source, /Dört ayrı dizim günü/u)
-  assert.match(source, /Vier Tage für Aufstellungsarbeit/u)
+  assert.match(source, /Berlin’de canlı dizim/u)
+  assert.match(source, /Live-Aufstellung in Berlin/u)
   assert.match(source, /Temsilci olarak · yeni katılanlar/u)
   assert.match(source, /Stellvertretung · neu dabei/u)
-  assert.match(source, /href="\/berlin-live\?lang=tr"/u)
+  assert.match(source, /ConstellationLayout language=\{language\}/u)
   assert.ok(Object.keys(berlinLiveStaticTurkishTranslations).length > 0)
 })
 

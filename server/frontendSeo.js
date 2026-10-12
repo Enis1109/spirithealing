@@ -6,6 +6,7 @@ import {
   socialImageFor,
   structuredDataForPath,
 } from "../src/seo/pageMeta.js"
+import { isConstellationPath } from "../src/content/constellationDays.js"
 
 const escapeHtml = (value) => String(value)
   .replaceAll("&", "&amp;")
@@ -16,7 +17,7 @@ const escapeHtml = (value) => String(value)
 export const injectSeoIntoDocument = (frontendDocument, requestPath) => {
   const requestUrl = new URL(String(requestPath || "/"), siteUrl)
   const pathname = normalizePathname(requestUrl.pathname)
-  const language = pathname === "/berlin-live" && requestUrl.searchParams.get("lang") === "tr" ? "tr" : "de"
+  const language = isConstellationPath(pathname) && requestUrl.searchParams.get("lang") === "tr" ? "tr" : "de"
   const meta = metadataForPath(pathname, language)
   const canonical = canonicalUrlForLanguage(meta.pathname, language)
   const image = socialImageFor(meta)
@@ -26,7 +27,7 @@ export const injectSeoIntoDocument = (frontendDocument, requestPath) => {
     : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
   const contentLanguage = meta.contentLanguage || language
   const structuredData = JSON.stringify(structuredDataForPath(meta.pathname, contentLanguage, meta)).replaceAll("<", "\\u003c")
-  const berlinLanguageLinks = pathname === "/berlin-live"
+  const berlinLanguageLinks = isConstellationPath(pathname)
     ? [
       `<link rel="alternate" hreflang="de" href="${escapeHtml(canonicalUrlForLanguage(pathname, "de"))}" data-spirit-healing-hreflang="true" />`,
       `<link rel="alternate" hreflang="tr" href="${escapeHtml(canonicalUrlForLanguage(pathname, "tr"))}" data-spirit-healing-hreflang="true" />`,

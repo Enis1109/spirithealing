@@ -164,6 +164,7 @@ import { initializeBerlinMeasurement, recordMeasurement, startBerlinMeasurementC
 import { berlinWebhookConfig, registerBerlinWebhook } from "./server/berlinWebhook.js";
 import { eraseBerlinPayment, berlinPaymentHash } from "./server/berlinErasure.js";
 import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
+import { initializeConstellationAvailability, getConstellationAvailability } from "./server/constellationAvailability.js";
 import { metaConfig, metaOriginAllowed, initializeMeta, cleanMeta, registerMetaConsent, revokeMetaConsent, sendMetaPageView } from "./server/berlinMeta.js";
 
 const app = express();
@@ -1004,6 +1005,19 @@ app.get("/api/content", async (_request, response) => {
     }
 });
 
+app.get("/api/aufstellungen/plaetze", async (_request, response) => {
+    response.set("Cache-Control", "no-store");
+    if (!berlinWebhookSettings.enabled || !berlinWebhookSettings.expectedLive) {
+        return response.status(503).json({ ok: false, error: "availability_unavailable" });
+    }
+    try {
+        return response.json({ ok: true, days: await getConstellationAvailability(database),
+            checkedAt: new Date().toISOString() });
+    } catch {
+        return response.status(503).json({ ok: false, error: "availability_unavailable" });
+    }
+});
+
 app.get("/api/admin/content", async (request, response) => {
     const member = await getAdminMember(request, response);
     if (!member) return undefined;
@@ -1831,6 +1845,7 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    await initializeConstellationAvailability(database);
     if (experienceEnabled) {
         await initializeExperienceGroup(database);
         await initializeExperienceReminders(database);

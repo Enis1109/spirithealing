@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { turkishTranslations, turkishTranslationsByPath } from "@/i18n/translations";
+import { isConstellationPath } from "@/content/constellationDays";
 import {
     canonicalUrlForLanguage,
     metadataForPath,
@@ -33,7 +34,7 @@ const upsertLink = (rel, href) => {
 const syncBerlinLanguageLinks = (pathname) => {
     const selector = 'link[data-spirit-healing-hreflang="true"]';
     const existing = [...document.head.querySelectorAll(selector)];
-    if (pathname !== "/berlin-live") {
+    if (!isConstellationPath(pathname)) {
         existing.forEach((element) => element.remove());
         return;
     }
@@ -72,8 +73,8 @@ const isExcluded = (node) => {
 export const DocumentTranslator = () => {
     const { language } = useLanguage();
     const { pathname, search } = useLocation();
-    const pageLanguage = pathname === "/berlin-live" && new URLSearchParams(search).get("lang") === "tr"
-        ? "tr"
+    const pageLanguage = isConstellationPath(pathname)
+        ? new URLSearchParams(search).get("lang") === "tr" ? "tr" : "de"
         : language;
     const originalText = useRef(new WeakMap());
     const originalAttributes = useRef(new WeakMap());

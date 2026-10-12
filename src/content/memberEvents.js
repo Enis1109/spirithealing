@@ -1,5 +1,5 @@
 import { programLiveEvents } from "./replayFunnel.js";
-import { constellationDays, constellationPlace, constellationTime } from "./constellationDays.js";
+import { constellationDays, constellationPlace, constellationTime, constellationDayPath } from "./constellationDays.js";
 
 // Weekly group: Sunday 19:00–21:30 German time, confirmed by Sabine on 6 October 2026.
 export const memberEvents = [
@@ -29,7 +29,7 @@ export const memberEvents = [
     ...constellationDays.map((day) => ({
         id: `constellation-${day.id}`,
         endsAt: `${day.date}T18:00:00Z`,
-        href: `/berlin-live${day.language === "tr" ? "?lang=tr" : ""}#tag-${day.id}`,
+        href: constellationDayPath(day),
         de: {
             kind: "Aufstellungsarbeit",
             title: `Aufstellungstag auf ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,

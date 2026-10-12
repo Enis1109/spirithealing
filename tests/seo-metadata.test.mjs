@@ -9,6 +9,7 @@ import {
   structuredDataForPath,
 } from "../src/seo/pageMeta.js"
 import { injectSeoIntoDocument } from "../server/frontendSeo.js"
+import { isConstellationPath } from "../src/content/constellationDays.js"
 
 test("gives every public page unique indexable metadata", () => {
   const titles = new Set()
@@ -45,7 +46,7 @@ test("keeps the XML sitemap aligned with public pages", () => {
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1])
   const expected = indexablePaths.flatMap((pathname) => {
     const canonical = canonicalUrlFor(pathname === "/" ? "/" : pathname).replace(/^https:\/\/spirit-healing\.tr$/u, "https://spirit-healing.tr/")
-    return pathname === "/berlin-live"
+    return isConstellationPath(pathname)
       ? [canonical, canonicalUrlForLanguage(pathname, "tr")]
       : [canonical]
   })
@@ -59,13 +60,13 @@ test("keeps the reviewed Berlin Live language versions separate", () => {
 
   assert.equal(canonicalUrlForLanguage("/berlin-live", "de"), "https://spirit-healing.tr/berlin-live")
   assert.equal(canonicalUrlForLanguage("/berlin-live", "tr"), "https://spirit-healing.tr/berlin-live?lang=tr")
-  assert.match(german.title, /Aufstellungsarbeit im Dezember und Januar/u)
-  assert.match(turkish.title, /Aralık ve Ocak aylarında dizim çalışması/u)
+  assert.match(german.title, /Live-Aufstellung in Berlin/u)
+  assert.match(turkish.title, /Berlin’de canlı dizim/u)
 
   const structuredData = JSON.stringify(structuredDataForPath("/berlin-live", "tr"))
   assert.match(structuredData, /Dizim çalışması/u)
   assert.match(structuredData, /Kendi dizimi/u)
-  assert.match(structuredData, /berlin-live\?lang=tr#tag-2026-12-12/u)
+  assert.match(structuredData, /berlin-live\/2026-12-12\?lang=tr#event/u)
 })
 
 test("adds truthful structured data for the main offers", () => {
@@ -104,7 +105,7 @@ test("places route-specific SEO in the initial HTML response", () => {
 
   const berlinTurkish = injectSeoIntoDocument(shell, "/berlin-live?lang=tr")
   assert.match(berlinTurkish, /<html lang="tr">/u)
-  assert.match(berlinTurkish, /Aralık ve Ocak aylarında dizim çalışması/u)
+  assert.match(berlinTurkish, /Berlin’de canlı dizim/u)
   assert.match(berlinTurkish, /rel="canonical" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)
   assert.match(berlinTurkish, /hreflang="de" href="https:\/\/spirit-healing\.tr\/berlin-live"/u)
   assert.match(berlinTurkish, /hreflang="tr" href="https:\/\/spirit-healing\.tr\/berlin-live\?lang=tr"/u)

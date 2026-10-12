@@ -1,166 +1,89 @@
-import { ArrowRight, CalendarDays, MapPin, Clock3 } from "lucide-react"
-import { useLocation } from "react-router-dom"
-import { BerlinLegacyConsentRevoke } from "@/components/BerlinLegacyConsentRevoke"
-import {
-  constellationDays,
-  constellationPlace,
-  constellationTime,
-  constellationTicketPrices,
-  constellationCapacity,
-} from "@/content/constellationDays"
+import { ArrowRight, CalendarDays, Clock3, MapPin, ArrowLeft } from "lucide-react"
+import { Link, useLocation, useParams } from "react-router-dom"
+import { ConstellationLayout } from "@/components/ConstellationLayout"
+import { ConstellationPlaces } from "@/components/ConstellationPlaces"
+import { useConstellationAvailability } from "@/hooks/useConstellationAvailability"
+import { NotFound } from "@/sections/NotFound"
+import { constellationDays, constellationDate, constellationDayPath, constellationPlace,
+  constellationTime, constellationTicketPrices } from "@/content/constellationDays"
 
 const copy = {
   de: {
-    back: "Zur Spirit-Healing-Startseite",
-    language: "Seitensprache",
-    eyebrow: "Aufstellungsarbeit mit Sabine und Selcan",
-    title: "Vier Tage für Aufstellungsarbeit",
-    intro: "Im Dezember und Januar arbeiten wir an vier einzelnen Tagen mit Aufstellungen. Die türkischsprachigen und deutschsprachigen Tage sind getrennt buchbar.",
-    dates: "12. und 13. Dezember 2026 · 30. und 31. Januar 2027",
-    timeSuffix: " Uhr",
-    choose: "Termin und Teilnahme wählen",
-    daysTitle: "Wähle deinen Tag",
-    daysIntro: "Jeder Termin gilt für einen Tag. Wähle zuerst das Datum und dann die passende Form der Teilnahme.",
-    capacity: `${constellationCapacity.total} Plätze pro Tag, davon höchstens ${constellationCapacity.own} eigene Aufstellungen. Die beiden Stellvertretungs-Preise teilen sich ${constellationCapacity.representative} Plätze.`,
-    languageName: { de: "Deutsch", tr: "Türkisch" },
-    returning: "Stellvertretung · bereits verbunden",
-    returningDescription: "Für Menschen, die beim vergangenen Aufstellungsseminar dabei waren oder schon zu Spirit Healing gehören.",
-    returningCheckout: "Der Preis von 22 € wird beim Buchen automatisch eingesetzt. Bitte wähle ihn nur, wenn du zu dieser Gruppe gehörst.",
-    new: "Stellvertretung · neu dabei",
-    newDescription: "Für Menschen, die noch nicht bei einer Aufstellung mit uns waren und uns noch nicht kennen.",
-    own: "Eigene Aufstellung",
+    main: "Aufstellungsarbeit", title: "Live-Aufstellung in Berlin",
+    intro: "Mit Sabine und Selcan. Im Dezember und Januar widmen wir vier einzelne Tage der reinen Aufstellungsarbeit. Die Samstage sind auf Türkisch, die Sonntage auf Deutsch.",
+    terms: "Termine und freie Plätze", choose: "Wähle deinen Aufstellungstag. Jeder Tag ist einzeln buchbar.",
+    details: "Zu diesem Termin", back: "Alle Berliner Termine", language: { de: "Deutsch", tr: "Türkisch" },
+    own: "Eigene Aufstellung", returning: "Stellvertretung · bereits verbunden", new: "Stellvertretung · neu dabei",
     ownDescription: "Für Menschen, die sich an diesem Tag selbst aufstellen lassen möchten.",
-    perDay: "pro Person und Tag",
-    book: "Diesen Platz buchen",
-    unavailable: "Buchung noch nicht freigeschaltet",
-    questions: "Fragen zu deiner Teilnahme?",
-    contact: "Schreib uns an info@spirit-healing.tr.",
-    imprint: "Impressum",
-    privacy: "Datenschutz",
+    returningDescription: "Für Menschen, die beim vergangenen Aufstellungsseminar dabei waren oder schon zu Spirit Healing gehören.",
+    newDescription: "Für Menschen, die noch nicht bei einer Aufstellung mit uns waren und uns noch nicht kennen.",
+    perDay: "pro Person und Tag", book: "Diesen Platz buchen", full: "Ausgebucht",
+    capacity: "20 Plätze pro Tag, davon fünf für eigene Aufstellungen und 15 für Stellvertretung.",
+    scope: "Ein Tag reine Aufstellungsarbeit mit Sabine und Selcan. Du nimmst als Stellvertretung teil oder buchst einen der fünf Plätze für dein eigenes Anliegen.",
+    discount: "Wähle den Preis von 22 €, wenn du bereits zu Spirit Healing gehörst oder beim vergangenen Aufstellungsseminar dabei warst.",
+    shared: "Die beiden Stellvertretungs-Preise gelten für dieselben 15 Plätze.",
+    calendar: "Diesen Tag im Kalender ansehen", question: "Fragen zur Teilnahme?", timeSuffix: " Uhr",
+    checking: "Aktuelle Plätze werden abgefragt.", checkFailure: "Die Platzanzeige ist gerade nicht erreichbar. Die verfügbaren Plätze werden beim Buchen geprüft.",
   },
   tr: {
-    back: "Spirit Healing ana sayfasına dön",
-    language: "Sayfa dili",
-    eyebrow: "Sabine ve Selcan ile dizim çalışması",
-    title: "Dört ayrı dizim günü",
-    intro: "Aralık ve Ocak aylarında dört ayrı günde dizim çalışması yapacağız. Türkçe ve Almanca günler ayrı ayrı rezerve edilir.",
-    dates: "12 ve 13 Aralık 2026 · 30 ve 31 Ocak 2027",
-    timeSuffix: "",
-    choose: "Tarih ve katılım biçimini seç",
-    daysTitle: "Katılacağınız günü seçin",
-    daysIntro: "Her rezervasyon tek bir gün içindir. Önce tarihi, ardından katılım biçimini seçin.",
-    capacity: `Her gün ${constellationCapacity.total} yer var. Bunların en fazla ${constellationCapacity.own} tanesi kendi dizimi içindir. İki temsilcilik fiyatı toplam ${constellationCapacity.representative} yeri paylaşır.`,
-    languageName: { de: "Almanca", tr: "Türkçe" },
-    returning: "Temsilci olarak · daha önce katılanlar",
-    returningDescription: "Önceki dizim seminerine katılmış olanlar veya zaten Spirit Healing’e dahil olanlar için.",
-    returningCheckout: "22 € tutarındaki fiyat ödeme sırasında otomatik uygulanır. Lütfen bu seçeneği yalnızca bu gruba dahilseniz seçin.",
-    new: "Temsilci olarak · yeni katılanlar",
-    newDescription: "Daha önce bizimle dizime katılmamış ve bizi henüz tanımayanlar için.",
-    own: "Kendi dizimin",
+    main: "Dizim çalışması", title: "Berlin’de canlı dizim",
+    intro: "Sabine ve Selcan ile. Aralık ve Ocak aylarında dört ayrı günü dizim çalışmasına ayırıyoruz. Cumartesi günleri Türkçe, pazar günleri Almanca.",
+    terms: "Tarihler ve boş yerler", choose: "Dizim gününüzü seçin. Her gün ayrı rezerve edilir.",
+    details: "Bu tarihe git", back: "Berlin’deki tüm tarihler", language: { de: "Almanca", tr: "Türkçe" },
+    own: "Kendi diziminiz", returning: "Temsilci olarak · daha önce katılanlar", new: "Temsilci olarak · yeni katılanlar",
     ownDescription: "O gün kendi dizimini açtırmak isteyenler için.",
-    perDay: "kişi başına, bir gün için",
-    book: "Bu yeri rezerve et",
-    unavailable: "Rezervasyon henüz açılmadı",
-    questions: "Katılımla ilgili sorun mu var?",
-    contact: "info@spirit-healing.tr adresine yazın.",
-    imprint: "Künye",
-    privacy: "Gizlilik",
+    returningDescription: "Önceki dizim seminerine katılmış olanlar veya zaten Spirit Healing’e dahil olanlar için.",
+    newDescription: "Daha önce bizimle dizime katılmamış ve bizi henüz tanımayanlar için.",
+    perDay: "kişi başına, bir gün için", book: "Bu yeri rezerve et", full: "Kontenjan doldu",
+    capacity: "Her gün 20 yer var: 5 kendi dizimi yeri ve 15 temsilci yeri.",
+    scope: "Sabine ve Selcan ile bir gün dizim çalışması. Temsilci olarak katılabilir veya kendi konunuz için ayrılan beş yerden birini rezerve edebilirsiniz.",
+    discount: "Zaten Spirit Healing’e dahilseniz veya önceki dizim seminerine katıldıysanız 22 € fiyatını seçin.",
+    shared: "İki temsilcilik fiyatı aynı 15 yeri paylaşır.",
+    calendar: "Bu günü takvimde gör", question: "Katılımla ilgili sorularınız mı var?", timeSuffix: "",
+    checking: "Güncel kontenjan sorgulanıyor.", checkFailure: "Kontenjan bilgisine şu anda ulaşılamıyor. Boş yerler rezervasyon sırasında kontrol edilir.",
   },
 }
 
-const ticketTypes = ["returning", "new", "own"]
-
-function formattedDate(date, language) {
-  const timestamp = new Date(`${date}T12:00:00Z`)
-  return new Intl.DateTimeFormat(language === "tr" ? "tr-TR" : "de-DE", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Berlin",
-  }).format(timestamp)
-}
+const Facts = ({ language }) => <div className="mt-6 flex flex-wrap gap-3 text-sm font-semibold text-[#49635f]">
+  <span className="inline-flex items-center gap-2"><MapPin size={17}/>{constellationPlace}</span>
+  <span className="inline-flex items-center gap-2"><Clock3 size={17}/>{constellationTime}{copy[language].timeSuffix}</span>
+</div>
 
 export const BerlinLive = () => {
   const { search } = useLocation()
+  const { dayId } = useParams()
   const language = new URLSearchParams(search).get("lang") === "tr" ? "tr" : "de"
   const t = copy[language]
+  const availability = useConstellationAvailability()
+  const day = dayId ? constellationDays.find(item => item.id === dayId) : null
+  const seats = day ? availability === null ? null : availability?.[day.id] : undefined
+  const berlinPath = `/berlin-live${language === "tr" ? "?lang=tr" : ""}`
+  if (dayId && !day) return <NotFound/>
 
-  return (
-    <main data-no-translate lang={language} className="min-h-screen bg-[#fbf8f1] text-[#173c39]">
-      <header className="border-b border-[#dbe7e1] bg-[#f8f5ed]">
-        <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 lg:px-10 lg:pb-24">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <a href="/" aria-label={t.back} className="inline-flex items-center gap-3">
-              <img src="/Logo-tuerkis.jpeg" alt="" className="h-12 w-12 rounded-full object-cover" />
-              <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
-            </a>
-            <div className="inline-flex rounded-full border border-[#0f7d79]/30 bg-white p-1" role="group" aria-label={t.language}>
-              <a href="/berlin-live" aria-current={language === "de" ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm font-bold ${language === "de" ? "bg-[#0f7d79] text-white" : "text-[#075a57]"}`}>DE</a>
-              <a href="/berlin-live?lang=tr" aria-current={language === "tr" ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm font-bold ${language === "tr" ? "bg-[#0f7d79] text-white" : "text-[#075a57]"}`}>TR</a>
-            </div>
-          </div>
-
-          <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-            <div>
-              <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#a67426]">{t.eyebrow}</p>
-              <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">{t.title}</h1>
-              <p className="mt-7 max-w-2xl text-xl leading-9 text-[#3f5d59]">{t.intro}</p>
-              <div className="mt-8 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white px-4 py-2.5"><CalendarDays size={18} aria-hidden="true" />{t.dates}</span>
-                {constellationPlace && <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white px-4 py-2.5"><MapPin size={18} aria-hidden="true" />{constellationPlace}</span>}
-                {constellationTime && <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white px-4 py-2.5"><Clock3 size={18} aria-hidden="true" />{constellationTime}{t.timeSuffix}</span>}
-              </div>
-              <a href="#termine" className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white hover:bg-[#075a57]">{t.choose}<ArrowRight size={18} aria-hidden="true" /></a>
-            </div>
-            <div className="overflow-hidden rounded-[2rem] border-8 border-white shadow-[0_26px_70px_rgba(31,75,70,0.18)]">
-              <img src="/familie/berlin.jpeg" alt="" className="h-80 w-full object-cover object-center lg:h-[29rem]" />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <section id="termine" className="mx-auto max-w-7xl scroll-mt-8 px-5 py-16 sm:px-8 lg:px-10">
-        <h2 className="text-3xl font-bold sm:text-4xl">{t.daysTitle}</h2>
-        <p className="mt-4 max-w-3xl text-lg leading-8 text-[#49635f]">{t.daysIntro}</p>
-        <p className="mt-2 max-w-3xl text-base leading-7 text-[#49635f]">{t.capacity}</p>
-        <div className="mt-10 space-y-8">
-          {constellationDays.map((day) => (
-            <article key={day.id} id={`tag-${day.id}`} className="scroll-mt-8 rounded-[2rem] border border-[#cbded6] bg-white p-6 shadow-sm sm:p-9">
-              <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-[#d6e3dc] pb-6">
-                <h3 className="text-2xl font-bold sm:text-3xl">{formattedDate(day.date, language)}</h3>
-                <p className="rounded-full bg-[#edf5f1] px-4 py-2 text-sm font-bold text-[#075a57]">{t.languageName[day.language]}</p>
-              </div>
-              <div className="mt-7 grid gap-5 lg:grid-cols-3">
-                {ticketTypes.map((type) => {
-                  const checkoutUrl = day.links[type]
-                  return (
-                    <div key={type} className="flex flex-col rounded-2xl border border-[#d6e3dc] bg-[#fbf8f1] p-6">
-                      <h4 className="text-lg font-bold">{t[type]}</h4>
-                      <p className="mt-4 text-4xl font-bold">{constellationTicketPrices[type]} €</p>
-                      <p className="mt-1 text-sm text-[#61736f]">{t.perDay}</p>
-                      <p className="mb-6 mt-5 leading-7 text-[#3f5b57]">{t[`${type}Description`]}</p>
-                      {type === "returning" && <p className="mb-5 text-sm leading-6 text-[#49635f]">{t.returningCheckout}</p>}
-                      {checkoutUrl ? (
-                        <a href={checkoutUrl} className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-5 py-3 text-center font-bold text-white hover:bg-[#075a57]">{t.book}</a>
-                      ) : (
-                        <span className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full bg-[#dce8e2] px-5 py-3 text-center font-semibold text-[#4b6561]">{t.unavailable}</span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
-        <h2 className="text-2xl font-bold">{t.questions}</h2>
-        <p className="mt-3 text-lg"><a href="mailto:info@spirit-healing.tr" className="underline underline-offset-4">{t.contact}</a></p>
-      </section>
-      <footer className="border-t border-[#d6e3dc] bg-white py-9">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 text-sm text-[#5d716d] sm:px-8 lg:px-10">
-          <span className="font-bold text-[#075a57]">Spirit Healing</span>
-          <div className="flex flex-wrap gap-6"><a href="/impressum">{t.imprint}</a><a href="/datenschutz">{t.privacy}</a><BerlinLegacyConsentRevoke /></div>
-        </div>
-      </footer>
-    </main>
-  )
+  return <ConstellationLayout language={language} breadcrumbs={[
+    { label: t.main, href: `/aufstellungsarbeit${language === "tr" ? "?lang=tr" : ""}` },
+    { label: t.title, ...(day ? { href: berlinPath } : {}) },
+    ...(day ? [{ label: constellationDate(day.date, language) }] : []),
+  ]}>
+    <section className="mx-auto grid max-w-7xl items-center gap-9 px-5 py-12 sm:px-8 lg:grid-cols-[1.25fr_0.75fr]">
+      <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-[#a67426]">{day ? t.language[day.language] : language === "tr" ? "Sabine ve Selcan ile" : "Mit Sabine und Selcan"}</p><h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">{day ? constellationDate(day.date, language) : t.title}</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-[#49635f]">{day ? t.scope : t.intro}</p><Facts language={language}/><p className="mt-4 text-sm leading-7 text-[#49635f]">{t.capacity}</p>{day && <div className="mt-5"><ConstellationPlaces seats={seats} language={language}/></div>}</div>
+      <img src="/familie/berlin.jpeg" alt="" className="h-64 w-full rounded-[2rem] object-cover lg:h-80"/>
+    </section>
+    {!day ? <section id="termine" className="mx-auto max-w-7xl px-5 pb-12 pt-6 sm:px-8">
+      <h2 className="text-3xl font-bold">{t.terms}</h2><p className="mt-4 text-lg leading-8 text-[#49635f]">{t.choose}</p>
+      <div className="mt-8 grid gap-5 md:grid-cols-2">{constellationDays.map(item => <article key={item.id} id={`tag-${item.id}`} className="flex scroll-mt-8 flex-col rounded-[1.75rem] border border-[#cbded6] bg-white p-6 sm:p-8"><p className="text-sm font-bold text-[#a67426]">{t.language[item.language]}</p><h3 className="mt-3 text-2xl font-bold">{constellationDate(item.date, language)}</h3><Facts language={language}/><div className="mt-5"><ConstellationPlaces seats={availability === null ? null : availability?.[item.id]} language={language}/></div><p className="mb-6 mt-4 text-sm leading-6 text-[#49635f]">{language === "tr" ? "Temsilci: 22 € veya 44 € · kendi dizimi: 160 €" : "Stellvertretung: 22 € oder 44 € · eigene Aufstellung: 160 €"}</p><Link to={constellationDayPath(item, language)} className="mt-auto inline-flex min-h-12 items-center justify-between gap-3 rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white hover:bg-[#075a57]">{availability?.[item.id]?.total === 0 ? t.full : t.details}<ArrowRight size={18}/></Link></article>)}</div>
+      <Link to="/vortraege-seminare#kalender" className="mt-7 inline-block underline underline-offset-4">{language === "tr" ? "Etkinlik takvimine git" : "Zum Veranstaltungskalender"}</Link>
+    </section> : <section id="teilnahme" className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+      <div className="grid gap-5 lg:grid-cols-3">{["returning", "new", "own"].map(type => {
+        const checkoutUrl = day.links[type]
+        const remaining = seats?.[type === "own" ? "own" : "representative"]
+        const full = remaining === 0
+        return <article key={type} className="flex flex-col rounded-[1.75rem] border border-[#cbded6] bg-white p-7"><h2 className="text-xl font-bold">{t[type]}</h2><p className="mt-5 text-4xl font-bold">{constellationTicketPrices[type]} €</p><p className="mt-2 text-sm text-[#61736f]">{t.perDay}</p><p className="mt-5 leading-7 text-[#49635f]">{t[`${type}Description`]}</p><p className="mb-6 mt-5 text-sm font-bold text-[#075a57]">{Number.isInteger(remaining) ? language === "tr" ? `${remaining} boş yer` : `${remaining} freie ${remaining === 1 ? "Platz" : "Plätze"}` : t.checking}</p>{full ? <span className="mt-auto rounded-full bg-[#e5ece8] px-5 py-3 text-center font-bold">{t.full}</span> : <a href={checkoutUrl} className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-5 py-3 text-center font-bold text-white hover:bg-[#075a57]">{t.book}</a>}</article>
+      })}</div>
+      <p className="mt-6 max-w-3xl text-sm leading-7 text-[#49635f]">{t.discount} {t.shared}</p>
+      {availability === null && <p className="mt-3 text-sm leading-7 text-[#49635f]">{t.checkFailure}</p>}
+      <div className="mt-9 flex flex-wrap items-center gap-6"><Link to={berlinPath} className="inline-flex items-center gap-2 font-bold text-[#075a57]"><ArrowLeft size={18}/>{t.back}</Link><Link to={`/vortraege-seminare?monat=${day.date.slice(0, 7)}&tag=${day.date}#kalender`} className="underline underline-offset-4"><CalendarDays size={16} className="mr-2 inline"/>{t.calendar}</Link></div>
+    </section>}
+    <section className="mx-auto max-w-7xl px-5 py-8 sm:px-8"><h2 className="text-2xl font-bold">{t.question}</h2><a href="mailto:info@spirit-healing.tr" className="mt-4 inline-block underline underline-offset-4">info@spirit-healing.tr</a></section>
+  </ConstellationLayout>
 }

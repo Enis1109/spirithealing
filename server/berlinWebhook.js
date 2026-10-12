@@ -1,5 +1,6 @@
 import express from 'express';
 import { BERLIN_LINK_IDS, recordStripeEvent, verifyStripeEvent } from './berlinMeasurement.js';
+import { recordConstellationBooking } from './constellationAvailability.js';
 
 const testOffers = Object.freeze({
   own_full: { ticket: 'own', booking: true, installment: 0 },
@@ -47,6 +48,8 @@ export function registerBerlinWebhook(app, { db, config, ready = async () => tru
       catch { return response.status(400).json({ ok: false }); }
       try {
         if (!await ready()) return response.status(503).json({ ok: false });
+        const booking = await recordConstellationBooking(db, event, config.expectedLive);
+        if (booking) return response.json({ ok: true, result: 'booking' });
         const result = await recordStripeEvent(db, event, config.expectedLive, config.linkMap);
         return response.json({ ok: true, result });
       } catch { return response.status(503).json({ ok: false }); }

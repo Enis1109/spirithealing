@@ -1,12 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { ConstellationPlaces } from "@/components/ConstellationPlaces";
+import { useConstellationAvailability } from "@/hooks/useConstellationAvailability";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { berlinDate, eventsOnDay, eventsInMonth, eventIsPast, monthCells } from "@/content/replayFunnel";
 
 export const EventCalendar = () => {
     const today = berlinDate();
-    const [month, setMonth] = useState(() => today.slice(0, 7));
-    const [selected, setSelected] = useState(null);
+    const { search } = useLocation();
+    const query = new URLSearchParams(search);
+    const requestedMonth = query.get("monat");
+    const requestedDay = query.get("tag");
+    const [month, setMonth] = useState(() => /^20\d\d-(0[1-9]|1[0-2])$/.test(requestedMonth || "") ? requestedMonth : today.slice(0, 7));
+    const [selected, setSelected] = useState(() => /^20\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(requestedDay || "") && requestedDay.startsWith(`${requestedMonth}-`) ? requestedDay : null);
+    const availability = useConstellationAvailability();
     const [year, monthNumber] = month.split("-").map(Number);
     const title = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${month}-01T12:00:00Z`));
     const move = delta => { setMonth(new Date(Date.UTC(year, monthNumber - 1 + delta, 1)).toISOString().slice(0, 7)); setSelected(null); };
@@ -29,7 +36,7 @@ export const EventCalendar = () => {
             <div className="border-t border-[#dedbcc] bg-white/60 p-5 sm:p-8 lg:border-l lg:border-t-0">
                 <div className="flex items-center justify-between gap-3"><h2 className="font-serif text-2xl">{selected ? selected.split("-").reverse().join(".") : "In diesem Monat"}</h2>{selected && <button onClick={() => setSelected(null)} className="min-h-11 text-sm underline">Alle Termine</button>}</div>
                 <div aria-live="polite" className="mt-5 space-y-4">{visible.map(event => <Link key={event.id} to={event.href} className="block rounded-2xl border border-[#d9ddcf] bg-white p-5 transition hover:border-[#9d783a] focus-visible:outline-2 focus-visible:outline-[#075d60]">
-                    <p className="text-xs font-bold uppercase tracking-wide text-[#88672b]">{event.date.split("-").reverse().join(".")}{event.time ? ` · ${event.time} Uhr` : ""}{eventIsPast(event) ? " · Vergangen" : ""}</p><h3 className="mt-2 font-serif text-xl leading-7">{event.title}</h3><p className="mt-2 text-sm leading-6 text-[#55685e]">{event.detail}</p><span className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#075d60]">{event.action || (event.replay ? "Zur Aufzeichnung" : "Zum Termin")}<ArrowUpRight size={16}/></span>
+                    <p className="text-xs font-bold uppercase tracking-wide text-[#88672b]">{event.date.split("-").reverse().join(".")}{event.time ? ` · ${event.time} Uhr` : ""}{eventIsPast(event) ? " · Vergangen" : ""}</p><h3 className="mt-2 font-serif text-xl leading-7">{event.title}</h3><p className="mt-2 text-sm leading-6 text-[#55685e]">{event.detail}</p>{event.constellationDayId && <div className="mt-3"><ConstellationPlaces seats={availability === null ? null : availability?.[event.constellationDayId]}/></div>}<span className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#075d60]">{event.action || (event.replay ? "Zur Aufzeichnung" : "Zum Termin")}<ArrowUpRight size={16}/></span>
                 </Link>)}{!visible.length && <p className="leading-7">{selected ? "Für diesen Tag ist kein Termin eingetragen." : "Für diesen Monat ist noch kein Termin eingetragen."}</p>}</div>
                 <p className="mt-6 border-t border-[#dedbcc] pt-5 text-sm leading-6">Unsere Erfahrungsgruppe trifft sich jeden Sonntag von 19:00 bis 21:30 Uhr deutscher Zeit. <Link className="font-bold underline" to="/mitglieder?tab=experience">Zum Mitgliederbereich</Link></p>
             </div>

@@ -294,8 +294,8 @@ export const Herotest = () => {
                         <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{language === "tr" ? "Aralık ve Ocak için dört ayrı gün" : "Vier einzelne Tage im Dezember und Januar"}</h2>
                         <p className="mt-3 leading-7 text-[#49635f]">{language === "tr" ? "Berlin-Kreuzberg, her gün 10:00–19:00. 12 Aralık ve 30 Ocak Türkçe · 13 Aralık ve 31 Ocak Almanca. Temsilci olarak veya kendi diziminizle katılabilirsiniz." : "Berlin-Kreuzberg, jeweils 10–19 Uhr. 12. Dezember und 30. Januar auf Türkisch · 13. Dezember und 31. Januar auf Deutsch. Teilnahme als Stellvertretung oder mit eigener Aufstellung."}</p>
                     </div>
-                    <Link to={language === "tr" ? "/berlin-live?lang=tr" : "/berlin-live"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3 text-center font-bold text-white hover:bg-[#075a57]">
-                        {language === "tr" ? "Tarihleri ve fiyatları gör" : "Termine und Preise ansehen"}<ArrowRight className="h-5 w-5" aria-hidden="true" />
+                    <Link to={language === "tr" ? "/aufstellungsarbeit?lang=tr" : "/aufstellungsarbeit"} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-6 py-3 text-center font-bold text-white hover:bg-[#075a57]">
+                        {language === "tr" ? "Dizim çalışmasına git" : "Zur Aufstellungsarbeit"}<ArrowRight className="h-5 w-5" aria-hidden="true" />
                     </Link>
                 </div>
             </div>
