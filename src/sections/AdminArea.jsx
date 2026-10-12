@@ -376,7 +376,8 @@ export const AdminArea = () => {
     const unpublishedCount = allKeys.filter(isUnpublished).length;
     const normalizedSearch = search.trim().toLowerCase();
     const pageCatalogForTab = activeTab === "berlin"
-        ? pageContentCatalog.filter((item) => item.section === "Berlin Live")
+        ? pageContentCatalog.filter((item) => item.section === "Berlin Live"
+            && /^berlin(?:-tr)?\.(?:hero\.lead-strong$|system\.|process\.|duo\.|own\.|group\.(?:eyebrow$|title$|item-))/.test(item.key))
         : pageContentCatalog.filter((item) => item.section !== "Berlin Live");
     const filteredPages = pageCatalogForTab.filter((item) => !normalizedSearch || `${item.section} ${item.group} ${item.label} ${item.key}`.toLowerCase().includes(normalizedSearch));
     const filteredTopics = assistantContentCatalog.filter((topic) => !normalizedSearch || `${topic.title} ${topic.id} ${topic.defaults.terms.de} ${topic.defaults.answer.de}`.toLowerCase().includes(normalizedSearch));
@@ -398,7 +399,7 @@ export const AdminArea = () => {
     const navItems = [
         { id: "overview", label: "Übersicht", icon: LayoutDashboard },
         { id: "pages", label: "Homepage-Texte", icon: FileText },
-        { id: "berlin", label: "Berlin-Archiv", icon: MapPin },
+        { id: "berlin", label: "Aufstellungsarbeit", icon: MapPin },
         { id: "assistant", label: "Fragebot", icon: Bot },
         { id: "programs", label: "Programme", icon: UsersRound },
         { id: "onboarding", label: "Startfragebögen", icon: ClipboardList },
@@ -470,9 +471,9 @@ export const AdminArea = () => {
                         <div>
                             <div className="mb-5 flex flex-col gap-4 rounded-3xl bg-[#fffaf2] p-5 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h1 className="text-3xl font-bold">{activeTab === "pages" ? "Homepage-Texte" : activeTab === "berlin" ? "Berlin-Archiv" : "Fragebot-Wissen"}</h1>
-                                    <p className="mt-1 text-[#6b8585]">{activeTab === "pages" ? "Einzelne Passagen bearbeiten, ohne die Seite neu zu bauen." : activeTab === "berlin" ? "Diese Textfelder gehören zum abgeschlossenen Oktoberseminar. Sie ändern die neuen Aufstellungstage nicht. Hier bleibt die Datenschutz-Verwaltung für die frühere Berlin-Messung erreichbar." : "Antworten und alternative Frageformulierungen auf Deutsch und Türkisch pflegen."}</p>
-                                    {activeTab === "berlin" && <a href="/berlin-live" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 font-bold text-[#0f8b8d] hover:underline"><MapPin className="h-4 w-4" /> Öffentliche Landingpage ansehen</a>}
+                                    <h1 className="text-3xl font-bold">{activeTab === "pages" ? "Homepage-Texte" : activeTab === "berlin" ? "Aufstellungsarbeit" : "Fragebot-Wissen"}</h1>
+                                    <p className="mt-1 text-[#6b8585]">{activeTab === "pages" ? "Einzelne Passagen bearbeiten, ohne die Seite neu zu bauen." : activeTab === "berlin" ? "Die allgemeinen Texte der Hauptseite auf Deutsch und Türkisch bearbeiten. Die Berliner Termine, Preise und aktuellen Plätze stehen auf den zugehörigen Terminseiten." : "Antworten und alternative Frageformulierungen auf Deutsch und Türkisch pflegen."}</p>
+                                    {activeTab === "berlin" && <a href="/aufstellungsarbeit" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 font-bold text-[#0f8b8d] hover:underline"><MapPin className="h-4 w-4" /> Hauptseite ansehen</a>}
                                 </div>
                                 <label className="relative block w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6b8585]" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Suchen …" className="min-h-12 w-full rounded-full border border-[#0f8b8d]/25 bg-white pl-12 pr-4 outline-none focus:border-[#0f8b8d] focus:ring-2 focus:ring-[#0f8b8d]/20" /></label>
                             </div>
