@@ -39,10 +39,10 @@ export const sendClosingNotification = async ({ reference }) => {
     if (!result.accepted?.length || result.rejected?.length) throw new Error('closing_notification_not_accepted');
 };
 
-export const sendClosingConfirmation = async ({ name, email, reference }) => {
+export const sendClosingConfirmation = async ({ name, email }) => {
     const result = await closingTransporter.sendMail({ from: process.env.SMTP_FROM, to: email, replyTo: notificationRecipient,
         subject: 'Dein Abschlussfragebogen ist bei uns angekommen',
-        text: `Hallo ${name},\n\ndanke, dass du deinen Weg mit uns teilst. Dein Abschlussfragebogen ist gespeichert und liegt uns vor.\n\nDeine Eingangsreferenz: ${reference}\n\nDeine Angaben zur Fortsetzung sind keine Buchung oder Zahlungszusage.\n\nVon Herzen\nSelcan und Sabine\nSpirit Healing` });
+        text: `Hallo ${name},\n\nvielen lieben Dank, dass du dir Zeit für deinen Abschlussfragebogen genommen und deine Erfahrungen mit uns geteilt hast. Dein Fragebogen ist bei uns eingegangen.\n\nWir lesen deine Antworten in Ruhe und schauen gemeinsam auf deinen persönlichen Weg durch diese acht Wochen. Innerhalb von drei Tagen schicken wir dir deine ausführliche persönliche Auswertung mit einer Empfehlung für deine nächsten Schritte.\n\nDanke für dein Vertrauen und für die gemeinsame Zeit mit dir.\n\nVon Herzen\nSelcan und Sabine` });
     if (!result.accepted?.some(address => String(address).toLowerCase() === email.toLowerCase()) || result.rejected?.length) throw new Error('closing_confirmation_not_accepted');
 };
 
