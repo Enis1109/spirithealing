@@ -291,6 +291,27 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
         }
     };
 
+    const publishClosingRecording = async (event) => {
+        event.preventDefault();
+        setBusyKey("closing-recording");
+        setNotice(null);
+        try {
+            const result = await requestJson(`/api/admin/programs/${programSlug}/closing-recording`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    closingRecordingUrl: weeks[8]?.closingRecordingUrl || "",
+                    closingRecordingDate: weeks[8]?.closingRecordingDate || "",
+                }),
+            });
+            applyProgram(result.program, { resetSettings: false, resetWeeks: false });
+            setNotice({ type: "success", text: "Das Abschlusstreffen wurde ergänzt. Alle bisherigen Wocheninhalte bleiben unverändert." });
+        } catch {
+            setNotice({ type: "error", text: "Das Abschlusstreffen konnte nicht gespeichert werden. Bitte Datum und Link prüfen." });
+        } finally {
+            setBusyKey("");
+        }
+    };
+
     if (state === "loading") return <div className="flex min-h-64 items-center justify-center rounded-3xl bg-[#fffaf2] text-[#0f8b8d]"><LoaderCircle className="h-8 w-8 animate-spin" /></div>;
     if (state === "error") return <div className="rounded-3xl bg-red-50 p-8 font-bold text-red-800">Der Programmbereich konnte nicht geladen werden.</div>;
 
@@ -391,6 +412,16 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                     })}
                 </div>
             </section>
+
+            <form onSubmit={publishClosingRecording} className="rounded-3xl bg-[#fffaf2] p-5 shadow-sm sm:p-7">
+                <h2 className="text-2xl font-bold">Abschlusstreffen</h2>
+                <p className="mt-2 text-[#6b8585]">Zusätzliche Aufzeichnung für die bestehende Gruppe. Die Aufnahme und Materialien aus Woche 8 bleiben erhalten.</p>
+                <div className="mt-5 grid gap-5 lg:grid-cols-2">
+                    <label className="font-bold">Datum des Abschlusstreffens<input required type="date" className={fieldClass} value={weeks[8]?.closingRecordingDate || ""} onChange={(event) => setWeekField(8, "closingRecordingDate", event.target.value)} /></label>
+                    <label className="font-bold">Link zum Abschlusstreffen<input required type="url" className={fieldClass} value={weeks[8]?.closingRecordingUrl || ""} onChange={(event) => setWeekField(8, "closingRecordingUrl", event.target.value)} /></label>
+                </div>
+                <button type="submit" disabled={Boolean(busyKey)} className="mt-5 min-h-11 rounded-full bg-[#0f8b8d] px-5 font-bold text-white disabled:opacity-60">Abschlusstreffen speichern & veröffentlichen</button>
+            </form>
 
             <section>
                 <div className="mb-4"><h2 className="text-3xl font-bold">Woche 1 bis 8</h2><p className="mt-1 text-[#6b8585]">Speichern legt einen Entwurf an. Erst „Veröffentlichen“ macht ihn für berechtigte Teilnehmer sichtbar.</p></div>

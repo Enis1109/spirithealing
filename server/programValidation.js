@@ -106,7 +106,18 @@ export const normalizeProgramWeek = (body, expectedWeekNumber) => {
         workbookLabel: normalizeText(body?.workbookLabel, "workbookLabel", { maxLength: 180 }),
         workbookUrl: normalizeUrl(body?.workbookUrl, "workbookUrl"),
         recordingUrl: normalizeUrl(body?.recordingUrl, "recordingUrl"),
+        closingRecordingUrl: normalizeUrl(body?.closingRecordingUrl, "closingRecordingUrl"),
+        closingRecordingDate: body?.closingRecordingDate ? normalizeDate(body.closingRecordingDate, "closingRecordingDate") : "",
         tasks,
+    };
+};
+
+export const normalizeClosingRecording = (body) => {
+    const closingRecordingUrl = normalizeUrl(body?.closingRecordingUrl, "closingRecordingUrl");
+    if (!closingRecordingUrl) throw new ProgramValidationError("closingRecordingUrl");
+    return {
+        closingRecordingUrl,
+        closingRecordingDate: normalizeDate(body?.closingRecordingDate, "closingRecordingDate"),
     };
 };
 

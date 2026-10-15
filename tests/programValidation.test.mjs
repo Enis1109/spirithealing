@@ -6,6 +6,7 @@ import {
     normalizeProgramSlug,
     normalizeProgramTaskUpdate,
     normalizeProgramWeek,
+    normalizeClosingRecording,
     ProgramValidationError,
 } from "../server/programValidation.js";
 
@@ -26,6 +27,8 @@ const validWeek = {
     workbookLabel: "Workbook – Woche 1",
     workbookUrl: "https://example.com/workbook.pdf",
     recordingUrl: "",
+    closingRecordingUrl: "",
+    closingRecordingDate: "",
     tasks: [
         { key: "meditation", label: "Meditation anhören" },
         { key: "workbook", label: "Workbook bearbeiten" },
@@ -81,6 +84,18 @@ test("rejects unsafe links and duplicate task keys", () => {
         () => normalizeProgramWeek({ ...validWeek, releaseOn: "2026-02-31" }, 1),
         ProgramValidationError,
     );
+});
+
+test("validates the separate closing recording without replacing the week recording", () => {
+    const recording = { closingRecordingUrl: "https://vimeo.com/123/example", closingRecordingDate: "2026-10-14" };
+    assert.deepEqual(normalizeClosingRecording(recording), recording);
+    const week = normalizeProgramWeek({ ...validWeek, ...recording, recordingUrl: "https://example.com/week8" }, 8);
+    assert.equal(week.recordingUrl, "https://example.com/week8");
+    assert.equal(week.closingRecordingUrl, recording.closingRecordingUrl);
+    for (const url of ["", "javascript:alert(1)", "http://example.com", "https://user:password@example.com"]) {
+        assert.throws(() => normalizeClosingRecording({ ...recording, closingRecordingUrl: url }), ProgramValidationError);
+    }
+    assert.throws(() => normalizeClosingRecording({ ...recording, closingRecordingDate: "2026-02-31" }), ProgramValidationError);
 });
 
 test("validates program slugs, enrollments and task updates", () => {

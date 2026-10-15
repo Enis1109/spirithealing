@@ -73,6 +73,7 @@ import {
     publishProgramWeek,
     saveProgramSettings,
     saveProgramWeekDraft,
+    saveClosingRecording,
     setProgramEnrollment,
     updateProgramTask,
     zepterProgramSlug,
@@ -92,6 +93,7 @@ import {
     normalizeProgramSlug,
     normalizeProgramTaskUpdate,
     normalizeProgramWeek,
+    normalizeClosingRecording,
     ProgramValidationError,
 } from "./server/programValidation.js";
 import {
@@ -1522,6 +1524,27 @@ app.put("/api/admin/programs/:slug", adminSameOriginOnly, async (request, respon
             return response.status(400).json({ ok: false, error: "validation", field: error.field });
         }
         console.error("Program settings could not be saved", error);
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+
+app.put("/api/admin/programs/:slug/closing-recording", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    response.set("Cache-Control", "no-store");
+    try {
+        const slug = normalizeProgramSlug(request.params.slug);
+        if (slug !== "zepter-acht-wochen") return response.status(404).json({ ok: false, error: "not_found" });
+        const recording = normalizeClosingRecording(request.body);
+        if (!await saveClosingRecording({ slug, recording })) {
+            return response.status(404).json({ ok: false, error: "not_found" });
+        }
+        return response.json({ ok: true, program: await getAdminProgram(slug) });
+    } catch (error) {
+        if (error instanceof ProgramValidationError) {
+            return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        }
+        console.error("Closing recording could not be saved", error);
         return response.status(500).json({ ok: false, error: "server" });
     }
 });

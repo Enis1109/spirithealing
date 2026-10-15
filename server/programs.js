@@ -311,6 +311,8 @@ export const getMemberProgram = async ({ slug, member }) => {
             workbookLabel: locked ? "" : (content.workbookLabel || ""),
             workbookUrl: locked ? "" : (content.workbookUrl || ""),
             recordingUrl: locked ? "" : (content.recordingUrl || ""),
+            closingRecordingUrl: locked ? "" : (content.closingRecordingUrl || ""),
+            closingRecordingDate: locked ? "" : (content.closingRecordingDate || ""),
             summary: locked ? null : (weekNumber === 1 ? zepterWeekOneSummary : (content.summary || null)),
             tasks: visibleTasks,
         };
@@ -458,6 +460,25 @@ export const saveProgramWeekDraft = async ({ slug, week }) => {
         [slug, week.weekNumber],
     );
     return Boolean(rows[0]);
+};
+
+// Update only the additional recording. Existing week assets, summaries,
+// publication state and unpublished changes remain intact.
+export const saveClosingRecording = async ({ slug, recording, databaseClient = database }) => {
+    const [result] = await databaseClient.execute(
+        `UPDATE program_weeks AS weeks
+         INNER JOIN programs ON programs.id = weeks.program_id
+         SET weeks.draft_content = JSON_SET(COALESCE(weeks.draft_content, weeks.published_content),
+             '$.closingRecordingUrl', ?, '$.closingRecordingDate', ?),
+             weeks.published_content = JSON_SET(weeks.published_content,
+             '$.closingRecordingUrl', ?, '$.closingRecordingDate', ?),
+             weeks.updated_at = UTC_TIMESTAMP()
+         WHERE programs.slug = ? AND weeks.week_number = 8
+           AND weeks.published_content IS NOT NULL`,
+        [recording.closingRecordingUrl, recording.closingRecordingDate,
+            recording.closingRecordingUrl, recording.closingRecordingDate, slug],
+    );
+    return result.affectedRows > 0;
 };
 
 export const publishProgramWeek = async ({ slug, weekNumber, memberId }) => {

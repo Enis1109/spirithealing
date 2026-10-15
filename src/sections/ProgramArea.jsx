@@ -88,6 +88,7 @@ export const ProgramArea = ({ member }) => {
     );
 
     const nextLiveWeek = program?.weeks.find((week) => !week.locked && week.liveAt && new Date(week.liveAt) > new Date());
+    const closingRecording = program?.weeks.find((week) => week.weekNumber === 8 && !week.locked && week.closingRecordingUrl);
 
     const toggleTask = async (task) => {
         if (!selectedWeek || busyTask) return;
@@ -166,6 +167,17 @@ export const ProgramArea = ({ member }) => {
                         <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/16"><div className="h-full rounded-full bg-[#f1d277] transition-all" style={{ width: `${program.progress.percent}%` }} /></div>
                     </div>
                 </section>
+
+                {closingRecording && (
+                    <section id="abschlusstreffen" className="mt-6 flex flex-col gap-5 rounded-3xl border border-[#d8b437]/45 bg-[#fff8e1] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                        <div>
+                            <p className="text-sm font-bold uppercase tracking-[0.14em] text-[#168e91]">Unser gemeinsamer Abschluss</p>
+                            <h2 className="mt-2 font-serif text-3xl font-bold">Abschlusstreffen</h2>
+                            {closingRecording.closingRecordingDate && <p className="mt-2 text-[#547875]">{formatDate(closingRecording.closingRecordingDate)}</p>}
+                        </div>
+                        <a href={closingRecording.closingRecordingUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#168e91] px-6 font-bold text-white">Aufzeichnung ansehen<PlayCircle className="h-5 w-5" /></a>
+                    </section>
+                )}
 
                 {nextLiveWeek && (
                     <section className="mt-6 flex flex-col gap-4 rounded-3xl border border-[#b8d9d4] bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
