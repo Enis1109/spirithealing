@@ -234,7 +234,7 @@ export const indexablePaths = Object.freeze([
   "/datenschutz",
 ])
 
-const noindexPrefixes = ["/mitglieder", "/admin", "/startfragebogen", "/terminumfrage", "/newsletter/status"]
+const noindexPrefixes = ["/mitglieder", "/admin", "/startfragebogen", "/abschlussfragebogen", "/terminumfrage", "/newsletter/status"]
 
 export const normalizePathname = (pathname = "/") => {
   const clean = String(pathname || "/").split("?")[0].split("#")[0]
@@ -244,6 +244,7 @@ export const normalizePathname = (pathname = "/") => {
 
 export const metadataForPath = (pathname, language = "de") => {
   const normalizedPath = normalizePathname(pathname)
+  if (normalizedPath === '/abschlussfragebogen') return { title: 'Abschlussfragebogen | Spirit Healing', description: 'Dein heutiger Stand und dein weiterer Weg nach acht Wochen.', pathname: normalizedPath, noindex: true, notFound: false, contentLanguage: 'de' }
   const day = constellationDays.find(item => normalizedPath === `/berlin-live/${item.id}`)
   if (day) {
     const date = constellationDate(day.date, language).replace(/^[^,]+, /u, "")

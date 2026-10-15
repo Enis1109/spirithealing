@@ -21,6 +21,31 @@ const transporter = nodemailer.createTransport({
 
 const notificationRecipient = process.env.CONTACT_NOTIFICATION_TO || "info@spirit-healing.tr";
 
+// Submission is already durable when these messages are sent. Keep SMTP stalls
+// bounded without changing timeouts for the existing mail workflows.
+const closingTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+    port: Number(process.env.SMTP_PORT || 465),
+    secure: String(process.env.SMTP_SECURE ?? 'true') !== 'false',
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+    connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000,
+});
+
+export const sendClosingNotification = async ({ reference }) => {
+    const adminUrl = new URL('/admin', process.env.PUBLIC_BASE_URL || 'https://spirit-healing.tr').href;
+    const result = await closingTransporter.sendMail({ from: process.env.SMTP_FROM, to: notificationRecipient,
+        subject: 'Ein neuer Abschlussfragebogen ist eingegangen',
+        text: `Ein Abschlussfragebogen ist gespeichert.\n\nReferenz: ${reference}\n\nDie Antworten, Wünsche zur Fortsetzung und der Vergleich mit dem Startfragebogen liegen im geschützten Admin-Bereich unter „Abschlussbögen“:\n${adminUrl}\n\nVon Herzen\nSelcan und Sabine` });
+    if (!result.accepted?.length || result.rejected?.length) throw new Error('closing_notification_not_accepted');
+};
+
+export const sendClosingConfirmation = async ({ name, email, reference }) => {
+    const result = await closingTransporter.sendMail({ from: process.env.SMTP_FROM, to: email, replyTo: notificationRecipient,
+        subject: 'Dein Abschlussfragebogen ist bei uns angekommen',
+        text: `Hallo ${name},\n\ndanke, dass du deinen Weg mit uns teilst. Dein Abschlussfragebogen ist gespeichert und liegt uns vor.\n\nDeine Eingangsreferenz: ${reference}\n\nDeine Angaben zur Fortsetzung sind keine Buchung oder Zahlungszusage.\n\nVon Herzen\nSelcan und Sabine\nSpirit Healing` });
+    if (!result.accepted?.some(address => String(address).toLowerCase() === email.toLowerCase()) || result.rejected?.length) throw new Error('closing_confirmation_not_accepted');
+};
+
 // Group reminders hold a membership lock until SMTP handoff. Bound network
 // stalls without changing timeouts for any of the existing mail workflows.
 const experienceTransporter = nodemailer.createTransport({

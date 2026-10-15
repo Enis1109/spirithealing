@@ -35,6 +35,7 @@ const MemberArea = lazy(() => import("@/sections/MemberArea").then((module) => (
 const AdminArea = lazy(() => import("@/sections/AdminArea").then((module) => ({ default: module.AdminArea })));
 const OnboardingQuestionnaire = lazy(() => import("@/sections/OnboardingQuestionnaire").then((module) => ({ default: module.OnboardingQuestionnaire })));
 const ScheduleSurvey = lazy(() => import("@/sections/ScheduleSurvey").then((module) => ({ default: module.ScheduleSurvey })));
+const ClosingQuestionnaire = lazy(() => import("@/sections/ClosingQuestionnaire").then(module => ({ default: module.ClosingQuestionnaire })));
 
 const PrivacyPage = () => {
   const { language } = useLanguage();
@@ -67,7 +68,7 @@ function App() {
   const isRauhnaechteLanding = location.pathname === "/rauhnaechte";
   const isWebinarApp = location.pathname.startsWith("/vortrag-13-wochen-programm") || location.pathname.startsWith("/live-vortrag");
   const isAdminApp = location.pathname.startsWith("/admin");
-  const isOnboardingApp = location.pathname.startsWith("/startfragebogen");
+  const isOnboardingApp = location.pathname.startsWith("/startfragebogen") || location.pathname.startsWith("/abschlussfragebogen") || location.pathname === "/vorschau/abschlussfragebogen";
   const isScheduleSurveyApp = location.pathname.startsWith("/terminumfrage");
   const isMemberApp = location.pathname.startsWith("/mitglieder")
     || isCampaignLanding;
@@ -80,6 +81,8 @@ function App() {
       <ScrollToTop/>
       {!isStandaloneApp && <Navbar/>}
       <Routes>
+        <Route path="/abschlussfragebogen" element={<Suspense fallback={<p>Fragebogen wird geladen …</p>}><ClosingQuestionnaire/></Suspense>}/>
+        {import.meta.env.DEV && <Route path="/vorschau/abschlussfragebogen" element={<Suspense fallback={<p>Fragebogen wird geladen …</p>}><ClosingQuestionnaire preview/></Suspense>}/>}
         <Route path="/" element={ <Herotest/> }/>
         <Route path="/coaching" element={<Coaching/>}/>
         <Route path="/therapie" element={<Therapie/>}/>

@@ -168,6 +168,12 @@ export const ProgramArea = ({ member }) => {
                     </div>
                 </section>
 
+                {program.weeks.some(week => week.weekNumber === 8 && !week.locked) && (
+                    <section className="mt-6 flex flex-col gap-5 rounded-3xl border border-[#bddbd6] bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
+                        <div><p className="text-sm font-bold uppercase tracking-[0.14em] text-[#168e91]">Dein heutiger Stand und dein weiterer Weg</p><h2 className="mt-2 font-serif text-3xl font-bold">Dein Abschlussfragebogen</h2><p className="mt-2 text-[#547875]">Teile mit uns, was sich verändert hat und welche Begleitung du dir für deine nächsten Schritte wünschst. Deine Antworten werden direkt an uns übermittelt und gespeichert.</p></div>
+                        <Link to="/abschlussfragebogen" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#168e91] px-6 font-bold text-white">Fragebogen ausfüllen</Link>
+                    </section>
+                )}
                 {closingRecording && (
                     <section id="abschlusstreffen" className="mt-6 flex flex-col gap-5 rounded-3xl border border-[#d8b437]/45 bg-[#fff8e1] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
                         <div>

@@ -20,6 +20,7 @@ import {
     UsersRound,
 } from "lucide-react";
 import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AdminClosing } from "@/sections/AdminClosing";
 import { Link } from "react-router-dom";
 import {
     adminCatalogStats,
@@ -403,6 +404,7 @@ export const AdminArea = () => {
         { id: "assistant", label: "Fragebot", icon: Bot },
         { id: "programs", label: "Programme", icon: UsersRound },
         { id: "onboarding", label: "Startfragebögen", icon: ClipboardList },
+        { id: "closing", label: "Abschlussbögen", icon: ClipboardList },
         { id: "schedule", label: "Terminabfrage", icon: CalendarCheck2 },
         { id: "ai", label: "KI-Zentrale", icon: BrainCircuit },
     ];
@@ -542,6 +544,7 @@ export const AdminArea = () => {
                     {contentState === "ready" && activeTab === "onboarding" && (
                         <AdminOnboarding requestJson={requestJson} setNotice={setNotice} />
                     )}
+                    {contentState === "ready" && activeTab === "closing" && <AdminClosing requestJson={requestJson} />}
 
                     {contentState === "ready" && activeTab === "schedule" && (
                         <AdminScheduleSurvey requestJson={requestJson} />

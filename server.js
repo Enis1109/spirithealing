@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { database, initializeDatabase } from "./server/database.js";
+import { createClosingService, initializeClosingQuestionnaire, registerClosingRoutes } from './server/closingQuestionnaire.js';
+import { sendClosingNotification, sendClosingConfirmation } from './server/mailer.js';
 import { createExperienceService, initializeExperienceGroup } from './server/experienceGroup.js';
 import { registerExperienceRoutes } from './server/experienceRoutes.js';
 import { createExperienceReminderService, initializeExperienceReminders, startExperienceReminderWorker } from './server/experienceReminders.js';
@@ -294,6 +296,10 @@ const getAdminMember = async (request, response) => {
 };
 
 const experienceEnabled = process.env.EXPERIENCE_GROUP_ENABLED === 'true';
+const closingEnabled = process.env.ZEPTER_CLOSING_ENABLED !== 'false';
+const closingService = createClosingService({ db: database, sendNotification: sendClosingNotification, sendConfirmation: sendClosingConfirmation });
+registerClosingRoutes(app, { service: closingService, enabled: closingEnabled, getMember: getMemberFromRequest,
+    sameOrigin: adminSameOriginOnly, limiter: submissionLimiter });
 const experienceService = createExperienceService({ db: database,
     joinUrl: experienceEnabled ? process.env.EXPERIENCE_ZOOM_JOIN_URL : null });
 const experienceReminders = createExperienceReminderService({ db: database, sendMail: sendExperienceReminder,
@@ -1868,6 +1874,7 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    if (closingEnabled) await initializeClosingQuestionnaire(database);
     await initializeConstellationAvailability(database);
     if (experienceEnabled) {
         await initializeExperienceGroup(database);
