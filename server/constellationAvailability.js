@@ -22,6 +22,34 @@ export async function initializeConstellationAvailability(db) {
     completed_at DATETIME NOT NULL,
     INDEX constellation_inventory (event_date, ticket_type)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await db.execute(`CREATE TABLE IF NOT EXISTS constellation_cash_bookings (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    request_key CHAR(36) NOT NULL,
+    event_date DATE NOT NULL,
+    ticket_type VARCHAR(24) NOT NULL,
+    price_cents INT UNSIGNED NOT NULL,
+    participant_name VARCHAR(100) NOT NULL,
+    participant_email VARCHAR(254) NULL,
+    note VARCHAR(500) NULL,
+    status VARCHAR(16) NOT NULL DEFAULT 'reserved',
+    payment_status VARCHAR(16) NOT NULL DEFAULT 'due',
+    created_by BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY constellation_cash_request (request_key),
+    INDEX constellation_cash_inventory (event_date, ticket_type, status)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await db.execute(`CREATE TABLE IF NOT EXISTS constellation_inventory_locks (
+    event_date DATE NOT NULL,
+    ticket_type VARCHAR(24) NOT NULL,
+    PRIMARY KEY (event_date, ticket_type)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  for (const day of constellationDays) {
+    for (const ticket of ['representative', 'own']) {
+      await db.execute(`INSERT IGNORE INTO constellation_inventory_locks (event_date, ticket_type) VALUES (?, ?)`,
+        [day.id, ticket]);
+    }
+  }
 }
 
 export function completedConstellationSession(event, expectedLive = true) {
@@ -57,7 +85,12 @@ export function inventoryFromRows(rows) {
 }
 
 export async function getConstellationAvailability(db) {
-  const [rows] = await db.execute(`SELECT DATE_FORMAT(event_date, '%Y-%m-%d') AS event_date,
-    ticket_type, COUNT(*) AS booked FROM constellation_bookings GROUP BY event_date, ticket_type`);
+  const [rows] = await db.execute(`SELECT event_date, ticket_type, SUM(booked) AS booked FROM (
+    SELECT DATE_FORMAT(event_date, '%Y-%m-%d') AS event_date, ticket_type, COUNT(*) AS booked
+      FROM constellation_bookings GROUP BY event_date, ticket_type
+    UNION ALL
+    SELECT DATE_FORMAT(event_date, '%Y-%m-%d') AS event_date, ticket_type, COUNT(*) AS booked
+      FROM constellation_cash_bookings WHERE status = 'reserved' GROUP BY event_date, ticket_type
+  ) AS bookings GROUP BY event_date, ticket_type`);
   return inventoryFromRows(rows);
 }

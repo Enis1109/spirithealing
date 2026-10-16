@@ -169,6 +169,7 @@ import { berlinWebhookConfig, registerBerlinWebhook } from "./server/berlinWebho
 import { eraseBerlinPayment, berlinPaymentHash } from "./server/berlinErasure.js";
 import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
 import { initializeConstellationAvailability, getConstellationAvailability } from "./server/constellationAvailability.js";
+import { CashBookingError, createCashBooking, listCashBookings, cancelCashBooking } from "./server/constellationCash.js";
 import { metaConfig, metaOriginAllowed, initializeMeta, cleanMeta, registerMetaConsent, revokeMetaConsent, sendMetaPageView } from "./server/berlinMeta.js";
 
 const app = express();
@@ -1023,6 +1024,54 @@ app.get("/api/aufstellungen/plaetze", async (_request, response) => {
             checkedAt: new Date().toISOString() });
     } catch {
         return response.status(503).json({ ok: false, error: "availability_unavailable" });
+    }
+});
+
+app.get("/api/admin/aufstellungen/barbuchungen", async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    response.set("Cache-Control", "no-store");
+    try {
+        return response.json({ ok: true, bookings: await listCashBookings(database),
+            days: await getConstellationAvailability(database) });
+    } catch (error) {
+        console.error("Cash bookings could not be loaded", error);
+        return response.status(503).json({ ok: false, error: "unavailable" });
+    }
+});
+
+app.post("/api/admin/aufstellungen/barbuchungen", adminSameOriginOnly, submissionLimiter, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    response.set("Cache-Control", "no-store");
+    if (!berlinWebhookSettings.enabled || !berlinWebhookSettings.expectedLive) {
+        return response.status(503).json({ ok: false, error: "availability_unavailable" });
+    }
+    try {
+        const booking = await createCashBooking(database, request.body, member.id);
+        return response.status(booking.duplicate ? 200 : 201).json({ ok: true, booking,
+            days: await getConstellationAvailability(database) });
+    } catch (error) {
+        if (error instanceof CashBookingError) {
+            return response.status(error.code === "full" || error.code === "duplicate" ? 409 : 400)
+                .json({ ok: false, error: error.code });
+        }
+        console.error("Cash booking could not be saved", error);
+        return response.status(503).json({ ok: false, error: "unavailable" });
+    }
+});
+
+app.post("/api/admin/aufstellungen/barbuchungen/:id/stornieren", adminSameOriginOnly, async (request, response) => {
+    const member = await getAdminMember(request, response);
+    if (!member) return undefined;
+    response.set("Cache-Control", "no-store");
+    try {
+        await cancelCashBooking(database, Number(request.params.id));
+        return response.json({ ok: true, days: await getConstellationAvailability(database) });
+    } catch (error) {
+        if (error instanceof CashBookingError) return response.status(400).json({ ok: false, error: error.code });
+        console.error("Cash booking could not be cancelled", error);
+        return response.status(503).json({ ok: false, error: "unavailable" });
     }
 });
 

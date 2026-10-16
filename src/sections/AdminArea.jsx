@@ -31,6 +31,7 @@ import { AdminPrograms } from "@/sections/AdminPrograms";
 import { AdminOnboarding } from "@/sections/AdminOnboarding";
 import { AdminScheduleSurvey } from "@/sections/AdminScheduleSurvey";
 import { AdminAiCommandCenter } from "@/sections/AdminAiCommandCenter";
+import { AdminConstellationCash } from "@/sections/AdminConstellationCash";
 import { BerlinErasureForm } from "@/components/BerlinErasureForm";
 
 const emptySnapshot = { entries: [], revisions: [] };
@@ -401,6 +402,7 @@ export const AdminArea = () => {
         { id: "overview", label: "Übersicht", icon: LayoutDashboard },
         { id: "pages", label: "Homepage-Texte", icon: FileText },
         { id: "berlin", label: "Aufstellungsarbeit", icon: MapPin },
+        { id: "cash", label: "Barbuchungen", icon: CalendarCheck2 },
         { id: "assistant", label: "Fragebot", icon: Bot },
         { id: "programs", label: "Programme", icon: UsersRound },
         { id: "onboarding", label: "Startfragebögen", icon: ClipboardList },
@@ -540,6 +542,8 @@ export const AdminArea = () => {
                     {contentState === "ready" && activeTab === "programs" && (
                         <AdminPrograms requestJson={requestJson} setNotice={setNotice} />
                     )}
+
+                    {contentState === "ready" && activeTab === "cash" && <AdminConstellationCash />}
 
                     {contentState === "ready" && activeTab === "onboarding" && (
                         <AdminOnboarding requestJson={requestJson} setNotice={setNotice} />

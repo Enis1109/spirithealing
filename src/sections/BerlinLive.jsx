@@ -18,6 +18,8 @@ const copy = {
     returningDescription: "Für Mitglieder von Spirit Healing und Menschen, die beim vergangenen Aufstellungsseminar dabei waren.",
     newDescription: "Für Menschen, die noch nicht bei einer Aufstellung mit uns waren und uns noch nicht kennen.",
     perDay: "pro Person und Tag", book: "Diesen Platz buchen", full: "Ausgebucht",
+    cashRequest: "Barzahlung vor Ort anfragen",
+    cashNote: "Barzahlung vor Ort ist möglich. Schreib uns dafür vor der Buchung; wir bestätigen dir, sobald dein Platz reserviert ist.",
     capacity: "20 Plätze pro Tag, davon fünf für eigene Aufstellungen und 15 für Stellvertretung.",
     scope: "Ein Tag reine Aufstellungsarbeit mit Sabine und Selcan. Du nimmst als Stellvertretung teil oder buchst einen der fünf Plätze für dein eigenes Anliegen.",
     discount: "Wähle den Preis von 22 €, wenn du bereits zu Spirit Healing gehörst oder beim vergangenen Aufstellungsseminar dabei warst.",
@@ -35,6 +37,8 @@ const copy = {
     returningDescription: "Spirit Healing üyeleri ve önceki dizim seminerine katılmış olanlar için.",
     newDescription: "Daha önce bizimle dizime katılmamış ve bizi henüz tanımayanlar için.",
     perDay: "kişi başına, bir gün için", book: "Bu yeri rezerve et", full: "Kontenjan doldu",
+    cashRequest: "Yerinde nakit ödeme için yazın",
+    cashNote: "Yerinde nakit ödeme mümkündür. Rezervasyon için bize yazın; yeriniz ayrıldığında size haber vereceğiz.",
     capacity: "Her gün 20 yer var: 5 kendi dizimi yeri ve 15 temsilci yeri.",
     scope: "Sabine ve Selcan ile bir gün dizim çalışması. Temsilci olarak katılabilir veya kendi konunuz için ayrılan beş yerden birini rezerve edebilirsiniz.",
     discount: "Zaten Spirit Healing’e dahilseniz veya önceki dizim seminerine katıldıysanız 22 € fiyatını seçin.",
@@ -78,9 +82,10 @@ export const BerlinLive = () => {
         const checkoutUrl = day.links[type]
         const remaining = seats?.[type === "own" ? "own" : "representative"]
         const full = remaining === 0
-        return <article key={type} className="flex flex-col rounded-[1.75rem] border border-[#cbded6] bg-white p-7"><h2 className="text-xl font-bold">{t[type]}</h2><p className="mt-5 text-4xl font-bold">{constellationTicketPrices[type]} €</p><p className="mt-2 text-sm text-[#61736f]">{t.perDay}</p><p className="mt-5 leading-7 text-[#49635f]">{t[`${type}Description`]}</p><p className="mb-6 mt-5 text-sm font-bold text-[#075a57]">{Number.isInteger(remaining) ? language === "tr" ? `${remaining} boş yer` : `${remaining} ${remaining === 1 ? "freier Platz" : "freie Plätze"}` : t.checking}</p>{full ? <span className="mt-auto rounded-full bg-[#e5ece8] px-5 py-3 text-center font-bold">{t.full}</span> : <a href={checkoutUrl} className="mt-auto inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-5 py-3 text-center font-bold text-white hover:bg-[#075a57]">{t.book}</a>}</article>
+        const cashSubject = `${language === "tr" ? "Yerinde nakit ödeme" : "Barzahlung vor Ort"} · ${day.id} · ${t[type]} · ${constellationTicketPrices[type]} €`
+        return <article key={type} className="flex flex-col rounded-[1.75rem] border border-[#cbded6] bg-white p-7"><h2 className="text-xl font-bold">{t[type]}</h2><p className="mt-5 text-4xl font-bold">{constellationTicketPrices[type]} €</p><p className="mt-2 text-sm text-[#61736f]">{t.perDay}</p><p className="mt-5 leading-7 text-[#49635f]">{t[`${type}Description`]}</p><p className="mb-6 mt-5 text-sm font-bold text-[#075a57]">{Number.isInteger(remaining) ? language === "tr" ? `${remaining} boş yer` : `${remaining} ${remaining === 1 ? "freier Platz" : "freie Plätze"}` : t.checking}</p>{full ? <span className="mt-auto rounded-full bg-[#e5ece8] px-5 py-3 text-center font-bold">{t.full}</span> : <div className="mt-auto grid gap-3"><a href={checkoutUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-5 py-3 text-center font-bold text-white hover:bg-[#075a57]">{t.book}</a><a href={`mailto:info@spirit-healing.tr?subject=${encodeURIComponent(cashSubject)}`} className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#0f7d79] px-5 py-3 text-center font-bold text-[#075a57] hover:bg-[#edf5f0]">{t.cashRequest}</a></div>}</article>
       })}</div>
-      <p className="mt-6 max-w-3xl text-sm leading-7 text-[#49635f]">{t.discount} {t.shared}</p>
+      <p className="mt-6 max-w-3xl text-sm leading-7 text-[#49635f]">{t.discount} {t.shared} {t.cashNote}</p>
       {availability === null && <p className="mt-3 text-sm leading-7 text-[#49635f]">{t.checkFailure}</p>}
       <div className="mt-9 flex flex-wrap items-center gap-6"><Link to={berlinPath} className="inline-flex items-center gap-2 font-bold text-[#075a57]"><ArrowLeft size={18}/>{t.back}</Link><Link to={`/vortraege-seminare?monat=${day.date.slice(0, 7)}&tag=${day.date}#kalender`} className="underline underline-offset-4"><CalendarDays size={16} className="mr-2 inline"/>{t.calendar}</Link></div>
     </section>}
