@@ -35,6 +35,9 @@ test("actual registration route offers separate unchecked measurement only on ma
         assert.doesNotMatch(familyMarked,/zoom\.us\/j\//);
         assert.doesNotMatch(renderFamily("/live-vortrag/familienaufstellung"),/name="measurement"/);
         assert.doesNotMatch(renderFamily("/live-vortrag/familienaufstellung?sh_source=lt20-a01"),/name="measurement"/);
+        const familyC02=renderFamily("/live-vortrag/familienaufstellung?sh_source=fa27-c02");
+        assert.match(familyC02,/name="measurement"/);
+        assert.doesNotMatch(familyC02,/<input(?=[^>]*name="measurement")(?=[^>]*(?:checked|required))[^>]*>/);
     } finally { await server.close(); }
 });
 

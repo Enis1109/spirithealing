@@ -305,3 +305,17 @@ test("family registration sends once with isolated access and its own consented 
     assert.equal(await service.cancel(token),true);
     assert.equal((await service.access(token,start)).joinUrl,null);
 });
+
+test("family C02 source is event-scoped, optional, saved once and distinct from B01", async () => {
+    const source={consent:true,version:liveAttributionVersion,sourceCode:"fa27-c02"};
+    assert.equal(readLiveSource("?sh_source=fa27-c02",liveTalkFamily.key),"fa27-c02");
+    assert.equal(readLiveSource("?sh_source=fa27-c02",liveTalk2.key),null);
+    assert.equal(normalizeLiveAttribution({...source,consent:false},liveTalkFamily.key),null);
+    const {state,service}=fixture(liveTalkFamily);
+    const registration=normalizeLiveRegistration({...form,recordingNoticeAccepted:true,attribution:source},liveTalkFamily);
+    await service.register(registration,now);
+    await service.register(registration,now);
+    assert.equal(state.attribution.length,1);
+    assert.equal(state.attribution[0].source_code,"fa27-c02");
+    assert.equal((await service.adminInfo()).attributionReport.sources[0].label,"Meta-Anzeige Familienaufstellung C02");
+});

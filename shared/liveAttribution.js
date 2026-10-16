@@ -14,6 +14,7 @@ export const liveAttributionSources = Object.freeze({
 
 export const familyAttributionSources = Object.freeze({
     "fa27-b01": "Meta-Anzeige Familienaufstellung B01",
+    "fa27-c02": "Meta-Anzeige Familienaufstellung C02",
     "fa27-email": "E-Mail-Einladung Familienaufstellung",
     "fa27-fb": "Facebook-Beitrag Familienaufstellung",
     "fa27-ig": "Instagram-Beitrag Familienaufstellung",
