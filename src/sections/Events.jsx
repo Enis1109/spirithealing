@@ -10,7 +10,7 @@ const content = {
         berlin: {
             eyebrow: "Aufstellungsarbeit mit Sabine und Selcan",
             title: "Vier einzelne Aufstellungstage",
-            intro: "Am 12. und 13. Dezember 2026 sowie am 30. und 31. Januar 2027 arbeiten wir mit Aufstellungen. Die Samstage sind auf Türkisch, die Sonntage auf Deutsch. Jeder Tag ist einzeln buchbar.",
+            intro: "Am 12. und 13. Dezember 2026 sowie am 30. und 31. Januar 2027 arbeiten wir mit Aufstellungen. Samstags arbeiten wir hauptsächlich auf Türkisch, sonntags hauptsächlich auf Deutsch. Wir übersetzen, sodass du an jedem Tag teilnehmen kannst. Jeder Tag ist einzeln buchbar.",
             date: "12./13. Dezember · 30./31. Januar",
             time: "jeweils 10–19 Uhr",
             place: "Berlin-Kreuzberg",
@@ -82,7 +82,7 @@ const content = {
         berlin: {
             eyebrow: "Sabine ve Selcan ile dizim çalışması",
             title: "Dört ayrı dizim günü",
-            intro: "12 ve 13 Aralık 2026 ile 30 ve 31 Ocak 2027 tarihlerinde dizim çalışması yapacağız. Cumartesi günleri Türkçe, pazar günleri Almanca olacak. Her gün ayrı ayrı rezerve edilir.",
+            intro: "12 ve 13 Aralık 2026 ile 30 ve 31 Ocak 2027 tarihlerinde dizim çalışması yapacağız. Cumartesi günleri ağırlıklı olarak Türkçe, pazar günleri ağırlıklı olarak Almanca çalışacağız. Çeviri yapacağımız için her güne katılabilirsiniz. Her gün ayrı ayrı rezerve edilir.",
             date: "12/13 Aralık · 30/31 Ocak",
             time: "her gün 10:00–19:00",
             place: "Berlin-Kreuzberg",

@@ -10,9 +10,10 @@ import { constellationDays, constellationDate, constellationDayPath, constellati
 const copy = {
   de: {
     main: "Aufstellungsarbeit", title: "Live-Aufstellung in Berlin",
-    intro: "Mit Sabine und Selcan. Im Dezember und Januar widmen wir vier einzelne Tage der reinen Aufstellungsarbeit. Die Samstage sind auf Türkisch, die Sonntage auf Deutsch.",
+    intro: "Mit Sabine und Selcan. Im Dezember und Januar widmen wir vier einzelne Tage der reinen Aufstellungsarbeit. Samstags arbeiten wir hauptsächlich auf Türkisch, sonntags hauptsächlich auf Deutsch. Du kannst an jedem der Tage teilnehmen: Wir übersetzen zwischen Türkisch und Deutsch.",
     terms: "Termine und freie Plätze", choose: "Wähle deinen Aufstellungstag. Jeder Tag ist einzeln buchbar.",
-    details: "Zu diesem Termin", back: "Alle Berliner Termine", language: { de: "Deutsch", tr: "Türkisch" },
+    details: "Zu diesem Termin", back: "Alle Berliner Termine", language: { de: "Hauptsächlich Deutsch", tr: "Hauptsächlich Türkisch" },
+    translation: "Auch wenn du die andere Sprache sprichst, kannst du an diesem Tag teilnehmen. Wir übersetzen zwischen Türkisch und Deutsch.",
     own: "Eigene Aufstellung", returning: "Stellvertretung · für Mitglieder", new: "Stellvertretung · neu dabei",
     ownDescription: "Für Menschen, die sich an diesem Tag selbst aufstellen lassen möchten.",
     returningDescription: "Für Mitglieder von Spirit Healing und Menschen, die beim vergangenen Aufstellungsseminar dabei waren.",
@@ -21,7 +22,7 @@ const copy = {
     cashRequest: "Barzahlung vor Ort anfragen",
     cashNote: "Barzahlung vor Ort ist möglich. Schreib uns dafür vor der Buchung; wir bestätigen dir, sobald dein Platz reserviert ist.",
     capacity: "20 Plätze pro Tag, davon fünf für eigene Aufstellungen und 15 für Stellvertretung.",
-    scope: "Ein Tag reine Aufstellungsarbeit mit Sabine und Selcan. Du nimmst als Stellvertretung teil oder buchst einen der fünf Plätze für dein eigenes Anliegen.",
+    scope: "Ein Tag reine Aufstellungsarbeit mit Sabine und Selcan. Du nimmst als Stellvertretung teil oder buchst einen freien Platz für dein eigenes Anliegen.",
     discount: "Wähle den Preis von 22 €, wenn du bereits zu Spirit Healing gehörst oder beim vergangenen Aufstellungsseminar dabei warst.",
     shared: "Die beiden Stellvertretungs-Preise gelten für dieselben 15 Plätze.",
     calendar: "Diesen Tag im Kalender ansehen", question: "Fragen zur Teilnahme?", timeSuffix: " Uhr",
@@ -29,9 +30,10 @@ const copy = {
   },
   tr: {
     main: "Dizim çalışması", title: "Berlin’de canlı dizim",
-    intro: "Sabine ve Selcan ile. Aralık ve Ocak aylarında dört ayrı günü dizim çalışmasına ayırıyoruz. Cumartesi günleri Türkçe, pazar günleri Almanca.",
+    intro: "Sabine ve Selcan ile. Aralık ve Ocak aylarında dört ayrı günü dizim çalışmasına ayırıyoruz. Cumartesi günleri ağırlıklı olarak Türkçe, pazar günleri ağırlıklı olarak Almanca çalışacağız. İstediğiniz güne katılabilirsiniz; Türkçe ve Almanca arasında çeviri yapacağız.",
     terms: "Tarihler ve boş yerler", choose: "Dizim gününüzü seçin. Her gün ayrı rezerve edilir.",
-    details: "Bu tarihe git", back: "Berlin’deki tüm tarihler", language: { de: "Almanca", tr: "Türkçe" },
+    details: "Bu tarihe git", back: "Berlin’deki tüm tarihler", language: { de: "Ağırlıklı olarak Almanca", tr: "Ağırlıklı olarak Türkçe" },
+    translation: "Diğer dili konuşuyor olsanız da bu güne katılabilirsiniz. Türkçe ve Almanca arasında çeviri yapacağız.",
     own: "Kendi diziminiz", returning: "Temsilci olarak · üyeler için", new: "Temsilci olarak · yeni katılanlar",
     ownDescription: "O gün kendi dizimini açtırmak isteyenler için.",
     returningDescription: "Spirit Healing üyeleri ve önceki dizim seminerine katılmış olanlar için.",
@@ -40,7 +42,7 @@ const copy = {
     cashRequest: "Yerinde nakit ödeme için yazın",
     cashNote: "Yerinde nakit ödeme mümkündür. Rezervasyon için bize yazın; yeriniz ayrıldığında size haber vereceğiz.",
     capacity: "Her gün 20 yer var: 5 kendi dizimi yeri ve 15 temsilci yeri.",
-    scope: "Sabine ve Selcan ile bir gün dizim çalışması. Temsilci olarak katılabilir veya kendi konunuz için ayrılan beş yerden birini rezerve edebilirsiniz.",
+    scope: "Sabine ve Selcan ile bir gün dizim çalışması. Temsilci olarak katılabilir veya kendi konunuz için boş olan yerlerden birini rezerve edebilirsiniz.",
     discount: "Zaten Spirit Healing’e dahilseniz veya önceki dizim seminerine katıldıysanız 22 € fiyatını seçin.",
     shared: "İki temsilcilik fiyatı aynı 15 yeri paylaşır.",
     calendar: "Bu günü takvimde gör", question: "Katılımla ilgili sorularınız mı var?", timeSuffix: "",
@@ -70,7 +72,7 @@ export const BerlinLive = () => {
     ...(day ? [{ label: constellationDate(day.date, language) }] : []),
   ]}>
     <section className="mx-auto grid max-w-7xl items-center gap-9 px-5 py-12 sm:px-8 lg:grid-cols-[1.25fr_0.75fr]">
-      <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-[#a67426]">{day ? t.language[day.language] : language === "tr" ? "Sabine ve Selcan ile" : "Mit Sabine und Selcan"}</p><h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">{day ? constellationDate(day.date, language) : t.title}</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-[#49635f]">{day ? t.scope : t.intro}</p><Facts language={language}/><p className="mt-4 text-sm leading-7 text-[#49635f]">{t.capacity}</p>{day && <div className="mt-5"><ConstellationPlaces seats={seats} language={language}/></div>}</div>
+      <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-[#a67426]">{day ? t.language[day.language] : language === "tr" ? "Sabine ve Selcan ile" : "Mit Sabine und Selcan"}</p><h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">{day ? constellationDate(day.date, language) : t.title}</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-[#49635f]">{day ? t.scope : t.intro}</p>{day && <p className="mt-4 max-w-3xl leading-7 text-[#49635f]">{t.translation}</p>}<Facts language={language}/><p className="mt-4 text-sm leading-7 text-[#49635f]">{t.capacity}</p>{day && <div className="mt-5"><ConstellationPlaces seats={seats} language={language}/></div>}</div>
       <img src="/familie/berlin.jpeg" alt="" className="h-64 w-full rounded-[2rem] object-cover lg:h-80"/>
     </section>
     {!day ? <section id="termine" className="mx-auto max-w-7xl px-5 pb-12 pt-6 sm:px-8">

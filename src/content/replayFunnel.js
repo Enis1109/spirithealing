@@ -23,8 +23,8 @@ export const publicEvents = [
     ...constellationDays.map((day) => ({
         id: `constellation-${day.id}`, date: day.date, ...(constellationTime ? { time: constellationTime } : {}),
         constellationDayId: day.id,
-        title: `Aufstellungsarbeit mit Sabine & Selcan · ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
-        detail: [day.language === "tr" ? "Türkisch" : "Deutsch", constellationPlace].filter(Boolean).join(" · "),
+        title: `Aufstellungsarbeit mit Sabine & Selcan · hauptsächlich ${day.language === "tr" ? "Türkisch" : "Deutsch"}`,
+        detail: [`Hauptsächlich ${day.language === "tr" ? "Türkisch" : "Deutsch"}; wir übersetzen`, constellationPlace].filter(Boolean).join(" · "),
         href: constellationDayPath(day),
         action: "Termin und Teilnahme ansehen",
     })),
