@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getUpcomingMemberEvents } from "@/content/memberEvents";
 import { EventCalendar } from "@/components/EventCalendar";
+import { FamilyLectureInvitation } from "@/components/FamilyLectureInvitation";
 
 const content = {
     de: {
@@ -193,6 +194,7 @@ export const Events = () => {
     return (
         <main data-no-translate className="min-h-screen overflow-hidden bg-card pb-8 pt-24 text-white sm:pt-28">
             <EventCalendar />
+            <section className="mx-auto w-[calc(100%-2rem)] max-w-6xl py-8 sm:py-10"><FamilyLectureInvitation language={language}/></section>
             {liveTalk && (
                 <section className="mx-auto w-[calc(100%-2rem)] max-w-6xl py-8 sm:py-10">
                     <UpcomingEventCard event={liveTalk} language={language} />

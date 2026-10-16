@@ -102,6 +102,12 @@ export const pageMeta = {
       image: "/images/live-drehbuch-2026-10-06.jpg", imageWidth: "1280", imageHeight: "720", imageAlt: "Sabine und Selcan", contentLanguage: "de",
     },
     "/live-vortrag/20-oktober/zugang": { title: "Dein zweites Live | Spirit Healing", description: "Persönlicher Zugang zum zweiten Live-Abend.", noindex: true },
+    "/live-vortrag/familienaufstellung": {
+      title: "Familienaufstellung: Vortrag am 27. Oktober | Spirit Healing",
+      description: "Familienaufstellung kennenlernen: kostenloser Online-Vortrag mit Sabine und Selcan am 27. Oktober 2026 um 20 Uhr deutscher Zeit. Jetzt für Zoom anmelden.",
+      image: "/ueberuns.jpeg", imageAlt: "Sabine Schmidt und Selcan Yilmaz", contentLanguage: "de",
+    },
+    "/live-vortrag/familienaufstellung/zugang": { title: "Dein Familienaufstellungsvortrag | Spirit Healing", description: "Persönlicher Zugang zum Vortrag am 27. Oktober.", noindex: true },
     "/admin/live-vortrag": { title: "Vortragsverwaltung | Spirit Healing", description: "Geschützte Verwaltung des Live-Vortrags.", noindex: true },
     "/vortrag-13-wochen-programm/ansehen": {
       title: "Dein Online-Vortrag | Spirit Healing",
@@ -227,6 +233,7 @@ export const indexablePaths = Object.freeze([
   "/live-vortrag",
   "/live-vortrag/aufzeichnung",
   "/live-vortrag/20-oktober",
+  "/live-vortrag/familienaufstellung",
   "/rauhnaechte",
   "/gratis-meditationen",
   "/kontakt",

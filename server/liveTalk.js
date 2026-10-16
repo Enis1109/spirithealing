@@ -185,7 +185,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             LEFT JOIN live_talk_mail m ON m.registration_id = r.id WHERE r.event_key = ? ORDER BY r.created_at DESC, m.id`, [liveTalk.key]);
         const [sourceRows] = await db.execute(`SELECT r.id, r.status, a.source_code FROM live_talk_registrations r
             LEFT JOIN live_talk_attribution a ON a.registration_id = r.id WHERE r.event_key = ?`, [liveTalk.key]);
-        return { ...liveTalk, ...config, registrations, attributionReport: summarizeLiveAttribution(sourceRows) };
+        return { ...liveTalk, ...config, registrations, attributionReport: summarizeLiveAttribution(sourceRows, liveTalk.key) };
     };
     const configure = async ({ joinUrl, passcode, enabled }) => {
         const validated = validateZoomJoinUrl(joinUrl);

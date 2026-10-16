@@ -24,6 +24,17 @@ test("actual registration route offers separate unchecked measurement only on ma
         assert.doesNotMatch(render("/live-vortrag/20-oktober"),/name="measurement"/);
         assert.doesNotMatch(render("/live-vortrag/20-oktober?sh_source=bad@example.test"),/name="measurement"/);
         assert.match(marked,/20\. Oktober 2026, 20 Uhr deutscher Zeit/);
+        const { FamilyLecture } = await server.ssrLoadModule("/src/sections/FamilyLecture.jsx");
+        const renderFamily = url => renderToStaticMarkup(createElement(MemoryRouter,{initialEntries:[url]},createElement(FamilyLecture)));
+        const familyMarked=renderFamily("/live-vortrag/familienaufstellung?sh_source=fa27-b01");
+        assert.match(familyMarked,/name="measurement"/);
+        assert.doesNotMatch(familyMarked,/<input(?=[^>]*name="measurement")(?=[^>]*(?:checked|required))[^>]*>/);
+        assert.match(familyMarked,/25\. Januar 2027/);
+        assert.match(familyMarked,/<input(?=[^>]*name="recording")(?=[^>]*required)[^>]*>/);
+        assert.match(familyMarked,/27\. Oktober 2026 · 20 Uhr deutscher Zeit/);
+        assert.doesNotMatch(familyMarked,/zoom\.us\/j\//);
+        assert.doesNotMatch(renderFamily("/live-vortrag/familienaufstellung"),/name="measurement"/);
+        assert.doesNotMatch(renderFamily("/live-vortrag/familienaufstellung?sh_source=lt20-a01"),/name="measurement"/);
     } finally { await server.close(); }
 });
 

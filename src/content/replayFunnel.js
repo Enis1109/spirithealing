@@ -1,5 +1,6 @@
 // Hosts-only replacement and new thumbnail confirmed in the video task on 6 October.
 import { constellationDays, constellationTime, constellationPlace, constellationDayPath } from "./constellationDays.js";
+import { familyLecture } from "../../shared/familyLecture.js";
 export const replayFunnel = Object.freeze({
     path: "/live-vortrag/aufzeichnung", title: "Wer schreibt dein inneres Drehbuch?",
     image: "/images/live-drehbuch-2026-10-06.jpg",
@@ -29,6 +30,9 @@ export const publicEvents = [
         action: "Termin und Teilnahme ansehen",
     })),
     { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine Erfahrungen mit Anteilen", detail: "Zweiter Live-Abend mit Sabine & Selcan · online", href: replayFunnel.nextLivePath },
+    { id: familyLecture.key, date: familyLecture.date, time: "20:00", title: familyLecture.title,
+        detail: "Kostenloser Vortrag mit Sabine & Selcan · online über Zoom · auf Deutsch", href: familyLecture.path,
+        action: "Kostenlos zum Vortrag anmelden" },
     { id: "onboarding", date: "2026-10-21", title: "Dein Einstieg ins 13-Wochen-Programm", detail: "Beginn des Onboardings und der persönlichen Matrix-Gespräche", href: "/13-wochen-programm" },
     ...programLiveEvents,
     { id: "rauhnaechte", date: "2026-12-23", lastDate: "2027-01-06", title: "Rauhnächte mit Sabine & Selcan", detail: "23. Dezember 2026 bis 6. Januar 2027", href: "/rauhnaechte" },

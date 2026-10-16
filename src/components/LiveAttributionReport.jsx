@@ -1,8 +1,9 @@
-import { liveAttributionEvent, liveAttributionSources } from "../../shared/liveAttribution.js";
+import { sourcesForLiveEvent } from "../../shared/liveAttribution.js";
 
 export const LiveAttributionReport = ({ data, registrationPath }) => {
     const report = data.attributionReport;
-    if (!report || data.key !== liveAttributionEvent) return null;
+    const liveAttributionSources = sourcesForLiveEvent(data.key);
+    if (!report || !Object.keys(liveAttributionSources).length) return null;
     return <section aria-labelledby="live-source-report" className="mt-8 rounded-2xl bg-white p-7">
         <h2 id="live-source-report" className="font-serif text-2xl">Anmeldungen und Herkunft</h2>
         <p className="mt-4">{report.active} aktive Anmeldungen · {report.cancelled} abgesagt · {report.total} insgesamt</p>

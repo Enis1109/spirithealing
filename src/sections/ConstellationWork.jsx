@@ -5,6 +5,7 @@ import { usePublishedContent } from "@/content/ContentContext"
 import { getPublishedValue } from "@/content/contentValues"
 import { berlinLiveDefaults } from "@/content/berlinLiveContent"
 import { berlinLiveTurkishDefaults } from "@/content/berlinLiveTurkishContent"
+import { FamilyLectureInvitation } from "@/components/FamilyLectureInvitation"
 
 const Title = ({ eyebrow, title, intro }) => <header className="max-w-3xl">
   <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a67426]">{eyebrow}</p>
@@ -37,6 +38,7 @@ export const ConstellationWork = () => {
         <div className="overflow-hidden rounded-[2rem] border-8 border-white shadow-lg"><img src="/ueberuns.jpeg" alt="Sabine Schmidt und Selcan Yilmaz" className="h-96 w-full object-cover object-center lg:h-[30rem]"/></div>
       </div>
     </section>
+    <section className="mx-auto max-w-7xl px-5 pt-12 sm:px-8"><FamilyLectureInvitation language={language}/></section>
     <section id="live-aufstellungen" className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
       <article className="grid overflow-hidden rounded-[2rem] border border-[#cbded6] bg-white md:grid-cols-[1fr_20rem]">
         <div className="p-7 sm:p-10"><p className="text-sm font-bold text-[#a67426]">Berlin-Kreuzberg</p><h2 className="mt-3 text-3xl font-bold">{berlinCta}</h2><p className="mt-5 max-w-2xl text-lg leading-8 text-[#49635f]">{tr ? "Sabine ve Selcan ile dizim günleri. Cumartesi günleri ağırlıklı olarak Türkçe, pazar günleri ağırlıklı olarak Almanca çalışacağız. Türkçe ve Almanca arasında çeviri yapacağız. Her gün ayrı rezerve edilir; temsilci olarak veya kendi diziminizle katılabilirsiniz." : "Aufstellungstage mit Sabine und Selcan. Samstags arbeiten wir hauptsächlich auf Türkisch, sonntags hauptsächlich auf Deutsch. Wir übersetzen zwischen beiden Sprachen. Jeder Tag ist einzeln buchbar, als Stellvertretung oder mit eigener Aufstellung."}</p><Link to={berlinPath} className="mt-7 inline-flex min-h-12 items-center gap-3 rounded-full bg-[#0f7d79] px-6 py-3 font-bold text-white">{tr ? "Tarihleri ve boş yerleri gör" : "Termine und freie Plätze ansehen"}<ArrowRight size={18}/></Link></div>

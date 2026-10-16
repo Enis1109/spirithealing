@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { normalizeWebinarRegistration, WebinarValidationError } from "./webinarValidation.js";
 import { normalizeLiveAttribution } from "../shared/liveAttribution.js";
+import { familyLecture } from "../shared/familyLecture.js";
 
 export const liveTalk = Object.freeze({
     key: "live-drehbuch-2026-10-06",
@@ -25,9 +26,17 @@ export const liveTalk2 = Object.freeze({
     openEnd: true,
 });
 
+export const liveTalkFamily = Object.freeze({
+    ...familyLecture, capacity: 98, openEnd: true,
+    privacyVersion: "family-live-2026-10-16", requiresRecordingNotice: true,
+    accessPath: `${familyLecture.path}/zugang`,
+    confirmationSubject: "Deine Anmeldung: Familienaufstellung am 27. Oktober",
+});
+
 export const normalizeLiveRegistration = (body, event = liveTalk) => {
     const result = normalizeWebinarRegistration({ ...body, slotId: "on-demand", locale: "de" });
     if (/[\r\n]/u.test(result.name)) throw new WebinarValidationError("name");
+    if (event.requiresRecordingNotice && body?.recordingNoticeAccepted !== true) throw new WebinarValidationError("recordingNotice");
     return { ...result, attribution: normalizeLiveAttribution(body?.attribution, event.key) };
 };
 
@@ -106,7 +115,9 @@ export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl,
     const intro = kind === "confirmation" ? "Du bist für unseren kostenlosen Live-Vortrag angemeldet."
         : kind === "day" ? "Morgen treffen wir uns live. Hier findest du deinen Zugang noch einmal."
             : "Gleich ist es so weit. In einer Stunde öffnen wir den Raum für unseren gemeinsamen Live-Abend.";
-    const personalInvitation = kind === "hour" && event.key === liveTalk2.key ? [
+    const personalInvitation = kind === "hour" && event.key === liveTalkFamily.key ? [
+        "Heute lernst du uns und unsere Aufstellungsarbeit kennen. Gemeinsam schauen wir auf familiäre Rollen, Verantwortung und den eigenen Platz. Du brauchst keine Vorkenntnisse.", "",
+    ] : kind === "hour" && event.key === liveTalk2.key ? [
         "Leg dir gern dein Workbook und etwas zum Schreiben bereit. Bring eine Beobachtung oder Frage mit, die dich seit unserem ersten Vortrag beschäftigt. Wir greifen eure Erfahrungen auf und gehen gemeinsam eine Stufe tiefer.", "",
     ] : kind === "hour" ? [
         "Wir freuen uns sehr darauf, diesen Abend mit dir zu verbringen. Gemeinsam schauen wir auf deine persönliche Matrix, auf die Rollen und inneren Drehbücher, die dein Leben unbewusst mitgestalten, und auf den Weg zurück zu deinem Selbst und deiner Schöpferkraft.",
@@ -121,8 +132,9 @@ export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl,
         "Wenn du Zoom lieber manuell öffnest:",
         `Meeting-ID: ${meetingId}`,
         `Kenncode: ${passcode}`, "",
-        `${event.openEnd ? "" : "Plane etwa 60 Minuten ein. "}Wir lassen dich zum Beginn aus dem Warteraum herein. Deine Kamera darf gerne eingeschaltet sein. Dein Mikrofon bleibt zunächst stumm.`,
-        "", ...(kind === "hour" ? ["Wir sind gespannt auf diesen gemeinsamen Abend und freuen uns darauf, dich gleich im Raum zu begrüßen."] : ["Du brauchst keine Vorkenntnisse und musst den aufgezeichneten Vortrag vorher nicht gesehen haben."]),
+        `${event.openEnd ? "" : "Plane etwa 60 Minuten ein. "}Wir lassen dich zum Beginn aus dem Warteraum herein. ${event.recordingNotice ? "Deine Kamera kann ausgeschaltet bleiben." : "Deine Kamera darf gerne eingeschaltet sein."} Dein Mikrofon bleibt zunächst stumm.`,
+        ...(event.recordingNotice ? ["", event.recordingNotice] : []),
+        "", ...(kind === "hour" ? ["Wir sind gespannt auf diesen gemeinsamen Abend und freuen uns darauf, dich gleich im Raum zu begrüßen."] : [event.key === liveTalkFamily.key ? "Du brauchst keine Vorkenntnisse und musst nichts vorbereiten." : "Du brauchst keine Vorkenntnisse und musst den aufgezeichneten Vortrag vorher nicht gesehen haben."]),
         "", "Falls die Schaltfläche nicht funktioniert, kopiere den vollständigen Zoom-Link in deinen Browser. Bitte gib deinen Zugang nicht öffentlich weiter.",
         "", "Von Herzen", "Sabine & Selcan", "Spirit Healing", "",
         "Anmeldung ansehen oder absagen:", manageUrl,

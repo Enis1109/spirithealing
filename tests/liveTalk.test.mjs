@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { liveTalk, liveTalk2, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
+import { liveTalk, liveTalk2, liveTalkFamily, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
     zoomMeetingIdFromJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
 import { liveAttributionVersion, liveAttributionEvent, liveAttributionSources,
@@ -258,4 +258,50 @@ test("failed source insert rolls registration back and expiry removes source", a
 test("source report counts registrations once and separates cancellations", () => {
     const rows=[{id:1,status:"active",source_code:"lt20-a01"},{id:1,status:"active",source_code:"lt20-a01"},{id:2,status:"active"},{id:3,status:"cancelled",source_code:"lt20-a01"}];
     assert.deepEqual(summarizeLiveAttribution(rows),{total:3,active:2,cancelled:1,attributed:1,sources:[{code:"lt20-a01",count:1,label:"Meta-Anzeige 1"},{code:"unknown",count:1,label:"Nicht zugeordnet"}]});
+});
+
+test("family lecture uses winter time, a separate calendar, recording acknowledgment and source allowlist", () => {
+    const event = liveTalkFamily;
+    const localTime = zone => new Intl.DateTimeFormat("de", {timeZone:zone,hour:"2-digit",minute:"2-digit"}).format(new Date(event.startsAt));
+    assert.equal(localTime("Europe/Berlin"),"20:00");
+    assert.equal(localTime("Europe/Istanbul"),"22:00");
+    assert.equal(new Date(event.deleteAfter)-new Date(event.endsAt),90*86400000);
+    assert.match(liveCalendar(joinUrl,event),/DTSTART:20261027T190000Z/);
+    assert.doesNotMatch(liveCalendar(joinUrl,event),/DTEND/);
+    assert.throws(()=>normalizeLiveRegistration(form,event),{field:"recordingNotice"});
+    const accepted={...form,recordingNoticeAccepted:true,attribution:{...attribution,sourceCode:"fa27-b01"}};
+    assert.equal(normalizeLiveRegistration(accepted,event).attribution.sourceCode,"fa27-b01");
+    assert.equal(normalizeLiveRegistration({...accepted,attribution},event).attribution,null);
+    assert.equal(readLiveSource("?sh_source=fa27-b01",event.key),"fa27-b01");
+    assert.equal(readLiveSource("?sh_source=fa27-b01",liveTalk2.key),null);
+    assert.equal(readLiveSource("?sh_source=lt20-a01",event.key),null);
+    for(const kind of ["confirmation","day","hour"]) {
+        const mail=liveEmail({name:"Test",kind,joinUrl,meetingId:"12345678901",passcode,manageUrl:"https://spirit-healing.tr/live-vortrag/familienaufstellung/zugang#token=test",event});
+        assert.match(mail.text,/27\. Oktober 2026/);
+        assert.match(mail.text,/Zoom-Cloud/);
+        assert.match(mail.text,/Kamera und dein Mikrofon können ausgeschaltet bleiben/);
+        assert.doesNotMatch(mail.text,/13.Wochen|Workbook|Replay ansehen|20\. Oktober/);
+    }
+});
+
+test("family registration sends once with isolated access and its own consented attribution report", async () => {
+    const {state,service}=fixture(liveTalkFamily);
+    const start=new Date("2026-10-16T12:00:00Z");
+    const accepted=normalizeLiveRegistration({...form,recordingNoticeAccepted:true,attribution:{...attribution,sourceCode:"fa27-b01"}},liveTalkFamily);
+    await service.register(accepted,start); await service.register(accepted,start);
+    await service.processMail(start); await service.processMail(start);
+    assert.equal(state.regs.length,1); assert.equal(state.sent.length,1); assert.equal(state.jobs.length,3);
+    assert.match(state.sent[0].manageUrl,/\/familienaufstellung\/zugang#token=/);
+    assert.equal(state.sent[0].event.key,liveTalkFamily.key);
+    assert.equal((await service.adminInfo()).attributionReport.sources[0].code,"fa27-b01");
+    const token=makeLiveToken(1,secret,liveTalkFamily);
+    assert.equal((await service.access(token,start)).joinUrl,joinUrl);
+    assert.equal(await service.access(makeLiveToken(1,secret,liveTalk2),start),null);
+    assert.equal(await service.withdrawAttribution(makeLiveToken(1,secret,liveTalk2),start),false);
+    assert.equal(await service.withdrawAttribution(token,start),true);
+    await service.processMail(new Date("2026-10-26T19:00Z"));
+    await service.processMail(new Date("2026-10-27T18:00Z"));
+    assert.deepEqual(state.sent.map(mail=>mail.kind),["confirmation","day","hour"]);
+    assert.equal(await service.cancel(token),true);
+    assert.equal((await service.access(token,start)).joinUrl,null);
 });

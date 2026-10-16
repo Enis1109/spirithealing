@@ -22,7 +22,8 @@ import {
 } from "./server/mailer.js";
 import { createLiveTalkService, initializeLiveTalk, startLiveTalkWorker } from "./server/liveTalk.js";
 import { initializeNewsletterCampaigns, newsletterCampaignOverview } from "./server/newsletterCampaigns.js";
-import { normalizeLiveRegistration, liveTalk2 } from "./server/liveTalkConfig.js";
+import { normalizeLiveRegistration, liveTalk2, liveTalkFamily } from "./server/liveTalkConfig.js";
+import { registerFamilyLectureRoutes } from "./server/familyLectureRoutes.js";
 import {
     activateMemberAccess,
     authenticateMember,
@@ -179,6 +180,9 @@ const liveTalkService = createLiveTalkService({ db: database, sendMail: sendLive
 const liveTalk2Service = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
     newsletter: registerNewsletterInterest, secret: process.env.WEBINAR_TOKEN_SECRET || process.env.NEWSLETTER_TOKEN_SECRET,
     baseUrl: process.env.PUBLIC_BASE_URL || "https://spirit-healing.tr", event: liveTalk2 });
+const familyLectureService = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
+    newsletter: registerNewsletterInterest, secret: process.env.WEBINAR_TOKEN_SECRET || process.env.NEWSLETTER_TOKEN_SECRET,
+    baseUrl: process.env.PUBLIC_BASE_URL || "https://spirit-healing.tr", event: liveTalkFamily });
 const port = Number(process.env.PORT || 3000);
 const productionOrigin = new URL(process.env.PUBLIC_BASE_URL || "https://www.spirit-healing.tr").origin;
 const zepterLandingOrigins = new Set(
@@ -442,6 +446,9 @@ app.get("/api/webinar/slots", (_request, response) => {
     response.set("Cache-Control", "no-store");
     return response.json({ ok: true, ...getAvailableWebinarSlots() });
 });
+
+registerFamilyLectureRoutes(app, { service: familyLectureService, submissionLimiter, analyticsLimiter,
+    sameOriginOnly, adminSameOriginOnly, getAdminMember });
 
 app.get("/api/live-talk", async (_request, response) => {
     response.set("Cache-Control", "no-store");
@@ -1938,6 +1945,7 @@ const initializeServices = async () => {
     }
     await initializeLiveTalk(database);
     await initializeLiveTalk(database, liveTalk2);
+    await initializeLiveTalk(database, liveTalkFamily);
     await initializeNewsletterCampaigns(database);
     await initializeMeta(database);
     if (berlinMeasurementEnabled) await initializeBerlinMeasurement(database);
@@ -1948,6 +1956,7 @@ const initializeServices = async () => {
     startWebinarReminderWorker();
     startLiveTalkWorker(liveTalkService);
     startLiveTalkWorker(liveTalk2Service);
+    startLiveTalkWorker(familyLectureService);
 };
 
 startupPromise = initializeServices().catch((error) => {

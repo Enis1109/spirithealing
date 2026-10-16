@@ -1,8 +1,20 @@
 import { programLiveEvents } from "./replayFunnel.js";
 import { constellationDays, constellationPlace, constellationTime, constellationDayPath } from "./constellationDays.js";
+import { familyLecture } from "../../shared/familyLecture.js";
 
 // Weekly group: Sunday 19:00–21:30 German time, confirmed by Sabine on 6 October 2026.
 export const memberEvents = [
+    {
+        id: familyLecture.key, endsAt: familyLecture.endsAt, href: familyLecture.path,
+        de: { kind: "Kostenloser Online-Vortrag", title: familyLecture.title,
+            date: "Dienstag, 27. Oktober 2026", time: "20 Uhr · deutsche Zeit", place: "Online über Zoom · auf Deutsch",
+            text: "Familiäre Rollen, Verantwortung und der eigene Platz. Lerne uns und unsere Aufstellungsarbeit kennen. Mit Sabine & Selcan.",
+            action: "Kostenlos zum Vortrag anmelden" },
+        tr: { kind: "Ücretsiz çevrim içi seminer", title: "Aile dizimini tanıyın",
+            date: "27 Ekim 2026 Salı", time: "20:00 · Almanya saati", place: "Zoom üzerinden · Almanca",
+            text: "Aile içindeki roller, sorumluluk ve kendi yerimiz. Sabine ve Selcan ile dizim çalışmamızı tanıyın.",
+            action: "Ücretsiz seminere kaydol" },
+    },
     {
         id: "live-talk-2026-10-06",
         endsAt: "2026-10-06T18:30:00Z",
