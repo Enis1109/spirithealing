@@ -455,7 +455,7 @@ app.get("/api/live-talk-2", async (_request, response) => {
 });
 app.post("/api/live-talk-2/register", submissionLimiter, sameOriginOnly, async (request, response) => {
     response.set("Cache-Control", "no-store");
-    try { return response.status(202).json({ ok: true, ...await liveTalk2Service.register(normalizeLiveRegistration(request.body)) }); }
+    try { return response.status(202).json({ ok: true, ...await liveTalk2Service.register(normalizeLiveRegistration(request.body, liveTalk2)) }); }
     catch (error) {
         if (error instanceof WebinarValidationError) return response.status(400).json({ ok: false, error: "validation", field: error.field });
         if (["closed", "full"].includes(error.code)) return response.status(409).json({ ok: false, error: error.code });
@@ -470,6 +470,12 @@ app.post("/api/live-talk-2/access", analyticsLimiter, sameOriginOnly, async (req
 app.post("/api/live-talk-2/cancel", submissionLimiter, sameOriginOnly, async (request, response) => {
     response.set("Cache-Control", "no-store");
     try { return await liveTalk2Service.cancel(request.body?.token) ? response.json({ ok: true }) : response.status(404).json({ ok: false, error: "invalid_access" }); }
+    catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.post("/api/live-talk-2/attribution/withdraw", submissionLimiter, sameOriginOnly, async (request, response) => {
+    response.set({ "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" });
+    try { return await liveTalk2Service.withdrawAttribution(request.body?.token)
+        ? response.json({ ok: true }) : response.status(404).json({ ok: false, error: "invalid_access" }); }
     catch { return response.status(500).json({ ok: false, error: "server" }); }
 });
 app.get("/api/admin/live-talk-2", async (request, response) => {

@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { normalizeWebinarRegistration, WebinarValidationError } from "./webinarValidation.js";
+import { normalizeLiveAttribution } from "../shared/liveAttribution.js";
 
 export const liveTalk = Object.freeze({
     key: "live-drehbuch-2026-10-06",
@@ -24,10 +25,10 @@ export const liveTalk2 = Object.freeze({
     openEnd: true,
 });
 
-export const normalizeLiveRegistration = (body) => {
+export const normalizeLiveRegistration = (body, event = liveTalk) => {
     const result = normalizeWebinarRegistration({ ...body, slotId: "on-demand", locale: "de" });
     if (/[\r\n]/u.test(result.name)) throw new WebinarValidationError("name");
-    return result;
+    return { ...result, attribution: normalizeLiveAttribution(body?.attribution, event.key) };
 };
 
 export const validateZoomJoinUrl = (value) => {

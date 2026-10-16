@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { normalizeLiveAttribution, summarizeLiveAttribution } from "../shared/liveAttribution.js";
 import { liveTalk as defaultLiveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl,
     validateZoomPasscode, zoomMeetingIdFromJoinUrl } from "./liveTalkConfig.js";
 
@@ -22,6 +23,11 @@ export const initializeLiveTalk = async (db, liveTalk = defaultLiveTalk) => {
         newsletter_status VARCHAR(32) NOT NULL DEFAULT 'not_requested',
         status VARCHAR(16) NOT NULL DEFAULT 'active', created_at DATETIME NOT NULL, cancelled_at DATETIME NULL,
         UNIQUE KEY live_email (event_key, email)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+    await db.execute(`CREATE TABLE IF NOT EXISTS live_talk_attribution (
+        registration_id BIGINT UNSIGNED PRIMARY KEY, source_code VARCHAR(24) NOT NULL,
+        consent_version VARCHAR(48) NOT NULL, consented_at DATETIME NOT NULL,
+        CONSTRAINT live_attribution_registration FOREIGN KEY (registration_id) REFERENCES live_talk_registrations(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
     await db.execute(`CREATE TABLE IF NOT EXISTS live_talk_mail (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, registration_id BIGINT UNSIGNED NOT NULL,
@@ -66,6 +72,12 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             isNew = insert.affectedRows === 1;
             const [rows] = await connection.execute("SELECT id, status FROM live_talk_registrations WHERE event_key = ? AND email = ? FOR UPDATE", [liveTalk.key, form.email]);
             id = rows[0].id;
+            const attribution = normalizeLiveAttribution(form.attribution, liveTalk.key);
+            if (isNew && attribution) {
+                await connection.execute(`INSERT INTO live_talk_attribution
+                    (registration_id, source_code, consent_version, consented_at) VALUES (?, ?, ?, ?)`,
+                    [id, attribution.sourceCode, attribution.version, sqlDate(now)]);
+            }
             if (isNew) for (const mail of liveMailSchedule(now, liveTalk)) {
                 await connection.execute("INSERT INTO live_talk_mail (registration_id, kind, due_at) VALUES (?, ?, ?)", [id, mail.kind, sqlDate(mail.dueAt)]);
             }
@@ -75,7 +87,8 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         // Repeat submissions neither change an existing person's data nor generate duplicate emails.
         if (isNew && form.newsletterConsent) {
             let status;
-            try { status = await newsletter({ ...form, locale: "de", source: liveTalk.key }); }
+            try { status = await newsletter({ name: form.name, email: form.email,
+                newsletterConsent: true, locale: "de", source: liveTalk.key }); }
             catch { status = "confirmation_failed"; }
             await db.execute("UPDATE live_talk_registrations SET newsletter_status = ? WHERE id = ?", [status, id]);
         }
@@ -86,9 +99,18 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         if (!id || now >= new Date(liveTalk.deleteAfter)) return null;
         const [rows] = await db.execute("SELECT id, name, status FROM live_talk_registrations WHERE id = ? AND event_key = ?", [id, liveTalk.key]);
         if (!rows.length) return null;
+        const [attribution] = await db.execute("SELECT registration_id FROM live_talk_attribution WHERE registration_id = ?", [id]);
         const config = await settings();
-        return { name: rows[0].name, status: rows[0].status, ...liveTalk,
+        return { name: rows[0].name, status: rows[0].status, ...liveTalk, hasAttribution: attribution.length > 0,
             joinUrl: rows[0].status === "active" && config.enabled && now < new Date(liveTalk.endsAt) ? config.joinUrl : null };
+    };
+    const withdrawAttribution = async (token, now = new Date()) => {
+        const id = readLiveToken(token, secret, liveTalk);
+        if (!id || now >= new Date(liveTalk.deleteAfter)) return false;
+        const [rows] = await db.execute("SELECT id FROM live_talk_registrations WHERE id = ? AND event_key = ?", [id, liveTalk.key]);
+        if (!rows.length) return false;
+        await db.execute("DELETE FROM live_talk_attribution WHERE registration_id = ?", [id]);
+        return true;
     };
     const cancel = async (token) => {
         const id = readLiveToken(token, secret, liveTalk);
@@ -161,7 +183,9 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         const [registrations] = await db.execute(`SELECT r.id, r.name, r.email, r.status, r.newsletter_status, r.created_at,
             m.kind, m.status AS mail_status, m.attempts, m.sent_at FROM live_talk_registrations r
             LEFT JOIN live_talk_mail m ON m.registration_id = r.id WHERE r.event_key = ? ORDER BY r.created_at DESC, m.id`, [liveTalk.key]);
-        return { ...liveTalk, ...config, registrations };
+        const [sourceRows] = await db.execute(`SELECT r.id, r.status, a.source_code FROM live_talk_registrations r
+            LEFT JOIN live_talk_attribution a ON a.registration_id = r.id WHERE r.event_key = ?`, [liveTalk.key]);
+        return { ...liveTalk, ...config, registrations, attributionReport: summarizeLiveAttribution(sourceRows) };
     };
     const configure = async ({ joinUrl, passcode, enabled }) => {
         const validated = validateZoomJoinUrl(joinUrl);
@@ -169,7 +193,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         if (!validated || !validatedPasscode || typeof enabled !== "boolean") throw Object.assign(new Error("Invalid configuration"), { code: "validation" });
         await db.execute("UPDATE live_talk_settings SET join_url = ?, passcode = ?, enabled = ? WHERE event_key = ?", [validated, validatedPasscode, enabled ? 1 : 0, liveTalk.key]);
     };
-    return { publicInfo, register, access, cancel, processMail, adminInfo, configure };
+    return { publicInfo, register, access, cancel, withdrawAttribution, processMail, adminInfo, configure };
 };
 
 export const startLiveTalkWorker = (service) => {

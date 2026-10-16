@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { liveTalk, liveTalk2, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
     zoomMeetingIdFromJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
+import { liveAttributionVersion, liveAttributionEvent, liveAttributionSources,
+    readLiveSource, normalizeLiveAttribution, summarizeLiveAttribution } from "../shared/liveAttribution.js";
 
 const joinUrl = "https://us06web.zoom.us/j/12345678901?pwd=test-only";
 const passcode = "084526";
@@ -62,12 +64,21 @@ test("calendar uses correct UTC and folding; mail contains no marketing or fake 
 
 // Isolated repository double exercises the service branches without real contacts or mail.
 function fixture(event = liveTalk) {
-    const state = { regs: [], jobs: [], sent: [], newsletter: [], config: { join_url: joinUrl, passcode, enabled: 1 }, failures: [], rollback: false };
+    const state = { regs: [], attribution: [], jobs: [], sent: [], newsletter: [], config: { join_url: joinUrl, passcode, enabled: 1 }, failures: [], rollback: false };
     const execute = async (raw, p = []) => {
         const q = raw.replace(/\s+/g, " ").trim();
         const result = value => [value];
         if (q.startsWith("CREATE TABLE") || q.startsWith("ALTER TABLE") || q.startsWith("INSERT IGNORE INTO live_talk_settings")) return result({ affectedRows: 0 });
         if (q.startsWith("SELECT join_url")) return result([state.config]);
+        if (q.startsWith("INSERT INTO live_talk_attribution")) {
+            if (state.failAttribution) throw new Error("Test insert failure");
+            state.attribution.push({ registration_id: p[0], source_code: p[1], consent_version: p[2], consented_at: p[3] });
+            return result({ affectedRows: 1 });
+        }
+        if (q.startsWith("SELECT registration_id FROM live_talk_attribution")) return result(state.attribution.filter(a => a.registration_id === p[0]));
+        if (q.startsWith("DELETE FROM live_talk_attribution")) { state.attribution = state.attribution.filter(a => a.registration_id !== p[0]); return result({ affectedRows: 1 }); }
+        if (q.startsWith("SELECT r.id, r.name")) return result(state.regs.flatMap(r => state.jobs.filter(j => j.registration_id === r.id).map(j => ({...r, kind:j.kind, mail_status:j.status}))));
+        if (q.startsWith("SELECT r.id, r.status, a.source_code")) return result(state.regs.map(r => ({...r, source_code:state.attribution.find(a => a.registration_id === r.id)?.source_code})));
         if (q.startsWith("SELECT event_key FROM")) return result([{ event_key: liveTalk.key }]);
         if (q.startsWith("SELECT COUNT(*)")) return result([{ total: state.regs.filter(r => r.status === "active").length }]);
         if (q.startsWith("INSERT IGNORE INTO live_talk_registrations")) {
@@ -94,11 +105,12 @@ function fixture(event = liveTalk) {
         if (q.startsWith("UPDATE live_talk_mail SET status = ?")) { state.jobs.find(j => j.id === p[1]).status = p[0]; return result({ affectedRows: 1 }); }
         if (q.startsWith("UPDATE live_talk_mail SET status = 'sent'")) { state.jobs.find(j => j.id === p[0]).status = "sent"; return result({ affectedRows: 1 }); }
         if (q.startsWith("UPDATE live_talk_mail SET status = 'skipped'")) { state.jobs.find(j => j.id === p[0]).status = "skipped"; return result({ affectedRows: 1 }); }
-        if (q.startsWith("DELETE FROM live_talk_registrations")) { state.regs = []; state.jobs = []; return result({ affectedRows: 1 }); }
+        if (q.startsWith("DELETE FROM live_talk_registrations")) { state.regs = []; state.jobs = []; state.attribution = []; return result({ affectedRows: 1 }); }
         if (q.startsWith("UPDATE live_talk_settings")) { state.config = { join_url: p[0], passcode: p[1], enabled: p[2] }; return result({ affectedRows: 1 }); }
         throw new Error("Uncovered SQL: " + q);
     };
-    const connection = { execute, beginTransaction: async () => {}, commit: async () => {}, rollback: async () => { state.rollback = true; }, release() {} };
+    let snapshot;
+    const connection = { execute, beginTransaction: async () => { snapshot = structuredClone({ regs: state.regs, jobs: state.jobs, attribution: state.attribution }); }, commit: async () => {}, rollback: async () => { Object.assign(state, snapshot); state.rollback = true; }, release() {} };
     const db = { execute, getConnection: async () => connection };
     const service = createLiveTalkService({ db, secret, event, newsletter: async f => { state.newsletter.push(f); return "pending"; }, sendMail: async mail => { if (state.failures.length) throw state.failures.shift(); state.sent.push(mail); } });
     return { state, service, db };
@@ -179,4 +191,71 @@ test("second live accepts new registrations after the first event, sends once an
     assert.deepEqual(state.sent.map(m => m.kind), ["confirmation", "day", "hour"]);
     assert.equal(await service.cancel(token), true);
     assert.equal((await service.access(token, october7)).joinUrl, null);
+});
+
+const attribution = { consent: true, version: liveAttributionVersion, sourceCode: "lt20-a01" };
+test("source allowlist rejects free text, multiple identifiers and personal information", () => {
+    for (const code of Object.keys(liveAttributionSources)) assert.equal(readLiveSource(`?sh_source=${code}&fbclid=not-stored`), code);
+    for (const query of ["", "?utm_source=facebook", "?sh_source=test@example.test", "?sh_source=__proto__", "?sh_source=lt20-a01&sh_source=lt20-a02"])
+        assert.equal(readLiveSource(query), null);
+    for (const value of [null, {...attribution,consent:false}, {...attribution,consent:"true"}, {...attribution,version:"old"}, {...attribution,sourceCode:"unknown"}])
+        assert.equal(normalizeLiveAttribution(value, liveAttributionEvent), null);
+    assert.equal(normalizeLiveAttribution(attribution, liveTalk.key), null);
+    assert.deepEqual(normalizeLiveAttribution({...attribution,email:"never-save",url:"never-save"},liveAttributionEvent),attribution);
+    assert.deepEqual(normalizeLiveRegistration({...form,attribution},liveTalk2).attribution,attribution);
+    assert.equal(normalizeLiveRegistration({...form,attribution}).attribution,null);
+});
+test("consented source is saved atomically once and never sent to newsletter or mail", async () => {
+    const {state,service} = fixture(liveTalk2);
+    const start = new Date("2026-10-16T12:00:00Z");
+    await service.register({...form,newsletterConsent:true,attribution},start);
+    await service.register({...form,attribution:{...attribution,sourceCode:"lt20-a02"}},start);
+    assert.equal(state.regs.length,1); assert.equal(state.jobs.length,3);
+    assert.deepEqual(state.attribution,[{registration_id:1,source_code:"lt20-a01",consent_version:liveAttributionVersion,consented_at:"2026-10-16 12:00:00"}]);
+    assert.equal(state.newsletter[0].attribution,undefined);
+    await service.processMail(start); assert.equal(state.sent[0].attribution,undefined);
+    const admin = await service.adminInfo();
+    assert.equal(admin.registrations.length,3);
+    assert.equal(admin.attributionReport.active,1);
+    assert.equal(admin.attributionReport.attributed,1);
+    assert.equal(admin.attributionReport.sources[0].code,"lt20-a01");
+});
+test("missing or declined consent stays unknown; repeat signup cannot rewrite history", async () => {
+    const {state,service}=fixture(liveTalk2);
+    await service.register(form,now);
+    await service.register({...form,attribution},now);
+    await service.register({...form,email:"second@example.test",attribution:{...attribution,consent:false}},now);
+    assert.equal(state.attribution.length,0);
+    assert.equal((await service.adminInfo()).attributionReport.sources[0].code,"unknown");
+    assert.equal((await service.adminInfo()).attributionReport.active,2);
+});
+test("withdrawal is event-token scoped, idempotent and preserves participation and newsletter", async () => {
+    const {state,service}=fixture(liveTalk2);
+    await service.register({...form,newsletterConsent:true,attribution},now);
+    const token=makeLiveToken(1,secret,liveTalk2);
+    assert.equal((await service.access(token,now)).hasAttribution,true);
+    assert.equal(await service.withdrawAttribution(makeLiveToken(1,secret),now),false);
+    assert.equal(await service.withdrawAttribution("invalid",now),false);
+    assert.equal(state.attribution.length,1);
+    assert.equal(await service.withdrawAttribution(token,now),true);
+    assert.equal(await service.withdrawAttribution(token,now),true);
+    assert.equal((await service.access(token,now)).hasAttribution,false);
+    assert.equal(state.regs[0].status,"active"); assert.equal(state.regs[0].newsletter_status,"pending");
+    assert.equal(state.jobs.length,3);
+    assert.equal((await service.adminInfo()).attributionReport.attributed,0);
+    assert.equal(await service.withdrawAttribution(token,new Date(liveTalk2.deleteAfter)),false);
+});
+test("failed source insert rolls registration back and expiry removes source", async () => {
+    const {state,service}=fixture(liveTalk2);
+    state.failAttribution=true;
+    await assert.rejects(()=>service.register({...form,attribution},now));
+    assert.equal(state.regs.length,0); assert.equal(state.jobs.length,0); assert.equal(state.newsletter.length,0);
+    state.failAttribution=false;
+    await service.register({...form,attribution},now);
+    await service.processMail(new Date(liveTalk2.deleteAfter));
+    assert.equal(state.attribution.length,0);
+});
+test("source report counts registrations once and separates cancellations", () => {
+    const rows=[{id:1,status:"active",source_code:"lt20-a01"},{id:1,status:"active",source_code:"lt20-a01"},{id:2,status:"active"},{id:3,status:"cancelled",source_code:"lt20-a01"}];
+    assert.deepEqual(summarizeLiveAttribution(rows),{total:3,active:2,cancelled:1,attributed:1,sources:[{code:"lt20-a01",count:1,label:"Meta-Anzeige 1"},{code:"unknown",count:1,label:"Nicht zugeordnet"}]});
 });

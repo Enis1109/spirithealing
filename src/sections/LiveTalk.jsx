@@ -43,6 +43,7 @@ export const LiveTalkAccess = ({ endpoint = "/api/live-talk" }) => {
     const [access, setAccess] = useState(null);
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false);
+    const [withdrawing, setWithdrawing] = useState(false);
     useEffect(() => { submitForm(`${endpoint}/access`, { token }).then(r => setAccess(r.access)).catch(() => setMessage("Dieser Zugang ist ungültig oder nicht mehr verfügbar. Bitte schreibe an info@spirit-healing.tr.")); }, [token, endpoint]);
     const cancel = async () => {
         setBusy(true);
@@ -50,5 +51,14 @@ export const LiveTalkAccess = ({ endpoint = "/api/live-talk" }) => {
         catch { setMessage("Die Absage konnte nicht gespeichert werden. Bitte versuche es erneut."); }
         finally { setBusy(false); }
     };
-    return <Shell><section className="mx-auto mt-10 max-w-2xl rounded-3xl bg-white p-8"><h1 className="font-serif text-4xl">Dein Live-Vortrag</h1>{message && <p role="alert" className="mt-5">{message}</p>}{!access && !message && <p className="mt-5">Dein Zugang wird geladen …</p>}{access && <><p className="mt-6">Hallo {access.name},</p><p className="mt-4 font-semibold">{access.label}</p>{access.status === "cancelled" ? <p role="status" className="mt-6">Deine Teilnahme ist abgesagt. Du erhältst keine weiteren Terminerinnerungen. Ein gegebenenfalls separat bestätigter Newsletter bleibt davon unberührt.</p> : <>{access.joinUrl ? <a className={`${button} mt-6`} href={access.joinUrl} rel="noreferrer">Zum Live-Vortrag in Zoom</a> : <p className="mt-6">Der Zoom-Zugang ist derzeit nicht verfügbar oder der Termin ist bereits beendet.</p>}<p className="mt-6 leading-7">Du kannst doch nicht teilnehmen? Mit dem folgenden Button sagst du deine Anmeldung ab und beendest die Terminerinnerungen.</p><button disabled={busy} onClick={cancel} className="mt-4 rounded-full border border-[#7a9290] px-6 py-3">{busy ? "Absage wird gespeichert …" : "Teilnahme absagen"}</button></>}</>}</section></Shell>;
+    const withdraw = async () => {
+        setWithdrawing(true); setMessage("");
+        try {
+            await submitForm(`${endpoint}/attribution/withdraw`, { token });
+            setAccess(a => ({ ...a, hasAttribution: false }));
+            setMessage("Deine Quellenzuordnung wurde gelöscht. Deine Teilnahme und ein separat bestellter Newsletter bleiben unverändert.");
+        } catch { setMessage("Die Zuordnung konnte nicht gelöscht werden. Bitte versuche es erneut oder schreibe an info@spirit-healing.tr."); }
+        finally { setWithdrawing(false); }
+    };
+    return <Shell><section className="mx-auto mt-10 max-w-2xl rounded-3xl bg-white p-8"><h1 className="font-serif text-4xl">Dein Live-Vortrag</h1>{message && <p role="alert" className="mt-5">{message}</p>}{!access && !message && <p className="mt-5">Dein Zugang wird geladen …</p>}{access && <><p className="mt-6">Hallo {access.name},</p><p className="mt-4 font-semibold">{access.label}</p>{access.status === "cancelled" ? <p role="status" className="mt-6">Deine Teilnahme ist abgesagt. Du erhältst keine weiteren Terminerinnerungen. Ein gegebenenfalls separat bestätigter Newsletter bleibt davon unberührt.</p> : <>{access.joinUrl ? <a className={`${button} mt-6`} href={access.joinUrl} rel="noreferrer">Zum Live-Vortrag in Zoom</a> : <p className="mt-6">Der Zoom-Zugang ist derzeit nicht verfügbar oder der Termin ist bereits beendet.</p>}<p className="mt-6 leading-7">Du kannst doch nicht teilnehmen? Mit dem folgenden Button sagst du deine Anmeldung ab und beendest die Terminerinnerungen.</p><button disabled={busy} onClick={cancel} className="mt-4 rounded-full border border-[#7a9290] px-6 py-3">{busy ? "Absage wird gespeichert …" : "Teilnahme absagen"}</button></>}{access.hasAttribution && endpoint === "/api/live-talk-2" && <section className="mt-8 border-t pt-6"><h2 className="font-serif text-xl">Freiwillige Quellenzuordnung</h2><p className="mt-3 text-sm leading-6">Du hast erlaubt, den verwendeten Einladungslink deiner Anmeldung zuzuordnen. Du kannst diese Angabe unabhängig von deiner Teilnahme löschen.</p><button disabled={withdrawing} onClick={withdraw} className="mt-4 rounded-full border border-[#7a9290] px-6 py-3">{withdrawing ? "Wird gelöscht …" : "Quellenzuordnung widerrufen"}</button></section>}</>}</section></Shell>;
 };
