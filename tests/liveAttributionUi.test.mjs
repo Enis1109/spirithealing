@@ -7,6 +7,40 @@ import { createServer } from "vite";
 import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { readFileSync } from "node:fs";
+import { liveAttributionEvent, summarizeLiveAttribution } from "../shared/liveAttribution.js";
+import { familyLecture } from "../shared/familyLecture.js";
+
+test("admin contact table shows each contact once beside their event-scoped source", async () => {
+    const server = await createServer({ configFile: false, plugins: [react()],
+        resolve: { alias: { "@": path.resolve("src") } },
+        optimizeDeps: { noDiscovery:true, include:[], entries:[] },
+        server: { middlewareMode:true, watch:null, hmr:false, ws:false }, appType:"custom" });
+    try {
+        const { LiveAttributionReport } = await server.ssrLoadModule("/src/components/LiveAttributionReport.jsx");
+        const registrations=[
+            {id:1,name:"Meta Test",email:"meta@example.test",status:"active",source_code:"lt20-a01",kind:"confirmation"},
+            {id:"1",name:"Meta Test",email:"meta@example.test",status:"active",source_code:"lt20-a01",kind:"day"},
+            {id:2,name:"Unassigned Test",email:"unknown@example.test",status:"active",source_code:null},
+            {id:3,name:"Cancelled Test",email:"cancelled@example.test",status:"cancelled",source_code:"lt20-e08"},
+            {id:4,name:"Wrong Event",email:"wrong@example.test",status:"active",source_code:"fa27-c02"},
+            {id:5,name:"Unsafe Test",email:"safe@example.test",status:"active",source_code:"__proto__"},
+        ];
+        const render=(rows,key=liveAttributionEvent)=>renderToStaticMarkup(createElement(LiveAttributionReport,{
+            data:{key,registrations:rows,attributionReport:summarizeLiveAttribution(rows,key)},registrationPath:"/live-vortrag/20-oktober"}));
+        const html=render(registrations);
+        const table=html.match(/<table aria-label="Kontakte und Quellen"[\s\S]*?<\/table>/)[0];
+        assert.equal((table.match(/meta@example.test/g)||[]).length,1);
+        assert.match(table,/<td[^>]*>Meta Test<\/td><td[^>]*>meta@example.test<\/td><td[^>]*>Meta-Anzeige 1<\/td>/);
+        assert.equal((table.match(/Nicht zugeordnet/g)||[]).length,3);
+        assert.match(table,/E-Mail E8<\/td><td[^>]*>Abgesagt/);
+        assert.doesNotMatch(table,/__proto__|fa27-c02|lt20-a01/);
+        assert.match(render([]),/Noch keine Anmeldungen/);
+        assert.match(render([{id:6,name:"Family Test",email:"family@example.test",status:"active",source_code:"fa27-c02"}],familyLecture.key),/Meta-Anzeige Familienaufstellung C02/);
+        const withdrawn=render([{...registrations[0],source_code:null}]);
+        assert.match(withdrawn,/<td[^>]*>meta@example.test<\/td><td[^>]*>Nicht zugeordnet/);
+        assert.match(render([{...registrations[0],name:"<script>not executed</script>"}]),/&lt;script&gt;not executed&lt;\/script&gt;/);
+    } finally { await server.close(); }
+});
 
 test("actual registration route offers separate unchecked measurement only on marked links", async () => {
     const server = await createServer({ configFile: false, plugins: [react()],

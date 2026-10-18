@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { normalizeLiveAttribution, summarizeLiveAttribution } from "../shared/liveAttribution.js";
+import { normalizeLiveAttribution, sourcesForLiveEvent, summarizeLiveAttribution } from "../shared/liveAttribution.js";
 import { liveTalk as defaultLiveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl,
     validateZoomPasscode, zoomMeetingIdFromJoinUrl } from "./liveTalkConfig.js";
 
@@ -185,7 +185,14 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             LEFT JOIN live_talk_mail m ON m.registration_id = r.id WHERE r.event_key = ? ORDER BY r.created_at DESC, m.id`, [liveTalk.key]);
         const [sourceRows] = await db.execute(`SELECT r.id, r.status, a.source_code FROM live_talk_registrations r
             LEFT JOIN live_talk_attribution a ON a.registration_id = r.id WHERE r.event_key = ?`, [liveTalk.key]);
-        return { ...liveTalk, ...config, registrations, attributionReport: summarizeLiveAttribution(sourceRows, liveTalk.key) };
+        const allowedSources = sourcesForLiveEvent(liveTalk.key);
+        const sourceByRegistration = new Map(sourceRows.map(row => [String(row.id),
+            Object.hasOwn(allowedSources, row.source_code) ? row.source_code : null]));
+        // Only the existing authenticated admin response receives the saved source.
+        // A missing/withdrawn source is never inferred from dates, mail or other contacts.
+        return { ...liveTalk, ...config,
+            registrations: registrations.map(row => ({ ...row, source_code: sourceByRegistration.get(String(row.id)) ?? null })),
+            attributionReport: summarizeLiveAttribution(sourceRows, liveTalk.key) };
     };
     const configure = async ({ joinUrl, passcode, enabled }) => {
         const validated = validateZoomJoinUrl(joinUrl);

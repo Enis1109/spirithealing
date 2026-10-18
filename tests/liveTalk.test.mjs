@@ -219,6 +219,33 @@ test("consented source is saved atomically once and never sent to newsletter or 
     assert.equal(admin.attributionReport.active,1);
     assert.equal(admin.attributionReport.attributed,1);
     assert.equal(admin.attributionReport.sources[0].code,"lt20-a01");
+    assert.ok(admin.registrations.every(row => row.source_code === "lt20-a01"));
+});
+test("admin contact sources join by registration ID, stay event-scoped and disappear after withdrawal", async () => {
+    const {state,service}=fixture(liveTalk2);
+    await service.register({...form,attribution},now);
+    await service.register({...form,name:"Other test",email:"other@example.test"},now);
+    state.attribution.reverse();
+    let admin=await service.adminInfo();
+    assert.equal(admin.registrations.length,6);
+    assert.ok(admin.registrations.filter(row=>row.id===1).every(row=>row.source_code==="lt20-a01"));
+    assert.ok(admin.registrations.filter(row=>row.id===2).every(row=>row.source_code===null));
+    assert.equal((await service.publicInfo(now)).registrations,undefined);
+    assert.equal((await service.access(makeLiveToken(1,secret,liveTalk2),now)).source_code,undefined);
+    assert.equal(await service.withdrawAttribution(makeLiveToken(1,secret,liveTalk2),now),true);
+    admin=await service.adminInfo();
+    assert.ok(admin.registrations.every(row=>row.source_code===null));
+    for (const invalid of ["fa27-c02","__proto__","unknown"]) {
+        state.attribution=[{registration_id:1,source_code:invalid}];
+        assert.ok((await service.adminInfo()).registrations.every(row=>row.source_code===null));
+    }
+    state.attribution=[{registration_id:2,source_code:"lt20-e08"},{registration_id:1,source_code:"lt20-a01"}];
+    state.regs[0].status="cancelled";
+    admin=await service.adminInfo();
+    assert.equal(admin.attributionReport.active,1);
+    assert.equal(admin.attributionReport.cancelled,1);
+    assert.equal(admin.registrations.find(row=>row.id===1).source_code,"lt20-a01");
+    assert.equal(admin.registrations.find(row=>row.id===2).source_code,"lt20-e08");
 });
 test("missing or declined consent stays unknown; repeat signup cannot rewrite history", async () => {
     const {state,service}=fixture(liveTalk2);
@@ -318,4 +345,5 @@ test("family C02 source is event-scoped, optional, saved once and distinct from 
     assert.equal(state.attribution.length,1);
     assert.equal(state.attribution[0].source_code,"fa27-c02");
     assert.equal((await service.adminInfo()).attributionReport.sources[0].label,"Meta-Anzeige Familienaufstellung C02");
+    assert.ok((await service.adminInfo()).registrations.every(row=>row.source_code==="fa27-c02"));
 });
