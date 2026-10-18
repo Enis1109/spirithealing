@@ -62,8 +62,9 @@ test("second event has independent tokens, correct time and reminders", () => {
     assert.equal(readLiveToken(token, secret, liveTalk), null);
     assert.equal(readLiveToken(makeLiveToken(5, secret), secret, liveTalk2), null);
     const schedule = liveMailSchedule(new Date("2026-10-07T10:00Z"), liveTalk2);
-    assert.equal(schedule[1].dueAt.toISOString(), "2026-10-19T18:00:00.000Z");
-    assert.equal(schedule[2].dueAt.toISOString(), "2026-10-20T17:00:00.000Z");
+    assert.equal(schedule.find(job => job.kind === "day").dueAt.toISOString(), "2026-10-19T18:00:00.000Z");
+    assert.equal(schedule.find(job => job.kind === "hour").dueAt.toISOString(), "2026-10-20T17:00:00.000Z");
+    assert.equal(schedule.find(job => job.kind === "morning").dueAt.toISOString(), "2026-10-20T07:00:00.000Z");
     assert.deepEqual(liveMailSchedule(new Date(liveTalk2.startsAt), liveTalk2), []);
     const url = "https://us06web.zoom.us/j/12345678901?pwd=test";
     const calendar = liveCalendar(url, liveTalk2);

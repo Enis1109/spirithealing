@@ -1,12 +1,12 @@
 import crypto from "node:crypto";
 import { normalizeLiveAttribution, sourcesForLiveEvent, summarizeLiveAttribution } from "../shared/liveAttribution.js";
 import { liveTalk as defaultLiveTalk, liveMailSchedule, makeLiveToken, readLiveToken, validateZoomJoinUrl,
-    validateZoomPasscode, zoomMeetingIdFromJoinUrl } from "./liveTalkConfig.js";
+    validateZoomPasscode, zoomMeetingIdFromJoinUrl, liveReminderExpired } from "./liveTalkConfig.js";
 
 const sqlDate = (date) => new Date(date).toISOString().slice(0, 19).replace("T", " ");
 
 // Separate tables keep the existing seven-day recording access untouched.
-export const initializeLiveTalk = async (db, liveTalk = defaultLiveTalk) => {
+export const initializeLiveTalk = async (db, liveTalk = defaultLiveTalk, now = new Date()) => {
     await db.execute(`CREATE TABLE IF NOT EXISTS live_talk_settings (
         event_key VARCHAR(80) PRIMARY KEY, join_url VARCHAR(1024) NULL, passcode VARCHAR(32) NULL,
         enabled BOOLEAN NOT NULL DEFAULT FALSE, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -38,6 +38,16 @@ export const initializeLiveTalk = async (db, liveTalk = defaultLiveTalk) => {
         CONSTRAINT live_mail_registration FOREIGN KEY (registration_id) REFERENCES live_talk_registrations(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
     await db.execute("INSERT IGNORE INTO live_talk_settings (event_key) VALUES (?)", [liveTalk.key]);
+    // Backfill only approved event reminders for existing active registrations.
+    // The unique registration/kind key preserves sent, cancelled and uncertain jobs
+    // across restarts. Late signups get their confirmation and future reminders only.
+    for (const reminder of liveTalk.reminders || []) {
+        if (now >= new Date(reminder.expiresAt)) continue;
+        await db.execute(`INSERT IGNORE INTO live_talk_mail (registration_id, kind, due_at)
+            SELECT id, ?, ? FROM live_talk_registrations
+            WHERE event_key = ? AND status = 'active' AND created_at < ?`,
+            [reminder.kind, sqlDate(reminder.dueAt), liveTalk.key, sqlDate(reminder.dueAt)]);
+    }
 };
 
 export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUrl = "https://spirit-healing.tr", event: liveTalk = defaultLiveTalk }) => {
@@ -158,7 +168,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
                 continue;
             }
             // Do not send a delayed 'tomorrow' message on the day of the event.
-            const stale = row.kind === "day" && now >= new Date(new Date(liveTalk.startsAt).getTime() - 12 * 3600000);
+            const stale = liveReminderExpired(row.kind, now, liveTalk);
             if (stale) {
                 await db.execute("UPDATE live_talk_mail SET status = 'skipped' WHERE id = ? AND claim_token = ?", [job.id, claim]);
                 continue;
@@ -181,7 +191,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
     const adminInfo = async () => {
         const config = await settings();
         const [registrations] = await db.execute(`SELECT r.id, r.name, r.email, r.status, r.newsletter_status, r.created_at,
-            m.kind, m.status AS mail_status, m.attempts, m.sent_at FROM live_talk_registrations r
+            m.kind, m.due_at, m.status AS mail_status, m.attempts, m.sent_at FROM live_talk_registrations r
             LEFT JOIN live_talk_mail m ON m.registration_id = r.id WHERE r.event_key = ? ORDER BY r.created_at DESC, m.id`, [liveTalk.key]);
         const [sourceRows] = await db.execute(`SELECT r.id, r.status, a.source_code FROM live_talk_registrations r
             LEFT JOIN live_talk_attribution a ON a.registration_id = r.id WHERE r.event_key = ?`, [liveTalk.key]);

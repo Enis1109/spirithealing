@@ -24,6 +24,13 @@ export const liveTalk2 = Object.freeze({
     privacyVersion: "live-vortrag-2026-09-22", deleteAfter: "2027-01-18T22:00:00.000Z",
     accessPath: "/live-vortrag/20-oktober/zugang", confirmationSubject: "Deine Anmeldung: zweites Live am 20. Oktober",
     openEnd: true,
+    // Explicitly approved on 18 October. Reuse the existing day/hour jobs.
+    reminders: Object.freeze([
+        { kind: "two_days", dueAt: "2026-10-18T10:00:00.000Z", expiresAt: "2026-10-18T22:00:00.000Z" },
+        { kind: "day", dueAt: "2026-10-19T18:00:00.000Z", expiresAt: "2026-10-19T22:00:00.000Z" },
+        { kind: "morning", dueAt: "2026-10-20T07:00:00.000Z", expiresAt: "2026-10-20T10:00:00.000Z" },
+        { kind: "hour", dueAt: "2026-10-20T17:00:00.000Z", expiresAt: "2026-10-20T18:00:00.000Z" },
+    ]),
 });
 
 export const liveTalkFamily = Object.freeze({
@@ -81,11 +88,17 @@ export const liveMailSchedule = (now = new Date(), event = liveTalk) => {
     if (now.getTime() >= start) return [];
     return [
         { kind: "confirmation", dueAt: now },
-        ...[["day", 24], ["hour", 1]].flatMap(([kind, hours]) => {
-            const dueAt = new Date(start - hours * 3600000);
+        ...(event.reminders || [["day", 24], ["hour", 1]].map(([kind, hours]) => ({ kind, dueAt: new Date(start - hours * 3600000) }))).flatMap(({ kind, dueAt: date }) => {
+            const dueAt = new Date(date);
             return dueAt > now ? [{ kind, dueAt }] : [];
         }),
     ];
+};
+
+export const liveReminderExpired = (kind, now, event = liveTalk) => {
+    const reminder = event.reminders?.find(item => item.kind === kind);
+    if (reminder) return now >= new Date(reminder.expiresAt);
+    return kind === "day" && now >= new Date(new Date(event.startsAt).getTime() - 12 * 3600000);
 };
 
 const escapeIcs = (s) => String(s).replaceAll("\\", "\\\\").replaceAll("\n", "\\n").replaceAll(",", "\\,").replaceAll(";", "\\;");
@@ -109,6 +122,44 @@ export const liveCalendar = (joinUrl, event = liveTalk) => [
 ].map(foldIcs).join("\r\n");
 
 export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl, event = liveTalk }) => {
+    if (event.key === liveTalk2.key && kind !== "confirmation") {
+        const variants = {
+            two_days: { subject: "Am Dienstag sehen wir uns: dein zweiter Live-Abend", paragraphs: [
+                "am Dienstag, 20. Oktober, um 20 Uhr deutscher Zeit treffen wir uns zu unserem zweiten Live-Abend. Du bist bereits angemeldet, und wir freuen uns auf dich.",
+                "Seit unserem ersten Abend war unsere Einladung, die Anteile im Alltag zu beobachten. Vielleicht hast du eine vertraute Rolle bemerkt oder dich gefragt, warum du in einer Situation so reagiert hast. Genau dort knüpfen wir am Dienstag an und gehen gemeinsam eine Stufe tiefer.",
+                "Wenn du magst, notiere dir bis dahin eine Beobachtung und eine Frage. Du musst nichts fertig bearbeitet haben. Auch wenn du gerade erst anfängst, diese Möglichkeit für dich zuzulassen, bist du willkommen.",
+            ] },
+            day: { subject: "Morgen um 20 Uhr: Wir freuen uns auf dich", paragraphs: [
+                "morgen Abend um 20 Uhr deutscher Zeit sehen wir uns zu unserem zweiten Live.",
+                "Nimm dir gern dein Workbook und wähle eine Situation aus: Was hast du bei dir beobachtet? Welche Rolle war dir vertraut? Was möchtest du besser verstehen? Bring deine Frage mit. Wir greifen eure Erfahrungen auf und schauen gemeinsam weiter.",
+                "Du brauchst nichts vorzubereiten, was sich gerade nicht stimmig anfühlt. Du darfst auch einfach zuhören und erleben, was sich für dich zeigt.",
+            ] },
+            morning: { subject: "Heute Abend ist es so weit: um 20 Uhr sind wir live", paragraphs: [
+                "heute Abend um 20 Uhr deutscher Zeit beginnt unser zweiter Live-Abend. Schön, dass du dabei bist.",
+                "Leg dir für heute Abend gern dein Workbook und etwas zum Schreiben bereit. Deine Beobachtungen und Fragen dürfen mit in den Raum. Du musst keine fertigen Antworten mitbringen.",
+                "Hier findest du deinen Zoom-Zugang für heute Abend. Eine Stunde vor Beginn erinnern wir dich noch einmal.",
+            ] },
+            hour: { subject: "In einer Stunde geht es los: dein Zoom-Zugang", paragraphs: [
+                "in einer Stunde, um 20 Uhr deutscher Zeit, beginnt unser zweites Live. Wir freuen uns darauf, dich gleich zu sehen.",
+                "Leg dir gern dein Workbook und etwas zum Schreiben bereit. Bring die Beobachtung oder Frage mit, die dich gerade beschäftigt. Wir greifen eure Erfahrungen auf und gehen gemeinsam eine Stufe tiefer.",
+                "Über den folgenden Link kommst du direkt in unseren Zoom-Raum. Wir lassen dich zum Beginn aus dem Warteraum herein.",
+            ] },
+        };
+        const copy = variants[kind];
+        if (!copy) throw new Error("Unknown second-live reminder kind");
+        return { subject: copy.subject, text: [
+            `Hallo ${name},`, "", ...copy.paragraphs.flatMap(p => [p, ""]),
+            event.title, event.label, "auf Deutsch · kostenlos", "",
+            "Dein Zoom-Zugang:", joinUrl, "",
+            "Wenn du Zoom lieber manuell öffnest:", `Meeting-ID: ${meetingId}`, `Kenncode: ${passcode}`, "",
+            "Dein Mikrofon bleibt zunächst stumm. Du brauchst keine Vorkenntnisse und musst den ersten Vortrag nicht gesehen haben.", "",
+            ...(kind === "two_days" || kind === "day" ? ["Falls du die Aufzeichnung oder dein Workbook noch einmal öffnen möchtest:", "https://spirit-healing.tr/live-vortrag/aufzeichnung", ""] : []),
+            "Bitte gib deinen Zoom-Zugang nicht öffentlich weiter.", "", "Von Herzen", "Sabine & Selcan", "Spirit Healing", "",
+            "Anmeldung ansehen oder absagen:", manageUrl, "",
+            "Du erhältst diese Erinnerung zu deiner Vortragsanmeldung. Eine Newsletter-Anmeldung ist dafür nicht nötig.",
+            "Bei Fragen: info@spirit-healing.tr",
+        ].join("\n") };
+    }
     const subject = kind === "day" ? "Morgen: dein Live-Vortrag mit Sabine & Selcan"
         : kind === "hour" ? "Gleich ist es so weit – wir freuen uns auf dich"
             : event.confirmationSubject || "Deine Anmeldung: Live-Vortrag am 6. Oktober";

@@ -83,10 +83,17 @@ function fixture(event = liveTalk) {
         if (q.startsWith("SELECT COUNT(*)")) return result([{ total: state.regs.filter(r => r.status === "active").length }]);
         if (q.startsWith("INSERT IGNORE INTO live_talk_registrations")) {
             if (state.regs.some(r => r.email === p[2])) return result({ affectedRows: 0 });
-            state.regs.push({ id: state.regs.length + 1, name: p[1], email: p[2], status: "active" });
+            state.regs.push({ id: state.regs.length + 1, name: p[1], email: p[2], status: "active", event_key:p[0], created_at:p[6] });
             return result({ affectedRows: 1 });
         }
         if (q.startsWith("SELECT id, status FROM")) return result(state.regs.filter(r => r.email === p[1]));
+        if (q.startsWith("INSERT IGNORE INTO live_talk_mail")) {
+            for (const r of state.regs.filter(r => r.event_key === p[2] && r.status === "active" && r.created_at < p[3])) {
+                if (state.jobs.some(j => j.registration_id === r.id && j.kind === p[0])) continue;
+                state.jobs.push({ id:state.jobs.length+1,registration_id:r.id,kind:p[0],due:new Date(p[1].replace(" ","T")+"Z"),status:"pending",attempts:0 });
+            }
+            return result({affectedRows:0});
+        }
         if (q.startsWith("INSERT INTO live_talk_mail")) {
             state.jobs.push({ id: state.jobs.length + 1, registration_id: p[0], kind: p[1], due: new Date(p[2].replace(" ", "T") + "Z"), status: "pending", attempts: 0 }); return result({ affectedRows: 1 });
         }
@@ -178,7 +185,7 @@ test("second live accepts new registrations after the first event, sends once an
     const october7 = new Date("2026-10-07T10:00:00Z");
     await service.register(form, october7);
     await service.register(form, october7);
-    assert.equal(state.regs.length, 1); assert.equal(state.jobs.length, 3);
+    assert.equal(state.regs.length, 1); assert.equal(state.jobs.length, 5);
     await service.processMail(october7); await service.processMail(october7);
     assert.equal(state.sent.length, 1);
     assert.equal(state.sent[0].event.key, liveTalk2.key);
@@ -210,12 +217,12 @@ test("consented source is saved atomically once and never sent to newsletter or 
     const start = new Date("2026-10-16T12:00:00Z");
     await service.register({...form,newsletterConsent:true,attribution},start);
     await service.register({...form,attribution:{...attribution,sourceCode:"lt20-a02"}},start);
-    assert.equal(state.regs.length,1); assert.equal(state.jobs.length,3);
+    assert.equal(state.regs.length,1); assert.equal(state.jobs.length,5);
     assert.deepEqual(state.attribution,[{registration_id:1,source_code:"lt20-a01",consent_version:liveAttributionVersion,consented_at:"2026-10-16 12:00:00"}]);
     assert.equal(state.newsletter[0].attribution,undefined);
     await service.processMail(start); assert.equal(state.sent[0].attribution,undefined);
     const admin = await service.adminInfo();
-    assert.equal(admin.registrations.length,3);
+    assert.equal(admin.registrations.length,5);
     assert.equal(admin.attributionReport.active,1);
     assert.equal(admin.attributionReport.attributed,1);
     assert.equal(admin.attributionReport.sources[0].code,"lt20-a01");
@@ -227,7 +234,7 @@ test("admin contact sources join by registration ID, stay event-scoped and disap
     await service.register({...form,name:"Other test",email:"other@example.test"},now);
     state.attribution.reverse();
     let admin=await service.adminInfo();
-    assert.equal(admin.registrations.length,6);
+    assert.equal(admin.registrations.length,10);
     assert.ok(admin.registrations.filter(row=>row.id===1).every(row=>row.source_code==="lt20-a01"));
     assert.ok(admin.registrations.filter(row=>row.id===2).every(row=>row.source_code===null));
     assert.equal((await service.publicInfo(now)).registrations,undefined);
@@ -268,7 +275,7 @@ test("withdrawal is event-token scoped, idempotent and preserves participation a
     assert.equal(await service.withdrawAttribution(token,now),true);
     assert.equal((await service.access(token,now)).hasAttribution,false);
     assert.equal(state.regs[0].status,"active"); assert.equal(state.regs[0].newsletter_status,"pending");
-    assert.equal(state.jobs.length,3);
+    assert.equal(state.jobs.length,5);
     assert.equal((await service.adminInfo()).attributionReport.attributed,0);
     assert.equal(await service.withdrawAttribution(token,new Date(liveTalk2.deleteAfter)),false);
 });
@@ -346,4 +353,69 @@ test("family C02 source is event-scoped, optional, saved once and distinct from 
     assert.equal(state.attribution[0].source_code,"fa27-c02");
     assert.equal((await service.adminInfo()).attributionReport.sources[0].label,"Meta-Anzeige Familienaufstellung C02");
     assert.ok((await service.adminInfo()).registrations.every(row=>row.source_code==="fa27-c02"));
+});
+
+test("second live has four approved reminders in Berlin time and late signups only get future jobs", () => {
+    const jobs = liveMailSchedule(new Date("2026-10-18T09:00Z"),liveTalk2);
+    assert.deepEqual(jobs.map(j=>j.kind),["confirmation","two_days","day","morning","hour"]);
+    const berlin = date => new Intl.DateTimeFormat("de-DE",{timeZone:"Europe/Berlin",dateStyle:"short",timeStyle:"short"}).format(date);
+    assert.deepEqual(jobs.slice(1).map(j=>berlin(j.dueAt)),["18.10.26, 12:00","19.10.26, 20:00","20.10.26, 09:00","20.10.26, 19:00"]);
+    assert.deepEqual(liveMailSchedule(new Date("2026-10-19T19:00Z"),liveTalk2).map(j=>j.kind),["confirmation","morning","hour"]);
+    assert.deepEqual(liveMailSchedule(new Date("2026-10-20T08:00Z"),liveTalk2).map(j=>j.kind),["confirmation","hour"]);
+    assert.deepEqual(liveMailSchedule(new Date("2026-10-20T17:30Z"),liveTalk2).map(j=>j.kind),["confirmation"]);
+    assert.deepEqual(liveMailSchedule(new Date(liveTalk2.startsAt),liveTalk2),[]);
+});
+
+test("approved reminders backfill existing registrations once, preserve prior states and exclude other events/cancelled/late registrations", async () => {
+    const {state,service,db}=fixture(liveTalk2);
+    await service.register(form,new Date("2026-10-07T10:00Z"));
+    state.jobs=state.jobs.filter(j=>!["two_days","morning"].includes(j.kind));
+    state.jobs.forEach((j,i)=>j.id=i+1);
+    state.jobs[0].status="sent"; state.jobs.find(j=>j.kind==="day").status="uncertain";
+    state.regs.push({id:2,event_key:liveTalkFamily.key,status:"active",created_at:"2026-10-07 10:00:00"},
+        {id:3,event_key:liveTalk2.key,status:"cancelled",created_at:"2026-10-07 10:00:00"});
+    await initializeLiveTalk(db,liveTalk2,new Date("2026-10-18T11:00Z"));
+    await initializeLiveTalk(db,liveTalk2,new Date("2026-10-18T11:00Z"));
+    assert.equal(state.jobs.length,5);
+    assert.ok(state.jobs.every(j=>j.registration_id===1));
+    assert.equal(state.jobs.find(j=>j.kind==="day").status,"uncertain");
+    await service.processMail(new Date("2026-10-18T11:00Z"));
+    await initializeLiveTalk(db,liveTalk2,new Date("2026-10-18T11:00Z"));
+    await service.processMail(new Date("2026-10-18T11:01Z"));
+    assert.deepEqual(state.sent.map(m=>m.kind),["two_days"]);
+    await service.register({...form,email:"late@example.test"},new Date("2026-10-18T11:02Z"));
+    await initializeLiveTalk(db,liveTalk2,new Date("2026-10-18T11:03Z"));
+    assert.equal(state.jobs.filter(j=>j.kind==="two_days").length,1);
+});
+
+test("four second-live reminders send once, have distinct copy, and cancellation prevents the remainder", async () => {
+    const {state,service}=fixture(liveTalk2);
+    await service.register(form,new Date("2026-10-07T10:00Z"));
+    await service.processMail(new Date("2026-10-07T10:00Z"));
+    for(const time of ["2026-10-18T10:00Z","2026-10-19T18:00Z","2026-10-20T07:00Z","2026-10-20T17:00Z"]){
+        await service.processMail(new Date(time)); await service.processMail(new Date(time));
+    }
+    assert.deepEqual(state.sent.map(m=>m.kind),["confirmation","two_days","day","morning","hour"]);
+    const copies=state.sent.slice(1).map(m=>liveEmail(m));
+    assert.equal(new Set(copies.map(c=>c.subject)).size,4);
+    for(const copy of copies){
+        assert.match(copy.text,/Hallo Testperson,/); assert.ok(copy.text.includes(joinUrl));
+        assert.match(copy.text,/20 Uhr deutscher Zeit/); assert.match(copy.text,/Anmeldung ansehen oder absagen/);
+        assert.doesNotMatch(copy.text,/anmelden|Restplätze|13-Wochen-Programm buchen/);
+    }
+    const cancelled=fixture(liveTalk2);
+    await cancelled.service.register(form,new Date("2026-10-07T10:00Z"));
+    await cancelled.service.cancel(makeLiveToken(1,secret,liveTalk2));
+    await cancelled.service.processMail(new Date("2026-10-20T17:00Z"));
+    assert.equal(cancelled.state.sent.length,0);
+});
+
+test("expired two-day, tomorrow and morning messages are skipped, never sent together as catch-up", async () => {
+    for(const [kind,time] of [["two_days","2026-10-18T22:00Z"],["day","2026-10-19T22:00Z"],["morning","2026-10-20T10:00Z"]]){
+        const {state,service}=fixture(liveTalk2);
+        await service.register(form,new Date("2026-10-07T10:00Z"));
+        state.jobs=state.jobs.filter(j=>j.kind===kind);
+        await service.processMail(new Date(time));
+        assert.equal(state.jobs[0].status,"skipped"); assert.equal(state.sent.length,0);
+    }
 });
