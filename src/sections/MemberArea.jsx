@@ -15,13 +15,14 @@ const content = {
         campaignEyebrow: "0 € · kein Abo · sofort verfügbar",
         title: "Deine kostenlose Spirit-Healing-Mediathek",
         intro: "Melde dich mit E-Mail-Adresse und Passwort an. Wenn du bereits einen persönlichen Direktlink von uns hast, kannst du ihn unverändert weiterverwenden.",
-        campaignIntro: "Erstelle jetzt dein kostenloses Konto. Nach der Bestätigung kannst du drei Meditationen, den vollständigen Vortrag und das Workbook direkt öffnen.",
+        campaignIntro: "Erstelle dein kostenloses Konto. Danach findest du beide Oktober-Vorträge, das Workbook „Eine neue Perspektive“ und die Meditation „Das Geschenk deines Anteils“ an einem Ort.",
         campaignTrust: "Dein Zugang bleibt kostenlos. Du kannst jederzeit zurückkehren und in deinem eigenen Tempo weitergehen.",
         benefitTitle: "Das erwartet dich",
         benefits: [
-            "Drei geführte Meditationen: „Loslassen & Reinigen“, „Wiedergeburt“ und „Ich bin Licht“",
-            "Die Aufzeichnung des Vortrags „Wer entscheidet eigentlich dein Leben?“",
-            "Das Workbook zum Vortrag mit Reflexionsfragen und Übungen",
+            "Vortrag 1: „Wer schreibt dein inneres Drehbuch?“",
+            "Vortrag 2: „Eine Stufe tiefer: Deine inneren Anteile“",
+            "Das Workbook „Eine neue Perspektive“ und die Meditation „Das Geschenk deines Anteils“",
+            "Weitere ältere Vorträge und Meditationen in derselben Mediathek",
             "Ein persönliches Konto – bestehende Direktlinks bleiben dauerhaft gültig",
         ],
         formTitle: "Kostenlosen Zugang anfordern",
@@ -103,13 +104,14 @@ const content = {
         campaignEyebrow: "0 € · abonelik yok · hemen erişim",
         title: "Ücretsiz Spirit Healing içerik alanın",
         intro: "E-posta adresin ve şifrenle giriş yap. Daha önce aldığın kişisel erişim bağlantısı varsa onu aynı şekilde kullanmaya devam edebilirsin.",
-        campaignIntro: "Ücretsiz hesabını şimdi oluştur. Onaydan sonra üç meditasyonu, seminer kaydının tamamını ve çalışma kitabını doğrudan açabilirsin.",
+        campaignIntro: "Ücretsiz hesabını oluştur. Ardından iki Ekim seminerini, “Yeni bir bakış açısı” çalışma kitabını ve “İçsel parçanın armağanı” meditasyonunu tek bir yerde bulabilirsin.",
         campaignTrust: "Erişimin ücretsiz kalır. İstediğin zaman geri dönüp kendi hızında devam edebilirsin.",
         benefitTitle: "Seni neler bekliyor?",
         benefits: [
-            "Üç rehberli meditasyon: “Bırakmak ve Arınmak”, “Yeniden Doğuş” ve “Ben Işığım”",
-            "“Hayatına aslında kim karar veriyor?” seminerinin kaydı",
-            "Seminere eşlik eden düşünme soruları ve egzersizlerden oluşan çalışma kitabı",
+            "1. seminer: “İçsel senaryonu kim yazıyor?”",
+            "2. seminer: “Bir katman daha derine: İçsel parçaların”",
+            "“Yeni bir bakış açısı” çalışma kitabı ve “İçsel parçanın armağanı” meditasyonu",
+            "Aynı içerik alanında daha önceki seminerler ve meditasyonlar",
             "Kişisel hesabın – mevcut erişim bağlantıların kalıcı olarak geçerli kalır",
         ],
         formTitle: "Ücretsiz erişim bağlantısı iste",
@@ -240,11 +242,11 @@ export const MemberArea = () => {
         robots?.setAttribute("content", campaignLanding ? "index, follow" : "noindex, nofollow");
         if (campaignLanding) {
             document.title = language === "tr"
-                ? "3 ücretsiz meditasyon, seminer ve çalışma kitabı | Spirit Healing"
-                : "3 kostenlose Meditationen, Vortrag & Workbook | Spirit Healing";
+                ? "2 ücretsiz seminer, çalışma kitabı ve meditasyon | Spirit Healing"
+                : "2 kostenlose Vorträge, Workbook & Meditation | Spirit Healing";
             description?.setAttribute("content", language === "tr"
-                ? "Üç rehberli meditasyona, Spirit Healing seminerine ve çalışma kitabına ücretsiz erişim oluştur."
-                : "Sichere dir kostenlosen Zugang zu drei geführten Meditationen, dem Spirit-Healing-Vortrag und dem begleitenden Workbook.");
+                ? "İki Spirit Healing seminerine, çalışma kitabına ve eşlik eden meditasyona ücretsiz erişim oluştur."
+                : "Registriere dich kostenlos für zwei Spirit-Healing-Vorträge, das begleitende Workbook und die Meditation „Das Geschenk deines Anteils“.");
         }
 
         return () => {

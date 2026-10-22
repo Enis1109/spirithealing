@@ -20,7 +20,7 @@ export const programLiveEvents = Array.from({ length: 13 }, (_, index) => ({
 }));
 export const publicEvents = [
     { id: "july-recording", date: "2026-07-26", title: "Wer entscheidet eigentlich dein Leben?", detail: "Vortrag mit Workbook im kostenlosen Mitgliederbereich", href: "/gratis-meditationen", replay: true },
-    { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Erster Live-Abend mit Sabine & Selcan · Aufzeichnungsbereich und Workbook", href: replayFunnel.path, replay: true },
+    { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Vortrag 1 und Workbook im Aufzeichnungsbereich", href: replayFunnel.path, replay: true },
     ...constellationDays.map((day) => ({
         id: `constellation-${day.id}`, date: day.date, ...(constellationTime ? { time: constellationTime } : {}),
         constellationDayId: day.id,
@@ -29,7 +29,7 @@ export const publicEvents = [
         href: constellationDayPath(day),
         action: "Termin und Teilnahme ansehen",
     })),
-    { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine Erfahrungen mit Anteilen", detail: "Zweiter Live-Abend mit Sabine & Selcan · online", href: replayFunnel.nextLivePath },
+    { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine inneren Anteile", detail: "Vortrag 2 und Meditation im kostenlosen Mitgliederbereich", href: "/gratis-meditationen", replay: true },
     { id: familyLecture.key, date: familyLecture.date, time: "20:00", title: familyLecture.title,
         detail: "Kostenloser Vortrag mit Sabine & Selcan · online über Zoom · auf Deutsch", href: familyLecture.path,
         action: "Kostenlos zum Vortrag anmelden" },

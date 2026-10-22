@@ -69,7 +69,7 @@ const intents = [
         priority: 60,
         terms: ["mitgliederbereich", "mediathek", "was ist enthalten", "was finde ich", "kostenloser zugang", "kostenlose inhalte", "aufzeichnung", "workbook", "meditationen"],
         answer: {
-            text: "Im kostenlosen Mitgliederbereich findest du drei geführte Meditationen – „Loslassen & Reinigen“, „Wiedergeburt“ und „Ich bin Licht“ –, die Aufzeichnung „Wer entscheidet eigentlich dein Leben?“ und das begleitende Workbook.",
+            text: "Im kostenlosen Mitgliederbereich findest du die beiden Oktober-Vorträge „Wer schreibt dein inneres Drehbuch?“ und „Eine Stufe tiefer: Deine inneren Anteile“, das Workbook „Eine neue Perspektive“ und die Meditation „Das Geschenk deines Anteils“. Der ältere Vortrag „Wer entscheidet eigentlich dein Leben?“ und die Meditationen „Loslassen & Reinigen“ und „Wiedergeburt“ bleiben ebenfalls in der Mediathek.",
             links: [{ label: "Zur kostenlosen Mediathek", href: `${SITE}/mitglieder` }],
         },
     },
@@ -78,16 +78,16 @@ const intents = [
         priority: 72,
         terms: ["wie lang ist der vortrag", "61 minuten", "wie viele seiten", "neun seiten", "9 seiten", "vertiefung", "premium inhalte", "premium bereich", "premium mitglied", "was kommt noch"],
         answer: {
-            text: "Der Vortrag im Mitgliederbereich dauert 61 Minuten. Das dazugehörige Workbook umfasst neun Seiten mit Reflexionsfragen und Übungen zur Selbstführung. Weitere Prozess-Meditationen, vertiefende Vorträge und besondere Live-Räume sind im Bereich „Vertiefung“ in Vorbereitung.",
+            text: "Der erste Oktober-Vortrag dauert 90 Minuten, der zweite 82 Minuten. Dazu gehören das vierseitige Workbook „Eine neue Perspektive“ und die 32-minütige Meditation „Das Geschenk deines Anteils“. Der ältere Vortrag und sein neunseitiges Workbook bleiben weiterhin verfügbar. Weitere Inhalte werden im Bereich „Vertiefung“ vorbereitet.",
             links: [{ label: "Inhalte im Mitgliederbereich ansehen", href: `${SITE}/mitglieder` }],
         },
     },
     {
         id: "meditation_difference",
         priority: 68,
-        terms: ["unterschied meditationen", "unterschied zwischen den meditationen", "welche meditation", "loslassen und reinigen", "wiedergeburt meditation", "meditation passt"],
+        terms: ["unterschied meditationen", "unterschied zwischen den meditationen", "welche meditation", "loslassen und reinigen", "wiedergeburt meditation", "geschenk deines anteils", "meditation passt"],
         answer: {
-            text: "„Loslassen & Reinigen“ begleitet bewusstes Loslassen und inneres Reinigen. „Wiedergeburt“ ist für Übergänge und einen neuen inneren Beginn gedacht. „Ich bin Licht“ verbindet dich mit deiner eigenen Lichtquelle, deinem zukünftigen Selbst und deiner inneren Kraft. Alle drei Meditationen sind im kostenlosen Mitgliederbereich verfügbar.",
+            text: "„Das Geschenk deines Anteils“ gehört zum zweiten Oktober-Vortrag. Du begegnest darin einem Anteil in einem geschützten inneren Raum und schaust, was er braucht und welches Geschenk er für dich trägt. „Loslassen & Reinigen“ und „Wiedergeburt“ stehen zusätzlich in der kostenlosen Mediathek.",
             links: [{ label: "Meditationen öffnen", href: `${SITE}/mitglieder` }],
         },
     },
@@ -96,7 +96,7 @@ const intents = [
         priority: 70,
         terms: ["meditation herunterladen", "mp3 herunterladen", "workbook herunterladen", "download", "offline hören", "offline hoeren"],
         answer: {
-            text: "Im Mitgliederbereich kannst du das Workbook herunterladen. Auch die beiden Meditationen lassen sich direkt anhören und als MP3 speichern, sobald du angemeldet bist.",
+            text: "Im Mitgliederbereich kannst du beide Workbooks herunterladen. Die Meditationen lassen sich nach der Anmeldung direkt öffnen; „Loslassen & Reinigen“ und „Wiedergeburt“ können zusätzlich als MP3 gespeichert werden.",
             links: [{ label: "Mitgliederbereich öffnen", href: `${SITE}/mitglieder` }],
         },
     },
@@ -620,19 +620,19 @@ const turkishContent = {
     },
     member_content: {
         terms: ["üye alanı", "uye alani", "üyelik alanı", "uyelik alani", "içinde ne var", "icinde ne var", "ücretsiz içerik", "ucretsiz icerik", "meditasyon", "kayıt", "kayit", "çalışma kitabı", "calisma kitabi"],
-        text: "Ücretsiz üye alanında “Bırakmak ve Arınmak”, “Yeniden Doğuş” ve “Ben Işığım” adlı üç rehberli meditasyon, “Hayatına aslında kim karar veriyor?” sunumunun kaydı ve ona eşlik eden çalışma kitabı bulunuyor.",
+        text: "Ücretsiz üye alanında iki Ekim semineri “İçsel senaryonu kim yazıyor?” ve “Bir katman daha derine: İçsel parçaların”, “Yeni bir bakış açısı” çalışma kitabı ve “İçsel parçanın armağanı” meditasyonu bulunuyor. Önceki seminer ile “Bırakmak ve Arınmak” ve “Yeniden Doğuş” meditasyonları da içerik alanında kalıyor.",
     },
     member_details: {
         terms: ["sunum ne kadar uzun", "sunum kaç dakika", "sunum kac dakika", "61 dakika", "kaç sayfa", "kac sayfa", "dokuz sayfa", "9 sayfa", "derinleşme", "derinlesme", "premium içerik", "premium icerik", "premium alan", "daha neler gelecek"],
-        text: "Üye alanındaki sunum 61 dakikadır. Ona eşlik eden çalışma kitabı, öz liderlik için düşünme soruları ve egzersizler içeren dokuz sayfadan oluşur. Yeni süreç meditasyonları, derinleştirici sunumlar ve özel canlı buluşmalar “Derinleşme” alanında hazırlanmaktadır.",
+        text: "İlk Ekim semineri 90, ikinci seminer 82 dakikadır. Bunlara dört sayfalık “Yeni bir bakış açısı” çalışma kitabı ve 32 dakikalık “İçsel parçanın armağanı” meditasyonu eşlik eder. Önceki seminer ile dokuz sayfalık çalışma kitabı da erişime açık kalır. Diğer içerikler “Derinleşme” alanında hazırlanmaktadır.",
     },
     meditation_difference: {
-        terms: ["meditasyonların farkı", "meditasyonlarin farki", "meditasyonun farkı", "meditasyonun farki", "hangi meditasyon", "bırakmak ve arınmak", "birakmak ve arinmak", "yeniden doğuş meditasyonu", "yeniden dogus meditasyonu"],
-        text: "“Bırakmak ve Arınmak” bilinçli bırakma ve içsel arınmaya eşlik eder. “Yeniden Doğuş” geçiş ve yeni bir içsel başlangıç içindir. “Ben Işığım” seni kendi ışık kaynağınla, gelecekteki benliğinle ve içsel gücünle buluşturur. Üç meditasyon da ücretsiz üye alanında bulunur.",
+        terms: ["meditasyonların farkı", "meditasyonlarin farki", "meditasyonun farkı", "meditasyonun farki", "hangi meditasyon", "bırakmak ve arınmak", "birakmak ve arinmak", "yeniden doğuş meditasyonu", "yeniden dogus meditasyonu", "içsel parçanın armağanı"],
+        text: "“İçsel parçanın armağanı” ikinci Ekim seminerine eşlik eder. Korunaklı bir iç alanda bir parçanla buluşur, neye ihtiyaç duyduğuna ve senin için hangi armağanı taşıdığına bakarsın. “Bırakmak ve Arınmak” ve “Yeniden Doğuş” meditasyonları da ücretsiz içerik alanında bulunur.",
     },
     member_downloads: {
         terms: ["meditasyon indir", "mp3 indir", "mp3 olarak indir", "çalışma kitabını indir", "calisma kitabini indir", "indirme", "çevrimdışı", "cevrimdisi"],
-        text: "Giriş yaptıktan sonra çalışma kitabını üye alanından indirebilirsin. Üç meditasyonu doğrudan dinlemek ve MP3 olarak kaydetmek de mümkündür.",
+        text: "Giriş yaptıktan sonra iki çalışma kitabını üye alanından indirebilirsin. Meditasyonları doğrudan açabilir, “Bırakmak ve Arınmak” ve “Yeniden Doğuş” meditasyonlarını ayrıca MP3 olarak kaydedebilirsin.",
     },
     event_recording: {
         terms: ["hayatına kim karar", "hayatina kim karar", "sunum kaydı", "sunum kaydi", "konferans kaydı", "konferans kaydi", "sunumu izle", "canlı yayın", "canli yayin"],
