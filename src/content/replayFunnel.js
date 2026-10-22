@@ -5,7 +5,7 @@ export const replayFunnel = Object.freeze({
     path: "/live-vortrag/aufzeichnung", title: "Wer schreibt dein inneres Drehbuch?",
     image: "/images/live-drehbuch-2026-10-06.jpg",
     workbook: "/downloads/Spirit-Healing-Workbook-Eine-neue-Perspektive.pdf",
-    videoUrl: "https://player.vimeo.com/video/1233482544?dnt=1", nextLivePath: "/live-vortrag/20-oktober", nextLiveStartsAt: "2026-10-20T18:00:00Z",
+    videoUrl: "https://player.vimeo.com/video/1233482544?h=c4a2a93ada&dnt=1", nextLivePath: "/live-vortrag/20-oktober", nextLiveStartsAt: "2026-10-20T18:00:00Z",
 });
 export const berlinDate = (now = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
 // Weekly live evenings confirmed by Sabine on 6 October 2026; German local time.

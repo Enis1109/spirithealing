@@ -16,7 +16,7 @@ export const octoberLibrary = {
             tr: "1. seminer · 6 Ekim 2026 · 90 dk.",
         },
         image: "/images/library-20261022/vortrag-inneres-drehbuch.png",
-        watchUrl: "https://vimeo.com/1233482544",
+        embedUrl: "https://player.vimeo.com/video/1233482544?h=c4a2a93ada&dnt=1",
         workbookUrl: "/downloads/Spirit-Healing-Workbook-Eine-neue-Perspektive.pdf",
         available: true,
     },

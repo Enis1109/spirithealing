@@ -50,7 +50,7 @@ test("thirteen Wednesday evenings appear once in both calendar views through 3 F
 test("workbook and photo exist; approved Vimeo recording uses privacy mode", () => {
     assert.equal(readFileSync(new URL(`../public${replayFunnel.workbook}`, import.meta.url)).subarray(0, 5).toString(), "%PDF-");
     assert.ok(readFileSync(new URL(`../public${replayFunnel.image}`, import.meta.url)).length > 1000);
-    assert.equal(replayFunnel.videoUrl, "https://player.vimeo.com/video/1233482544?dnt=1");
+    assert.equal(replayFunnel.videoUrl, "https://player.vimeo.com/video/1233482544?h=c4a2a93ada&dnt=1");
     const app = readFileSync(new URL("../src/App.jsx", import.meta.url), "utf8");
     assert.match(app, /location.pathname === "\/"/);
     assert.match(app, /live-vortrag\/aufzeichnung\$\{location.search\}/);
