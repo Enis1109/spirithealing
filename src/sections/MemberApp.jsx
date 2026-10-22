@@ -740,7 +740,15 @@ export const MemberApp = ({
                             />
                         </div>
                     )}
-                    {activeItem.type === "talk" && !activeItem.embedUrl && (
+                    {activeItem.watchUrl && (
+                        <div className="border-t border-[#c7dfdb] bg-[#f3faf8] p-6 sm:p-8">
+                            <a href={activeItem.watchUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center gap-3 rounded-full bg-[#168e91] px-6 py-3 font-bold text-white">
+                                <PlayCircle className="h-5 w-5" />{language === "tr" ? "Kaydı Vimeo’da izle" : "Aufzeichnung auf Vimeo ansehen"}<ExternalLink className="h-4 w-4" />
+                            </a>
+                            <p className="mt-3 text-sm leading-6 text-[#547875]">{language === "tr" ? "Video yeni bir sekmede açılır. Çalışma kitabı burada açık kalır." : "Die Aufzeichnung öffnet sich in einem neuen Tab. Das Workbook bleibt hier für dich geöffnet."}</p>
+                        </div>
+                    )}
+                    {activeItem.type === "talk" && !activeItem.embedUrl && !activeItem.watchUrl && (
                         <video className="aspect-video w-full bg-black" controls playsInline preload="metadata" controlsList="nodownload" src={activeItem.mediaUrl}>
                             <track kind="captions" />
                         </video>
