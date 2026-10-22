@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getUpcomingMemberEvents } from "@/content/memberEvents";
+import { octoberLibrary } from "@/content/memberLibrary";
 
 const bookingLinks = {
     introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
@@ -59,8 +60,8 @@ const appCopy = {
         heroEyebrow: "Dein nächster Schritt",
         heroTitle: "Nimm dir heute Zeit für das, was in dir gehört werden möchte.",
         heroText: "Deine Inhalte bleiben an einem Ort. Du kannst jederzeit zurückkehren und in deinem eigenen Tempo weitergehen.",
-        continue: "Vortrag weiter ansehen",
-        begin: "Mit dem Vortrag beginnen",
+        continue: "Hier weitermachen",
+        begin: "Inhalt öffnen",
         libraryTitle: "Deine Mediathek",
         libraryIntro: "Meditationen, Vorträge und Workbooks für deine persönliche Weiterarbeit.",
         showAll: "Alle Inhalte",
@@ -376,9 +377,9 @@ const ContentCard = ({
 
     return (
         <article className="group overflow-hidden rounded-[1.7rem] border border-[#b8d9d4] bg-white shadow-[0_18px_50px_rgba(28,96,91,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(28,96,91,0.13)]">
-            <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#dff3ef,#f8f0df)]">
+            <div className={`relative flex ${item.type === "meditation" ? "aspect-square" : "aspect-video"} items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#dff3ef,#f8f0df)]`}>
                 {item.image ? (
-                    <img src={item.image} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                    <img src={item.image} alt="" className={`h-full w-full ${item.imageFit === "contain" ? "object-contain" : "object-cover"} transition duration-500 group-hover:scale-[1.03]`} />
                 ) : (
                     <Icon className="h-16 w-16 text-[#187f7d]/55" aria-hidden="true" />
                 )}
@@ -442,6 +443,7 @@ export const MemberApp = ({
     const requestedView = new URLSearchParams(window.location.search).get("tab");
     const [activeView, setActiveView] = useState(allowedViews.has(requestedView) ? requestedView : "home");
     const [activeFilter, setActiveFilter] = useState("all");
+    const [librarySearch, setLibrarySearch] = useState("");
     const [activeItem, setActiveItem] = useState(null);
     const [installPrompt, setInstallPrompt] = useState(null);
     const [funnelSummary, setFunnelSummary] = useState(null);
@@ -471,10 +473,14 @@ export const MemberApp = ({
     }, [member?.role]);
 
     const items = useMemo(() => ([
-        { ...contentDefinitions.talk, available: recordingAvailable, mediaUrl: recordingEmbedUrl || "/api/members/recording" },
+        { ...octoberLibrary.secondTalk, icon: PlayCircle },
+        { ...octoberLibrary.firstTalk, icon: PlayCircle },
+        { ...contentDefinitions.talk, meta: "26. Juli 2026 · 61 Min.", available: recordingAvailable, embedUrl: recordingEmbedUrl, mediaUrl: recordingEmbedUrl || "/api/members/recording" },
+        { ...octoberLibrary.meditation, icon: Headphones },
         { ...contentDefinitions.loslassen, available: meditations.loslassenAvailable, mediaUrl: "/api/members/meditations/loslassen", downloadUrl: "/api/members/meditations/loslassen?download=1" },
         { ...contentDefinitions.wiedergeburt, available: meditations.wiedergeburtAvailable, mediaUrl: "/api/members/meditations/wiedergeburt", downloadUrl: "/api/members/meditations/wiedergeburt?download=1" },
         { ...contentDefinitions.workbook, available: workbookAvailable, downloadUrl: "/api/members/workbook" },
+        { ...octoberLibrary.workbook, icon: FileText },
         { ...contentDefinitions.deepening, available: false },
     ]), [meditations, recordingAvailable, recordingEmbedUrl, workbookAvailable]);
 
@@ -482,6 +488,8 @@ export const MemberApp = ({
     const favoriteCount = Object.values(contentState).filter((entry) => entry.favorite).length;
     const completedCount = Object.values(contentState).filter((entry) => entry.progress === "completed").length;
     const filteredItems = items.filter((item) => {
+        const query = librarySearch.trim().toLocaleLowerCase(language);
+        if (query && !`${localized(item.title, language)} ${localized(item.description, language)} ${localized(item.meta, language)}`.toLocaleLowerCase(language).includes(query)) return false;
         if (activeFilter === "all") return true;
         if (activeFilter === "favorites") return Boolean(contentState[item.key]?.favorite);
         if (activeFilter === "completed") return contentState[item.key]?.progress === "completed";
@@ -719,11 +727,11 @@ export const MemberApp = ({
                             <Heart className={`h-5 w-5 ${contentState[activeItem.key]?.favorite ? "fill-[#d3a831] text-[#d3a831]" : ""}`} />
                         </button>
                     </div>
-                    {activeItem.type === "talk" && recordingEmbedUrl && (
+                    {activeItem.embedUrl && (
                         <div className="aspect-video w-full bg-black">
                             <iframe
                                 className="h-full w-full"
-                                src={recordingEmbedUrl}
+                                src={activeItem.embedUrl}
                                 title={localized(activeItem.title, language)}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen
@@ -732,12 +740,12 @@ export const MemberApp = ({
                             />
                         </div>
                     )}
-                    {activeItem.type === "talk" && !recordingEmbedUrl && (
+                    {activeItem.type === "talk" && !activeItem.embedUrl && (
                         <video className="aspect-video w-full bg-black" controls playsInline preload="metadata" controlsList="nodownload" src={activeItem.mediaUrl}>
                             <track kind="captions" />
                         </video>
                     )}
-                    {activeItem.type === "meditation" && (
+                    {activeItem.type === "meditation" && !activeItem.embedUrl && (
                         <div className="border-t border-[#c7dfdb] bg-[#f3faf8] p-6 sm:p-8">
                             <audio className="w-full" controls autoPlay preload="metadata" src={activeItem.mediaUrl} />
                             {activeItem.downloadUrl && (
@@ -754,6 +762,7 @@ export const MemberApp = ({
                             </a>
                         </div>
                     )}
+                    {activeItem.workbookUrl && <div className="border-t border-[#c7dfdb] bg-[#f3faf8] p-6 sm:p-8"><a href={activeItem.workbookUrl} download className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#168e91] px-5 py-3 font-bold text-white"><Download className="h-4 w-4" />{language === "tr" ? "Çalışma kitabını indir" : "Workbook zum Vortrag herunterladen"}</a></div>}
                     <div className="grid gap-5 border-t border-[#c7dfdb] bg-[#fffaf0] p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
                         <div>
                             <h3 className="font-serif text-2xl font-bold text-[#123e3d]">{copy.reflectionTitle}</h3>
@@ -771,15 +780,22 @@ export const MemberApp = ({
                 </section>
             )}
 
-            <div className="mt-8 flex gap-2 overflow-x-auto pb-2">
+            <label className="mt-8 block max-w-xl text-sm font-bold text-[#315b58]">{language === "tr" ? "İçerik ara" : "Inhalte suchen"}<input type="search" value={librarySearch} onChange={event => setLibrarySearch(event.target.value)} placeholder={language === "tr" ? "Başlık, konu veya tarih" : "Titel, Thema oder Datum"} className="mt-2 min-h-12 w-full rounded-2xl border border-[#b8d9d4] bg-white px-4 py-3 font-normal outline-none focus:ring-2 focus:ring-[#168e91]" /></label>
+            <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
                 {Object.entries(typeLabels(copy)).map(([type, label]) => (
-                    <button key={type} type="button" onClick={() => setActiveFilter(type)} className={`min-h-10 shrink-0 rounded-full px-4 py-2 text-sm font-bold ${activeFilter === type ? "bg-[#168e91] text-white" : "border border-[#b8d9d4] bg-white text-[#456b68]"}`}>
+                    <button key={type} type="button" aria-pressed={activeFilter === type} onClick={() => setActiveFilter(type)} className={`min-h-10 shrink-0 rounded-full px-4 py-2 text-sm font-bold ${activeFilter === type ? "bg-[#168e91] text-white" : "border border-[#b8d9d4] bg-white text-[#456b68]"}`}>
                         {label}
                     </button>
                 ))}
             </div>
-            <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {filteredItems.map((item) => (
+            {(activeFilter === "all" ? ["talk", "meditation", "workbook"] : [activeFilter]).map(group => {
+                const groupItems = activeFilter === "all" ? filteredItems.filter(item => item.type === group && item.status !== "soon") : filteredItems;
+                if (!groupItems.length) return null;
+                const heading = { talk: copy.talks, meditation: copy.meditations, workbook: copy.workbooks }[group];
+                return <section key={group} className="mt-9" aria-label={heading || copy.libraryTitle}>
+                {activeFilter === "all" && <div className="mb-5 flex items-center gap-3"><h2 className="font-serif text-3xl font-bold text-[#123e3d]">{heading}</h2><span className="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#547875]">{groupItems.length}</span></div>}
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {groupItems.map((item) => (
                     <ContentCard
                         key={item.key}
                         item={item}
@@ -791,7 +807,8 @@ export const MemberApp = ({
                         onFavorite={toggleFavorite}
                     />
                 ))}
-            </div>
+                </div></section>;
+            })}
             {filteredItems.length === 0 && (
                 <div className="mt-5 rounded-[2rem] border border-dashed border-[#9bcac3] bg-white/65 p-8 text-center text-[#547875]">
                     {copy.emptySelection}
@@ -840,7 +857,7 @@ export const MemberApp = ({
                     <div className="p-6 sm:p-8">
                         <p className="text-sm font-bold text-[#f1d277]">26. Juli 2026 · 61 Min.</p>
                         <h3 className="mt-2 font-serif text-3xl font-bold">{localized(contentDefinitions.talk.title, language)}</h3>
-                        <button type="button" onClick={() => openItem(items[0])} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 font-bold text-[#123e3d]">
+                        <button type="button" onClick={() => openItem(items.find(item => item.key === contentDefinitions.talk.key))} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 font-bold text-[#123e3d]">
                             {copy.eventArchive}<PlayCircle className="h-5 w-5" />
                         </button>
                     </div>
