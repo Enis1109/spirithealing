@@ -19,6 +19,15 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+// Bound admin resend requests without changing existing registration mail.
+const accessResendTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.hostinger.com",
+    port: Number(process.env.SMTP_PORT || 465),
+    secure: String(process.env.SMTP_SECURE ?? "true") !== "false",
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+    connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000,
+});
+
 const notificationRecipient = process.env.CONTACT_NOTIFICATION_TO || "info@spirit-healing.tr";
 
 // Submission is already durable when these messages are sent. Keep SMTP stalls
@@ -200,6 +209,7 @@ export const sendMemberAccessEmail = async ({
     accessUrl,
     newsletterConsent,
     newsletterOfferUrl,
+    includeNewsletterOffer = true,
 }) => {
     const isTurkish = locale === "tr";
     const subject = isTurkish
@@ -222,11 +232,14 @@ export const sendMemberAccessEmail = async ({
         ? "Bu erişimi sen istemediysen e-postayı görmezden gelebilirsin."
         : "Falls du diesen Zugang nicht angefordert hast, kannst du diese E-Mail ignorieren.";
 
-    const textLines = [greeting, "", intro, "", accessUrl, "", newsletterText];
-    if (!newsletterConsent) textLines.push(newsletterOfferUrl);
+    const textLines = [greeting, "", intro, "", accessUrl];
+    if (includeNewsletterOffer) {
+        textLines.push("", newsletterText);
+        if (!newsletterConsent) textLines.push(newsletterOfferUrl);
+    }
     textLines.push("", ignore);
 
-    await transporter.sendMail({
+    const delivery = await (includeNewsletterOffer ? transporter : accessResendTransporter).sendMail({
         from: process.env.SMTP_FROM,
         to: email,
         replyTo: notificationRecipient,
@@ -245,10 +258,10 @@ export const sendMemberAccessEmail = async ({
                         <p style="margin:0 0 30px;text-align:center">
                             <a href="${escapeHtml(accessUrl)}" style="display:inline-block;border-radius:999px;background:#d4af37;padding:14px 24px;color:#034f52;text-decoration:none;font-size:16px;font-weight:700">${escapeHtml(accessButton)}</a>
                         </p>
-                        <div style="border-top:1px solid #d8e3df;padding-top:24px">
+                        ${includeNewsletterOffer ? `<div style="border-top:1px solid #d8e3df;padding-top:24px">
                             <p style="margin:0 0 16px">${escapeHtml(newsletterText)}</p>
                             ${newsletterConsent ? "" : `<p style="margin:0"><a href="${escapeHtml(newsletterOfferUrl)}" style="display:inline-block;border:1px solid #087478;border-radius:999px;padding:11px 18px;color:#075f62;text-decoration:none;font-weight:700">${escapeHtml(newsletterButton)}</a></p>`}
-                        </div>
+                        </div>` : ""}
                         <p style="margin:26px 0 0;font-size:13px;color:#557072">${escapeHtml(ignore)}</p>
                         <p style="margin:24px 0 0;font-size:14px;color:#557072">Herzlich · Sevgiler<br><strong>Sabine &amp; Selcan</strong><br>Spirit Healing</p>
                     </div>
@@ -256,6 +269,7 @@ export const sendMemberAccessEmail = async ({
             </div>
         `,
     });
+    return { accepted: delivery.accepted || [], rejected: delivery.rejected || [], sender: process.env.SMTP_FROM };
 };
 
 export const sendMemberPasswordResetEmail = async ({ name, email, locale, resetUrl }) => {

@@ -281,6 +281,30 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
         }
     };
 
+    const resendAccessEmail = async (member) => {
+        if (!window.confirm(`Zugangs-E-Mail erneut an ${member.email} senden? Einwilligungen, Passwort und Programmzugänge bleiben unverändert.`)) return;
+        setBusyKey(`access-email-${member.email}`);
+        setNotice(null);
+        try {
+            const result = await requestJson("/api/admin/members/access-email/resend", {
+                method: "POST", body: JSON.stringify({ email: member.email }),
+            });
+            const sender = result.delivery.sender ? ` Absender: ${result.delivery.sender}.` : "";
+            setNotice({ type: "success", text: `Die Zugangs-E-Mail wurde erneut an ${result.delivery.email} gesendet (${formatDate(result.delivery.sentAt)}).${sender} Es wurden keine Einwilligungen oder Zugangsrechte geändert.` });
+        } catch (error) {
+            const messages = {
+                recent_access_request: "Für dieses Konto wurde in den letzten fünf Minuten bereits ein Link angefordert. Bitte nicht sofort erneut senden.",
+                rate_limit: "Bitte warte einige Minuten, bevor du weitere Zugangs-E-Mails sendest.",
+                member_not_found: "Dieses Mitgliederkonto wurde nicht gefunden. Bitte lade die Übersicht neu.",
+                account_unavailable: "Für dieses Konto kann keine Zugangs-E-Mail gesendet werden. Sein Status bleibt unverändert.",
+                delivery_unconfirmed: "Der E-Mail-Versand konnte nicht bestätigt werden. Bitte nicht sofort erneut senden; ein möglicherweise zugestellter Link bleibt gültig.",
+            };
+            setNotice({ type: "error", text: messages[error.code] || "Die Zugangs-E-Mail konnte nicht bestätigt werden. Bitte nicht sofort erneut senden." });
+        } finally {
+            setBusyKey("");
+        }
+    };
+
     const copyDirectAccess = async () => {
         if (!directAccess?.url) return;
         try {
@@ -387,6 +411,11 @@ export const AdminPrograms = ({ requestJson, setNotice }) => {
                                         {member.memberStatus !== "active" && <p className="mt-1 text-xs font-bold text-amber-700">Mitgliederkonto noch nicht bestätigt</p>}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
+                                        {["pending", "active"].includes(member.memberStatus) && (
+                                            <button type="button" disabled={Boolean(busyKey)} onClick={() => resendAccessEmail(member)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#0f8b8d]/30 bg-white px-4 text-sm font-bold text-[#0f8b8d] disabled:opacity-60">
+                                                {busyKey === `access-email-${member.email}` ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}Zugangs-E-Mail neu senden
+                                            </button>
+                                        )}
                                         {active && member.memberStatus === "active" && (
                                             <button type="button" disabled={busyKey === `direct-${member.email}`} onClick={() => createDirectAccess(member.email)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[#eaf4f1] px-4 text-sm font-bold text-[#0f8b8d] disabled:opacity-60">
                                                 {busyKey === `direct-${member.email}` ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}Direktlink erstellen

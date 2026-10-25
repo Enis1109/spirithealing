@@ -40,6 +40,7 @@ import {
     updateMemberContentState,
 } from "./server/members.js";
 import { resolveMemberAccessRedirect } from "./server/memberAccessPaths.js";
+import { createMemberAccessResendService, registerMemberAccessResendRoutes } from "./server/memberAccessResend.js";
 import {
     acceptNewsletterOffer,
     confirmNewsletterSubscription,
@@ -264,6 +265,14 @@ const authenticationLimiter = rateLimit({
     message: { ok: false, error: "rate_limit" },
 });
 
+const memberAccessEmailLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 12,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { ok: false, error: "rate_limit" },
+});
+
 const analyticsLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 120,
@@ -304,6 +313,11 @@ const getAdminMember = async (request, response) => {
 };
 
 const experienceEnabled = process.env.EXPERIENCE_GROUP_ENABLED === 'true';
+const memberAccessResendService = createMemberAccessResendService({
+    db: database, sendEmail: sendMemberAccessEmail, baseUrl: productionOrigin,
+});
+registerMemberAccessResendRoutes(app, { service: memberAccessResendService,
+    getMember: getMemberFromRequest, sameOrigin: adminSameOriginOnly, limiter: memberAccessEmailLimiter });
 const closingEnabled = process.env.ZEPTER_CLOSING_ENABLED !== 'false';
 const closingService = createClosingService({ db: database, sendNotification: sendClosingNotification, sendConfirmation: sendClosingConfirmation });
 registerClosingRoutes(app, { service: closingService, enabled: closingEnabled, getMember: getMemberFromRequest,
