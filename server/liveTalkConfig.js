@@ -33,6 +33,30 @@ export const liveTalk2 = Object.freeze({
     ]),
 });
 
+export const liveTalk3 = Object.freeze({
+    key: "live-drehbuch-2026-11-03",
+    requiresRecordingNotice: true,
+    title: "Noch tiefer: Deine inneren Anteile verstehen",
+    startsAt: "2026-11-03T19:00:00.000Z",
+    // Access cutoff, not an advertised duration. No end time has been promised.
+    endsAt: "2026-11-03T23:00:00.000Z",
+    timeZone: "Europe/Berlin",
+    capacity: 98,
+    label: "Dienstag, 3. November 2026, um 20 Uhr deutscher Zeit",
+    privacyVersion: "live-vortrag-2026-09-22",
+    deleteAfter: "2027-02-01T23:00:00.000Z",
+    accessPath: "/live-vortrag/3-november/zugang",
+    confirmationSubject: "Deine Anmeldung: dritter Live-Vortrag am 3. November",
+    calendarStamp: "20261022T000000Z",
+    openEnd: true,
+    reminders: Object.freeze([
+        { kind: "two_days", dueAt: "2026-11-01T10:00:00.000Z", expiresAt: "2026-11-01T22:00:00.000Z" },
+        { kind: "day", dueAt: "2026-11-02T19:00:00.000Z", expiresAt: "2026-11-02T23:00:00.000Z" },
+        { kind: "morning", dueAt: "2026-11-03T07:00:00.000Z", expiresAt: "2026-11-03T11:00:00.000Z" },
+        { kind: "hour", dueAt: "2026-11-03T18:00:00.000Z", expiresAt: "2026-11-03T19:00:00.000Z" },
+    ]),
+});
+
 export const liveTalkFamily = Object.freeze({
     ...familyLecture, capacity: 98, openEnd: true,
     privacyVersion: "family-live-2026-10-16", requiresRecordingNotice: true,
@@ -114,7 +138,7 @@ const foldIcs = (line) => {
 const icsDate = value => new Date(value).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 export const liveCalendar = (joinUrl, event = liveTalk) => [
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Spirit Healing//Live Vortrag//DE", "METHOD:PUBLISH",
-    "BEGIN:VEVENT", `UID:${event.key}@spirit-healing.tr`, "DTSTAMP:20261006T000000Z",
+    "BEGIN:VEVENT", `UID:${event.key}@spirit-healing.tr`, `DTSTAMP:${event.calendarStamp || "20261006T000000Z"}`,
     `DTSTART:${icsDate(event.startsAt)}`, ...(!event.openEnd ? [`DTEND:${icsDate(event.endsAt)}`] : []),
     `SUMMARY:${escapeIcs(event.title)}`, `LOCATION:${escapeIcs(joinUrl)}`,
     `DESCRIPTION:${escapeIcs("Mit Sabine und Selcan. Auf Deutsch. Dein Zoom-Zugang: " + joinUrl)}`,
@@ -154,6 +178,38 @@ export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl,
             "Wenn du Zoom lieber manuell öffnest:", `Meeting-ID: ${meetingId}`, `Kenncode: ${passcode}`, "",
             "Dein Mikrofon bleibt zunächst stumm. Du brauchst keine Vorkenntnisse und musst den ersten Vortrag nicht gesehen haben.", "",
             ...(kind === "two_days" || kind === "day" ? ["Falls du die Aufzeichnung oder dein Workbook noch einmal öffnen möchtest:", "https://spirit-healing.tr/live-vortrag/aufzeichnung", ""] : []),
+            "Bitte gib deinen Zoom-Zugang nicht öffentlich weiter.", "", "Von Herzen", "Sabine & Selcan", "Spirit Healing", "",
+            "Anmeldung ansehen oder absagen:", manageUrl, "",
+            "Du erhältst diese Erinnerung zu deiner Vortragsanmeldung. Eine Newsletter-Anmeldung ist dafür nicht nötig.",
+            "Bei Fragen: info@spirit-healing.tr",
+        ].join("\n") };
+    }
+    if (event.key === liveTalk3.key && kind !== "confirmation") {
+        const variants = {
+            two_days: { subject: "Am Dienstag sehen wir uns: unser dritter Live-Abend", paragraphs: [
+                "am Dienstag, 3. November, um 20 Uhr deutscher Zeit treffen wir uns zu unserem dritten Live-Abend. Wir freuen uns darauf, mit euch noch tiefer in die Welt der inneren Anteile einzusteigen.",
+                "Vielleicht ist dir seit unserem letzten Abend ein Anteil begegnet, den du deutlicher wahrnimmst. Vielleicht ist eine Frage geblieben. Du musst nichts fertig bearbeitet haben. Bring einfach mit, was sich dir gezeigt hat.",
+            ] },
+            day: { subject: "Morgen um 20 Uhr: Wir gehen noch tiefer", paragraphs: [
+                "morgen Abend um 20 Uhr deutscher Zeit sehen wir uns zu unserem dritten Live.",
+                "Wir führen die Gedanken aus den ersten beiden Abenden weiter, nehmen uns Zeit für eure Fragen und schließen den gemeinsamen Abend mit einer Meditation ab.",
+            ] },
+            morning: { subject: "Heute Abend ist es so weit: unser dritter Live-Abend", paragraphs: [
+                "heute Abend um 20 Uhr deutscher Zeit beginnt unser dritter Live-Abend. Schön, dass du dabei bist.",
+                "Leg dir gern etwas zum Schreiben bereit. Du darfst mit einer Beobachtung oder einer Frage kommen und genauso gut einfach zuhören und erleben, was sich für dich zeigt.",
+            ] },
+            hour: { subject: "In einer Stunde geht es los: dein Zoom-Zugang", paragraphs: [
+                "in einer Stunde, um 20 Uhr deutscher Zeit, beginnt unser dritter Live-Abend. Wir freuen uns darauf, dich gleich zu sehen.",
+                "Über den folgenden Link kommst du direkt in unseren Zoom-Raum. Dein Mikrofon bleibt beim Betreten zunächst stumm. Deine Kamera darf gern eingeschaltet sein.",
+            ] },
+        };
+        const copy = variants[kind];
+        if (!copy) throw new Error("Unknown third-live reminder kind");
+        return { subject: copy.subject, text: [
+            `Hallo ${name},`, "", ...copy.paragraphs.flatMap(p => [p, ""]),
+            event.title, event.label, "auf Deutsch · kostenlos", "",
+            "Dein Zoom-Zugang:", joinUrl, "",
+            "Wenn du Zoom lieber manuell öffnest:", `Meeting-ID: ${meetingId}`, `Kenncode: ${passcode}`, "",
             "Bitte gib deinen Zoom-Zugang nicht öffentlich weiter.", "", "Von Herzen", "Sabine & Selcan", "Spirit Healing", "",
             "Anmeldung ansehen oder absagen:", manageUrl, "",
             "Du erhältst diese Erinnerung zu deiner Vortragsanmeldung. Eine Newsletter-Anmeldung ist dafür nicht nötig.",

@@ -30,6 +30,11 @@ const rauhnaechteImage = {
 
 export const pageMeta = {
   de: {
+    "/live-vortrag/3-november/zugang": { title: "Dein dritter Live-Abend | Spirit Healing", description: "Persönlicher Zugang zum dritten Vortrag.", noindex: true },
+    "/live-vortrag/3-november": {
+      title: "Dritter Live-Vortrag am 3. November | Spirit Healing",
+      description: "Innere Anteile und vertraute Rollen verstehen: kostenloser Live-Abend zum 13-Wochen-Programm mit Sabine und Selcan am 3. November um 20 Uhr.",
+    },
     "/": {
       title: "Traumasensible Online-Begleitung | Spirit Healing",
       description: "Traumasensible Prozessbegleitung und integrative Therapie online mit Sabine und Selcan. Schutzmuster verstehen und wieder mehr innere Sicherheit entwickeln.",
@@ -233,6 +238,7 @@ export const indexablePaths = Object.freeze([
   "/live-vortrag",
   "/live-vortrag/aufzeichnung",
   "/live-vortrag/20-oktober",
+  "/live-vortrag/3-november",
   "/live-vortrag/familienaufstellung",
   "/rauhnaechte",
   "/gratis-meditationen",

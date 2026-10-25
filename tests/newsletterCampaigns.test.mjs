@@ -43,14 +43,15 @@ test("overview counts only confirmed active German contacts, without exporting c
     assert.equal(result.sendingEnabled, false);
 });
 
-test("public pages use the replay popup and the homepage has no fixed notice", () => {
+test("homepage uses current live invitations and has no fixed notice", () => {
     const home = readFileSync(new URL("../src/sections/Herotest.jsx", import.meta.url), "utf8");
     const app = readFileSync(new URL("../src/App.jsx", import.meta.url), "utf8");
     const popup = readFileSync(new URL("../src/components/ReplayPopup.jsx", import.meta.url), "utf8");
     assert.doesNotMatch(home, /LiveTalkHomeNotice|LiveTalkPopup/u);
     assert.match(app, /showLiveTalkPopup && <ReplayPopup\/>/u);
     assert.match(app, /!isStandaloneApp && <WebsiteAssistant\/>/u);
-    assert.match(popup, /spirit-replay-october-popup-dismissed/u);
-    assert.match(popup, /replayFunnel\.path/u);
+    assert.match(popup, /spirit-live-invitations-2026-10-25-dismissed/u);
+    assert.match(popup, /upcomingTalks/u);
+    assert.doesNotMatch(popup, /replayFunnel\.path/u);
     assert.doesNotMatch(popup, /Türkei/u);
 });

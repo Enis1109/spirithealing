@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { liveTalk, liveTalk2, liveTalkFamily, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
+import { liveTalk, liveTalk2, liveTalk3, liveTalkFamily, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
     zoomMeetingIdFromJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
 import { liveAttributionVersion, liveAttributionEvent, liveAttributionSources,
@@ -418,4 +418,42 @@ test("expired two-day, tomorrow and morning messages are skipped, never sent tog
         await service.processMail(new Date(time));
         assert.equal(state.jobs[0].status,"skipped"); assert.equal(state.sent.length,0);
     }
+});
+
+test("third live is scheduled for 3 November at 20:00 in Berlin and 22:00 in Istanbul", () => {
+    const localTime = zone => new Intl.DateTimeFormat("de", { timeZone: zone, hour: "2-digit", minute: "2-digit" }).format(new Date(liveTalk3.startsAt));
+    assert.equal(localTime("Europe/Berlin"), "20:00");
+    assert.equal(localTime("Europe/Istanbul"), "22:00");
+    assert.equal(liveTalk3.startsAt, "2026-11-03T19:00:00.000Z");
+    assert.deepEqual(liveMailSchedule(new Date("2026-10-22T18:00:00Z"), liveTalk3).map(job => job.kind), ["confirmation", "two_days", "day", "morning", "hour"]);
+    const calendar = liveCalendar(joinUrl, liveTalk3);
+    assert.match(calendar, /DTSTART:20261103T190000Z/);
+    assert.doesNotMatch(calendar, /DTEND/);
+});
+
+test("third-live reminders contain the direct and manual Zoom access", () => {
+    for (const kind of ["two_days", "day", "morning", "hour"]) {
+        const mail = liveEmail({ name: "Test", kind, joinUrl, meetingId: "12345678901", passcode, manageUrl: "https://spirit-healing.tr/live-vortrag/3-november/zugang#token=test", event: liveTalk3 });
+        assert.match(mail.text, /3\. November/);
+        assert.ok(mail.text.includes(joinUrl));
+        assert.match(mail.text, /Meeting-ID: 12345678901/);
+        assert.match(mail.text, /Kenncode: 084526/);
+        assert.match(mail.text, /Anmeldung ansehen oder absagen/);
+    }
+});
+
+test("third-live registration has isolated access and five scheduled messages", async () => {
+    const { state, service } = fixture(liveTalk3);
+    const registrationDate = new Date("2026-10-22T18:00:00Z");
+    await service.register(form, registrationDate);
+    await service.register(form, registrationDate);
+    assert.equal(state.regs.length, 1);
+    assert.equal(state.jobs.length, 5);
+    await service.processMail(registrationDate);
+    assert.equal(state.sent.length, 1);
+    assert.equal(state.sent[0].event.key, liveTalk3.key);
+    assert.match(state.sent[0].manageUrl, /\/3-november\/zugang#token=/);
+    const token = makeLiveToken(1, secret, liveTalk3);
+    assert.equal((await service.access(token, registrationDate)).key, liveTalk3.key);
+    assert.equal(await service.access(makeLiveToken(1, secret, liveTalk2), registrationDate), null);
 });

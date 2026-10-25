@@ -22,7 +22,7 @@ import {
 } from "./server/mailer.js";
 import { createLiveTalkService, initializeLiveTalk, startLiveTalkWorker } from "./server/liveTalk.js";
 import { initializeNewsletterCampaigns, newsletterCampaignOverview } from "./server/newsletterCampaigns.js";
-import { normalizeLiveRegistration, liveTalk2, liveTalkFamily } from "./server/liveTalkConfig.js";
+import { normalizeLiveRegistration, liveTalk2, liveTalk3, liveTalkFamily } from "./server/liveTalkConfig.js";
 import { registerFamilyLectureRoutes } from "./server/familyLectureRoutes.js";
 import {
     activateMemberAccess,
@@ -180,6 +180,9 @@ const liveTalkService = createLiveTalkService({ db: database, sendMail: sendLive
 const liveTalk2Service = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
     newsletter: registerNewsletterInterest, secret: process.env.WEBINAR_TOKEN_SECRET || process.env.NEWSLETTER_TOKEN_SECRET,
     baseUrl: process.env.PUBLIC_BASE_URL || "https://spirit-healing.tr", event: liveTalk2 });
+const liveTalk3Service = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
+    newsletter: registerNewsletterInterest, secret: process.env.WEBINAR_TOKEN_SECRET || process.env.NEWSLETTER_TOKEN_SECRET,
+    baseUrl: process.env.PUBLIC_BASE_URL || "https://spirit-healing.tr", event: liveTalk3 });
 const familyLectureService = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
     newsletter: registerNewsletterInterest, secret: process.env.WEBINAR_TOKEN_SECRET || process.env.NEWSLETTER_TOKEN_SECRET,
     baseUrl: process.env.PUBLIC_BASE_URL || "https://spirit-healing.tr", event: liveTalkFamily });
@@ -495,6 +498,42 @@ app.put("/api/admin/live-talk-2", adminSameOriginOnly, async (request, response)
     if (!await getAdminMember(request, response)) return;
     response.set("Cache-Control", "no-store");
     try { await liveTalk2Service.configure(request.body || {}); return response.json({ ok: true, ...await liveTalk2Service.adminInfo() }); }
+    catch (error) { return response.status(error.code === "validation" ? 400 : 500).json({ ok: false, error: error.code === "validation" ? "validation" : "server" }); }
+});
+app.get("/api/live-talk-3", async (_request, response) => {
+    response.set("Cache-Control", "no-store");
+    try { return response.json({ ok: true, event: await liveTalk3Service.publicInfo() }); }
+    catch { return response.status(503).json({ ok: false, error: "unavailable" }); }
+});
+app.post("/api/live-talk-3/register", submissionLimiter, sameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    try { return response.status(202).json({ ok: true, ...await liveTalk3Service.register(normalizeLiveRegistration(request.body, liveTalk3)) }); }
+    catch (error) {
+        if (error instanceof WebinarValidationError) return response.status(400).json({ ok: false, error: "validation", field: error.field });
+        if (["closed", "full"].includes(error.code)) return response.status(409).json({ ok: false, error: error.code });
+        return response.status(500).json({ ok: false, error: "server" });
+    }
+});
+app.post("/api/live-talk-3/access", analyticsLimiter, sameOriginOnly, async (request, response) => {
+    response.set({ "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" });
+    try { const access = await liveTalk3Service.access(request.body?.token); return access ? response.json({ ok: true, access }) : response.status(404).json({ ok: false, error: "invalid_access" }); }
+    catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.post("/api/live-talk-3/cancel", submissionLimiter, sameOriginOnly, async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    try { return await liveTalk3Service.cancel(request.body?.token) ? response.json({ ok: true }) : response.status(404).json({ ok: false, error: "invalid_access" }); }
+    catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.get("/api/admin/live-talk-3", async (request, response) => {
+    if (!await getAdminMember(request, response)) return;
+    response.set("Cache-Control", "no-store");
+    try { return response.json({ ok: true, ...await liveTalk3Service.adminInfo() }); }
+    catch { return response.status(500).json({ ok: false, error: "server" }); }
+});
+app.put("/api/admin/live-talk-3", adminSameOriginOnly, async (request, response) => {
+    if (!await getAdminMember(request, response)) return;
+    response.set("Cache-Control", "no-store");
+    try { await liveTalk3Service.configure(request.body || {}); return response.json({ ok: true, ...await liveTalk3Service.adminInfo() }); }
     catch (error) { return response.status(error.code === "validation" ? 400 : 500).json({ ok: false, error: error.code === "validation" ? "validation" : "server" }); }
 });
 app.post("/api/live-talk/register", submissionLimiter, sameOriginOnly, async (request, response) => {
@@ -1945,6 +1984,7 @@ const initializeServices = async () => {
     }
     await initializeLiveTalk(database);
     await initializeLiveTalk(database, liveTalk2);
+    await initializeLiveTalk(database, liveTalk3);
     await initializeLiveTalk(database, liveTalkFamily);
     await initializeNewsletterCampaigns(database);
     await initializeMeta(database);
@@ -1956,6 +1996,7 @@ const initializeServices = async () => {
     startWebinarReminderWorker();
     startLiveTalkWorker(liveTalkService);
     startLiveTalkWorker(liveTalk2Service);
+    startLiveTalkWorker(liveTalk3Service);
     startLiveTalkWorker(familyLectureService);
 };
 

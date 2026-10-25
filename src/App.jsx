@@ -14,6 +14,7 @@ import { BookingHub } from "@/sections/BookingHub"
 import { Navigate, Route, Routes, useLocation } from "react-router-dom"
 import { LiveReplay } from "@/sections/LiveReplay"
 import { LiveTalkSecond } from "@/sections/LiveTalkSecond"
+import { LiveTalkThird } from "@/sections/LiveTalkThird"
 import { FamilyLecture } from "@/sections/FamilyLecture"
 import { Imp } from "@/sections/Imp"
 import { Daten } from "@/sections/Daten"
@@ -103,11 +104,14 @@ function App() {
         <Route path="/live-vortrag" element={<Navigate to={`/live-vortrag/aufzeichnung${location.search}`} replace/>}/>
         <Route path="/live-vortrag/aufzeichnung" element={<LiveReplay/>}/>
         <Route path="/live-vortrag/20-oktober" element={<LiveTalkSecond/>}/>
+        <Route path="/live-vortrag/3-november" element={<LiveTalkThird/>}/>
         <Route path="/live-vortrag/familienaufstellung" element={<FamilyLecture/>}/>
         <Route path="/live-vortrag/familienaufstellung/zugang" element={<LiveTalkAccess endpoint="/api/live-talk-family"/>}/>
         <Route path="/admin/live-vortrag-familienaufstellung" element={<Suspense fallback={<p>Vortragsverwaltung wird geladen …</p>}><AdminLiveTalk endpoint="/api/admin/live-talk-family" heading="Familienaufstellung · 27. Oktober" registrationPath="/live-vortrag/familienaufstellung" showCampaignDrafts={false}/></Suspense>}/>
         <Route path="/live-vortrag/20-oktober/zugang" element={<LiveTalkAccess endpoint="/api/live-talk-2"/>}/>
         <Route path="/admin/live-vortrag-2" element={<Suspense fallback={<p>Vortragsverwaltung wird geladen …</p>}><AdminLiveTalk endpoint="/api/admin/live-talk-2" heading="Zweites Live am 20. Oktober" registrationPath="/live-vortrag/20-oktober"/></Suspense>}/>
+        <Route path="/live-vortrag/3-november/zugang" element={<LiveTalkAccess endpoint="/api/live-talk-3"/>}/>
+        <Route path="/admin/live-vortrag-3" element={<Suspense fallback={<p>Vortragsverwaltung wird geladen …</p>}><AdminLiveTalk endpoint="/api/admin/live-talk-3" heading="Dritter Live-Vortrag · 3. November" registrationPath="/live-vortrag/3-november" showCampaignDrafts={false}/></Suspense>}/>
         <Route path="/live-vortrag/zugang" element={<LiveTalkAccess/>}/>
         <Route path="/admin/live-vortrag" element={<Suspense fallback={<p>Vortragsverwaltung wird geladen …</p>}><AdminLiveTalk/></Suspense>}/>
         <Route path="/vortrag-13-wochen-programm/ansehen" element={<WebinarWatch/>}/>
