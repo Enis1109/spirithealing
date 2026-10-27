@@ -36,7 +36,7 @@ export const liveTalk2 = Object.freeze({
 export const liveTalk3 = Object.freeze({
     key: "live-drehbuch-2026-11-03",
     requiresRecordingNotice: true,
-    title: "Noch tiefer: Deine inneren Anteile verstehen",
+    title: "Bindungsmuster verstehen",
     startsAt: "2026-11-03T19:00:00.000Z",
     // Access cutoff, not an advertised duration. No end time has been promised.
     endsAt: "2026-11-03T23:00:00.000Z",
@@ -47,7 +47,7 @@ export const liveTalk3 = Object.freeze({
     deleteAfter: "2027-02-01T23:00:00.000Z",
     accessPath: "/live-vortrag/3-november/zugang",
     confirmationSubject: "Deine Anmeldung: dritter Live-Vortrag am 3. November",
-    calendarStamp: "20261022T000000Z",
+    calendarStamp: "20261027T000000Z",
     openEnd: true,
     reminders: Object.freeze([
         { kind: "two_days", dueAt: "2026-11-01T10:00:00.000Z", expiresAt: "2026-11-01T22:00:00.000Z" },
@@ -187,12 +187,12 @@ export const liveEmail = ({ name, kind, joinUrl, meetingId, passcode, manageUrl,
     if (event.key === liveTalk3.key && kind !== "confirmation") {
         const variants = {
             two_days: { subject: "Am Dienstag sehen wir uns: unser dritter Live-Abend", paragraphs: [
-                "am Dienstag, 3. November, um 20 Uhr deutscher Zeit treffen wir uns zu unserem dritten Live-Abend. Wir freuen uns darauf, mit euch noch tiefer in die Welt der inneren Anteile einzusteigen.",
-                "Vielleicht ist dir seit unserem letzten Abend ein Anteil begegnet, den du deutlicher wahrnimmst. Vielleicht ist eine Frage geblieben. Du musst nichts fertig bearbeitet haben. Bring einfach mit, was sich dir gezeigt hat.",
+                "am Dienstag, 3. November, um 20 Uhr deutscher Zeit treffen wir uns zu unserem dritten Live-Abend. Diesmal geht es um Bindungsmuster: wie sie sich in Beziehungen zeigen und was unsere inneren Anteile dabei schützen möchten.",
+                "Ein Teil möchte Nähe. Ein anderer hält Abstand. Wir schauen gemeinsam auf das innere Drehbuch hinter solchen Momenten. Bring deine Beobachtungen und Fragen mit. Du bist auch willkommen, wenn du bei den ersten beiden Abenden nicht dabei warst.",
             ] },
-            day: { subject: "Morgen um 20 Uhr: Wir gehen noch tiefer", paragraphs: [
+            day: { subject: "Morgen um 20 Uhr: Bindungsmuster verstehen", paragraphs: [
                 "morgen Abend um 20 Uhr deutscher Zeit sehen wir uns zu unserem dritten Live.",
-                "Wir führen die Gedanken aus den ersten beiden Abenden weiter, nehmen uns Zeit für eure Fragen und schließen den gemeinsamen Abend mit einer Meditation ab.",
+                "Wir schauen auf Bindungsmuster, auf Nähe und Rückzug und auf die inneren Anteile, die Verbindung suchen oder schützen möchten. Wir nehmen uns Zeit für eure Fragen und schließen den gemeinsamen Abend mit einer Meditation ab.",
             ] },
             morning: { subject: "Heute Abend ist es so weit: unser dritter Live-Abend", paragraphs: [
                 "heute Abend um 20 Uhr deutscher Zeit beginnt unser dritter Live-Abend. Schön, dass du dabei bist.",

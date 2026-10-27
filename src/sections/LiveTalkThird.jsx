@@ -59,16 +59,16 @@ export const LiveTalkThird = () => {
 
             <header className="mt-9 rounded-3xl bg-[#075d60] px-7 py-12 text-white sm:px-12">
                 <p className="text-sm font-bold uppercase tracking-[0.17em] text-[#edcf96]">Dritter Live-Abend · 3. November · 20 Uhr</p>
-                <h1 className="mt-5 font-serif text-4xl leading-tight sm:text-6xl">Noch tiefer.<br/>In die Welt deiner inneren Anteile.</h1>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-white/90">Wir führen die Gedanken aus den ersten beiden Abenden weiter und schauen auf das, was in dir reagiert, schützt und immer wieder vertraute Rollen übernimmt.</p>
+                <h1 className="mt-5 font-serif text-4xl leading-tight sm:text-6xl">Bindungsmuster<br/>verstehen.</h1>
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-white/90">Ein Teil möchte Nähe. Ein anderer hält Abstand. Wir schauen gemeinsam auf das innere Drehbuch hinter Nähe und Rückzug und auf die Anteile in uns, die Verbindung suchen oder schützen möchten.</p>
                 <p className="mt-6 font-semibold">Mit Sabine & Selcan · kostenlos über Zoom<br/>Dienstag, 3. November 2026, 20 Uhr deutscher Zeit</p>
             </header>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-2">
                 <section className="p-3 sm:p-7">
-                    <h2 className="font-serif text-3xl">Was geschieht in dir, bevor du handelst?</h2>
-                    <p className="mt-5 leading-8">Ein Teil in dir zieht sich zurück. Ein anderer übernimmt Verantwortung, hält aus oder versucht, alles unter Kontrolle zu behalten. Diese Anteile sind nicht gegen dich. Sie tragen ihre eigene Geschichte und haben einmal eine wichtige Aufgabe übernommen.</p>
-                    <p className="mt-4 leading-8">An diesem Abend schauen wir weiter auf diese inneren Bewegungen. Wir nehmen uns Zeit für eure Beobachtungen und Fragen und öffnen den Raum für das, was hinter einer vertrauten Rolle verborgen liegt.</p>
+                    <h2 className="font-serif text-3xl">Warum wird es manchmal schwierig, wenn es nah wird?</h2>
+                    <p className="mt-5 leading-8">Was geschieht in uns, wenn Verbindung entsteht? Wenn eine Nachricht unbeantwortet bleibt? Wenn wir jemanden gernhaben und uns trotzdem zurückziehen? In unserem dritten kostenlosen Live-Vortrag geht es um Bindungen und Bindungsmuster.</p>
+                    <p className="mt-4 leading-8">Wir schauen darauf, wie unterschiedlich Menschen Nähe erleben: mit Vertrauen, mit der Sorge, verlassen zu werden, mit Rückzug oder mit dem Wunsch nach Nähe und der gleichzeitigen Angst davor. Welche Muster zeigen sich in Beziehungen? Welcher innere Anteil sucht Verbindung, welcher möchte schützen? Bring deine Beobachtungen und Fragen mit.</p>
                     <p className="mt-4 leading-8">Du brauchst keine Vorkenntnisse und musst bei den ersten beiden Abenden nicht dabei gewesen sein. Du darfst mit einer Frage kommen oder einfach zuhören. Zum Abschluss gehen wir gemeinsam in eine Meditation.</p>
                     <Link to={replayFunnel.path} className="mt-6 inline-block font-bold underline underline-offset-4">Den ersten Vortrag und das Workbook öffnen</Link>
                 </section>

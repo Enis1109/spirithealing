@@ -32,8 +32,8 @@ export const pageMeta = {
   de: {
     "/live-vortrag/3-november/zugang": { title: "Dein dritter Live-Abend | Spirit Healing", description: "Persönlicher Zugang zum dritten Vortrag.", noindex: true },
     "/live-vortrag/3-november": {
-      title: "Dritter Live-Vortrag am 3. November | Spirit Healing",
-      description: "Innere Anteile und vertraute Rollen verstehen: kostenloser Live-Abend zum 13-Wochen-Programm mit Sabine und Selcan am 3. November um 20 Uhr.",
+      title: "Bindungsmuster verstehen · 3. November | Spirit Healing",
+      description: "Ein Teil möchte Nähe, ein anderer hält Abstand. Kostenloser Live-Vortrag über Bindungsmuster mit Sabine und Selcan am 3. November um 20 Uhr. Über Zoom, mit Meditation.",
     },
     "/": {
       title: "Traumasensible Online-Begleitung | Spirit Healing",

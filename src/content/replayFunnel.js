@@ -33,7 +33,7 @@ export const publicEvents = [
     { id: familyLecture.key, date: familyLecture.date, time: "20:00", title: familyLecture.title,
         detail: "Kostenloser Vortrag mit Sabine & Selcan · online über Zoom · auf Deutsch", href: familyLecture.path,
         action: "Kostenlos zum Vortrag anmelden" },
-    { id: "third-live", date: "2026-11-03", time: "20:00", title: "Noch tiefer: Deine inneren Anteile verstehen", detail: "Dritter kostenloser Live-Abend zum 13-Wochen-Programm mit Sabine & Selcan · online über Zoom", href: "/live-vortrag/3-november", action: "Kostenlos zum Vortrag anmelden" },
+    { id: "third-live", date: "2026-11-03", time: "20:00", title: "Bindungsmuster verstehen", detail: "Nähe, Rückzug und innere Anteile · dritter kostenloser Live-Abend zum 13-Wochen-Programm mit Sabine & Selcan · online über Zoom · mit Meditation", href: "/live-vortrag/3-november", action: "Kostenlos zum Vortrag anmelden" },
     { id: "onboarding", date: "2026-10-21", title: "Dein Einstieg ins 13-Wochen-Programm", detail: "Beginn des Onboardings und der persönlichen Matrix-Gespräche", href: "/13-wochen-programm" },
     ...programLiveEvents,
     { id: "rauhnaechte", date: "2026-12-23", lastDate: "2027-01-06", title: "Rauhnächte mit Sabine & Selcan", detail: "23. Dezember 2026 bis 6. Januar 2027", href: "/rauhnaechte" },
