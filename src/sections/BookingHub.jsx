@@ -2,11 +2,13 @@ import { ArrowRight, CalendarDays, CalendarRange, HeartHandshake, MessageCircle,
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+const contactUrl = "https://www.spirit-healing.tr/kontakt";
+
 const bookingLinks = {
-    introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
-    introSelcan: "https://calendly.com/selcan1975/erstgesprach",
-    firstSabine: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
-    firstSelcan: "https://calendly.com/selcan1975/erstsitzung-selcan",
+    introSabine: contactUrl,
+    introSelcan: contactUrl,
+    firstSabine: contactUrl,
+    firstSelcan: contactUrl,
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
 };
 
@@ -28,8 +30,9 @@ const copy = {
     de: {
         eyebrow: "Termin buchen",
         title: "Was ist für dich der passende nächste Schritt?",
-        intro: "Wähle zuerst die Art des Termins. Anschließend kannst du direkt einen freien Zeitpunkt auswählen.",
+        intro: "Wähle zuerst die Art des Termins. Für ein Kennenlernen oder eine Einzelsitzung sende uns eine Terminanfrage; wir stimmen den Termin persönlich mit dir ab.",
         choose: "Termin auswählen",
+        request: "Termin anfragen",
         rescheduling: "Kostenfreie Umbuchung bis 48 Stunden vor dem Termin",
         options: [
             {
@@ -99,8 +102,9 @@ const copy = {
     tr: {
         eyebrow: "Randevu al",
         title: "Senin için uygun bir sonraki adım hangisi?",
-        intro: "Önce görüşme türünü seç. Ardından doğrudan uygun bir zaman belirleyebilirsin.",
+        intro: "Önce görüşme türünü seç. Tanışma veya bireysel seans için bize randevu talebini gönder; zamanı seninle birlikte belirleyelim.",
         choose: "Randevu seç",
+        request: "Randevu talep et",
         rescheduling: "Randevudan 48 saat öncesine kadar ücretsiz tarih değişikliği",
         options: [
             {
@@ -203,11 +207,11 @@ export const BookingHub = () => {
                             <div className="mt-6 space-y-3 border-t border-muted-foreground/15 pt-5">
                                 {option.people.map(([label, url]) => (
                                     <a
-                                        key={url}
+                                        key={label}
                                         href={url}
                                         className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                                     >
-                                        {label} – {content.choose}
+                                        {label} – {url === contactUrl ? content.request : content.choose}
                                     </a>
                                 ))}
                             </div>

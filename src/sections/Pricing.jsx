@@ -10,11 +10,13 @@ import {
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+const contactUrl = "https://www.spirit-healing.tr/kontakt";
+
 const bookingLinks = {
-    introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
-    introSelcan: "https://calendly.com/selcan1975/erstgesprach",
-    firstSabine: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
-    firstSelcan: "https://calendly.com/selcan1975/erstsitzung-selcan",
+    introSabine: contactUrl,
+    introSelcan: contactUrl,
+    firstSabine: contactUrl,
+    firstSelcan: contactUrl,
     followSabine: "https://calendly.com/spirit-healing/folgesitzung-sabine",
     followSelcan: "https://calendly.com/selcan1975/folgesitzung-selcan",
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
@@ -43,6 +45,7 @@ const content = {
         intro: "Du kannst mit einem kostenfreien Kennenlernen beginnen oder direkt eine Sitzung buchen. Wenn du noch unsicher bist, klären wir gemeinsam, welche Form der Begleitung für dich sinnvoll ist.",
         facts: ["Online und ortsunabhängig", "Deutsch und Türkisch", "Vertraulich und persönlich"],
         book: "Termin wählen",
+        request: "Termin anfragen",
         duration: "Dauer",
         price: "Preis",
         sections: [
@@ -156,6 +159,7 @@ const content = {
         intro: "Ücretsiz bir tanışma görüşmesiyle başlayabilir veya doğrudan seans randevusu alabilirsin. Hangisinin sana uygun olduğundan emin değilsen, birlikte netleştiririz.",
         facts: ["Çevrim içi ve mekândan bağımsız", "Türkçe ve Almanca", "Gizli ve kişiye özel"],
         book: "Randevu seç",
+        request: "Randevu talep et",
         duration: "Süre",
         price: "Ücret",
         sections: [
@@ -306,7 +310,7 @@ const BookingCard = ({ item, labels, icon }) => {
                 href={item.link}
                 className="mt-6 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-primary px-5 py-3 text-base font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-                {labels.book}<ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+                {item.link === contactUrl ? labels.request : labels.book}<ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
             </a>
         </article>
     );
