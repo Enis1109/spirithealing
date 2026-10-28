@@ -17,7 +17,7 @@ const bookingLinks = {
     introSelcan: contactUrl,
     firstSabine: contactUrl,
     firstSelcan: contactUrl,
-    followSabine: "https://calendly.com/spirit-healing/folgesitzung-sabine",
+    followSabine: contactUrl,
     followSelcan: "https://calendly.com/selcan1975/folgesitzung-selcan",
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
     combinedFollow: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
