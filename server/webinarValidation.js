@@ -22,15 +22,20 @@ export class WebinarValidationError extends Error {
     }
 }
 
-export const normalizeWebinarRegistration = (body = {}) => {
+export const normalizeRegistrationContact = (body = {}) => {
     if (body.company) throw new WebinarValidationError("form");
-    if (body.privacyConsent !== true) throw new WebinarValidationError("privacyConsent");
 
     const email = requiredText(body.email, "email", 254).toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)) {
         throw new WebinarValidationError("email");
     }
 
+    return { name: requiredText(body.name, "name", 100), email };
+};
+
+export const normalizeWebinarRegistration = (body = {}) => {
+    if (body.privacyConsent !== true) throw new WebinarValidationError("privacyConsent");
+    const contact = normalizeRegistrationContact(body);
     const slotId = requiredText(body.slotId, "slotId", 40);
     const slotDate = new Date(slotId);
     if (slotId !== "on-demand" && (!Number.isFinite(slotDate.getTime()) || slotDate.toISOString() !== slotId)) {
@@ -38,8 +43,7 @@ export const normalizeWebinarRegistration = (body = {}) => {
     }
 
     return {
-        name: requiredText(body.name, "name", 100),
-        email,
+        ...contact,
         slotId,
         locale: body.locale === "tr" ? "tr" : "de",
         newsletterConsent: body.newsletterConsent === true,

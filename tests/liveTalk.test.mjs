@@ -83,7 +83,7 @@ function fixture(event = liveTalk) {
         if (q.startsWith("SELECT COUNT(*)")) return result([{ total: state.regs.filter(r => r.status === "active").length }]);
         if (q.startsWith("INSERT IGNORE INTO live_talk_registrations")) {
             if (state.regs.some(r => r.email === p[2])) return result({ affectedRows: 0 });
-            state.regs.push({ id: state.regs.length + 1, name: p[1], email: p[2], status: "active", event_key:p[0], created_at:p[6] });
+            state.regs.push({ id: state.regs.length + 1, name: p[1], email: p[2], status: "active", event_key:p[0], privacy_version:p[3], newsletter_requested:p[4], newsletter_status:p[5], created_at:p[6] });
             return result({ affectedRows: 1 });
         }
         if (q.startsWith("SELECT id, status FROM")) return result(state.regs.filter(r => r.email === p[1]));
@@ -456,4 +456,78 @@ test("third-live registration has isolated access and five scheduled messages", 
     const token = makeLiveToken(1, secret, liveTalk3);
     assert.equal((await service.access(token, registrationDate)).key, liveTalk3.key);
     assert.equal(await service.access(makeLiveToken(1, secret, liveTalk2), registrationDate), null);
+});
+
+
+test("Nov3 service registration accepts only contact details without manufacturing consent", () => {
+    const contact = { name: "  Neu  ", email: " NEW@example.test " };
+    const result = normalizeLiveRegistration(contact, liveTalk3);
+    assert.equal(result.name, "Neu");
+    assert.equal(result.email, "new@example.test");
+    for (const flag of ["privacyConsent", "recordingNoticeAccepted"]) assert.equal(Object.hasOwn(result, flag), false);
+    assert.equal(result.newsletterConsent, false);
+    assert.equal(normalizeLiveRegistration({ ...contact, privacyConsent: true, recordingNoticeAccepted: true, newsletterConsent: true }, liveTalk3).newsletterConsent, false);
+    for (const invalid of [{ name: "" }, { email: "oops" }, { company: "bot" }, { name: "Hi\nBcc: spam" }]) {
+        assert.throws(() => normalizeLiveRegistration({ ...contact, ...invalid }, liveTalk3));
+    }
+    for (const event of [liveTalk, liveTalk2, liveTalkFamily]) {
+        assert.throws(() => normalizeLiveRegistration(contact, event), { field: "privacyConsent" });
+    }
+    assert.throws(() => normalizeLiveRegistration({ ...contact, privacyConsent: true }, liveTalkFamily), { field: "recordingNotice" });
+});
+
+test("Nov3 ignores forged newsletter requests at service boundary and preserves old rows on duplicate", async () => {
+    const { state, service } = fixture(liveTalk3);
+    const date = new Date("2026-10-31T12:00Z");
+    await service.register({ name: "Neu", email: "new@example.test", newsletterConsent: true }, date);
+    assert.equal(state.regs[0].newsletter_requested, 0);
+    assert.equal(state.regs[0].newsletter_status, "not_requested");
+    assert.equal(state.regs[0].privacy_version, "nov3-service-notice-2026-10-31");
+    assert.equal(state.newsletter.length, 0);
+    // An older registration's historical consent version and newsletter status stay intact.
+    Object.assign(state.regs[0], { privacy_version: "live-vortrag-2026-09-22", newsletter_requested: 1, newsletter_status: "confirmed" });
+    const original = structuredClone(state.regs[0]);
+    await service.register({ name: "Changed", email: "new@example.test", newsletterConsent: true }, date);
+    assert.deepEqual(state.regs[0], original);
+    assert.equal(state.jobs.length, 5);
+    assert.equal(state.newsletter.length, 0);
+    await service.processMail(date);
+    for (const time of ["2026-11-01T10:00Z", "2026-11-02T19:00Z", "2026-11-03T07:00Z", "2026-11-03T18:00Z"]) {
+        await service.processMail(new Date(time));
+        await service.processMail(new Date(time));
+    }
+    assert.deepEqual(state.sent.map(mail => mail.kind), ["confirmation", "two_days", "day", "morning", "hour"]);
+});
+
+
+test("Nov3 retains existing newsletter histories on duplicate and cancellation", async () => {
+    for (const status of ["not_requested", "pending", "confirmed", "subscribed", "unsubscribed", "confirmation_failed"]) {
+        const { state, service } = fixture(liveTalk3);
+        const date = new Date("2026-11-03T17:30Z");
+        await service.register(normalizeLiveRegistration({ name: "Alt", email: "existing@example.test" }, liveTalk3), date);
+        Object.assign(state.regs[0], { newsletter_status: status, newsletter_requested: status === "not_requested" ? 0 : 1, privacy_version: "live-vortrag-2026-09-22" });
+        const original = structuredClone(state.regs[0]);
+        await service.register({ name: "Overwrite", email: "existing@example.test", newsletterConsent: true }, date);
+        assert.deepEqual(state.regs[0], original);
+        assert.deepEqual(state.jobs.map(job => job.kind), ["confirmation", "hour"]);
+        await service.cancel(makeLiveToken(1, secret, liveTalk3), date);
+        await service.processMail(new Date("2026-11-03T18:00Z"));
+        assert.equal(state.sent.length, 0);
+        assert.equal(state.regs[0].newsletter_status, status);
+        assert.equal(state.newsletter.length, 0);
+    }
+});
+
+test("Nov3 still enforces readiness, cutoff and capacity", async () => {
+    const { state, service } = fixture(liveTalk3);
+    const contact = normalizeLiveRegistration({ name: "Neu", email: "new@example.test" }, liveTalk3);
+    const date = new Date("2026-10-31T12:00Z");
+    state.config.enabled = 0;
+    await assert.rejects(() => service.register(contact, date), { code: "closed" });
+    state.config.enabled = 1;
+    await assert.rejects(() => service.register(contact, new Date(liveTalk3.startsAt)), { code: "closed" });
+    state.regs = Array.from({ length: liveTalk3.capacity }, (_, id) => ({ id: id + 1, email: `full${id}@example.test`, status: "active" }));
+    await assert.rejects(() => service.register(contact, date), { code: "full" });
+    assert.equal(state.newsletter.length, 0);
+    assert.equal(state.jobs.length, 0);
 });

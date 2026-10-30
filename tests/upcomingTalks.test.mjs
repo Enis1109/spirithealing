@@ -19,10 +19,10 @@ test("past invitations expire individually and none remain after the last start"
     assert.deepEqual(active("2026-10-27T19:00:00Z").map(t => t.id), ["third-2026-11-03"]);
     assert.equal(active("2026-11-03T19:00:00Z").length, 0);
 });
-test("third registration requires recording acknowledgement and newsletter remains optional", () => {
-    const data = {name:"Test",email:"test@example.com",privacyConsent:true,newsletterConsent:false,company:""};
-    assert.throws(() => normalizeLiveRegistration(data, liveTalk3));
-    assert.equal(normalizeLiveRegistration({...data,recordingNoticeAccepted:true},liveTalk3).newsletterConsent,false);
+test("third registration needs contact details only and never opts into newsletter", () => {
+    const data = {name:"Test",email:"test@example.test",company:""};
+    assert.equal(normalizeLiveRegistration(data, liveTalk3).newsletterConsent, false);
+    assert.equal(normalizeLiveRegistration({...data,newsletterConsent:true},liveTalk3).newsletterConsent,false);
 });
 test("calendar, page and popup use the same published registration route", () => {
     assert.equal(publicEvents.find(e => e.id === "third-live").href, "/live-vortrag/3-november");
