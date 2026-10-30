@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { normalizeWebinarRegistration, WebinarValidationError } from "./webinarValidation.js";
+import { normalizeWebinarRegistration, normalizeRegistrationContact, WebinarValidationError } from "./webinarValidation.js";
 import { normalizeLiveAttribution } from "../shared/liveAttribution.js";
 import { familyLecture } from "../shared/familyLecture.js";
 
@@ -35,7 +35,8 @@ export const liveTalk2 = Object.freeze({
 
 export const liveTalk3 = Object.freeze({
     key: "live-drehbuch-2026-11-03",
-    requiresRecordingNotice: true,
+    registrationMode: "service",
+    newsletterSignupEnabled: false,
     title: "Bindungsmuster verstehen",
     startsAt: "2026-11-03T19:00:00.000Z",
     // Access cutoff, not an advertised duration. No end time has been promised.
@@ -43,7 +44,7 @@ export const liveTalk3 = Object.freeze({
     timeZone: "Europe/Berlin",
     capacity: 98,
     label: "Dienstag, 3. November 2026, um 20 Uhr deutscher Zeit",
-    privacyVersion: "live-vortrag-2026-09-22",
+    privacyVersion: "nov3-service-notice-2026-10-31",
     deleteAfter: "2027-02-01T23:00:00.000Z",
     accessPath: "/live-vortrag/3-november/zugang",
     confirmationSubject: "Deine Anmeldung: dritter Live-Vortrag am 3. November",
@@ -65,7 +66,9 @@ export const liveTalkFamily = Object.freeze({
 });
 
 export const normalizeLiveRegistration = (body, event = liveTalk) => {
-    const result = normalizeWebinarRegistration({ ...body, slotId: "on-demand", locale: "de" });
+    const result = event.registrationMode === "service"
+        ? { ...normalizeRegistrationContact(body), slotId: "on-demand", locale: "de", newsletterConsent: false }
+        : normalizeWebinarRegistration({ ...body, slotId: "on-demand", locale: "de" });
     if (/[\r\n]/u.test(result.name)) throw new WebinarValidationError("name");
     if (event.requiresRecordingNotice && body?.recordingNoticeAccepted !== true) throw new WebinarValidationError("recordingNotice");
     return { ...result, attribution: normalizeLiveAttribution(body?.attribution, event.key) };

@@ -62,6 +62,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         return { ...liveTalk, ready: config.enabled && Boolean(config.joinUrl) && Boolean(config.passcode) && now < new Date(liveTalk.startsAt) };
     };
     const register = async (form, now = new Date()) => {
+        const newsletterRequested = liveTalk.newsletterSignupEnabled !== false && form.newsletterConsent === true;
         if (!(await publicInfo(now)).ready) throw Object.assign(new Error("Registration closed"), { code: "closed" });
         // Also validate the signing configuration before accepting registrations.
         makeLiveToken(1, secret, liveTalk);
@@ -78,7 +79,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
             const [insert] = await connection.execute(`INSERT IGNORE INTO live_talk_registrations
                 (event_key, name, email, privacy_version, newsletter_requested, newsletter_status, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?)`, [liveTalk.key, form.name, form.email, liveTalk.privacyVersion,
-                form.newsletterConsent ? 1 : 0, form.newsletterConsent ? "pending" : "not_requested", sqlDate(now)]);
+                newsletterRequested ? 1 : 0, newsletterRequested ? "pending" : "not_requested", sqlDate(now)]);
             isNew = insert.affectedRows === 1;
             const [rows] = await connection.execute("SELECT id, status FROM live_talk_registrations WHERE event_key = ? AND email = ? FOR UPDATE", [liveTalk.key, form.email]);
             id = rows[0].id;
@@ -95,7 +96,7 @@ export const createLiveTalkService = ({ db, sendMail, newsletter, secret, baseUr
         } catch (error) { await connection.rollback(); throw error; }
         finally { connection.release(); }
         // Repeat submissions neither change an existing person's data nor generate duplicate emails.
-        if (isNew && form.newsletterConsent) {
+        if (isNew && newsletterRequested) {
             let status;
             try { status = await newsletter({ name: form.name, email: form.email,
                 newsletterConsent: true, locale: "de", source: liveTalk.key }); }

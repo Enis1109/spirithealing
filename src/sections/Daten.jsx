@@ -347,6 +347,26 @@ export const Daten = () => {
                             nach 30 Tagen ab. Eine Nutzung Ihrer Daten für den Newsletter erfolgt nur nach einer gesonderten,<br/>
                             freiwilligen Auswahl oder einem eindeutigen Klick auf den Newsletter-Button in der Zugangs-E-Mail.<br/>
                         </p>
+                        <h3 id="live-3-november" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Anmeldung zum Live-Vortrag am 3. November 2026</h3>
+                        <p className="text-md">
+                            Für die angeforderte Teilnahme speichern wir Name, E-Mail-Adresse, Anmeldezeitpunkt,
+                            die Version dieses Datenschutzhinweises, Teilnahmestatus und Versandstatus auf unserem Hostinger-System.
+                            Wir senden die Bestätigung mit Zoom-Zugang und Kalendereintrag sowie die bei Ihrer Anmeldung
+                            noch ausstehenden Terminerinnerungen: zwei Tage vorher, am Vortag, am Veranstaltungsmorgen und
+                            eine Stunde vor Beginn. Über den persönlichen Link in der E-Mail können Sie absagen;
+                            damit stoppen weitere Terminerinnerungen. Die veranstaltungsbezogenen Daten werden ab dem
+                            1. Februar 2027 um 23 Uhr UTC automatisch gelöscht.
+                            Diese Anmeldung bestellt keinen Newsletter und ändert keine bestehende Newsletter-Anmeldung.
+                            Sie erfasst keine Aufzeichnungseinwilligung. Fragen zur Anmeldung oder zur Löschung richten Sie
+                            an info@spirit-healing.tr. Die allgemeinen Angaben zu Verantwortlichen und Ihren Rechten finden Sie auf dieser Seite.
+                        </p>
+                        <p className="text-md">
+                            Die Veranstaltung findet über Zoom statt. Beim Öffnen des Teilnahmelinks verbinden Sie sich mit Zoom.
+                            Dabei werden unter anderem Ihr Anzeigename, technische Verbindungsdaten und von Ihnen freigegebene
+                            Audio-, Video- und Chat-Inhalte verarbeitet. Anzeigename und Beiträge können für andere Teilnehmende
+                            sichtbar sein. Weitere Informationen enthält die {" "}
+                            <a href="https://www.zoom.com/de/trust/privacy/privacy-statement/" target="_blank" rel="noreferrer" className="underline">Datenschutzerklärung von Zoom</a>.
+                        </p>
                         <h3 className="text-lg md:text-xl leading-tight font-bold text-primary">Anmeldung zum Live-Vortrag am 6. Oktober 2026</h3>
                         <p className="text-md">
                             Für die Anmeldung speichern wir Name, E-Mail-Adresse, Anmeldezeitpunkt, den bestätigten Datenschutzhinweis,
