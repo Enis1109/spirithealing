@@ -1,5 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { runInNewContext } from "node:vm";
+import express from "express";
+import { WebinarValidationError } from "../server/webinarValidation.js";
 import { liveTalk, liveTalk2, liveTalk3, liveTalkFamily, liveMailSchedule, normalizeLiveRegistration, validateZoomJoinUrl, validateZoomPasscode,
     zoomMeetingIdFromJoinUrl, makeLiveToken, readLiveToken, liveCalendar, liveEmail } from "../server/liveTalkConfig.js";
 import { createLiveTalkService, initializeLiveTalk } from "../server/liveTalk.js";
@@ -530,4 +534,70 @@ test("Nov3 still enforces readiness, cutoff and capacity", async () => {
     await assert.rejects(() => service.register(contact, date), { code: "full" });
     assert.equal(state.newsletter.length, 0);
     assert.equal(state.jobs.length, 0);
+});
+
+
+test("actual Nov3 HTTP registration route accepts minimal payload and preserves service safeguards", async () => {
+    // Execute the exact inline production route, without starting the production app,
+    // initializing other features, or connecting to its database/SMTP transport.
+    const source = readFileSync(new URL("../server.js", import.meta.url), "utf8");
+    const start = source.indexOf('app.post("/api/live-talk-3/register",');
+    const end = source.indexOf('app.post("/api/live-talk-3/access",', start);
+    assert.ok(start > 0 && end > start);
+    const { state, service } = fixture(liveTalk3);
+    const date = new Date("2026-10-31T12:00Z");
+    const app = express(); app.use(express.json());
+    const next = (_request, _response, proceed) => proceed();
+    runInNewContext(source.slice(start, end), {
+        app, submissionLimiter: next, sameOriginOnly: next,
+        normalizeLiveRegistration, liveTalk3, WebinarValidationError,
+        liveTalk3Service: { register: form => service.register(form, date) },
+    });
+    const server = await new Promise((resolve, reject) => {
+        const handle = app.listen(0, "127.0.0.1", () => resolve(handle));
+        handle.on("error", reject);
+    });
+    const endpoint = `http://127.0.0.1:${server.address().port}/api/live-talk-3/register`;
+    const post = body => fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const minimal = { name: "HTTP Test", email: "http@example.test" };
+    try {
+        const accepted = await post(minimal);
+        assert.equal(accepted.status, 202);
+        assert.equal(accepted.headers.get("cache-control"), "no-store");
+        assert.deepEqual(await accepted.json(), { ok: true, accepted: true });
+        assert.equal(state.regs.length, 1);
+        assert.equal(state.regs[0].newsletter_requested, 0);
+        assert.equal(state.regs[0].newsletter_status, "not_requested");
+        assert.equal(state.regs[0].privacy_version, "nov3-service-notice-2026-10-31");
+        assert.deepEqual(state.jobs.map(job => job.kind), ["confirmation", "two_days", "day", "morning", "hour"]);
+        const original = structuredClone(state.regs[0]);
+        const duplicate = await post({ ...minimal, name: "Overwrite", privacyConsent: true, recordingNoticeAccepted: true, newsletterConsent: true });
+        assert.equal(duplicate.status, 202);
+        assert.deepEqual(state.regs[0], original);
+        assert.equal(state.jobs.length, 5);
+        assert.equal(state.newsletter.length, 0);
+        for (const invalid of [{ ...minimal, email: "invalid" }, { ...minimal, name: "" }, { ...minimal, company: "bot" }, { ...minimal, name: "Hi\nBcc: spam" }]) {
+            const rejected = await post(invalid);
+            assert.equal(rejected.status, 400);
+            assert.equal((await rejected.json()).error, "validation");
+        }
+        state.config.enabled = 0;
+        const closed = await post({ name: "Other", email: "other@example.test" });
+        assert.equal(closed.status, 409);
+        assert.equal((await closed.json()).error, "closed");
+        state.config.enabled = 1;
+        for (let id = 2; id <= liveTalk3.capacity; id++) state.regs.push({ id, email: `full${id}@example.test`, status: "active" });
+        const full = await post({ name: "Other", email: "other@example.test" });
+        assert.equal(full.status, 409);
+        assert.equal((await full.json()).error, "full");
+        assert.equal(state.sent.length, 0);
+        assert.equal(state.newsletter.length, 0);
+        await service.processMail(date);
+        await service.processMail(date);
+        assert.equal(state.sent.length, 1);
+        assert.equal(state.sent[0].email, minimal.email);
+    } finally {
+        server.closeAllConnections();
+        await new Promise(resolve => server.close(resolve));
+    }
 });
