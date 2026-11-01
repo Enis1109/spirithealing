@@ -9,7 +9,7 @@ import {
   HeartHandshake,
 } from "lucide-react"
 
-const introCallUrl = "https://calendly.com/spirit-healing/partner-einschreiben"
+const introCallUrl = "https://calendly.com/spirit-healing/erstgespraech-13-wochen-programm"
 
 const recurringScenes = [
   "Du sagst Ja, obwohl in dir längst ein Nein lebt.",
