@@ -35,17 +35,20 @@ test("calendar targets and private access routes are known to production SEO rou
     assert.equal(metadataForPath("/live-vortrag/20-oktober/zugang").noindex, true);
     assert.equal(metadataForPath("/admin/live-vortrag-2").noindex, true);
 });
-test("thirteen Wednesday evenings appear once in both calendar views through 3 February", () => {
-    assert.deepEqual(programLiveEvents.map(event => event.date), ["2026-11-11", "2026-11-18", "2026-11-25", "2026-12-02", "2026-12-09", "2026-12-16", "2026-12-23", "2026-12-30", "2027-01-06", "2027-01-13", "2027-01-20", "2027-01-27", "2027-02-03"]);
-    for (const event of programLiveEvents) {
-        assert.equal(new Date(`${event.date}T12:00Z`).getUTCDay(), 3);
-        assert.equal(event.time, "19:30–21:00");
-        assert.equal(eventsOnDay(event.date).filter(item => item.id === event.id).length, 1);
-        assert.equal(eventsInMonth(event.date.slice(0, 7)).filter(item => item.id === event.id).length, 1);
+test("open programme conversation phase does not publish an unconfirmed live schedule", () => {
+    assert.deepEqual(programLiveEvents, []);
+    for (const month of ["2026-11", "2026-12", "2027-01", "2027-02"]) {
+        assert.equal(eventsInMonth(month).some(event => event.id.startsWith("program-live-")), false);
     }
-    assert.equal(eventsOnDay("2026-11-04").some(event => event.id.startsWith("program-live-")), false);
-    assert.equal(eventsOnDay("2027-02-10").some(event => event.id.startsWith("program-live-")), false);
-    assert.equal(eventsOnDay("2026-11-11").length, 1);
+    assert.equal(eventsOnDay("2026-11-11").length, 0);
+    const phase = publicEvents.find(event => event.id === "onboarding");
+    assert.equal(phase.date, "2026-10-21");
+    assert.match(phase.title, /Gesprächsphase/);
+    assert.doesNotMatch(phase.detail, /Matrix-Gespräche/);
+    assert.match(phase.detail, /kostenfrei/);
+    const rauhnaechte = publicEvents.find(event => event.id === "rauhnaechte");
+    assert.equal(rauhnaechte.date, "2026-12-23");
+    assert.equal(rauhnaechte.lastDate, "2027-01-06");
 });
 test("workbook and photo exist; approved Vimeo recording uses privacy mode", () => {
     assert.equal(readFileSync(new URL(`../public${replayFunnel.workbook}`, import.meta.url)).subarray(0, 5).toString(), "%PDF-");

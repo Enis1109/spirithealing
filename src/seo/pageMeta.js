@@ -79,7 +79,7 @@ export const pageMeta = {
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
-      description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. 13 Wochen mit Matrix-Gespräch, Online-Begleitung und Rauhnächten.",
+      description: "13 Wochen mit Matrix-Gespräch und Rauhnächten. Sabine und Selcan im kostenfreien Zoom-Gespräch kennenlernen. Gesprächsphase offen, Programmstart wird bekannt gegeben.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -181,7 +181,7 @@ export const pageMeta = {
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
-      description: "Erkenne die unbewusste Matrix hinter wiederkehrenden Rollen, Schutzmustern und Entscheidungen. Mit Matrix-Gespräch, Online-Begleitung und Rauhnächten.",
+      description: "13 Wochen mit Matrix-Gespräch und Rauhnächten. Sabine und Selcan im kostenfreien Zoom-Gespräch kennenlernen. Gesprächsphase offen, Programmstart wird bekannt gegeben.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -493,18 +493,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
       description: meta.description,
       url,
       provider: { "@id": organizationId },
-      hasCourseInstance: {
-        "@type": "CourseInstance",
-        courseMode: "online",
-        startDate: "2026-11-11",
-        endDate: "2027-02-03",
-        inLanguage: "de",
-      },
-      offers: [
-        { "@type": "Offer", name: "Gemeinsamer Weg", price: "1555", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
-        { "@type": "Offer", name: "Vertiefter Weg", price: "2777", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
-        { "@type": "Offer", name: "Persönlicher Weg", price: "4777", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#teilnahme` },
-      ],
+      // No dated instance or purchasable package while the cohort start is open.
     })
   }
 
