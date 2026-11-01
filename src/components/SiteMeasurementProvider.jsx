@@ -73,9 +73,9 @@ export function SiteMeasurementProvider({ children, environment = import.meta.en
         {(configured || choice?.receipt) && safe && <section data-no-translate="true" aria-label={copy.title} className="border-t bg-[#fffaf2] p-5 text-[#173f40]">
             <button type="button" className="min-h-12 underline" onClick={() => setOpen(!open)} aria-expanded={open}>{copy.settings}</button>
             {(open || !choice) && <div className="max-w-3xl space-y-3">
-                <p>{copy.purpose}</p><p>{copy.retention}</p><p>{copy.withdrawal} <a className="underline" href="/datenschutz#website-auswertung">{copy.details}</a></p>
-                <div className="flex flex-wrap gap-3"><button type="button" disabled={busy} className="min-h-12 rounded-xl border px-4" onClick={() => choose(false)}>{copy.no}</button>
-                    <button type="button" disabled={busy} className="min-h-12 rounded-xl border px-4" onClick={() => choose(true)}>{copy.yes}</button></div>
+                <p>{copy.question}</p><p className="text-sm">{copy.brief} <a className="underline" href="/datenschutz#website-auswertung">{copy.details}</a></p>
+                <div className="flex flex-wrap gap-3"><button type="button" disabled={busy} className="min-h-12 min-w-32 rounded-xl border px-4" onClick={() => choose(false)}>{choice?.enabled || choice?.pending ? copy.revoke : copy.no}</button>
+                    <button type="button" disabled={busy} className="min-h-12 min-w-32 rounded-xl border px-4" onClick={() => choose(true)}>{copy.yes}</button></div>
                 {failed && <p role="status">{copy.error}</p>}
             </div>}
         </section>}

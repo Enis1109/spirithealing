@@ -457,3 +457,11 @@ test("third-live registration has isolated access and five scheduled messages", 
     assert.equal((await service.access(token, registrationDate)).key, liveTalk3.key);
     assert.equal(await service.access(makeLiveToken(1, secret, liveTalk2), registrationDate), null);
 });
+
+
+test("November 3 registration needs no recording acknowledgment; privacy and separate newsletter remain", () => {
+    const accepted=normalizeLiveRegistration(form,liveTalk3);
+    assert.equal(accepted.newsletterConsent,false);
+    assert.throws(()=>normalizeLiveRegistration({...form,privacyConsent:false},liveTalk3),{field:"privacyConsent"});
+    assert.throws(()=>normalizeLiveRegistration(form,liveTalkFamily),{field:"recordingNotice"});
+});

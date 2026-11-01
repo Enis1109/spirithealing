@@ -35,7 +35,7 @@ export const liveTalk2 = Object.freeze({
 
 export const liveTalk3 = Object.freeze({
     key: "live-drehbuch-2026-11-03",
-    requiresRecordingNotice: true,
+    requiresRecordingNotice: false,
     title: "Bindungsmuster verstehen",
     startsAt: "2026-11-03T19:00:00.000Z",
     // Access cutoff, not an advertised duration. No end time has been promised.

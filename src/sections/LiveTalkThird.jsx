@@ -34,7 +34,6 @@ export const LiveTalkThird = () => {
                 email: data.get("email"),
                 company: data.get("company"),
                 privacyConsent: data.get("privacy") === "on",
-                recordingNoticeAccepted: data.get("recording") === "on",
                 newsletterConsent: data.get("newsletter") === "on",
             });
             setStatus("success");
@@ -86,7 +85,6 @@ export const LiveTalkThird = () => {
                     <input id="third-email" name="email" type="email" className={field} autoComplete="email" required maxLength={254}/>
                     <div className="absolute -left-[10000px]" aria-hidden="true"><label htmlFor="third-company">Firma</label><input id="third-company" name="company" tabIndex={-1} autoComplete="off"/></div>
                     <label className="mt-6 flex gap-3 text-sm leading-6"><input type="checkbox" name="privacy" required className="mt-1 h-4 w-4 shrink-0"/><span>Ich stimme der Verarbeitung meiner Angaben für die Anmeldung, den Zoom-Zugang und die Terminerinnerungen zu. <Link className="underline" to="/datenschutz">Datenschutz</Link>. Über den Link in meiner E-Mail kann ich absagen.</span></label>
-                    <div className="mt-5 rounded-xl bg-[#faf6ed] p-4 text-sm leading-6"><p className="font-semibold">Hinweis zur Aufzeichnung</p><p className="mt-2">Der Vortrag wird in der Zoom-Cloud aufgezeichnet. Deine Kamera und dein Mikrofon können ausgeschaltet bleiben. Wenn du sie einschaltest, können dein Bild und deine Beiträge Teil der Aufzeichnung sein.</p><label className="mt-3 flex gap-3"><input type="checkbox" name="recording" required className="mt-1 h-4 w-4 shrink-0"/><span>Ich habe den Hinweis zur Aufzeichnung gelesen.</span></label></div>
                     <label className="mt-4 flex gap-3 text-sm leading-6"><input type="checkbox" name="newsletter" className="mt-1 h-4 w-4 shrink-0"/><span>Ich möchte weitere Impulse von Spirit Healing per E-Mail erhalten. Freiwillig, mit separater E-Mail-Bestätigung und jederzeit abbestellbar.</span></label>
                     {info && !info.ready && <p role="status" className="mt-5 rounded-xl bg-[#faf6ed] p-4 leading-7">Die Anmeldung für diesen Termin ist noch nicht geöffnet. Wir bereiten sie gerade im Hintergrund vor.</p>}
                     {error && <p role="alert" className="mt-5 text-red-800">{error}</p>}

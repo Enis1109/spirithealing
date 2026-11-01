@@ -96,7 +96,9 @@ test('partial schema cannot skip surviving activity deletion or falsely acknowle
     assert.equal(siteMeasurementSchema.length,4);
 });
 test('DE/TR drafts disclose active/idle limits, optionality, pending retention and unconfirmed bookings',()=>{
-    for(const locale of ['de','tr'])for(const key of ['purpose','retention','withdrawal','yes','no','error'])assert.ok(siteMeasurementCopy[locale][key].length>10);
+    for(const locale of ['de','tr'])for(const key of ['purpose','retention','withdrawal','question','brief','error'])assert.ok(siteMeasurementCopy[locale][key].length>10);
+    assert.equal(siteMeasurementCopy.de.yes,'Erlauben');assert.equal(siteMeasurementCopy.de.no,'Ablehnen');assert.equal(siteMeasurementCopy.de.details,'Datenschutz');
+    assert.equal(siteMeasurementCopy.tr.yes,'İzin ver');assert.equal(siteMeasurementCopy.tr.no,'Reddet');
     assert.match(siteMeasurementCopy.de.purpose,/30 Sekunden/);assert.match(siteMeasurementCopy.tr.purpose,/30 saniye/);
 });
 test('booking handoff remains disconnected and rejects clicks, done status, absent consent and expired mapping',()=>{
