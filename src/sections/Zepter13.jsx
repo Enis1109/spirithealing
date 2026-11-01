@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom"
-import { fullPriceCheckoutUrl, klarnaPaymentCopy } from "@/content/klarnaPayments"
 import {
   ArrowDown,
   ArrowRight,
@@ -10,11 +9,7 @@ import {
   HeartHandshake,
 } from "lucide-react"
 
-const checkoutLinks = {
-  gemeinsamEinmalig: fullPriceCheckoutUrl("gemeinsam", import.meta.env.VITE_ZEPTER_GEMEINSAM_CHECKOUT_URL),
-  vertieftEinmalig: fullPriceCheckoutUrl("vertieft", import.meta.env.VITE_ZEPTER_VERTIEFT_CHECKOUT_URL),
-  persoenlichEinmalig: fullPriceCheckoutUrl("persoenlich", import.meta.env.VITE_ZEPTER_PERSOENLICH_4777_CHECKOUT_URL),
-}
+const introCallUrl = "https://calendly.com/spirit-healing/erstgespraech-13-wochen-programm"
 
 const recurringScenes = [
   "Du sagst Ja, obwohl in dir längst ein Nein lebt.",
@@ -58,54 +53,6 @@ const included = [
   "Teilnahme am gemeinsamen Abschlusstreffen in Berlin nach dem 13-Wochen-Prozess",
 ]
 
-const tiers = [
-  {
-    name: "Gemeinsamer Weg",
-    price: "1.555 €",
-    intro: "Der vollständige Prozess im gemeinsamen Spirit-Healing-Raum.",
-    items: [
-      "Onboarding ab 21. Oktober und alle 13 wöchentlichen Online-Termine des Programms",
-      "Matrix-Gespräch im Onboarding",
-      "Persönlicher Start- und Integrationsplan",
-      "Tägliche energetische Begleitung mit Tagesimpuls und aus der Gruppe entstehenden Meditationen",
-      "Aufzeichnungen, Workbook und Wochenimpulse",
-      "Community-Begleitung; Fragen werden aufgegriffen, wenn sie für den Gruppenprozess relevant sind",
-      "Vollständiges Rauhnachtsprogramm",
-      "Teilnahme am Abschlusstreffen in Berlin; Reise, Übernachtung und Verpflegung sind selbst zu bezahlen",
-    ],
-    checkout: checkoutLinks.gemeinsamEinmalig,
-  },
-  {
-    name: "Vertiefter Weg",
-    price: "2.777 €",
-    intro: "Für dich, wenn du regelmäßig persönlich reflektieren und schriftlich nachvollziehen möchtest, was sich in dir verändert.",
-    items: [
-      "Alles aus dem Gemeinsamen Weg",
-      "Schriftliche Ausarbeitung deines Matrix-Gesprächs",
-      "Sechs zusätzliche Kleingruppen-Calls im Zwei-Wochen-Rhythmus für persönliche Fragen und Integration",
-      "Ein gemeinsames Einzelsetting mit Sabine und Selcan vor den Rauhnächten",
-      "Persönliche schriftliche Prozessauswertung nach jeder vierwöchigen Phase",
-      "Abschließendes schriftliches Entwicklungsprotokoll",
-      "Freiwillige Peer-Räume zum Üben und für Erfahrungsaustausch in kleiner Runde",
-    ],
-    featured: true,
-    checkout: checkoutLinks.vertieftEinmalig,
-  },
-  {
-    name: "Persönlicher Weg",
-    price: "4.777 €",
-    intro: "Die engste Begleitung für einen Prozess, der täglich auf deine persönliche Bewegung reagieren darf.",
-    items: [
-      "Alles aus dem Vertieften Weg",
-      "Insgesamt drei persönliche Tandem-Settings mit Sabine und Selcan",
-      "Wöchentliche persönliche schriftliche Prozessauswertung",
-      "Täglich ein individuell auf deinen Prozess zugeschnittener Impuls",
-      "Antwort auf jede persönliche Anfrage im vereinbarten privaten Nachrichtenrahmen, werktags innerhalb von 48 Stunden",
-    ],
-    checkout: checkoutLinks.persoenlichEinmalig,
-  },
-]
-
 const SectionTitle = ({ eyebrow, title, intro, center = false, light = false }) => (
   <header className={center ? "mx-auto max-w-4xl text-center" : "max-w-4xl"}>
     <p className={`text-xs font-extrabold uppercase tracking-[0.24em] ${light ? "text-[#f1d7a0]" : "text-[#a67426]"}`}>{eyebrow}</p>
@@ -115,10 +62,6 @@ const SectionTitle = ({ eyebrow, title, intro, center = false, light = false }) 
 )
 
 export const Zepter13 = () => {
-  const scrollToBooking = () => {
-    document.getElementById("teilnahme")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
-
   return (
     <main data-no-translate className="min-h-screen bg-[#fbf8f1] text-[#173c39]">
       <section className="relative isolate min-h-screen overflow-hidden border-b border-[#dbe7e1] bg-[#f8f5ed]">
@@ -131,9 +74,9 @@ export const Zepter13 = () => {
               <img src="/Logo-tuerkis.jpeg?v=20260730" alt="Spirit Healing" className="h-12 w-12 rounded-full object-cover shadow-sm" />
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
             </a>
-            <button type="button" onClick={scrollToBooking} className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
-              Teilnahme wählen
-            </button>
+            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
+              Erstgespräch buchen
+            </a>
           </header>
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
@@ -147,9 +90,9 @@ export const Zepter13 = () => {
               </p>
 
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <button type="button" onClick={scrollToBooking} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
-                  Das Zepter zurückholen <ArrowDown size={18} />
-                </button>
+                <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
+                  Erstgespräch buchen <ArrowRight size={18} />
+                </a>
                 <a href="#ablauf" className="inline-flex items-center justify-center rounded-full border border-[#0f7d79]/35 bg-white/75 px-7 py-4 font-bold text-[#075a57] transition hover:bg-white">
                   Die innere Reise entdecken
                 </a>
@@ -195,7 +138,7 @@ export const Zepter13 = () => {
               <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f1d7a0]">11. November 2026 bis 3. Februar 2027</p>
               <h2 className="mt-4 font-serif text-3xl font-semibold">13-Wochen-Programm</h2>
               <p className="mt-5 text-lg leading-8 text-white/78">Am 11. November beginnt für alle der gemeinsame 13-Wochen-Prozess. Er führt durch Weihnachten, die Rauhnächte und den Jahreswechsel bis zum letzten gemeinsamen Termin am 3. Februar 2027.</p>
-              <p className="mt-5 font-semibold leading-7 text-white">Das vollständige Rauhnachtsprogramm bleibt in allen drei Begleitungswegen enthalten.</p>
+              <p className="mt-5 font-semibold leading-7 text-white">Das vollständige Rauhnachtsprogramm ist enthalten.</p>
             </article>
           </div>
         </div>
@@ -273,7 +216,7 @@ export const Zepter13 = () => {
             <p className="font-serif text-3xl font-semibold leading-tight text-[#173c39] sm:text-4xl">Eine wiederkehrende Szene. Die verteilten Rollen. Die verborgene Regel. Der Anteil, der das Zepter hält.</p>
             <p className="mt-6 text-lg leading-8 text-[#506864]">Zu Beginn des Programms schauen wir mit dir auf eine Situation, die sich in deinem Leben immer wieder zeigt. Gemeinsam arbeiten wir heraus, was dein System erwartet, wovor es dich schützen möchte und welche Rolle du selbst und andere darin übernehmen.</p>
             <p className="mt-5 text-lg leading-8 text-[#506864]">Du sollst danach nicht einfach nur mehr über dich wissen. Du sollst den Moment erkennen können, in dem der alte Film beginnt – und spüren, dass du heute eine andere Wahl hast.</p>
-            <button type="button" onClick={scrollToBooking} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Ich möchte meine Matrix erkennen</button>
+            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Erstgespräch buchen</a>
           </div>
         </div>
       </section>
@@ -312,7 +255,7 @@ export const Zepter13 = () => {
             ))}
           </ul>
           <p className="mt-6 text-sm leading-7 text-[#506864]">Die gemeinsamen Online-Termine des Programms finden mittwochs um 19:30 Uhr deutscher Zeit statt und dauern etwa 90 Minuten. Plane zusätzlich etwa 30 Minuten täglich für Übungen und Integration ein. Wenn du an einem Termin nicht teilnehmen kannst, steht dir die Aufzeichnung zur Verfügung.</p>
-          <p className="mt-5 text-sm leading-7 text-[#506864]">Die Teilnahme am Abschlusstreffen in Berlin ist in allen drei Begleitungswegen im Programmpreis enthalten. Reise, Übernachtung und Verpflegung sind selbst zu bezahlen. Der genaue Termin und Veranstaltungsort werden noch bekannt gegeben. Das Abschlusstreffen ist ein eigener Bestandteil des 13-Wochen-Programms.</p>
+          <p className="mt-5 text-sm leading-7 text-[#506864]">Die Teilnahme am Abschlusstreffen in Berlin ist im Programm enthalten. Reise, Übernachtung und Verpflegung sind selbst zu bezahlen. Der genaue Termin und Veranstaltungsort werden noch bekannt gegeben. Das Abschlusstreffen ist ein eigener Bestandteil des 13-Wochen-Programms.</p>
           </div>
         </div>
       </section>
@@ -320,34 +263,14 @@ export const Zepter13 = () => {
       <section id="teilnahme" className="scroll-mt-8 bg-[#f4ead6] py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SectionTitle
-            eyebrow="Drei Formen der Teilnahme"
-            title="Du entscheidest, wie eng du begleitet werden möchtest"
-            intro="Der inhaltliche Kern bleibt in allen drei Varianten erhalten. Der Unterschied liegt in der persönlichen Rückmeldung, der Gruppengröße zusätzlicher Termine und der individuellen Begleitung."
+            eyebrow="Dein nächster Schritt"
+            title="Lass uns über deinen Weg sprechen."
+            intro="Du interessierst dich für das 13-Wochen-Programm und möchtest uns kennenlernen? In einem persönlichen Erstgespräch ist Raum für dein Anliegen und deine Fragen. Gemeinsam schauen wir, ob das Programm und unsere Begleitung zu dir passen."
             center
           />
-          <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
-            {tiers.map((tier) => (
-              <article key={tier.name} className={`relative flex flex-col rounded-[2rem] p-7 sm:p-9 ${tier.featured ? "border-2 border-[#0f7d79] bg-white shadow-[0_24px_60px_rgba(15,125,121,0.13)]" : "border border-[#d9c69f] bg-[#fffaf2]"}`}>
-                {tier.featured && <span className="absolute right-6 top-0 -translate-y-1/2 rounded-full bg-[#0f7d79] px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">Empfohlene Vertiefung</span>}
-                <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#a67426]">{tier.name}</p>
-                <p className="mt-4 font-serif text-4xl font-semibold text-[#173c39]">{tier.price}</p>
-                <p className="mt-1 text-sm font-semibold text-[#6c7c78]">Gesamtpreis</p>
-                <p className="mt-5 min-h-24 text-lg leading-8 text-[#506864]">{tier.intro}</p>
-                <ul className="mt-7 flex-1 space-y-4 border-t border-[#d9e3de] pt-6">
-                  {tier.items.map((item) => <li key={item} className="flex gap-3 leading-7 text-[#365653]"><Check size={19} className="mt-1 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>)}
-                </ul>
-                <div className="mt-8 space-y-3">
-                  <a href={tier.checkout} target="_blank" rel="noopener noreferrer" className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-center font-bold transition ${tier.featured ? "bg-[#0f7d79] text-white hover:bg-[#075a57]" : "bg-[#173c39] text-white hover:bg-[#0f7d79]"}`}>Für {tier.price} buchen <ArrowRight size={18} className="shrink-0" /></a>
-                  <p className="pt-3 text-center font-semibold text-[#31534f]">{klarnaPaymentCopy.de.title}</p>
-                  <p className="text-center text-sm leading-6 text-[#63736f]">{klarnaPaymentCopy.de.note}</p>
-                  <a href={tier.checkout} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#0f7d79] bg-white px-5 py-3 text-center font-bold text-[#0f7d79] transition hover:bg-[#edf5f1]">{klarnaPaymentCopy.de.cta}</a>
-                </div>
-              </article>
-            ))}
-          </div>
-          <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-[#d9c69f] bg-white/70 px-6 py-5 text-center text-sm leading-6 text-[#63736f]">
-            <p>{klarnaPaymentCopy.de.details}</p>
-            <p className="mt-2">Peer-Räume sind freiwillig. Die persönliche Nachrichtenbegleitung ist Prozessbegleitung im vereinbarten Rahmen und ersetzt keine Akut- oder Krisenhilfe.</p>
+          <div className="mx-auto mt-9 max-w-2xl text-center">
+            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-8 py-4 font-bold text-white transition hover:bg-[#075a57]">Erstgespräch buchen <ArrowRight size={18} /></a>
+            <p className="mt-5 text-sm leading-7 text-[#506864]">Wähle bei Calendly einen passenden Termin für dein Erstgespräch.</p>
           </div>
         </div>
       </section>
@@ -375,7 +298,7 @@ export const Zepter13 = () => {
           <SectionTitle
             eyebrow="Das Zepter wieder übernehmen"
             title="Dein Film muss nicht so weitergehen."
-            intro="Wenn du spürst, dass deine Geschichte größer ist als die Wiederholungen, in denen du bisher festhingst, wähle den Weg, der zu deiner gewünschten Begleitungstiefe passt."
+            intro="Wenn du spürst, dass du das Zepter wieder selbst in die Hand nehmen möchtest, lass uns kennenlernen. In deinem Erstgespräch schauen wir gemeinsam auf dein Anliegen und deine Fragen zum 13-Wochen-Programm."
             center
             light
           />
@@ -383,9 +306,8 @@ export const Zepter13 = () => {
             <span className="rounded-full border border-white/20 px-4 py-2.5">Onboarding ab 21. Oktober 2026</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">Programm: 11. November 2026 bis 3. Februar 2027</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">Rauhnachtsprogramm inklusive</span>
-            <span className="rounded-full border border-white/20 px-4 py-2.5">{klarnaPaymentCopy.de.short}</span>
           </div>
-          <button type="button" onClick={scrollToBooking} className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 font-bold text-[#173c39] transition hover:bg-white">Teilnahme wählen <ArrowRight size={18} /></button>
+          <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 font-bold text-[#173c39] transition hover:bg-white">Erstgespräch buchen <ArrowRight size={18} /></a>
         </div>
       </section>
 
