@@ -9,7 +9,7 @@ import {
   HeartHandshake,
 } from "lucide-react"
 
-const introCallUrl = "https://calendly.com/spirit-healing/erstgespraech-13-wochen-programm"
+const introCallUrl = "https://calendly.com/d/dt8n-hrk-ftm/gemeinsames-erstgesprach-zum-13-wochen-programm"
 
 const recurringScenes = [
   "Du sagst Ja, obwohl in dir längst ein Nein lebt.",
@@ -270,7 +270,7 @@ export const Zepter13 = () => {
           />
           <div className="mx-auto mt-9 max-w-2xl text-center">
             <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-8 py-4 font-bold text-white transition hover:bg-[#075a57]">Erstgespräch buchen <ArrowRight size={18} /></a>
-            <p className="mt-5 text-sm leading-7 text-[#506864]">Wähle bei Calendly einen passenden Termin für dein Erstgespräch.</p>
+            <p className="mt-5 text-sm leading-7 text-[#506864]">30 Minuten mit Sabine und Selcan über Zoom. Wähle bei Calendly einen passenden Termin für dein Erstgespräch.</p>
           </div>
         </div>
       </section>
