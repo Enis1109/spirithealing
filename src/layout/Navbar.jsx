@@ -6,6 +6,7 @@ import { LANGUAGE_SWITCHER_ENABLED, useLanguage } from "@/i18n/LanguageContext";
 
 const navLinks = {
     de: [
+        { href: "/13-wochen-programm", label: "13-Wochen-Programm", featured: true },
         { href: "/coaching", label: "Prozessbegleitung" },
         { href: "/therapie", label: "Integrative Therapie" },
         { href: "/aufstellungsarbeit", label: "Aufstellungsarbeit" },
@@ -16,6 +17,7 @@ const navLinks = {
         { href: "/faq", label: "FAQ" },
     ],
     tr: [
+        { href: "/13-wochen-programm", label: "13 Haftalık Program", featured: true },
         { href: "/coaching", label: "Süreç Danışmanlığı" },
         { href: "/therapie", label: "Bütüncül Terapi" },
         { href: "/aufstellungsarbeit?lang=tr", label: "Dizim çalışması" },
@@ -81,7 +83,7 @@ export const Navbar = () => {
                     alt="Spirit Healing Logo"
                     className="h-14 w-14 rounded-full object-cover shadow-lg shadow-primary/20 ring-2 ring-primary/80 sm:h-16 sm:w-16"
                 />
-                <span className={isScrolled ? "text-xl font-bold tracking-tight text-muted-foreground transition hover:text-primary sm:text-2xl" : "text-xl font-bold tracking-tight transition hover:text-primary sm:text-2xl"}>
+                <span className={isScrolled ? "hidden sm:inline text-xl font-bold tracking-tight text-muted-foreground transition hover:text-primary sm:text-2xl 2xl:text-xl" : "hidden sm:inline text-xl font-bold tracking-tight transition hover:text-primary sm:text-2xl 2xl:text-xl"}>
                     Spirit Healing
                 </span>
             </Link>
@@ -92,9 +94,9 @@ export const Navbar = () => {
                         <Link 
                             to={link.href}
                             key={link.href}
-                            className={link.member
-                                ? "inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2 py-2 text-[13px] font-bold text-muted-foreground hover:bg-primary hover:text-primary-foreground 2xl:px-2.5 2xl:text-sm"
-                                : "rounded-full px-2 py-2 text-[13px] text-muted-foreground hover:bg-surface hover:text-primary-foreground 2xl:px-2.5 2xl:text-sm"}
+                            className={link.member || link.featured
+                                ? "inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2 py-2 text-[13px] font-bold text-muted-foreground hover:bg-primary hover:text-primary-foreground"
+                                : "rounded-full px-2 py-2 text-[13px] text-muted-foreground hover:bg-surface hover:text-primary-foreground"}
                         >
                             {link.member && <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />}
                             {link.label}
@@ -108,6 +110,14 @@ export const Navbar = () => {
                             {language === "tr" ? "Randevu al" : "Termin buchen"}
                         </Button>
                     </div>
+            <div className="flex items-center gap-2 2xl:hidden">
+                <Link
+                    to="/13-wochen-programm"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-3 py-2 text-xs font-bold text-primary-foreground sm:px-4 sm:text-sm"
+                >
+                    {language === "tr" ? "13 Haftalık Program" : "13-Wochen-Programm"}
+                </Link>
             <button
                 type="button"
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-surface/65 p-2 text-muted-foreground shadow-sm 2xl:hidden"
@@ -120,16 +130,17 @@ export const Navbar = () => {
             >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24}/>}
             </button>
+            </div>
         </nav>
         {isMobileMenuOpen && (
-            <div id="mobile-navigation" className="glass-strong animate-fade-in 2xl:hidden">
+            <div id="mobile-navigation" className="glass-strong max-h-[calc(100dvh-5rem)] overflow-y-auto animate-fade-in 2xl:hidden">
                 <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-3 px-6 py-6">
                     {links.map((link) => (
                             <Link 
                                 to={link.href}
                                 key={link.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className={link.member
+                                className={link.member || link.featured
                                     ? "flex items-center gap-2 rounded-xl border border-primary/35 bg-primary/10 px-4 py-3 text-lg font-bold text-muted-foreground hover:bg-primary/20 hover:text-primary"
                                     : "rounded-xl py-2 text-lg text-muted-foreground hover:text-primary"}
                             >
