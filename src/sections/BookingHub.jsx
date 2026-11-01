@@ -37,7 +37,7 @@ const copy = {
             {
                 icon: MessageCircle,
                 title: "Kostenfrei kennenlernen",
-                text: "15 Minuten für dein Anliegen, deine Fragen und ein erstes Gefühl für die Zusammenarbeit.",
+                text: "Ein kostenfreies Telefonat von 15 Minuten. Wir klären dein Anliegen, deine Fragen und ob eine Zusammenarbeit für dich stimmig ist.",
                 price: "Kostenfrei · 15 Min.",
                 people: [
                     ["Mit Sabine", bookingLinks.introSabine],
@@ -47,7 +47,7 @@ const copy = {
             {
                 icon: UserRound,
                 title: "Einzelsitzung beginnen",
-                text: "Ein fundierter Einstieg in ein persönliches, emotionales oder beziehungsbezogenes Thema.",
+                text: "Deine erste Sitzung mit Sabine oder Selcan. Wir nehmen uns Zeit für dein Anliegen und den Einstieg in deinen persönlichen Prozess.",
                 price: "222 € · 60 Min.",
                 people: [
                     ["Erstsitzung mit Sabine", bookingLinks.firstSabine],
@@ -57,7 +57,7 @@ const copy = {
             {
                 icon: UsersRound,
                 title: "Gemeinsame Begleitung",
-                text: "Sabine und Selcan begleiten dein Thema gemeinsam aus mehreren fachlichen Perspektiven.",
+                text: "Deine erste Sitzung mit Sabine und Selcan gemeinsam. Wir verbinden systemische Anteilearbeit und Energiearbeit und arbeiten gleichzeitig mit dir.",
                 price: "333 € · 60 Min.",
                 people: [
                     ["Gemeinsame Erstsitzung", bookingLinks.combinedFirst],
@@ -109,7 +109,7 @@ const copy = {
             {
                 icon: MessageCircle,
                 title: "Ücretsiz tanışma",
-                text: "Konun, soruların ve birlikte çalışmanın sana uygun olup olmadığını hissetmek için 15 dakika.",
+                text: "15 dakikalık ücretsiz bir telefon görüşmesi. Konunu, sorularını ve birlikte çalışmanın sana uygun olup olmadığını konuşuruz.",
                 price: "Ücretsiz · 15 dk.",
                 people: [
                     ["Sabine ile", bookingLinks.introSabine],
@@ -119,7 +119,7 @@ const copy = {
             {
                 icon: UserRound,
                 title: "Bireysel seansa başla",
-                text: "Kişisel, duygusal veya ilişki odaklı bir konuya sağlam bir başlangıç.",
+                text: "Sabine veya Selcan ile ilk seansın. Konuna ve kişisel sürecine birlikte başlamaya zaman ayırırız.",
                 price: "222 € · 60 dk.",
                 people: [
                     ["Sabine ile ilk seans", bookingLinks.firstSabine],
@@ -129,7 +129,7 @@ const copy = {
             {
                 icon: UsersRound,
                 title: "Ortak çalışma",
-                text: "Sabine ve Selcan konuna farklı uzmanlık perspektiflerinden birlikte eşlik eder.",
+                text: "Sabine ve Selcan ile birlikte ilk seansın. Sistemik içsel parçalar çalışması ve enerji çalışmasını birleştirerek seninle aynı anda çalışırız.",
                 price: "333 € · 60 dk.",
                 people: [
                     ["Ortak ilk seans", bookingLinks.combinedFirst],
