@@ -2,13 +2,12 @@ import { ArrowRight, CalendarDays, CalendarRange, HeartHandshake, MessageCircle,
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-import { contactOfferUrl } from "@/lib/contactOffers";
 
 const bookingLinks = {
-    introSabine: contactOfferUrl("introSabine"),
-    introSelcan: contactOfferUrl("introSelcan"),
-    firstSabine: contactOfferUrl("firstSabine"),
-    firstSelcan: contactOfferUrl("firstSelcan"),
+    introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
+    introSelcan: "https://calendly.com/selcan1975/erstgesprach",
+    firstSabine: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
+    firstSelcan: "https://calendly.com/selcan1975/erstsitzung-selcan",
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
 };
 
@@ -30,7 +29,7 @@ const copy = {
     de: {
         eyebrow: "Termin buchen",
         title: "Was ist für dich der passende nächste Schritt?",
-        intro: "Wähle zuerst die Art des Termins. Für ein Kennenlernen oder eine Einzelsitzung sende uns eine Terminanfrage; wir stimmen den Termin persönlich mit dir ab.",
+        intro: "Wähle die Art des Termins und anschließend einen freien Termin direkt in unserem Kalender.",
         choose: "Termin auswählen",
         request: "Termin anfragen",
         rescheduling: "Kostenfreie Umbuchung bis 48 Stunden vor dem Termin",
@@ -102,7 +101,7 @@ const copy = {
     tr: {
         eyebrow: "Randevu al",
         title: "Senin için uygun bir sonraki adım hangisi?",
-        intro: "Önce görüşme türünü seç. Tanışma veya bireysel seans için bize randevu talebini gönder; zamanı seninle birlikte belirleyelim.",
+        intro: "Önce görüşme türünü seç, ardından takvimimizden sana uygun bir randevu belirle.",
         choose: "Randevu seç",
         request: "Randevu talep et",
         rescheduling: "Randevudan 48 saat öncesine kadar ücretsiz tarih değişikliği",
