@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { NewsletterCampaignDrafts } from "@/components/NewsletterCampaignDrafts";
 import { LiveAttributionReport } from "@/components/LiveAttributionReport";
@@ -7,13 +7,13 @@ export const AdminLiveTalk = ({ endpoint = "/api/admin/live-talk", heading = "Li
     const [data, setData] = useState(null);
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false);
-    const load = async () => {
+    const load = useCallback(async () => {
         const response = await fetch(endpoint, { cache: "no-store" });
         const body = await response.json();
         if (!body.ok) throw new Error(response.status === 401 || response.status === 403 ? "Bitte melde dich zuerst im Admin-Bereich an und öffne diese Seite danach erneut." : "Übersicht konnte nicht geladen werden.");
         setData(body);
-    };
-    useEffect(() => { load().catch(e => setMessage(e.message)); }, []);
+    }, [endpoint]);
+    useEffect(() => { load().catch(e => setMessage(e.message)); }, [load]);
     const save = async (event) => {
         event.preventDefault(); setBusy(true); setMessage("");
         const form = new FormData(event.currentTarget);

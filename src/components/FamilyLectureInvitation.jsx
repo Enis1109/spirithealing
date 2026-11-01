@@ -1,8 +1,20 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { familyLecture } from "../../shared/familyLecture.js";
 
 export const FamilyLectureInvitation = ({ language = "de" }) => {
-    if (Date.now() >= Date.parse(familyLecture.startsAt)) return null;
+    const [expired, setExpired] = useState(() => Date.now() >= Date.parse(familyLecture.startsAt));
+    useEffect(() => {
+        let timer;
+        const update = () => {
+            const remaining = Date.parse(familyLecture.startsAt) - Date.now();
+            if (remaining <= 0) setExpired(true);
+            else timer = setTimeout(update, Math.min(remaining, 2147483647));
+        };
+        update();
+        return () => clearTimeout(timer);
+    }, []);
+    if (expired) return null;
     const tr = language === "tr";
     return <article data-no-translate="true" className="rounded-[2rem] border border-[#d8bd86]/40 bg-[#075d60] p-7 text-white sm:p-10">
         <p className="text-sm font-bold uppercase tracking-[0.15em] text-[#edcf96]">{tr ? "Ücretsiz çevrim içi seminer" : "Kostenloser Online-Vortrag"}</p>

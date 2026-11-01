@@ -5,13 +5,14 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { LanguageProvider } from '@/i18n/LanguageContext.jsx'
 import { ContentProvider } from '@/content/ContentContext.jsx'
+import { SiteMeasurementProvider } from '@/components/SiteMeasurementProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <LanguageProvider>
       <ContentProvider>
         <BrowserRouter>
-          <App />
+          <SiteMeasurementProvider><App /></SiteMeasurementProvider>
         </BrowserRouter>
       </ContentProvider>
     </LanguageProvider>

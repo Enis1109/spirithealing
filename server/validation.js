@@ -1,3 +1,4 @@
+import { getContactOffer } from "../src/lib/contactOffers.js";
 export const limits = Object.freeze({
     name: 100,
     email: 254,
@@ -60,6 +61,7 @@ export class ValidationError extends Error {
 }
 
 const commonFields = (body) => {
+    if (!body || typeof body !== "object" || Array.isArray(body)) throw new ValidationError("form");
     if (body.company) throw new ValidationError("form");
     if (body.privacyConsent !== true) throw new ValidationError("privacyConsent");
 
@@ -71,12 +73,26 @@ const commonFields = (body) => {
     };
 };
 
-export const validateContact = (body) => ({
-    ...commonFields(body),
-    phone: optionalText(body.phone, "phone", limits.phone),
-    topic: requiredText(body.topic, "topic", limits.topic),
-    message: requiredText(body.message, "message", limits.message),
-});
+export const validateContact = (body) => {
+    const common = commonFields(body);
+    const requestKind = body.requestKind ?? "general";
+    if (!["general", "appointment"].includes(requestKind)) throw new ValidationError("requestKind");
+    const offer = getContactOffer(body.offerCode);
+    if (requestKind === "appointment" && !offer) throw new ValidationError("offerCode");
+    if (requestKind === "appointment" && !body.requestKey) throw new ValidationError("requestKey");
+    if (requestKind === "general" && body.offerCode) throw new ValidationError("offerCode");
+    if (body.requestKey != null && (typeof body.requestKey !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.requestKey))) throw new ValidationError("requestKey");
+    return {
+        ...common,
+        phone: optionalText(body.phone, "phone", limits.phone),
+        requestKind,
+        offerCode: offer ? body.offerCode : null,
+        practitioner: offer?.practitioner ?? null,
+        requestKey: body.requestKey?.toLowerCase() ?? null,
+        topic: offer ? offer[common.locale] : requiredText(body.topic, "topic", limits.topic),
+        message: requestKind === "appointment" ? optionalText(body.message, "message", limits.message) ?? "" : requiredText(body.message, "message", limits.message),
+    };
+};
 
 export const validateZepterBankTransfer = (body) => {
     const paymentPlan = requiredText(body.paymentPlan, "paymentPlan", 24);

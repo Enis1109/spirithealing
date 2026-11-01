@@ -10,7 +10,8 @@ const socialSources = [
     ["telegram.org", "telegram"],
 ];
 
-const pageSessionId = globalThis.crypto?.randomUUID
+const legacyEnabled = import.meta.env?.VITE_LEGACY_FUNNEL_ENABLED === 'true' && import.meta.env?.VITE_SITE_MEASUREMENT_ENABLED !== 'true';
+const pageSessionId = !legacyEnabled ? null : globalThis.crypto?.randomUUID
     ? globalThis.crypto.randomUUID()
     : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 18)}`.slice(0, 36);
 
@@ -32,6 +33,7 @@ const inferredSource = (host) => socialSources.find(([domain]) => host?.endsWith
 export const getFunnelSessionId = () => pageSessionId;
 
 export const readAttribution = ({ searchParams, pathname }) => {
+    if (!legacyEnabled) return {};
     const host = referrerHost();
     const source = clean(searchParams.get("utm_source"), 80) || inferredSource(host) || "direct";
     const medium = clean(searchParams.get("utm_medium"), 80)
@@ -51,6 +53,7 @@ export const readAttribution = ({ searchParams, pathname }) => {
 };
 
 export const trackFunnelEvent = async ({ eventName, eventKey, attribution, locale }) => {
+    if (!legacyEnabled) return;
     try {
         await fetch("/api/analytics/funnel", {
             method: "POST",

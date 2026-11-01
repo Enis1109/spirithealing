@@ -20,7 +20,9 @@ const cleanSessionId = (value) => {
 
 const normalizeLocale = (value) => value === "tr" ? "tr" : "de";
 
-export const normalizeAttribution = (value = {}) => ({
+export const normalizeAttribution = (value = {}) => {
+    if (process.env.LEGACY_FUNNEL_ENABLED !== 'true' || process.env.SITE_MEASUREMENT_ENABLED === 'true') value = {};
+    return ({
     funnelSessionId: cleanSessionId(value.funnelSessionId),
     source: clean(value.source, 80),
     medium: clean(value.medium, 80),
@@ -30,6 +32,7 @@ export const normalizeAttribution = (value = {}) => ({
     landingPath: clean(value.landingPath, 255),
     referrerHost: clean(value.referrerHost, 160),
 });
+};
 
 export const normalizeFunnelEvent = (body = {}) => {
     const eventName = clean(body.eventName, 48);
@@ -47,6 +50,7 @@ export const normalizeFunnelEvent = (body = {}) => {
 };
 
 export const recordFunnelEvent = async ({ eventName, eventKey = "default", attribution, locale = "de" }) => {
+    if (process.env.LEGACY_FUNNEL_ENABLED !== 'true' || process.env.SITE_MEASUREMENT_ENABLED === 'true') return false;
     const normalized = normalizeFunnelEvent({ eventName, eventKey, attribution, locale });
     if (!normalized) return false;
 
@@ -103,8 +107,8 @@ export const getFunnelSummary = async (days = 7) => {
 
     const events = Object.fromEntries(eventRows.map((row) => [row.event_name, Number(row.total)]));
     const landingViews = events.landing_view || 0;
-    const registrations = Number(memberRows[0]?.registrations || events.registration_created || 0);
-    const activations = Number(memberRows[0]?.activations || events.registration_activated || 0);
+    const registrations = Number(memberRows[0]?.registrations || 0);
+    const activations = Number(memberRows[0]?.activations || 0);
 
     return {
         days: boundedDays,
@@ -113,7 +117,8 @@ export const getFunnelSummary = async (days = 7) => {
         registrationSubmits: events.registration_submit || 0,
         registrations,
         activations,
-        registrationRate: landingViews > 0 ? Math.round((registrations / landingViews) * 1000) / 10 : null,
+        registrationRate: null,
+        registrationRateUnavailableReason: 'Member totals and legacy landing events have different populations; no combined rate.',
         sources: sourceRows.map((row) => ({
             source: row.source,
             events: Number(row.events),

@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { contactOffers, contactOfferFromSearch } from "@/lib/contactOffers";
+import { contactRequestKey } from "@/lib/contactRequestKey";
+import { useSiteMeasurement } from "@/lib/siteMeasurementContext";
+import { useRef, useState } from "react";
 import { CheckCircle2, Facebook, HeartHandshake, Instagram, Languages, Mail, MessageCircleMore, Phone, Send } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Modal } from "@/components/Modal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { submitForm } from "@/lib/submissions";
@@ -98,6 +101,7 @@ export const contactContent = {
 const fieldClass = "mt-2 min-h-12 w-full rounded-xl border border-primary/35 bg-white/90 px-4 py-3 text-base text-muted-foreground outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-2 focus:ring-primary/25";
 
 export const Contact = () => {
+    const measurement = useSiteMeasurement();
     const { language } = useLanguage();
     const { content: publishedContent } = usePublishedContent();
     const defaults = contactContent[language];
@@ -110,29 +114,55 @@ export const Contact = () => {
         formCardTitle: getPublishedValue(publishedContent, "contact.form-card-title", language, defaults.formCardTitle),
         formCardText: getPublishedValue(publishedContent, "contact.form-card-text", language, defaults.formCardText),
     };
-    const [modalOpen, setModalOpen] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const offerCode = contactOfferFromSearch(searchParams.toString());
+    const appointment = Boolean(offerCode);
+    const [modalOpen, setModalOpen] = useState(appointment);
+    const [draft, setDraft] = useState({});
+    const submitting = useRef(false);
+    const requestCopy = language === "tr" ? {
+        title: "Randevu talep et", intro: "İsim ve e-posta adresin yeterli. Kişisel veya sağlık bilgilerini paylaşman gerekmez. Bu talep kesin bir rezervasyon değildir; tarihi birlikte belirleyeceğiz.",
+        offer: "İstediğin görüşme", general: "Başka bir soru", message: "Mesajın (isteğe bağlı)", placeholder: "Örneğin uygun olduğun zamanlar (isteğe bağlı)",
+    } : {
+        title: "Termin anfragen", intro: "Name und E-Mail genügen. Persönliche oder gesundheitliche Angaben sind nicht erforderlich. Dies ist eine Anfrage; den Termin stimmen wir gemeinsam ab.",
+        offer: "Gewünschte Sitzung", general: "Eine andere Frage", message: "Nachricht (optional)", placeholder: "Zum Beispiel passende Zeiten (freiwillig)",
+    };
+    const changeOffer = event => {
+        const next = new URLSearchParams(searchParams);
+        next.delete("offer");
+        if (event.target.value) next.set("offer", event.target.value);
+        setSearchParams(next, { replace: true });
+    };
     const [submitState, setSubmitState] = useState("idle");
     const [errorMessage, setErrorMessage] = useState("");
     const [newsletterStatus, setNewsletterStatus] = useState("not_requested");
     const [messageLength, setMessageLength] = useState(0);
 
     const openForm = () => {
-        setSubmitState("idle");
-        setErrorMessage("");
-        setNewsletterStatus("not_requested");
-        setMessageLength(0);
+        if (submitState === "success") {
+            setSubmitState("idle");
+            setErrorMessage("");
+            setNewsletterStatus("not_requested");
+            setDraft({});
+            setMessageLength(0);
+        }
         setModalOpen(true);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (submitting.current) return;
+        void measurement.track('inquiry_start');
+        submitting.current = true;
         setSubmitState("submitting");
         setErrorMessage("");
         const form = event.currentTarget;
         const formData = new FormData(form);
 
         try {
-            const result = await submitForm("/api/contact", {
+            const payload = {
+                requestKind: appointment ? "appointment" : "general",
+                offerCode: offerCode || null,
                 name: formData.get("name"),
                 email: formData.get("email"),
                 phone: formData.get("phone"),
@@ -142,14 +172,21 @@ export const Contact = () => {
                 newsletterConsent: formData.get("newsletter") === "on",
                 company: formData.get("company"),
                 locale: language,
-            });
+            };
+            const requestKey = await contactRequestKey(payload);
+            const context = measurement.context();
+            const result = await submitForm("/api/contact", { ...payload, requestKey, ...(context ? { measurement: context } : {}) });
             setNewsletterStatus(result.newsletterStatus);
             setSubmitState("success");
+            setDraft({});
             form.reset();
             setMessageLength(0);
         } catch (error) {
+            void measurement.track('form_error', error.code === 'validation' ? 'validation' : 'technical');
             setErrorMessage(error.code === "rate_limit" ? copy.rateError : copy.error);
             setSubmitState("error");
+        } finally {
+            submitting.current = false;
         }
     };
 
@@ -162,8 +199,8 @@ export const Contact = () => {
                     </Link>
                     <div>
                             <p className="font-semibold uppercase tracking-[0.18em] text-primary">{copy.eyebrow}</p>
-                            <h1 className="mt-2 text-4xl font-bold leading-tight text-white sm:text-5xl">{copy.title}</h1>
-                        <p className="mt-4 max-w-3xl text-lg leading-8 text-white/88">{copy.intro}</p>
+                            <h1 className="mt-2 text-4xl font-bold leading-tight text-white sm:text-5xl">{appointment ? requestCopy.title : copy.title}</h1>
+                        <p className="mt-4 max-w-3xl text-lg leading-8 text-white/88">{appointment ? requestCopy.intro : copy.intro}</p>
                     </div>
                 </header>
 
@@ -206,9 +243,10 @@ export const Contact = () => {
                             </span>
                             <p className="mt-6 text-sm font-bold uppercase tracking-[0.16em] text-primary">{copy.formCardEyebrow}</p>
                             <h2 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">{copy.formCardTitle}</h2>
-                            <p className="mt-4 max-w-xl text-lg leading-8 text-muted-foreground/80">{copy.formCardText}</p>
+                            <p className="mt-4 max-w-xl text-lg leading-8 text-muted-foreground/80">{appointment ? requestCopy.intro : copy.formCardText}</p>
+                            {appointment && <p className="mt-3 font-bold">{contactOffers[offerCode][language]}</p>}
                             <button type="button" onClick={openForm} className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-fit">
-                                {copy.openForm}
+                                {appointment ? requestCopy.title : copy.openForm}
                                 <Send className="h-5 w-5" aria-hidden="true" />
                             </button>
                         </div>
@@ -216,7 +254,7 @@ export const Contact = () => {
                 </div>
             </section>
 
-            <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={submitState === "success" ? copy.successTitle : copy.formTitle} closeLabel={copy.close}>
+            <Modal open={modalOpen} onClose={() => { if (!submitting.current) setModalOpen(false); }} title={submitState === "success" ? copy.successTitle : appointment ? requestCopy.title : copy.formTitle} closeLabel={copy.close}>
                 {submitState === "success" ? (
                     <div className="py-5 text-center">
                         <CheckCircle2 className="mx-auto h-16 w-16 text-primary" aria-hidden="true" />
@@ -227,50 +265,57 @@ export const Contact = () => {
                         </button>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="mt-3">
-                        <p className="text-sm text-muted-foreground/75">{copy.formIntro}</p>
+                    <form onSubmit={handleSubmit} onInputCapture={() => { void measurement.track('inquiry_start'); }}
+                        onInvalidCapture={() => { void measurement.track('form_error', 'validation'); }}
+                        onChange={event => setDraft(Object.fromEntries(new FormData(event.currentTarget)))} className="mt-3">
+                        <fieldset disabled={submitState === "submitting"}>
+                        <p className="text-sm text-muted-foreground/75">{appointment ? requestCopy.intro : copy.formIntro}</p>
+                        <label className="mt-5 block text-sm font-semibold">{requestCopy.offer}
+                            <select className={fieldClass} value={offerCode} onChange={changeOffer}><option value="">{requestCopy.general}</option>{Object.entries(contactOffers).map(([code, offer]) => <option key={code} value={code}>{offer[language]}</option>)}</select>
+                        </label>
                         <div className="pointer-events-none absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
                             <label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label>
                         </div>
                         <div className="mt-6 grid gap-5 sm:grid-cols-2">
                             <label className="block text-sm font-semibold text-muted-foreground">
                                 {copy.name} *
-                                <input className={fieldClass} type="text" name="name" autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required />
+                                <input className={fieldClass} type="text" name="name" defaultValue={draft.name || ""} autoComplete="name" maxLength={100} placeholder={copy.namePlaceholder} required />
                             </label>
                             <label className="block text-sm font-semibold text-muted-foreground">
                                 {copy.email} *
-                                <input className={fieldClass} type="email" name="email" autoComplete="email" inputMode="email" maxLength={254} pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" title={copy.emailFormat} placeholder={copy.emailPlaceholder} required />
+                                <input className={fieldClass} type="email" name="email" defaultValue={draft.email || ""} autoComplete="email" inputMode="email" maxLength={254} pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" title={copy.emailFormat} placeholder={copy.emailPlaceholder} required />
                                 <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground/60">{copy.emailFormat}</span>
                             </label>
                             <label className="block text-sm font-semibold text-muted-foreground">
                                 {copy.phone}
-                                <input className={fieldClass} type="tel" name="phone" autoComplete="tel" maxLength={40} placeholder={copy.phonePlaceholder} />
+                                <input className={fieldClass} type="tel" name="phone" defaultValue={draft.phone || ""} autoComplete="tel" maxLength={40} placeholder={copy.phonePlaceholder} />
                             </label>
-                            <label className="block text-sm font-semibold text-muted-foreground">
+                            {!appointment && <label className="block text-sm font-semibold text-muted-foreground">
                                 {copy.topic} *
-                                <select className={fieldClass} name="topic" defaultValue={copy.topics[0]} required>
+                                <select className={fieldClass} name="topic" defaultValue={draft.topic || copy.topics[0]} required>
                                     {copy.topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
                                 </select>
-                            </label>
+                            </label>}
                         </div>
 
                         <label className="mt-5 block text-sm font-semibold text-muted-foreground">
                             <span className="flex items-center justify-between gap-3">
-                                <span>{copy.message} *</span>
+                                <span>{appointment ? requestCopy.message : `${copy.message} *`}</span>
                                 <span className="font-normal text-muted-foreground/60">{messageLength}/{MESSAGE_LIMIT} {copy.characters}</span>
                             </span>
                             <textarea
                                 className={`${fieldClass} min-h-32 resize-y`}
                                 name="message"
+                                defaultValue={draft.message || ""}
                                 maxLength={MESSAGE_LIMIT}
                                 onChange={(event) => setMessageLength(event.target.value.length)}
-                                placeholder={copy.messagePlaceholder}
-                                required
+                                placeholder={appointment ? requestCopy.placeholder : copy.messagePlaceholder}
+                                required={!appointment}
                             />
                         </label>
 
                         <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted-foreground">
-                            <input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="privacy" required />
+                            <input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="privacy" defaultChecked={draft.privacy === "on"} required />
                             <span>
                                 {copy.privacyStart}
                                 <Link to="/datenschutz" target="_blank" className="font-semibold text-primary underline decoration-primary/50 underline-offset-2 hover:decoration-primary">{copy.privacyLink}</Link>
@@ -280,7 +325,7 @@ export const Contact = () => {
 
                         <div className="mt-5 rounded-2xl border border-primary/30 bg-primary/[0.07] p-4">
                             <label className="flex cursor-pointer items-start gap-3 text-sm font-semibold leading-6 text-muted-foreground">
-                                <input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="newsletter" />
+                                <input className="mt-1.5 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="newsletter" defaultChecked={draft.newsletter === "on"} />
                                 <span>{copy.newsletter}</span>
                             </label>
                             <p className="ml-7 mt-2 text-xs leading-5 text-muted-foreground/70">{copy.newsletterHint}</p>
@@ -292,6 +337,7 @@ export const Contact = () => {
                             {submitState === "submitting" ? copy.submitting : copy.submit}
                             <Send className="h-5 w-5" aria-hidden="true" />
                         </button>
+                        </fieldset>
                     </form>
                 )}
             </Modal>

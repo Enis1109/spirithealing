@@ -1,3 +1,4 @@
+import { SiteMeasurementPrivacy } from '../components/SiteMeasurementPrivacy';
 import { Code2, Lightbulb, Rocket, Users, ArrowRight, Check, Calendar1 } from "lucide-react"
 import { Button } from "@/components/Button"
 import { InlineWidget, PopupButton } from "react-calendly";
@@ -431,6 +432,7 @@ export const Daten = () => {
                             (z. B. nach abgeschlossener Bearbeitung Ihres Anliegens). Zwingende gesetzliche Bestimmungen –<br/>
                             insbesondere gesetzliche Aufbewahrungsfristen – bleiben unberührt.<br/>
                         </p>
+                        <SiteMeasurementPrivacy />
                         <h3 id="berlin-messung" className="scroll-mt-24 text-lg md:text-xl leading-tight font-bold text-primary">Freiwillige Werbemessung für das Berliner Seminar</h3>
                         <p className="text-md">
                             Die folgenden Angaben betreffen die frühere Berliner Seminarkampagne. Auf der aktuellen Seite für die

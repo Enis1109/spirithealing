@@ -535,6 +535,13 @@ const schemaStatements = [
 ];
 
 const additiveColumns = [
+    { table: "contact_submissions", column: "request_kind", definition: "VARCHAR(24) NULL" },
+    { table: "contact_submissions", column: "offer_code", definition: "VARCHAR(32) NULL" },
+    { table: "contact_submissions", column: "practitioner", definition: "VARCHAR(24) NULL" },
+    { table: "contact_submissions", column: "request_key", definition: "CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL UNIQUE" },
+    { table: "contact_submissions", column: "request_hash", definition: "CHAR(64) NULL" },
+    { table: "contact_submissions", column: "processing_status", definition: "VARCHAR(24) NULL" },
+    { table: "contact_submissions", column: "processing_version", definition: "INT UNSIGNED NULL" },
     { table: "members", column: "password_hash", definition: "VARCHAR(255) NULL AFTER email" },
     { table: "members", column: "password_set_at", definition: "DATETIME NULL AFTER password_hash" },
     { table: "members", column: "role", definition: "VARCHAR(24) NOT NULL DEFAULT 'member' AFTER locale" },

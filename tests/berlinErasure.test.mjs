@@ -102,3 +102,28 @@ test('a connection with an unreleased lock is destroyed, never returned to the p
   await assert.rejects(withBerlinPaymentLock(db, 'pi_eraseTest', async () => true), /lock release failed/);
   assert.equal(destroyed, true); assert.equal(released, false);
 });
+
+test('lock cleanup preserves task values and rejection identity, including falsy rejection', async () => {
+  for (const value of [42, undefined, null]) {
+    let released = 0;
+    const db = { getConnection: async () => ({ query: async () => [[{ acquired: 1 }]], release() { released++; } }) };
+    assert.equal(await withBerlinPaymentLock(db, 'pi_eraseTest', async () => value), value);
+    assert.equal(released, 1);
+  }
+  for (const failure of [new Error('task failed'), undefined, null, 0]) {
+    let released = 0, caught = false;
+    const db = { getConnection: async () => ({ query: async () => [[{ acquired: 1 }]], release() { released++; } }) };
+    try { await withBerlinPaymentLock(db, 'pi_eraseTest', async () => { throw failure; }); }
+    catch (error) { caught = true; assert.equal(error, failure); }
+    assert.equal(caught, true); assert.equal(released, 1);
+  }
+});
+test('lock release failure retains precedence over task failure', async () => {
+  let destroyed = 0, released = 0;
+  const db = { getConnection: async () => ({
+    query: async sql => { if (sql.includes('RELEASE_LOCK')) throw new Error('release'); return [[{ acquired: 1 }]]; },
+    destroy() { destroyed++; }, release() { released++; },
+  }) };
+  await assert.rejects(withBerlinPaymentLock(db, 'pi_eraseTest', async () => { throw new Error('task'); }), /lock release failed/);
+  assert.equal(destroyed, 1); assert.equal(released, 0);
+});

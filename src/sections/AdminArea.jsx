@@ -1,3 +1,5 @@
+import { AdminContactRequests } from "@/sections/AdminContactRequests";
+import { AdminSiteMeasurement } from "@/sections/AdminSiteMeasurement";
 import {
     Bot,
     BrainCircuit,
@@ -399,6 +401,8 @@ export const AdminArea = () => {
     if (sessionState === "error") return <main className="flex min-h-screen items-center justify-center bg-[#eaf4f1] px-4 font-bold text-red-800">Der Admin-Bereich ist gerade nicht erreichbar.</main>;
 
     const navItems = [
+        { id: "contacts", label: "Kontaktanfragen", icon: ClipboardList },
+        { id: "measurement", label: "Website-Kontrollpunkte", icon: ClipboardList },
         { id: "overview", label: "Übersicht", icon: LayoutDashboard },
         { id: "pages", label: "Homepage-Texte", icon: FileText },
         { id: "berlin", label: "Aufstellungsarbeit", icon: MapPin },
@@ -436,7 +440,7 @@ export const AdminArea = () => {
                     <Link to="/admin/live-vortrag" className="mt-2 flex min-h-12 items-center rounded-2xl px-3 text-sm font-bold text-[#4e6d6e] hover:bg-[#eaf4f1]">Live-Vortrag · Anmeldung & Versand</Link>
                     <Link to="/admin/live-vortrag-familienaufstellung" className="mt-2 flex min-h-12 items-center rounded-2xl px-3 text-sm font-bold text-[#4e6d6e] hover:bg-[#eaf4f1]">Familienaufstellung · 27. Oktober</Link>
                     <div className="mt-3 hidden rounded-2xl bg-[#eaf4f1] p-4 text-sm leading-6 text-[#4e6d6e] lg:block">
-                        <ShieldCheck className="mb-2 h-5 w-5 text-[#0f8b8d]" /> {activeTab === "ai" ? "KI-Ergebnisse bleiben intern. Außenaktionen sind gesperrt." : "Änderungen bleiben als Entwurf unsichtbar, bis „Veröffentlichen“ gewählt wird."}
+                        <ShieldCheck className="mb-2 h-5 w-5 text-[#0f8b8d]" /> {activeTab === "contacts" ? "Bearbeitungsstatus wird sofort intern gespeichert." : activeTab === "ai" ? "KI-Ergebnisse bleiben intern. Außenaktionen sind gesperrt." : "Änderungen bleiben als Entwurf unsichtbar, bis „Veröffentlichen“ gewählt wird."}
                     </div>
                 </aside>
 
@@ -543,6 +547,9 @@ export const AdminArea = () => {
                     {contentState === "ready" && activeTab === "programs" && (
                         <AdminPrograms requestJson={requestJson} setNotice={setNotice} />
                     )}
+
+                    {contentState === "ready" && activeTab === "contacts" && <AdminContactRequests />}
+                    {contentState === "ready" && activeTab === "measurement" && <AdminSiteMeasurement />}
 
                     {contentState === "ready" && activeTab === "cash" && <AdminConstellationCash />}
 

@@ -11,7 +11,8 @@ test('cookie preferences stay in the footer, with no popup or automatic opening'
     optimizeDeps: { noDiscovery: true, include: [], entries: [] },
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: 'custom' });
   try {
-    const { BerlinMeasurementSettings, useBerlinMeasurement } = await server.ssrLoadModule('/src/components/BerlinMeasurement.jsx');
+    const { BerlinMeasurementSettings } = await server.ssrLoadModule('/src/components/BerlinMeasurement.jsx');
+    const { useBerlinMeasurement } = await server.ssrLoadModule('/src/lib/useBerlinMeasurement.js');
     let initialState;
     const Probe = () => {
       initialState = useBerlinMeasurement('');

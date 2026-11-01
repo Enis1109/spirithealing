@@ -1,3 +1,7 @@
+import { createRequestOrigins } from "./server/requestOrigins.js";
+import { registerContactRoutes } from "./server/contactRequests.js";
+import { createSiteMeasurement, registerSiteMeasurementRoutes, initializeSiteMeasurement,
+    cleanSiteMeasurement, startSiteMeasurementCleanup } from './server/siteMeasurement.js';
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
@@ -155,7 +159,6 @@ import {
 } from "./server/aiCommandCenterValidation.js";
 import {
     ValidationError,
-    validateContact,
     validateMemberAccess,
     validateMemberLogin,
     validateMemberPasswordRequest,
@@ -231,7 +234,9 @@ const berlinMetaSettings = metaConfig(process.env);
 const berlinWebhookSettings = berlinWebhookConfig(process.env);
 registerBerlinWebhook(app, { db: database, config: berlinWebhookSettings,
     ready: async () => { await startupPromise; return !startupError; } });
-app.use(express.json({ limit: "64kb", type: "application/json" }));
+// GHSA-27r3-jxmh-p828: browser/API clients send uncompressed bodies. Reject encoded
+// requests before decompression; do not weaken limits or run a broad package update.
+app.use(express.json({ limit: "64kb", type: "application/json", inflate: false }));
 
 app.get("/robots.txt", (_request, response) => {
     response.type("text/plain").sendFile(path.join(currentDirectory, "public", "robots.txt"));
@@ -280,23 +285,12 @@ const analyticsLimiter = rateLimit({
     legacyHeaders: false,
     message: { ok: false, error: "rate_limit" },
 });
+const measurementRevokeLimiter = rateLimit({
+    windowMs: 60 * 1000, limit: 60, standardHeaders: 'draft-8', legacyHeaders: false,
+    message: { ok: false, error: 'rate_limit' },
+});
 
-const sameOriginOnly = (request, response, next) => {
-    const origin = request.get("origin");
-    if (!origin || origin.replace("://www.", "://") === productionOrigin.replace("://www.", "://") || /^http:\/\/127\.0\.0\.1:\d+$/u.test(origin) || /^http:\/\/localhost:\d+$/u.test(origin)) {
-        return next();
-    }
-    return response.status(403).json({ ok: false, error: "origin" });
-};
-
-const adminSameOriginOnly = (request, response, next) => {
-    const origin = request.get("origin");
-    const normalizedOrigin = String(origin || "").replace("://www.", "://");
-    const normalizedProductionOrigin = productionOrigin.replace("://www.", "://");
-    const isLocal = /^http:\/\/(127\.0\.0\.1|localhost):\d+$/u.test(origin || "");
-    if (origin && (normalizedOrigin === normalizedProductionOrigin || isLocal)) return next();
-    return response.status(403).json({ ok: false, error: "origin" });
-};
+const { sameOriginOnly, adminSameOriginOnly } = createRequestOrigins(productionOrigin);
 
 const getAdminMember = async (request, response) => {
     const member = await getMemberFromRequest(request);
@@ -311,6 +305,13 @@ const getAdminMember = async (request, response) => {
     }
     return member;
 };
+const siteMeasurementConfigured = ['local','staging','production'].includes(process.env.SITE_MEASUREMENT_ENVIRONMENT);
+const siteMeasurementEnvironment = siteMeasurementConfigured ? process.env.SITE_MEASUREMENT_ENVIRONMENT : 'production';
+const siteMeasurementEnabled = process.env.SITE_MEASUREMENT_ENABLED === 'true'
+    && siteMeasurementConfigured;
+const siteMeasurement = createSiteMeasurement({ db: database, enabled: siteMeasurementEnabled, environment: siteMeasurementEnvironment });
+registerSiteMeasurementRoutes(app, { service: siteMeasurement, sameOrigin: adminSameOriginOnly,
+    limiter: analyticsLimiter, revokeLimiter: measurementRevokeLimiter, getAdminMember });
 
 const experienceEnabled = process.env.EXPERIENCE_GROUP_ENABLED === 'true';
 const memberAccessResendService = createMemberAccessResendService({
@@ -400,64 +401,9 @@ const loslassenIsAvailable = () => protectedFileIsAvailable(memberLoslassenPath)
 const wiedergeburtIsAvailable = () => protectedFileIsAvailable(memberWiedergeburtPath);
 const ichBinLichtIsAvailable = () => protectedFileIsAvailable(memberIchBinLichtPath);
 
-app.post("/api/contact", submissionLimiter, sameOriginOnly, async (request, response) => {
-    try {
-        const form = validateContact(request.body);
-        let newsletterStatus = form.newsletterConsent ? "pending" : "not_requested";
-
-        const [result] = await database.execute(
-            `INSERT INTO contact_submissions (
-                name, email, phone, topic, message, locale, privacy_consent_version,
-                newsletter_requested, newsletter_status, notification_status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-            [
-                form.name,
-                form.email,
-                form.phone,
-                form.topic,
-                form.message,
-                form.locale,
-                privacyConsentVersion,
-                form.newsletterConsent ? 1 : 0,
-                newsletterStatus,
-            ],
-        );
-
-        if (form.newsletterConsent) {
-            try {
-                newsletterStatus = await registerNewsletterInterest({
-                    name: form.name,
-                    email: form.email,
-                    locale: form.locale,
-                    source: "contact_form",
-                });
-            } catch (error) {
-                console.error("Newsletter confirmation could not be prepared", error);
-                newsletterStatus = "confirmation_failed";
-            }
-            await database.execute(
-                "UPDATE contact_submissions SET newsletter_status = ? WHERE id = ?",
-                [newsletterStatus, result.insertId],
-            );
-        }
-
-        try {
-            await sendContactNotification({ id: result.insertId, ...form });
-            await updateNotificationStatus("contact_submissions", result.insertId, "sent");
-        } catch (error) {
-            console.error("Contact notification could not be sent", error);
-            await updateNotificationStatus("contact_submissions", result.insertId, "failed");
-        }
-
-        return response.status(201).json({ ok: true, newsletterStatus });
-    } catch (error) {
-        if (error instanceof ValidationError) {
-            return response.status(400).json({ ok: false, error: "validation", field: error.field });
-        }
-        console.error("Contact submission failed", error);
-        return response.status(500).json({ ok: false, error: "server" });
-    }
-});
+registerContactRoutes(app, { database, submissionLimiter, sameOriginOnly, adminSameOriginOnly,
+    getAdminMember, privacyConsentVersion, sendContactNotification, registerNewsletterInterest,
+    recordInquiryMeasurement: context => siteMeasurement.record({ context, event_name: 'inquiry_success', schema_version: 1, environment: siteMeasurementEnvironment }, true) });
 
 app.get("/api/webinar/slots", (_request, response) => {
     response.set("Cache-Control", "no-store");
@@ -1057,6 +1003,7 @@ app.post("/api/admin/berlin/measurement/erase", adminSameOriginOnly, async (requ
 });
 
 app.post("/api/analytics/funnel", analyticsLimiter, sameOriginOnly, async (request, response) => {
+    if (process.env.LEGACY_FUNNEL_ENABLED !== 'true' || process.env.SITE_MEASUREMENT_ENABLED === 'true') return response.status(404).json({ ok: false });
     const event = normalizeFunnelEvent(request.body);
     if (!event) return response.status(400).json({ ok: false, error: "validation" });
 
@@ -1591,7 +1538,7 @@ app.post("/api/admin/programs/:slug/prepare", adminSameOriginOnly, async (reques
 app.put(
     "/api/admin/programs/:slug/weeks/:weekNumber/assets/:kind",
     adminSameOriginOnly,
-    express.raw({ type: ["application/pdf", "audio/*", "image/jpeg", "image/png", "image/webp"], limit: "80mb" }),
+    express.raw({ type: ["application/pdf", "audio/*", "image/jpeg", "image/png", "image/webp"], limit: "80mb", inflate: false }),
     async (request, response) => {
         const member = await getAdminMember(request, response);
         if (!member) return undefined;
@@ -1989,6 +1936,14 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    try {
+        if (siteMeasurementEnabled) await initializeSiteMeasurement(database);
+        else await cleanSiteMeasurement(database);
+    } catch {
+        siteMeasurement.enabled = false;
+        console.error('Optional website measurement unavailable; collection disabled');
+    }
+    startSiteMeasurementCleanup(database);
     if (closingEnabled) await initializeClosingQuestionnaire(database);
     await initializeConstellationAvailability(database);
     if (experienceEnabled) {

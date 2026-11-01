@@ -21,23 +21,31 @@ export async function withBerlinLock(db, name, task) {
   const connection = typeof db.getConnection === 'function' ? await db.getConnection() : db;
   let locked = false;
   let discarded = false;
+  let result;
+  let failure;
+  let failed = false;
   try {
     const [rows] = await connection.query('SELECT GET_LOCK(?, 5) AS acquired', [name]);
     if (Number(rows[0]?.acquired) !== 1) throw new Error('Berlin payment lock unavailable');
     locked = true;
-    return await task(connection);
-  } finally {
-    try {
-      if (locked) {
-        try { await connection.query('SELECT RELEASE_LOCK(?) AS released', [name]); }
-        catch {
-          discarded = true;
-          connection.destroy();
-          throw new Error('Berlin payment lock release failed');
-        }
-      }
-    } finally { if (connection !== db && !discarded) connection.release(); }
+    result = await task(connection);
+  } catch (error) {
+    failed = true;
+    failure = error;
   }
+  // Preserve the existing precedence: release failure overrides task failure.
+  try {
+    if (locked) {
+      try { await connection.query('SELECT RELEASE_LOCK(?) AS released', [name]); }
+      catch {
+        discarded = true;
+        connection.destroy();
+        throw new Error('Berlin payment lock release failed');
+      }
+    }
+  } finally { if (connection !== db && !discarded) connection.release(); }
+  if (failed) throw failure;
+  return result;
 }
 
 export async function berlinPaymentErased(db, hash) {

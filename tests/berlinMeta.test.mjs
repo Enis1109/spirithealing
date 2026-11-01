@@ -148,5 +148,7 @@ test('retention removes old delivery markers and expired consent; no client toke
   const component=readFileSync(new URL('../src/components/BerlinMeasurement.jsx',import.meta.url),'utf8');
   assert.equal(component.includes('META_CAPI_ACCESS_TOKEN'),false);
   assert.ok(component.includes('Meta-Werbemessung'));
-  assert.ok(component.includes('metaReceipt: next.metaReceipt')); // retained before registration awaits
+  const hook=readFileSync(new URL('../src/lib/useBerlinMeasurement.js',import.meta.url),'utf8');
+  assert.equal(hook.includes('META_CAPI_ACCESS_TOKEN'),false);
+  assert.ok(hook.includes('metaReceipt: next.metaReceipt')); // retained before registration awaits
 });

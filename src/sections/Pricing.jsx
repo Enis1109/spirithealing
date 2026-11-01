@@ -10,14 +10,14 @@ import {
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const contactUrl = "https://www.spirit-healing.tr/kontakt";
+import { contactOfferUrl } from "@/lib/contactOffers";
 
 const bookingLinks = {
-    introSabine: contactUrl,
-    introSelcan: contactUrl,
-    firstSabine: contactUrl,
-    firstSelcan: contactUrl,
-    followSabine: contactUrl,
+    introSabine: contactOfferUrl("introSabine"),
+    introSelcan: contactOfferUrl("introSelcan"),
+    firstSabine: contactOfferUrl("firstSabine"),
+    firstSelcan: contactOfferUrl("firstSelcan"),
+    followSabine: contactOfferUrl("followSabine"),
     followSelcan: "https://calendly.com/selcan1975/folgesitzung-selcan",
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
     combinedFollow: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
@@ -277,6 +277,8 @@ const sectionIcons = {
 
 const BookingCard = ({ item, labels, icon }) => {
     const CardIcon = icon;
+    const internal = item.link.startsWith('/kontakt?offer=');
+    const BookingLink = internal ? Link : 'a';
 
     return (
         <article className="glass-strong group flex h-full flex-col rounded-3xl p-5 shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-6">
@@ -306,12 +308,12 @@ const BookingCard = ({ item, labels, icon }) => {
                 </div>
             </dl>
 
-            <a
-                href={item.link}
+            <BookingLink
+                {...(internal ? { to: item.link } : { href: item.link })}
                 className="mt-6 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-primary px-5 py-3 text-base font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-                {item.link === contactUrl ? labels.request : labels.book}<ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
-            </a>
+                {item.link.startsWith("/kontakt?offer=") ? labels.request : labels.book}<ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+            </BookingLink>
         </article>
     );
 };

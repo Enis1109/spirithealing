@@ -2,13 +2,13 @@ import { ArrowRight, CalendarDays, CalendarRange, HeartHandshake, MessageCircle,
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const contactUrl = "https://www.spirit-healing.tr/kontakt";
+import { contactOfferUrl } from "@/lib/contactOffers";
 
 const bookingLinks = {
-    introSabine: contactUrl,
-    introSelcan: contactUrl,
-    firstSabine: contactUrl,
-    firstSelcan: contactUrl,
+    introSabine: contactOfferUrl("introSabine"),
+    introSelcan: contactOfferUrl("introSelcan"),
+    firstSabine: contactOfferUrl("firstSabine"),
+    firstSelcan: contactOfferUrl("firstSelcan"),
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
 };
 
@@ -173,6 +173,9 @@ const copy = {
     },
 };
 
+const OfferLink = ({ url, children, ...props }) => url.startsWith('/kontakt?offer=')
+    ? <Link to={url} {...props}>{children}</Link> : <a href={url} {...props}>{children}</a>;
+
 export const BookingHub = () => {
     const { language } = useLanguage();
     const content = copy[language];
@@ -206,13 +209,13 @@ export const BookingHub = () => {
                             <p className="mt-3 flex-1 leading-7 text-muted-foreground/80">{option.text}</p>
                             <div className="mt-6 space-y-3 border-t border-muted-foreground/15 pt-5">
                                 {option.people.map(([label, url]) => (
-                                    <a
+                                    <OfferLink
                                         key={label}
-                                        href={url}
+                                        url={url}
                                         className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                                     >
-                                        {label} – {url === contactUrl ? content.request : content.choose}
-                                    </a>
+                                        {label} – {url.startsWith("/kontakt?offer=") ? content.request : content.choose}
+                                    </OfferLink>
                                 ))}
                             </div>
                         </article>

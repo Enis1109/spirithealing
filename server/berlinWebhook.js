@@ -40,7 +40,7 @@ export function berlinWebhookConfig(env) {
 // Register before the site's express.json middleware. Tests exercise this exact route.
 export function registerBerlinWebhook(app, { db, config, ready = async () => true }) {
   app.post('/api/berlin/stripe-webhook',
-    express.raw({ type: 'application/json', limit: '256kb' }), async (request, response) => {
+    express.raw({ type: 'application/json', limit: '256kb', inflate: false }), async (request, response) => {
       response.set('Cache-Control', 'no-store');
       if (!config.enabled) return response.status(503).json({ ok: false });
       let event;
