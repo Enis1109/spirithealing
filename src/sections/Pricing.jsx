@@ -10,14 +10,13 @@ import {
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-import { contactOfferUrl } from "@/lib/contactOffers";
 
 const bookingLinks = {
-    introSabine: contactOfferUrl("introSabine"),
-    introSelcan: contactOfferUrl("introSelcan"),
-    firstSabine: contactOfferUrl("firstSabine"),
-    firstSelcan: contactOfferUrl("firstSelcan"),
-    followSabine: contactOfferUrl("followSabine"),
+    introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
+    introSelcan: "https://calendly.com/selcan1975/erstgesprach",
+    firstSabine: "https://calendly.com/spirit-healing/einzelsitzung-sabine",
+    firstSelcan: "https://calendly.com/selcan1975/erstsitzung-selcan",
+    followSabine: "https://calendly.com/spirit-healing/folgesitzung-sabine",
     followSelcan: "https://calendly.com/selcan1975/folgesitzung-selcan",
     combinedFirst: "https://calendly.com/d/ct8z-zk5-7yc/gemeinsame-erstsitzung",
     combinedFollow: "https://calendly.com/d/cvrv-kgh-zvr/gemeinsame-folgesitzung",
