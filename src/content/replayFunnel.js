@@ -8,16 +8,8 @@ export const replayFunnel = Object.freeze({
     videoUrl: "https://player.vimeo.com/video/1233482544?h=c4a2a93ada&dnt=1", nextLivePath: "/live-vortrag/20-oktober", nextLiveStartsAt: "2026-10-20T18:00:00Z",
 });
 export const berlinDate = (now = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
-// Weekly live evenings confirmed by Sabine on 6 October 2026; German local time.
-export const programLiveEvents = Array.from({ length: 13 }, (_, index) => ({
-    id: `program-live-${index + 1}`,
-    date: new Date(Date.UTC(2026, 10, 11 + index * 7)).toISOString().slice(0, 10),
-    time: "19:30–21:00",
-    title: `13-Wochen-Programm · Live-Abend ${index + 1}`,
-    detail: "Mittwochabend mit Sabine & Selcan · Online über Zoom · für Teilnehmende des 13-Wochen-Programms",
-    href: "/13-wochen-programm",
-    action: "Zum 13-Wochen-Programm",
-}));
+// Open conversation phase since 21 October. Publish cohort dates only after confirmation.
+export const programLiveEvents = [];
 export const publicEvents = [
     { id: "july-recording", date: "2026-07-26", title: "Wer entscheidet eigentlich dein Leben?", detail: "Vortrag mit Workbook im kostenlosen Mitgliederbereich", href: "/gratis-meditationen", replay: true },
     { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Vortrag 1 und Workbook im Aufzeichnungsbereich", href: replayFunnel.path, replay: true },
@@ -34,7 +26,7 @@ export const publicEvents = [
         detail: "Kostenloser Vortrag mit Sabine & Selcan · online über Zoom · auf Deutsch", href: familyLecture.path,
         action: "Kostenlos zum Vortrag anmelden" },
     { id: "third-live", date: "2026-11-03", time: "20:00", title: "Bindungsmuster verstehen", detail: "Nähe, Rückzug und innere Anteile · dritter kostenloser Live-Abend zum 13-Wochen-Programm mit Sabine & Selcan · online über Zoom · mit Meditation", href: "/live-vortrag/3-november", action: "Kostenlos zum Vortrag anmelden" },
-    { id: "onboarding", date: "2026-10-21", title: "Dein Einstieg ins 13-Wochen-Programm", detail: "Beginn des Onboardings und der persönlichen Matrix-Gespräche", href: "/13-wochen-programm" },
+    { id: "onboarding", date: "2026-10-21", title: "Gesprächsphase zum 13-Wochen-Programm", detail: "Seit dem 21. Oktober führen wir persönliche Kennenlerngespräche. Jetzt kostenfrei und unverbindlich kennenlernen; der Programmstart wird bekannt gegeben.", href: "/13-wochen-programm#teilnahme", action: "Kostenfreies Kennenlernen ansehen" },
     ...programLiveEvents,
     { id: "rauhnaechte", date: "2026-12-23", lastDate: "2027-01-06", title: "Rauhnächte mit Sabine & Selcan", detail: "23. Dezember 2026 bis 6. Januar 2027", href: "/rauhnaechte" },
 ];

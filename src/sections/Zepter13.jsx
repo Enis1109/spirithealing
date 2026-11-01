@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { programIntroCallUrl as introCallUrl } from "@/content/programInterest"
 import {
   ArrowDown,
   ArrowRight,
@@ -8,8 +9,6 @@ import {
   Clock3,
   HeartHandshake,
 } from "lucide-react"
-
-const introCallUrl = "https://calendly.com/d/dt8n-hrk-ftm/gemeinsames-erstgesprach-zum-13-wochen-programm"
 
 const recurringScenes = [
   "Du sagst Ja, obwohl in dir längst ein Nein lebt.",
@@ -39,9 +38,9 @@ const shifts = [
 ]
 
 const included = [
-  "Onboarding ab 21. Oktober mit Vorbereitung auf deinen persönlichen Prozess",
+  "Persönliche Vorbereitung und Onboarding innerhalb des Programms",
   "13-Wochen-Programm mit einem wöchentlichen gemeinsamen Online-Termin",
-  "Ein begleitetes Matrix-Gespräch im Onboarding, in dem dein unbewusstes Drehbuch sichtbar werden darf",
+  "Ein begleitetes Matrix-Gespräch zu Beginn deiner Teilnahme am Programm, in dem dein unbewusstes Drehbuch sichtbar werden darf",
   "Dein persönlicher Start- und Integrationsplan",
   "Tägliche energetische Begleitung mit Tagesimpuls und Meditationen, die aus dem aktuellen Gruppenprozess entstehen",
   "Aufzeichnungen der gemeinsamen Termine",
@@ -75,13 +74,13 @@ export const Zepter13 = () => {
               <span className="text-sm font-bold uppercase tracking-[0.16em] text-[#075a57]">Spirit Healing</span>
             </a>
             <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="hidden rounded-full border border-[#0f7d79]/30 bg-white/80 px-5 py-2.5 text-sm font-bold text-[#075a57] transition hover:border-[#0f7d79] hover:bg-white sm:block">
-              Erstgespräch buchen
+              Kostenfrei kennenlernen
             </a>
           </header>
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
             <div className="relative z-10">
-              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">Onboarding ab 21. Oktober · 13-Wochen-Programm · mit Sabine &amp; Selcan</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#a67426]">13-Wochen-Programm · mit Sabine &amp; Selcan · Gesprächsphase seit 21. Oktober</p>
               <h1 className="mt-5 max-w-4xl font-serif text-5xl font-semibold leading-[0.98] text-[#173c39] sm:text-6xl lg:text-8xl">
                 Du spielst die Hauptrolle. Doch wer schreibt dein Drehbuch?
               </h1>
@@ -91,16 +90,17 @@ export const Zepter13 = () => {
 
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-7 py-4 font-bold text-white shadow-[0_16px_36px_rgba(15,125,121,0.22)] transition hover:bg-[#075a57]">
-                  Erstgespräch buchen <ArrowRight size={18} />
+                  Kostenfreies Kennenlerngespräch buchen <ArrowRight size={18} className="shrink-0" />
                 </a>
                 <a href="#ablauf" className="inline-flex items-center justify-center rounded-full border border-[#0f7d79]/35 bg-white/75 px-7 py-4 font-bold text-[#075a57] transition hover:bg-white">
                   Die innere Reise entdecken
                 </a>
               </div>
+              <p className="mt-4 text-sm leading-7 text-[#49635f]">Unverbindlich · 30 Minuten · mit Sabine und Selcan über Zoom. Du buchst damit noch keine Teilnahme am Programm.</p>
 
               <div className="mt-9 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />Onboarding ab 21. Oktober 2026</span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="text-[#0f7d79]" />Programm: 11. November 2026 bis 3. Februar 2027</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="shrink-0 text-[#0f7d79]" />Persönliche Gespräche seit 21. Oktober 2026</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="shrink-0 text-[#0f7d79]" />Programmstart wird bekannt gegeben</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Clock3 size={17} className="text-[#0f7d79]" />vollständiges Rauhnachtsprogramm inklusive</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Check size={17} className="text-[#0f7d79]" />keine Vorkenntnisse nötig</span>
               </div>
@@ -123,22 +123,22 @@ export const Zepter13 = () => {
       <section className="border-b border-[#d5e4dd] bg-[#edf5f1] py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <SectionTitle
-            eyebrow="Der zeitliche Rahmen"
-            title="Am 21. Oktober beginnt dein Onboarding. Am 11. November beginnt das 13-Wochen-Programm."
-            intro="Die Vorbereitung und der gemeinsame 13-Wochen-Prozess gehören zusammen. Gleichzeitig bleibt klar, wann welcher Teil beginnt."
+            eyebrow="Wir lernen uns kennen"
+            title="Seit dem 21. Oktober führen wir persönliche Gespräche."
+            intro="Die Gesprächsphase ist offen. Wenn dich das 13-Wochen-Programm anspricht, kannst du dir jetzt Zeit für ein Kennenlernen mit uns nehmen. Den gemeinsamen Programmstart geben wir bekannt, sobald er feststeht."
           />
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             <article className="rounded-[2rem] border border-[#c8dcd3] bg-white p-7 sm:p-9">
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#a67426]">Ab 21. Oktober 2026</p>
-              <h2 className="mt-4 font-serif text-3xl font-semibold text-[#173c39]">Onboarding und persönliche Vorbereitung</h2>
-              <p className="mt-5 text-lg leading-8 text-[#506864]">In dieser Zeit beginnen die Matrix-Gespräche. Du erhältst deinen Zugang, wir bereiten deinen persönlichen Start vor und richten den Blick auf die wiederkehrende Szene, die du mitbringst. Während des Onboardings ist der Einstieg weiterhin möglich.</p>
-              <p className="mt-5 font-semibold leading-7 text-[#31534f]">Wer früh dabei ist, hat mehr Zeit für das Matrix-Gespräch und die Vorbereitung vor dem gemeinsamen Programm.</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#a67426]">Kostenfrei · unverbindlich · 30 Minuten</p>
+              <h2 className="mt-4 font-serif text-3xl font-semibold text-[#173c39]">Dein Kennenlerngespräch mit uns beiden</h2>
+              <p className="mt-5 text-lg leading-8 text-[#506864]">Wir treffen uns über Zoom. Du kannst uns kennenlernen, dein Anliegen mitbringen und deine Fragen zum Programm stellen. Gemeinsam schauen wir, ob unsere Begleitung zu dir passt.</p>
+              <p className="mt-5 font-semibold leading-7 text-[#31534f]">Dieses Gespräch ist noch kein Matrix-Gespräch und keine verbindliche Buchung des Programms.</p>
             </article>
             <article className="rounded-[2rem] bg-[#173c39] p-7 text-white sm:p-9">
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f1d7a0]">11. November 2026 bis 3. Februar 2027</p>
-              <h2 className="mt-4 font-serif text-3xl font-semibold">13-Wochen-Programm</h2>
-              <p className="mt-5 text-lg leading-8 text-white/78">Am 11. November beginnt für alle der gemeinsame 13-Wochen-Prozess. Er führt durch Weihnachten, die Rauhnächte und den Jahreswechsel bis zum letzten gemeinsamen Termin am 3. Februar 2027.</p>
-              <p className="mt-5 font-semibold leading-7 text-white">Das vollständige Rauhnachtsprogramm ist enthalten.</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f1d7a0]">Später · innerhalb des 13-Wochen-Programms</p>
+              <h2 className="mt-4 font-serif text-3xl font-semibold">Dein persönliches Matrix-Gespräch</h2>
+              <p className="mt-5 text-lg leading-8 text-white/78">Wenn du am Programm teilnimmst, arbeiten wir zu Beginn gemeinsam deine persönliche Matrix heraus. Wir schauen auf die wiederkehrenden Szenen, die verteilten Rollen und den Anteil, der bisher das Zepter hält.</p>
+              <p className="mt-5 font-semibold leading-7 text-white">Das Matrix-Gespräch ist Teil deiner gebuchten Programmbegleitung und findet getrennt vom kostenfreien Kennenlernen statt.</p>
             </article>
           </div>
         </div>
@@ -216,7 +216,7 @@ export const Zepter13 = () => {
             <p className="font-serif text-3xl font-semibold leading-tight text-[#173c39] sm:text-4xl">Eine wiederkehrende Szene. Die verteilten Rollen. Die verborgene Regel. Der Anteil, der das Zepter hält.</p>
             <p className="mt-6 text-lg leading-8 text-[#506864]">Zu Beginn des Programms schauen wir mit dir auf eine Situation, die sich in deinem Leben immer wieder zeigt. Gemeinsam arbeiten wir heraus, was dein System erwartet, wovor es dich schützen möchte und welche Rolle du selbst und andere darin übernehmen.</p>
             <p className="mt-5 text-lg leading-8 text-[#506864]">Du sollst danach nicht einfach nur mehr über dich wissen. Du sollst den Moment erkennen können, in dem der alte Film beginnt – und spüren, dass du heute eine andere Wahl hast.</p>
-            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Erstgespräch buchen</a>
+            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0f7d79] px-7 py-3.5 font-bold text-white transition hover:bg-[#075a57]">Zuerst kostenfrei kennenlernen</a>
           </div>
         </div>
       </section>
@@ -254,7 +254,7 @@ export const Zepter13 = () => {
               <li key={item} className="flex gap-4 py-5 text-lg font-semibold leading-8 text-[#31534f]"><CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-[#0f7d79]" aria-hidden="true" />{item}</li>
             ))}
           </ul>
-          <p className="mt-6 text-sm leading-7 text-[#506864]">Die gemeinsamen Online-Termine des Programms finden mittwochs um 19:30 Uhr deutscher Zeit statt und dauern etwa 90 Minuten. Plane zusätzlich etwa 30 Minuten täglich für Übungen und Integration ein. Wenn du an einem Termin nicht teilnehmen kannst, steht dir die Aufzeichnung zur Verfügung.</p>
+          <p className="mt-6 text-sm leading-7 text-[#506864]">Das Programm umfasst einen wöchentlichen gemeinsamen Online-Termin von etwa 90 Minuten. Die genauen Termine geben wir mit dem Programmstart bekannt. Plane zusätzlich etwa 30 Minuten täglich für Übungen und Integration ein. Wenn du an einem Termin nicht teilnehmen kannst, steht dir die Aufzeichnung zur Verfügung.</p>
           <p className="mt-5 text-sm leading-7 text-[#506864]">Die Teilnahme am Abschlusstreffen in Berlin ist im Programm enthalten. Reise, Übernachtung und Verpflegung sind selbst zu bezahlen. Der genaue Termin und Veranstaltungsort werden noch bekannt gegeben. Das Abschlusstreffen ist ein eigener Bestandteil des 13-Wochen-Programms.</p>
           </div>
         </div>
@@ -265,12 +265,12 @@ export const Zepter13 = () => {
           <SectionTitle
             eyebrow="Dein nächster Schritt"
             title="Lass uns über deinen Weg sprechen."
-            intro="Du interessierst dich für das 13-Wochen-Programm und möchtest uns kennenlernen? In einem persönlichen Erstgespräch ist Raum für dein Anliegen und deine Fragen. Gemeinsam schauen wir, ob das Programm und unsere Begleitung zu dir passen."
+            intro="Du interessierst dich für das 13-Wochen-Programm und möchtest uns kennenlernen? Seit dem 21. Oktober führen wir persönliche Gespräche. In deinem kostenfreien Kennenlerngespräch ist Raum für dein Anliegen und deine Fragen. Gemeinsam schauen wir, ob das Programm und unsere Begleitung zu dir passen."
             center
           />
           <div className="mx-auto mt-9 max-w-2xl text-center">
-            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-8 py-4 font-bold text-white transition hover:bg-[#075a57]">Erstgespräch buchen <ArrowRight size={18} /></a>
-            <p className="mt-5 text-sm leading-7 text-[#506864]">30 Minuten mit Sabine und Selcan über Zoom. Wähle bei Calendly einen passenden Termin für dein Erstgespräch.</p>
+            <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0f7d79] px-8 py-4 text-center font-bold text-white transition hover:bg-[#075a57]">Kostenfreies Kennenlerngespräch buchen <ArrowRight size={18} className="shrink-0" /></a>
+            <p className="mt-5 text-sm leading-7 text-[#506864]">30 Minuten mit Sabine und Selcan über Zoom. Unverbindlich und ohne Programmbuchung. Das persönliche Matrix-Gespräch gehört zur späteren Teilnahme am Programm.</p>
           </div>
         </div>
       </section>
@@ -298,16 +298,16 @@ export const Zepter13 = () => {
           <SectionTitle
             eyebrow="Das Zepter wieder übernehmen"
             title="Dein Film muss nicht so weitergehen."
-            intro="Wenn du spürst, dass du das Zepter wieder selbst in die Hand nehmen möchtest, lass uns kennenlernen. In deinem Erstgespräch schauen wir gemeinsam auf dein Anliegen und deine Fragen zum 13-Wochen-Programm."
+            intro="Wenn du spürst, dass du das Zepter wieder selbst in die Hand nehmen möchtest, lass uns kennenlernen. In deinem kostenfreien Gespräch schauen wir gemeinsam auf dein Anliegen und deine Fragen zum 13-Wochen-Programm."
             center
             light
           />
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-3 text-sm font-semibold text-white/80">
-            <span className="rounded-full border border-white/20 px-4 py-2.5">Onboarding ab 21. Oktober 2026</span>
-            <span className="rounded-full border border-white/20 px-4 py-2.5">Programm: 11. November 2026 bis 3. Februar 2027</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">Gesprächsphase seit 21. Oktober 2026</span>
+            <span className="rounded-full border border-white/20 px-4 py-2.5">Programmstart wird bekannt gegeben</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">Rauhnachtsprogramm inklusive</span>
           </div>
-          <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 font-bold text-[#173c39] transition hover:bg-white">Erstgespräch buchen <ArrowRight size={18} /></a>
+          <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 text-center font-bold text-[#173c39] transition hover:bg-white">Kostenfrei kennenlernen <ArrowRight size={18} className="shrink-0" /></a>
         </div>
       </section>
 

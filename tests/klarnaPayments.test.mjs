@@ -39,8 +39,8 @@ test("landing pages no longer advertise merchant installments or separate instal
     const source = readFileSync(new URL(`../src/sections/${file}.jsx`, import.meta.url), "utf8");
     assert.doesNotMatch(source, /THREE_INSTALLMENTS|ZWEI_RATEN|DREI_RATEN|threeInstallments|twoInstallments|Raten-Gesamtpreis|bis zu drei Raten|InstallmentCheckoutUrl/);
     if (file === "Zepter13") {
-      assert.match(source, /fullPriceCheckoutUrl/);
-      assert.match(source, /klarnaPaymentCopy/);
+      assert.doesNotMatch(source, /fullPriceCheckoutUrl|klarnaPaymentCopy|tier\.price/);
+      assert.match(source, /Kostenfreies Kennenlerngespräch buchen/);
     } else {
       assert.doesNotMatch(source, /fullPriceCheckoutUrl|klarnaPaymentCopy/u);
     }

@@ -88,9 +88,9 @@ test("adds truthful structured data for the main offers", () => {
   assert.match(rauhnaechte, /"444"/u)
 
   const zepter = JSON.stringify(structuredDataForPath("/13-wochen-programm", "de"))
-  assert.match(zepter, /"1555"/u)
-  assert.match(zepter, /"2777"/u)
-  assert.match(zepter, /"4777"/u)
+  assert.match(zepter, /"Course"/u)
+  assert.doesNotMatch(zepter, /"offers"|"price"|"startDate"|"endDate"|2026-11-11|2027-02-03/u)
+  assert.match(zepter, /kostenfreien Zoom-Gespräch/u)
 
   assert.deepEqual(structuredDataForPath("/admin", "de"), [])
 })
@@ -118,4 +118,13 @@ test("places route-specific SEO in the initial HTML response", () => {
   const missing = injectSeoIntoDocument(shell, "/gibt-es-nicht")
   assert.match(missing, /<title>Seite nicht gefunden \| Spirit Healing<\/title>/u)
   assert.match(missing, /name="googlebot" content="noindex, follow"/u)
+})
+
+test("initial programme HTML has no stale cohort dates or purchasable price packages", () => {
+  const shell = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8")
+  for (const language of ["de", "tr"]) {
+    const html = injectSeoIntoDocument(shell, `/13-wochen-programm?lang=${language}`)
+    assert.doesNotMatch(html, /2026-11-11|2027-02-03|"price":"(?:1555|2777|4777)"/u)
+    assert.match(html, /Programmstart wird bekannt gegeben/u)
+  }
 })

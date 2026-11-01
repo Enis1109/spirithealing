@@ -4,6 +4,7 @@ import { ConstellationPlaces } from "@/components/ConstellationPlaces";
 import { useConstellationAvailability } from "@/hooks/useConstellationAvailability";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { berlinDate, eventsOnDay, eventsInMonth, eventIsPast, monthCells } from "@/content/replayFunnel";
+import { programIntroCallUrl } from "@/content/programInterest";
 
 export const EventCalendar = () => {
     const today = berlinDate();
@@ -41,5 +42,11 @@ export const EventCalendar = () => {
                 <p className="mt-6 border-t border-[#dedbcc] pt-5 text-sm leading-6">Unsere Erfahrungsgruppe trifft sich jeden Sonntag von 19:00 bis 21:30 Uhr deutscher Zeit. <Link className="font-bold underline" to="/mitglieder?tab=experience">Zum Mitgliederbereich</Link></p>
             </div>
         </div>
+        <aside className="mt-6 rounded-3xl border border-[#d0b16d]/50 bg-[#faf6ed] p-6 sm:p-8" aria-label="Offene Gesprächsphase zum 13-Wochen-Programm">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#88672b]">13-Wochen-Programm · Gesprächsphase seit 21. Oktober 2026</p>
+            <h2 className="mt-3 font-serif text-2xl">Lerne uns im kostenfreien Gespräch kennen.</h2>
+            <p className="mt-3 max-w-3xl leading-7 text-[#55685e]">30 Minuten mit Sabine und Selcan über Zoom. Wir sprechen über dein Anliegen und deine Fragen zum Programm. Den gemeinsamen Programmstart geben wir bekannt, sobald er feststeht. Das spätere Matrix-Gespräch ist Teil der Programmbegleitung.</p>
+            <a href={programIntroCallUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#075d60] px-6 py-3 text-center font-bold text-white">Kostenfreies Kennenlerngespräch buchen <ArrowUpRight size={18} className="shrink-0" /></a>
+        </aside>
     </section>;
 };
