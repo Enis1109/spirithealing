@@ -34,17 +34,21 @@ import {
     clearMemberSessionCookie,
     createMemberAccessRequest,
     createProgramDirectAccessLink,
+    createSession,
     createMemberPasswordReset,
     createMemberRegistration,
     endMemberSession,
     getMemberContentState,
     getMemberFromRequest,
     resetMemberPassword,
+    resolveRole,
     setMemberSessionCookie,
     updateMemberContentState,
 } from "./server/members.js";
 import { resolveMemberAccessRedirect } from "./server/memberAccessPaths.js";
 import { createMemberAccessResendService, registerMemberAccessResendRoutes } from "./server/memberAccessResend.js";
+import { createManualExperienceAccessService, initializeManualExperienceAccess,
+    registerManualExperienceAccessRoutes } from './server/manualExperienceAccess.js';
 import {
     acceptNewsletterOffer,
     confirmNewsletterSubscription,
@@ -278,6 +282,12 @@ const memberAccessEmailLimiter = rateLimit({
     message: { ok: false, error: "rate_limit" },
 });
 
+const manualExperienceAccessLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, limit: 12,
+    standardHeaders: 'draft-8', legacyHeaders: false,
+    message: { ok: false, error: 'rate_limit' },
+});
+
 const analyticsLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 120,
@@ -314,6 +324,12 @@ registerSiteMeasurementRoutes(app, { service: siteMeasurement, sameOrigin: admin
     limiter: analyticsLimiter, revokeLimiter: measurementRevokeLimiter, getAdminMember });
 
 const experienceEnabled = process.env.EXPERIENCE_GROUP_ENABLED === 'true';
+const manualExperienceAccess = createManualExperienceAccessService({
+    db: database, baseUrl: productionOrigin, createSession, resolveRole,
+});
+registerManualExperienceAccessRoutes(app, { service: manualExperienceAccess, enabled: experienceEnabled,
+    getMember: getMemberFromRequest, sameOrigin: adminSameOriginOnly, limiter: manualExperienceAccessLimiter,
+    formParser: express.urlencoded({ extended: false, limit: '2kb' }), setSessionCookie: setMemberSessionCookie });
 const memberAccessResendService = createMemberAccessResendService({
     db: database, sendEmail: sendMemberAccessEmail, baseUrl: productionOrigin,
 });
@@ -1948,6 +1964,7 @@ const initializeServices = async () => {
     await initializeConstellationAvailability(database);
     if (experienceEnabled) {
         await initializeExperienceGroup(database);
+        await initializeManualExperienceAccess(database);
         await initializeExperienceReminders(database);
         startExperienceReminderWorker(experienceReminders);
     }

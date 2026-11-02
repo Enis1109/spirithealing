@@ -19,7 +19,7 @@ const ownerEmails = new Set(
 const hashToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
 const baseUrl = () => (process.env.PUBLIC_BASE_URL || "https://www.spirit-healing.tr").replace(/\/$/u, "");
 
-const createSession = async (connection, memberId) => {
+export const createSession = async (connection, memberId) => {
     const sessionToken = crypto.randomBytes(32).toString("base64url");
     await connection.execute(
         `INSERT INTO member_sessions (member_id, token_hash, expires_at)
@@ -38,7 +38,7 @@ const readCookie = (request, name) => {
     return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : "";
 };
 
-const resolveRole = (member) => (
+export const resolveRole = (member) => (
     member.role === "admin" || ownerEmails.has(String(member.email || "").toLowerCase())
         ? "admin"
         : "member"

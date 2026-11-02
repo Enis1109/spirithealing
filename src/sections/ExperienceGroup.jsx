@@ -13,9 +13,16 @@ const buttonClass = 'inline-flex min-h-11 items-center justify-center gap-2 roun
 async function request(url, options) {
     const response = await fetch(url, options);
     const data = await response.json();
-    if (!response.ok || !data.ok) throw new Error(data.error === 'member_not_registered'
-        ? 'Diese Person braucht zuerst ein aktiviertes Mitgliederkonto.'
-        : `Die Änderung konnte nicht ausgeführt werden (${data.error || response.status}).`);
+    const errors = {
+        member_not_registered: 'Diese Person braucht zuerst ein aktiviertes Mitgliederkonto.',
+        member_not_found: 'Unter dieser E-Mail-Adresse gibt es kein bestehendes Mitgliederkonto.',
+        manual_confirmation_required: 'Bitte bestätige Identität und Zustimmung und wähle „Bestehende Vereinbarung“ sowie „Aktiv“.',
+        account_unavailable: 'Dieses Konto kann nicht manuell aktiviert werden. Gesperrte und administrative Konten bleiben unverändert.',
+        existing_plan_conflict: 'Für dieses Konto besteht eine andere Zugangsart. Bitte die vorhandene Vereinbarung gesondert prüfen.',
+        access_not_current: 'Der Zugang muss bereits begonnen haben und noch aktiv sein.',
+    };
+    if (!response.ok || !data.ok) throw new Error(errors[data.error]
+        || `Die Änderung konnte nicht ausgeführt werden (${data.error || response.status}).`);
     return data;
 }
 
@@ -29,6 +36,8 @@ export function ExperienceGroup({ member }) {
     const [notice, setNotice] = useState('');
     const [editing, setEditing] = useState(null);
     const [reminderInfo, setReminderInfo] = useState(null);
+    const [manualAccess, setManualAccess] = useState(false);
+    const [personalAccess, setPersonalAccess] = useState(null);
     const [removingHandout, setRemovingHandout] = useState(null);
     const removalDialog = useRef(null);
     useEffect(() => {
@@ -72,13 +81,20 @@ export function ExperienceGroup({ member }) {
         });
     };
     const grant = event => {
-        event.preventDefault(); const fields = Object.fromEntries(new FormData(event.currentTarget));
+        event.preventDefault();
+        const { identityConfirmed, ...fields } = Object.fromEntries(new FormData(event.currentTarget));
+        if (manualAccess && !window.confirm(`Mitgliederkonto ${fields.email} manuell aktivieren, nur die Erfahrungsgruppe gemäß diesen Angaben freischalten und einen einmaligen, 24 Stunden gültigen Zugangslink erstellen? Die Identität und Zustimmung wurden persönlich geprüft. Passwort, E-Mail-Bestätigungsstatus, Einwilligungen und andere Programmzugänge bleiben unverändert.`)) return;
+        setPersonalAccess(null);
         action(async () => {
-            await jsonPost('/api/admin/experience/grant', { ...fields,
+            const result = await jsonPost(manualAccess ? '/api/admin/experience/manual-access' : '/api/admin/experience/grant', { ...fields,
                 startsAt: toUTC(fields.startsAt), endsAt: fields.endsAt ? toUTC(fields.endsAt) : null,
                 contentFrom: toUTC(fields.contentFrom || fields.startsAt), fullArchive: fields.fullArchive === 'on',
+                ...(manualAccess ? { identityConfirmed: identityConfirmed === 'on' } : {}),
             });
-            setNotice('Zugangsregel gespeichert. Es wurde keine Zahlung ausgelöst und keine E-Mail versendet.');
+            if (manualAccess) {
+                setPersonalAccess(result.access);
+                setNotice(`Das Konto und die Erfahrungsgruppe für ${result.access.email} sind freigeschaltet. Der persönliche Link ist einmalig bis ${new Date(result.access.expiresAt).toLocaleString('de-DE')} gültig. Es wurde keine Nachricht automatisch versendet.`);
+            } else setNotice('Zugangsregel gespeichert. Es wurde keine Zahlung ausgelöst und keine E-Mail versendet.');
         });
     };
     const upload = event => {
@@ -229,7 +245,13 @@ export function ExperienceGroup({ member }) {
             </section>
             <form onSubmit={grant} className="mt-8 grid gap-4 border-t pt-6 sm:grid-cols-2">
                 <h3 className="text-xl font-bold sm:col-span-2">Bestehendes Mitglied zuordnen</h3>
-                <label>E-Mail des aktivierten Kontos<input className={fieldClass} name="email" type="email" required /></label>
+                <label className="sm:col-span-2"><input type="checkbox" checked={manualAccess} onChange={event => { setManualAccess(event.target.checked); setPersonalAccess(null); }} /> Konto manuell aktivieren und Telegram-Zugangslink erstellen</label>
+                {manualAccess && <div className="rounded-xl bg-[#fff6dc] p-4 sm:col-span-2">
+                    <p>Nur für persönlich geprüfte Bestandsmitglieder mit bestehendem Konto. Aktiviert das Konto und ausschließlich den Zugang zur Erfahrungsgruppe. Eine E-Mail-Bestätigung wird nicht als erfolgt eingetragen. Passwort, Einwilligungen, Newsletter und andere Programmzugänge bleiben unverändert.</p>
+                    <p className="mt-2">Nur „Bestehende Vereinbarung“, Status „Aktiv“ und ein bereits begonnener Zugang sind möglich. Den einmaligen Link nur direkt an diese Person schicken. Er gilt 24 Stunden. Die Freischaltung wird mit deinem Namen und dem angegebenen Grund protokolliert.</p>
+                    <label className="mt-3 block"><input type="checkbox" name="identityConfirmed" required /> Identität und ausdrückliche Zustimmung dieser Person sind persönlich geprüft.</label>
+                </div>}
+                <label>{manualAccess ? 'E-Mail des bestehenden Kontos' : 'E-Mail des aktivierten Kontos'}<input className={fieldClass} name="email" type="email" required /></label>
                 <label>Zugangsart<select className={fieldClass} name="plan"><option value="existing">Bestehende Vereinbarung</option><option value="monthly">Monatlich · 88 €</option><option value="annual">Zwölf Monate · einmalig 888 €</option></select></label>
                 <label>Zugang ab<input className={fieldClass} name="startsAt" type="datetime-local" required /></label>
                 <label>Zugangsende (bei bestehender Vereinbarung vorerst leer möglich)<input className={fieldClass} name="endsAt" type="datetime-local" /></label>
@@ -237,8 +259,14 @@ export function ExperienceGroup({ member }) {
                 <label>Status<select className={fieldClass} name="status"><option value="active">Aktiv</option><option value="revoked">Gesperrt</option></select></label>
                 <label className="sm:col-span-2"><input name="fullArchive" type="checkbox" /> Bestandsmitglied: gesamtes freigegebenes Archiv</label>
                 <label className="sm:col-span-2">Grund / geprüfter Zahlungszeitraum<input className={fieldClass} name="reason" maxLength="500" required /></label>
-                <button disabled={busy} className={buttonClass}>Zugangsregel speichern</button>
+                <button disabled={busy} className={buttonClass}>{manualAccess ? 'Manuell freischalten und Zugangslink erstellen' : 'Zugangsregel speichern'}</button>
             </form>
+            {personalAccess && <section className="mt-6 rounded-2xl border border-[#b8d9d4] bg-[#eaf4f1] p-5" aria-label="Persönlicher Telegram-Zugangslink">
+                <h3 className="text-xl font-bold">Persönlicher Zugang für {personalAccess.name}</h3>
+                <p className="mt-2">Nur an {personalAccess.email} beziehungsweise den persönlich geprüften Telegram-Kontakt dieser Person weitergeben. Nicht selbst öffnen und nicht in eine Gruppe posten.</p>
+                <label className="mt-3 block">Persönlicher Zugangslink<input readOnly className={fieldClass} value={personalAccess.url} /></label>
+                <p className="mt-3">Einmalig gültig bis {new Date(personalAccess.expiresAt).toLocaleString('de-DE')} (Zeitzone dieses Geräts). Eine Linkvorschau meldet die Person nicht an. Erst „Meinen Mitgliederbereich öffnen“ löst die Anmeldung aus.</p>
+            </section>}
         </details>}
     </section>;
 }
