@@ -82,3 +82,33 @@ export const octoberLibrary = {
         available: true,
     },
 };
+
+export const additionalTalks = [
+    {
+        key: "bei-mir-bleiben-vortrag-2026-11-17",
+        title: "Wie bleibe ich bei mir, wenn mir jemand wichtig ist?",
+        meta: "Live-Vortrag · 17. November 2026 · 111 Min.",
+        description: "Wir schauen gemeinsam auf den Moment, in dem dein eigenes Bedürfnis und dein Wunsch nach Verbindung aufeinandertreffen. Woran merkst du, dass du dich anpasst?",
+    },
+    {
+        key: "bindungsmuster-2026-11-03",
+        title: "Bindungsmuster verstehen",
+        meta: "Live-Vortrag · 3. November 2026 · 114 Min.",
+        description: "Ein Einstieg in Bindungsmuster und Bindungstypen.",
+    },
+    {
+        key: "familienaufstellung-2026-10-27",
+        title: "Familienaufstellung kennenlernen",
+        meta: "Live-Vortrag · 27. Oktober 2026 · 81 Min.",
+        description: "Manche Aufgaben beginnen früh und wirken später wie ein Teil der eigenen Persönlichkeit. In der Familienaufstellung schauen wir auf den Platz, an dem eine solche Rolle entstanden ist.",
+    },
+];
+
+export const beiMirBleiben = {
+    key: "meditation-bei-mir-bleiben-2026-11-17",
+    type: "meditation",
+    access: "free",
+    title: "Bei mir bleiben",
+    meta: "Geführte Übung mit Sabine Schmidt · 14 Minuten",
+    description: "Denk an ein Gespräch aus deinem Alltag, in dem für dich etwas nicht rundgelaufen ist. Wähle eine Situation, mit der du dich gerade gut beschäftigen kannst. In der Übung lässt du das Bild des Gesprächs nach und nach in den Hintergrund treten und spürst hin, was sich in deinem Körper bemerkbar macht.",
+};

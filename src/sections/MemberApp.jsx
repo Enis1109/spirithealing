@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getUpcomingMemberEvents } from "@/content/memberEvents";
-import { octoberLibrary } from "@/content/memberLibrary";
+import { additionalTalks, beiMirBleiben, octoberLibrary } from "@/content/memberLibrary";
 
 const bookingLinks = {
     introSabine: "https://calendly.com/spirit-healing/partner-einschreiben",
@@ -430,6 +430,7 @@ export const MemberApp = ({
     member,
     recordingAvailable,
     recordingEmbedUrl,
+    extraMedia,
     workbookAvailable,
     meditations,
     initialContentState,
@@ -477,12 +478,17 @@ export const MemberApp = ({
         { ...octoberLibrary.workbook, icon: FileText },
         { ...octoberLibrary.secondTalk, icon: PlayCircle },
         { ...octoberLibrary.meditation, icon: Headphones },
+        ...additionalTalks.flatMap((item) => {
+            const embedUrl = extraMedia?.[item.key];
+            return embedUrl ? [{ ...item, type: "talk", access: "free", icon: PlayCircle, embedUrl, available: true }] : [];
+        }),
+        ...(extraMedia?.[beiMirBleiben.key] ? [{ ...beiMirBleiben, icon: Headphones, embedUrl: extraMedia[beiMirBleiben.key], available: true }] : []),
         { ...contentDefinitions.talk, meta: { de: "Älterer Vortrag · 26. Juli 2026 · 61 Min.", tr: "Önceki seminer · 26 Temmuz 2026 · 61 dk." }, available: recordingAvailable, embedUrl: recordingEmbedUrl, mediaUrl: recordingEmbedUrl || "/api/members/recording" },
         { ...contentDefinitions.loslassen, available: meditations.loslassenAvailable, mediaUrl: "/api/members/meditations/loslassen", downloadUrl: "/api/members/meditations/loslassen?download=1" },
         { ...contentDefinitions.wiedergeburt, available: meditations.wiedergeburtAvailable, mediaUrl: "/api/members/meditations/wiedergeburt", downloadUrl: "/api/members/meditations/wiedergeburt?download=1" },
         { ...contentDefinitions.workbook, available: workbookAvailable, downloadUrl: "/api/members/workbook" },
         { ...contentDefinitions.deepening, available: false },
-    ]), [meditations, recordingAvailable, recordingEmbedUrl, workbookAvailable]);
+    ]), [extraMedia, meditations, recordingAvailable, recordingEmbedUrl, workbookAvailable]);
 
     const availableItems = items.filter((item) => item.available);
     const favoriteCount = Object.values(contentState).filter((entry) => entry.favorite).length;

@@ -207,6 +207,7 @@ export const MemberArea = () => {
     const [member, setMember] = useState(null);
     const [recordingAvailable, setRecordingAvailable] = useState(false);
     const [recordingEmbedUrl, setRecordingEmbedUrl] = useState("");
+    const [extraMedia, setExtraMedia] = useState(null);
     const [workbookAvailable, setWorkbookAvailable] = useState(false);
     const [meditations, setMeditations] = useState({ loslassenAvailable: false, wiedergeburtAvailable: false, ichBinLichtAvailable: false });
     const [contentState, setContentState] = useState([]);
@@ -266,6 +267,7 @@ export const MemberArea = () => {
                     setMember(result.member);
                     setRecordingAvailable(result.recordingAvailable);
                     setRecordingEmbedUrl(result.recordingEmbedUrl || "");
+                    setExtraMedia(result.extraMedia || null);
                     setWorkbookAvailable(result.workbookAvailable);
                     setMeditations(result.meditations || { loslassenAvailable: false, wiedergeburtAvailable: false, ichBinLichtAvailable: false });
                     setContentState(result.contentState || []);
@@ -440,6 +442,7 @@ export const MemberArea = () => {
                 member={member}
                 recordingAvailable={recordingAvailable}
                 recordingEmbedUrl={recordingEmbedUrl}
+                extraMedia={extraMedia}
                 workbookAvailable={workbookAvailable}
                 meditations={meditations}
                 initialContentState={contentState}

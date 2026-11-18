@@ -180,6 +180,7 @@ import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
 import { initializeConstellationAvailability, getConstellationAvailability } from "./server/constellationAvailability.js";
 import { CashBookingError, createCashBooking, listCashBookings, cancelCashBooking } from "./server/constellationCash.js";
 import { metaConfig, metaOriginAllowed, initializeMeta, cleanMeta, registerMetaConsent, revokeMetaConsent, sendMetaPageView } from "./server/berlinMeta.js";
+import { readExtraMemberMedia } from "./server/extraMemberMedia.js";
 
 const app = express();
 const liveTalkService = createLiveTalkService({ db: database, sendMail: sendLiveTalkEmail,
@@ -218,6 +219,7 @@ let memberWorkbookPath = "";
 let memberLoslassenPath = "";
 let memberWiedergeburtPath = "";
 let memberIchBinLichtPath = "";
+const extraMemberMedia = readExtraMemberMedia(process.env.MEMBER_LIBRARY_VIMEO);
 let startupError = null;
 let startupPromise = Promise.resolve();
 
@@ -923,6 +925,7 @@ app.get("/api/members/session", async (request, response) => {
         premiumCheckoutUrl: memberPremiumCheckoutUrl || null,
         recordingAvailable: await recordingIsAvailable(),
         recordingEmbedUrl: memberRecordingEmbedUrl || null,
+        extraMedia: extraMemberMedia,
         workbookAvailable: await workbookIsAvailable(),
         meditations: {
             loslassenAvailable: await loslassenIsAvailable(),
