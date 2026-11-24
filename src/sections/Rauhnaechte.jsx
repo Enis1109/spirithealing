@@ -100,7 +100,7 @@ const meetings = [
 
 const included = [
   [Headphones, "Zwölf Meditationen per E-Mail", "Vom 25. Dezember bis 5. Januar bekommst du jeden Abend eine geführte Meditation und einen kurzen Begleittext von uns."],
-  [BookOpen, "Dein Raunächte-Workbook", "Mit Rückblick auf 2026, Vorbereitung der 13 Wünsche und einer Doppelseite pro Monat für deine Beobachtungen und Entscheidungen."],
+  [BookOpen, "Dein Raunächte-Workbook", "Für jede der zwölf Nächte gibt es eine Doppelseite mit einer Aufgabe für den Abend und Platz für deine Wahrnehmungen, Träume und Fragen."],
   [MoonStar, "Das Ritual der 13 Wünsche", "Du bereitest deine Wünsche vor. Am letzten Abend bleibt ein Wunsch, aus dem du deine Jahresessenz formulierst."],
   [Video, "Drei Live-Abende mit Meditation", "Wir meditieren gemeinsam bei der Eröffnung, bei der Zwischenreflexion und am Abschlussabend."],
 ]
@@ -259,7 +259,7 @@ export function Rauhnaechte() {
           <div className="space-y-5 border-l-2 border-[#dcc38b] pl-5 text-[#405d55] sm:pl-7">
             <p className="leading-7 sm:text-lg sm:leading-8">Im Brauchtum steht jede der zwölf Nächte für einen Monat des kommenden Jahres. Die Menschen achteten in dieser Zeit auf ihre Träume und auf das, was ihnen im Alltag auffiel. Uns spricht daran an, wie aufmerksam man an einer Schwelle werden kann. Das Vertraute klingt noch nach, während für das Neue schon Platz da ist.</p>
             <p className="leading-7 sm:text-lg sm:leading-8">Diese Aufmerksamkeit holen wir in jede Nacht. In der Meditation hörst du darauf, was dein Vorhaben in dir berührt. Beim Schreiben hältst du fest, was sich zeigt. Über die Abende hinweg bemerkst du vielleicht, welcher Wunsch wiederkommt, welche Sorge dich bisher begleitet hat und wofür du deine Kraft heute einsetzen möchtest.</p>
-            <p className="leading-7 sm:text-lg sm:leading-8">Am 6. Januar kommen wir noch einmal zusammen. Du öffnest den Wunsch, der übrig geblieben ist, und findest deinen Satz für das Jahr. Dazu wählst du eine Handlung, mit der du in der ersten Woche beginnen kannst. Die zwölf Monatsseiten im Workbook begleiten dich, wenn du später zu deiner Ausrichtung zurückkehren möchtest.</p>
+            <p className="leading-7 sm:text-lg sm:leading-8">Am 6. Januar kommen wir noch einmal zusammen. Du öffnest den Wunsch, der übrig geblieben ist, und findest deinen Satz für das Jahr. Dazu wählst du eine Handlung, mit der du in der ersten Woche beginnen kannst.</p>
           </div>
         </div>
       </section>
@@ -322,7 +322,7 @@ export function Rauhnaechte() {
             <p className="mt-4 leading-7 text-[#e6eee4]">Wenn der Tag leiser wird, machst du dir einen Platz. Vielleicht ist dein Kopf noch bei einem Gespräch oder bei dem, was morgen ansteht. Die Meditation gibt dir einen Moment, in dem du den Boden spürst und bemerkst, was du heute alles mitgebracht hast.</p>
             <ol className="mt-6 space-y-3 text-sm leading-6 text-[#f5f3e9]">
               <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Hören.</strong> Du öffnest unseren Abendimpuls und nimmst dein Vorhaben mit in die Meditation.</li>
-              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Festhalten.</strong> Du schreibst auf, was du wahrgenommen hast. Vielleicht ist es ein Satz, ein Traumbild oder eine Frage, die dich durch den nächsten Monat begleitet.</li>
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Festhalten.</strong> Du schreibst auf, was du wahrgenommen hast, und nimmst dir einen Moment für die Aufgabe dieser Nacht. Vielleicht bleibt dir ein Satz, ein Traumbild oder eine Frage.</li>
               <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Übergeben.</strong> Du ziehst einen gefalteten Wunschzettel und gibst ihn ungelesen ab. Ein Wunsch bleibt bis zum Abschluss bei dir.</li>
             </ol>
           </div>
@@ -332,16 +332,16 @@ export function Rauhnaechte() {
       <section id="workbook" aria-labelledby="workbook-heading" className="scroll-mt-6 border-b border-[#e2dac4] bg-[#f6f0e0] py-16 lg:py-24">
         <div className={`${width} grid items-center gap-9 lg:grid-cols-[1.05fr_.95fr] lg:gap-18`}>
           <figure className="raun-detail-in mx-auto grid min-h-[21rem] w-full max-w-[33rem] place-items-center overflow-hidden rounded-[1.65rem] border border-[#e0d2b1] bg-[radial-gradient(ellipse_at_20%_8%,#fcf9ee_10%,#e3d6b7_100%)] px-8 py-10 sm:min-h-[25.5rem]">
-            <img src="/raunaechte-workbook-cover.jpg" alt="Cover des Raunächte-Workbooks für 2027 mit einem Glas voller gefalteter Wunschzettel auf dem Kaminsims" loading="lazy" className="w-[68%] max-w-[16rem] -rotate-[5deg] rounded-sm border border-[#d7c5a1] shadow-[0_18px_34px_#55412557]" />
+            <img src="/raunaechte-workbook-cover.jpg" alt="Cover des Raunächte-Workbooks mit gefalteten Wunschzetteln im Glas auf dem Kaminsims" loading="lazy" className="w-[68%] max-w-[16rem] -rotate-[5deg] rounded-sm border border-[#d7c5a1] shadow-[0_18px_34px_#55412557]" />
           </figure>
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Dein Raunächte-Workbook</p>
-            <h2 id="workbook-heading" className="max-w-lg font-serif text-[clamp(2.2rem,4.1vw,4.05rem)] leading-[1.02] tracking-[-0.044em]">Ein Buch, zu dem du im neuen Jahr zurückkehren kannst</h2>
-            <p className="mt-4 leading-7 text-[#405d55]">In den Raunächten sammelst du darin Träume, Sätze und Fragen zu deinem Vorhaben. Wenn der jeweilige Monat beginnt, schlägst du deine Seite wieder auf. Du kannst nachlesen, was dir damals wichtig war, und heute entscheiden, welcher Schritt zu deinem Leben passt.</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Schreiben zwischen den Jahren</p>
+            <h2 id="workbook-heading" className="max-w-lg font-serif text-[clamp(2.2rem,4.1vw,4.05rem)] leading-[1.02] tracking-[-0.044em]">Dein Workbook für die Raunächte</h2>
+            <p className="mt-4 leading-7 text-[#405d55]">Nach jeder Meditation schlägst du die Doppelseite für diese Nacht auf. Du hältst fest, was du gehört, gespürt oder geträumt hast, und bearbeitest die Aufgabe für den Abend. So kannst du am Ende nachlesen, was sich von Nacht zu Nacht in dir verändert hat.</p>
             <ul className="mt-5 space-y-2 text-sm leading-6 text-[#405d55]">
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Rückblick auf 2026 und 13 Wunschzettel zum Ausschneiden</li>
-              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Zwölf Doppelseiten für Meditation, Wahrnehmung und deinen nächsten Schritt</li>
-              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Eine Seite für deine Jahresessenz und Raum für die ersten sieben Tage</li>
+              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Zwölf Doppelseiten zum Schreiben und Ausprobieren in den Nächten</li>
+              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Am Ende Platz für deine Jahresessenz, deinen ersten Schritt und die Weiterarbeit in 2027</li>
             </ul>
           </div>
         </div>
@@ -385,7 +385,7 @@ export function Rauhnaechte() {
             <article className="flex flex-col rounded-[1.8rem] border border-[#d6c6a4] bg-[#fffdf7] p-6 shadow-[0_8px_35px_#4541270c] sm:p-9">
               <h3 className="font-serif text-3xl">Raunächte-Begleitung</h3>
               <div className="mt-5"><Price offerActive={offerActive} remainingMs={remainingMs} /></div>
-              <p className="mt-3 text-sm leading-6 text-[#49625b]">Einmalzahlung für deine Begleitung von der Eröffnung bis zum Abschluss. Du nimmst deine Jahresessenz, einen ersten Schritt für dein Vorhaben und das Workbook für alle zwölf Monate mit.</p>
+              <p className="mt-3 text-sm leading-6 text-[#49625b]">Einmalzahlung für deine Begleitung von der Eröffnung bis zum Abschluss. Das Workbook begleitet dich in allen zwölf Nächten. Am letzten Abend hältst du deine Jahresessenz und einen ersten Schritt für dein Vorhaben fest.</p>
               <ul className="mb-7 mt-5 space-y-2 text-sm leading-6">
                 {["Zwölf geführte Meditationen mit Begleittext per E-Mail", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit gemeinsamer Meditation"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
               </ul>
