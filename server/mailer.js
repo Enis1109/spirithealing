@@ -80,12 +80,15 @@ const escapeHtml = (value) => String(value)
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-export const sendRaunaechteWelcome = async ({ email, subject, text, messageId }) => {
+export const sendRaunaechteWelcome = async ({ email, subject, text, messageId, invoiceUrl }) => {
     const paragraphs = text.split("\n\n").map((paragraph) =>
         `<p style="margin:0 0 18px;line-height:1.7">${escapeHtml(paragraph).replaceAll("\n", "<br>")}</p>`).join("");
+    const invoiceButton = invoiceUrl
+        ? `<p><a href="${escapeHtml(invoiceUrl)}" style="display:inline-block;background:#18524c;color:#fffaf2;padding:13px 21px;border-radius:24px;text-decoration:none;font-weight:bold">PDF-Rechnung herunterladen</a></p>` : "";
     const result = await closingTransporter.sendMail({
-        from: process.env.SMTP_FROM, to: email, replyTo: notificationRecipient, subject, text, messageId,
-        html: `<div lang="de" style="background:#edf4f0;padding:24px 12px;font-family:Arial,sans-serif;color:#173c39"><div style="max-width:590px;margin:auto;background:#fffaf2;padding:28px;border-radius:16px;border-top:4px solid #25a99d"><p style="font-size:12px;letter-spacing:2px;color:#775923">SPIRIT HEALING</p><h1 style="font-family:Georgia,serif;font-size:29px;line-height:1.2">${escapeHtml(subject)}</h1>${paragraphs}</div></div>`,
+        from: process.env.SMTP_FROM, to: email, replyTo: notificationRecipient, subject, messageId,
+        text: invoiceUrl ? `${text}\n\n${invoiceUrl}` : text,
+        html: `<div lang="de" style="background:#edf4f0;padding:24px 12px;font-family:Arial,sans-serif;color:#173c39"><div style="max-width:590px;margin:auto;background:#fffaf2;padding:28px;border-radius:16px;border-top:4px solid #25a99d"><p style="font-size:12px;letter-spacing:2px;color:#775923">SPIRIT HEALING</p><h1 style="font-family:Georgia,serif;font-size:29px;line-height:1.2">${escapeHtml(subject)}</h1>${paragraphs}${invoiceButton}</div></div>`,
     });
     if (!result.accepted?.some((address) => String(address).toLowerCase() === email.toLowerCase())) {
         throw new Error("raunaechte_recipient_not_accepted");

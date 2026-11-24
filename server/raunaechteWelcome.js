@@ -1,5 +1,10 @@
 const program = 'raunaechte_welcome_2026_27';
 const offerEnds = Date.parse('2026-11-28T00:00:00+01:00');
+export const raunaechtePayment = Object.freeze({
+  paymentLink: 'https://buy.stripe.com/6oU6oJekaaOx6p52Bh83C1a',
+  paymentLinkId: 'plink_1UfNa1Q90vf7AvfH0Nr6uMCv',
+  promoCode: 'RAUNAECHTE88',
+});
 
 export function raunaechteCheckoutFor({ price, paymentLink, promoCode, now = Date.now() }) {
   const inPromotion = now < offerEnds;
@@ -17,9 +22,10 @@ export function raunaechteCheckoutFor({ price, paymentLink, promoCode, now = Dat
 }
 
 export async function initializeRaunaechteWelcome(db) {
-  await db.execute(`CREATE TABLE IF NOT EXISTS raunaechte_registrations (
-    stripe_session_id VARCHAR(128) PRIMARY KEY,
+  await db.execute(`CREATE TABLE IF NOT EXISTS raunaechte_deliveries (
+    stripe_id VARCHAR(128) PRIMARY KEY,
     email VARCHAR(254) NOT NULL,
+    invoice_url VARCHAR(2048) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     welcome_status VARCHAR(20) NOT NULL DEFAULT 'pending',
     welcome_attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -29,22 +35,40 @@ export async function initializeRaunaechteWelcome(db) {
 }
 
 export async function recordRaunaechtePurchase(db, event) {
-  const session = event.data?.object;
-  if (event.livemode !== true || session?.metadata?.fulfillment !== program
-    || !['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)) return false;
-  if (session.payment_status !== 'paid') return true;
+  const object = event.data?.object;
+  if (event.livemode !== true || object?.metadata?.fulfillment !== program) return false;
+  const isInvoice = event.type === 'invoice.paid' && object.object === 'invoice';
+  const isCheckout = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)
+    && object.object === 'checkout.session' && object.mode === 'payment'
+    && object.payment_link === raunaechtePayment.paymentLinkId;
+  if (!isInvoice && !isCheckout) return false;
+  if (!isInvoice && object.payment_status !== 'paid') return true;
 
-  const email = session.customer_details?.email?.trim();
+  const email = (isInvoice ? object.customer_email : object.customer_details?.email)?.trim();
+  const amount = isInvoice ? object.amount_paid : object.amount_total;
+  const idPattern = isInvoice ? /^in_[a-z0-9]+$/i : /^cs_live_[a-z0-9]+$/i;
+  const invoiceUrl = isInvoice ? stripeInvoiceUrl(object.invoice_pdf) : null;
   if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    || !/^cs_live_[a-z0-9]+$/i.test(session.id) || !/^plink_[a-z0-9]+$/i.test(session.payment_link)
-    || session.currency !== 'eur' || ![8800, 11100].includes(session.amount_total)) {
+    || !idPattern.test(object.id) || object.currency !== 'eur' || ![8800, 11100].includes(amount)
+    || (isInvoice && (object.status !== 'paid' || !invoiceUrl))) {
     console.error('Raunächte: paid checkout needs review', event.id);
     throw new Error('raunaechte_invalid_paid_checkout');
   }
 
-  await db.execute(`INSERT INTO raunaechte_registrations (stripe_session_id, email) VALUES (?, ?)
-    ON DUPLICATE KEY UPDATE stripe_session_id = stripe_session_id`, [session.id, email]);
+  await db.execute(`INSERT INTO raunaechte_deliveries (stripe_id, email, invoice_url) VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE stripe_id = stripe_id`, [object.id, email, invoiceUrl]);
   return true;
+}
+
+function stripeInvoiceUrl(value) {
+  if (typeof value !== 'string' || value.length > 2048) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && !url.username && !url.password
+      && ['pay.stripe.com', 'invoice.stripe.com'].includes(url.hostname) ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 export function raunaechteWelcomeCopy() {
@@ -59,7 +83,7 @@ Unsere gemeinsamen Abende finden online statt, jeweils um 19 Uhr deutscher Zeit:
 30. Dezember · Zwischenreflexion und Meditation
 6. Januar · Abschluss und Meditation
 
-Dein Workbook und die Zoom-Informationen schicken wir dir vor der Eröffnung. Vom 25. Dezember bis zum 5. Januar bekommst du die Meditation und den Impuls für die jeweilige Nacht an diese E-Mail-Adresse. Deine Rechnung kommt separat von Stripe.
+Dein Workbook und die Zoom-Informationen schicken wir dir vor der Eröffnung. Vom 25. Dezember bis zum 5. Januar bekommst du die Meditation und den Impuls für die jeweilige Nacht an diese E-Mail-Adresse. Deine Rechnung bekommst du in einer separaten E-Mail.
 
 Wenn du vorab etwas fragen möchtest, antworte einfach auf diese E-Mail. Wir freuen uns, dich durch diese Zeit zu begleiten.
 
@@ -68,30 +92,39 @@ Selcan & Sabine · Spirit Healing`,
   };
 }
 
+function raunaechteInvoiceCopy(invoiceUrl) {
+  return {
+    subject: 'Deine Rechnung für die Raunächte 2026/27',
+    text: 'Vielen Dank für deine Buchung bei Spirit Healing. Deine Zahlung für die Raunächte-Begleitung ist eingegangen. Über diesen Link kannst du deine Rechnung als PDF herunterladen.\n\nVon Herzen\nSelcan & Sabine · Spirit Healing',
+    invoiceUrl,
+  };
+}
+
 export async function deliverRaunaechteWelcomes(db, sendMail) {
-  const [rows] = await db.execute(`SELECT stripe_session_id, email, welcome_attempts
-    FROM raunaechte_registrations
+  const [rows] = await db.execute(`SELECT stripe_id, email, invoice_url, welcome_attempts
+    FROM raunaechte_deliveries
     WHERE welcome_status = 'pending'
       AND (welcome_attempts = 0 OR welcome_updated_at < CURRENT_TIMESTAMP - INTERVAL 2 MINUTE)
     ORDER BY created_at LIMIT 8`);
   for (const row of rows) {
-    const id = row.stripe_session_id;
-    const [claim] = await db.execute(`UPDATE raunaechte_registrations
+    const id = row.stripe_id;
+    const [claim] = await db.execute(`UPDATE raunaechte_deliveries
       SET welcome_status = 'sending', welcome_attempts = welcome_attempts + 1
-      WHERE stripe_session_id = ? AND welcome_status = 'pending' AND welcome_attempts = ?`,
+      WHERE stripe_id = ? AND welcome_status = 'pending' AND welcome_attempts = ?`,
     [id, row.welcome_attempts]);
     if (claim.affectedRows !== 1) continue;
 
     let status = 'sent';
     try {
-      await sendMail({ ...raunaechteWelcomeCopy(), email: row.email, messageId: `<raunaechte-${id}@spirit-healing.tr>` });
+      const copy = row.invoice_url ? raunaechteInvoiceCopy(row.invoice_url) : raunaechteWelcomeCopy();
+      await sendMail({ ...copy, email: row.email, messageId: `<raunaechte-${id}@spirit-healing.tr>` });
     } catch (error) {
       // Retry only failures known to precede handoff. An ambiguous SMTP result must not produce a duplicate.
       const preHandoff = ['CONN', 'EHLO', 'AUTH', 'MAIL FROM', 'RCPT TO'].includes(error?.command);
       status = preHandoff && row.welcome_attempts < 3 ? 'pending' : 'needs_review';
       console.error('Raunächte: welcome delivery delayed or needs review', id, status);
     }
-    await db.execute('UPDATE raunaechte_registrations SET welcome_status = ? WHERE stripe_session_id = ?', [status, id]);
+    await db.execute('UPDATE raunaechte_deliveries SET welcome_status = ? WHERE stripe_id = ?', [status, id]);
   }
 }
 
@@ -102,7 +135,7 @@ export function startRaunaechteWelcomeWorker(db, sendMail) {
     running = true;
     try {
       await deliverRaunaechteWelcomes(db, sendMail);
-      const [stalled] = await db.execute(`UPDATE raunaechte_registrations
+      const [stalled] = await db.execute(`UPDATE raunaechte_deliveries
         SET welcome_status = 'needs_review'
         WHERE welcome_status = 'sending' AND welcome_updated_at < CURRENT_TIMESTAMP - INTERVAL 5 MINUTE`);
       if (stalled.affectedRows) console.error('Raunächte: interrupted welcome deliveries need review', stalled.affectedRows);
