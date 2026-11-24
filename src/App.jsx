@@ -4,6 +4,7 @@ import ScrollToTop from "@/layout/ScrollToTop"
 import { About } from "@/sections/About"
 import { Herotest } from "@/sections/Herotest"
 import { Therapie } from "@/sections/Therapy"
+import { ConversationTherapy } from "@/sections/ConversationTherapy"
 import { Pricing } from "@/sections/Pricing"
 import { Coaching } from "@/sections/Coaching"
 import { FAQ } from "@/sections/FAQ"
@@ -88,6 +89,7 @@ function App() {
         <Route path="/" element={ <Herotest/> }/>
         <Route path="/coaching" element={<Coaching/>}/>
         <Route path="/therapie" element={<Therapie/>}/>
+        <Route path="/gespraechstherapie" element={<ConversationTherapy/>}/>
         <Route path="/about" element={<About/>}/>
         <Route path="/prices" element={<Pricing/>}/>
         <Route path="/termin-buchen" element={<BookingHub/>}/>

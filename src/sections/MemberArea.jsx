@@ -364,7 +364,7 @@ export const MemberArea = () => {
                 email: formData.get("email"),
                 password: formData.get("password"),
             });
-            window.location.assign("/mitglieder");
+            window.location.assign("/mitglieder" + (searchParams.get("tab") === "library" ? "?tab=library" + (searchParams.get("media") ? "&media=" + encodeURIComponent(searchParams.get("media")) : "") : ""));
         } catch (error) {
             setErrorMessage(error.code === "invalid_credentials" ? copy.loginError : (error.code === "rate_limit" ? copy.rateError : copy.authError));
             setSubmitState("error");

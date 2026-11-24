@@ -43,6 +43,7 @@ export const pageMeta = {
       title: "Traumasensible Prozessbegleitung online | Spirit Healing",
       description: "Schutzmuster, innere Anteile und Reaktionen des Nervensystems verstehen. Traumasensible Online-Begleitung mit Sabine und Selcan kennenlernen.",
     },
+    "/gespraechstherapie": { title: "Gesprächs- und Verhaltenstherapie mit Selcan | Spirit Healing", description: "Gesprächs- und Verhaltenstherapie mit Selcan: 90 Minuten, 90 Euro. Angebot kennenlernen und Termin wählen.", contentLanguage: "de" },
     "/therapie": {
       title: "Integrative Therapie & Energiearbeit online | Spirit Healing",
       description: "Integrative Online-Therapie mit Anteilearbeit, Körperwahrnehmung, Energiearbeit und einem traumasensiblen Blick auf dein Nervensystem.",
@@ -79,7 +80,7 @@ export const pageMeta = {
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
-      description: "13 Wochen mit Matrix-Gespräch und Rauhnächten. Sabine und Selcan im kostenfreien Zoom-Gespräch kennenlernen. Gesprächsphase offen, Programmstart wird bekannt gegeben.",
+      description: "13 Wochen mit Matrix-Gespräch, gemeinsamen Online-Terminen und persönlicher Begleitung. Sabine und Selcan im kostenfreien Zoom-Gespräch kennenlernen. Gesprächsphase offen, Programmstart wird bekannt gegeben.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -162,6 +163,7 @@ export const pageMeta = {
   tr: {
     "/": { title: "Spirit Healing | Çevrim İçi Travma Bilgili Danışmanlık", description: sharedTurkishDescription },
     "/coaching": { title: "Travma Bilgili Danışmanlık | Spirit Healing", description: "Sinir sistemi tepkilerini, korunma örüntülerini ve içsel parçaları Sabine ve Selcan ile çevrim içi çalışmada daha iyi anlayın." },
+    "/gespraechstherapie": { title: "Gesprächs- und Verhaltenstherapie mit Selcan | Spirit Healing", description: "Gesprächs- und Verhaltenstherapie mit Selcan: 90 Minuten, 90 Euro. Angebot kennenlernen und Termin wählen.", contentLanguage: "de" },
     "/therapie": { title: "Bütüncül Çevrim İçi Terapi | Spirit Healing", description: "İçsel parçalar, beden farkındalığı, enerji çalışması ve travma bilgili yaklaşımı birleştiren bütüncül çevrim içi terapi." },
     "/about": { title: "Sabine & Selcan | Spirit Healing Hakkında", description: "Sabine Schmidt ve Selcan Yilmaz'ı, yaklaşımlarını ve birlikte yürüttükleri travma bilgili, sistemik ve enerjetik çalışmayı tanıyın." },
     "/prices": { title: "Ücretler ve Randevular | Spirit Healing", description: "Bireysel seans, ortak çalışma, yoğun seans ve seans paketlerinin güncel ücretlerini inceleyin." },
@@ -181,7 +183,7 @@ export const pageMeta = {
     },
     "/13-wochen-programm": {
       title: "13-Wochen-Programm: Das Zepter übernehmen | Spirit Healing",
-      description: "13 Wochen mit Matrix-Gespräch und Rauhnächten. Sabine und Selcan im kostenfreien Zoom-Gespräch kennenlernen. Gesprächsphase offen, Programmstart wird bekannt gegeben.",
+      description: "13 Wochen mit Matrix-Gespräch, gemeinsamen Online-Terminen und persönlicher Begleitung. Sabine und Selcan im kostenfreien Zoom-Gespräch kennenlernen. Gesprächsphase offen, Programmstart wird bekannt gegeben.",
       ...zepterImage,
       contentLanguage: "de",
     },
@@ -225,6 +227,7 @@ export const indexablePaths = Object.freeze([
   "/",
   "/coaching",
   "/therapie",
+  "/gespraechstherapie",
   "/about",
   "/prices",
   "/termin-buchen",

@@ -1,3 +1,5 @@
+import { BlackFridayOffers } from "@/components/BlackFridayOffers";
+import { ConversationTherapyOffer } from "@/components/ConversationTherapyOffer";
 import { ArrowRight, CalendarDays, CalendarRange, HeartHandshake, MessageCircle, UserRound, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -192,6 +194,7 @@ export const BookingHub = () => {
                     <p className="mx-auto mt-5 inline-flex rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">{content.rescheduling}</p>
                 </div>
             </section>
+            <BlackFridayOffers/>
 
             <section className="mx-auto grid max-w-6xl gap-5 px-4 py-14 sm:px-6 lg:grid-cols-3 lg:px-8">
                 {content.options.map((option) => {
@@ -222,7 +225,8 @@ export const BookingHub = () => {
                 })}
             </section>
 
-            <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8" aria-labelledby="packages-title">
+            <ConversationTherapyOffer/>
+                <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8" aria-labelledby="packages-title">
                 <div className="mb-8 max-w-3xl">
                     <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{content.packagesEyebrow}</p>
                     <h2 id="packages-title" className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">{content.packagesTitle}</h2>

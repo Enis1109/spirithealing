@@ -6,7 +6,6 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
-  Clock3,
   HeartHandshake,
 } from "lucide-react"
 
@@ -47,7 +46,6 @@ const included = [
   "Begleitendes Workbook mit Übungen und Reflexionsfragen",
   "Kurze Impulse für die Umsetzung zwischen den Terminen",
   "Austausch in einer geschützten Spirit-Healing-Community",
-  "Das vollständige Rauhnachtsprogramm innerhalb der gemeinsamen Reise",
   "Abschluss und persönlicher 90-Tage-Ausblick",
   "Teilnahme am gemeinsamen Abschlusstreffen in Berlin nach dem 13-Wochen-Prozess",
 ]
@@ -101,7 +99,6 @@ export const Zepter13 = () => {
               <div className="mt-9 flex flex-wrap gap-3 text-sm font-semibold text-[#2c514d]">
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="shrink-0 text-[#0f7d79]" />Persönliche Gespräche seit 21. Oktober 2026</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><CalendarDays size={17} className="shrink-0 text-[#0f7d79]" />Programmstart wird bekannt gegeben</span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Clock3 size={17} className="text-[#0f7d79]" />vollständiges Rauhnachtsprogramm inklusive</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#cbded6] bg-white/90 px-4 py-2.5"><Check size={17} className="text-[#0f7d79]" />keine Vorkenntnisse nötig</span>
               </div>
             </div>
@@ -221,25 +218,7 @@ export const Zepter13 = () => {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#173c39] py-20 text-white lg:py-28">
-        <div className="absolute -right-24 top-0 h-96 w-96 rounded-full bg-[#c69543]/15 blur-3xl" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.86fr_1.14fr] lg:gap-20 lg:px-10">
-          <SectionTitle
-            eyebrow="Im Programm enthalten"
-            title="Das vollständige Spirit-Healing-Rauhnachtsprogramm ist Teil dieser Reise."
-            intro="Du brauchst dafür nichts zusätzlich zu buchen. Die gemeinsame Rauhnachtsbegleitung ist vollständig in deiner Teilnahme am 13-Wochen-Programm enthalten."
-            light
-          />
-          <div className="rounded-[2rem] border border-white/15 bg-white/8 p-7 sm:p-10">
-            <p className="font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl">Eine gemeinsame Zeit für Innenschau, Wahrheit, Wünsche und bewusste Ausrichtung.</p>
-            <p className="mt-6 text-lg leading-8 text-white/75">Die Rauhnächte verbinden das Ende des alten Jahres mit dem Beginn des neuen. Wie die Begleitung im Einzelnen gestaltet wird, erfährst du innerhalb des Programms.</p>
-            <div className="mt-8 flex flex-wrap gap-3 text-sm font-bold">
-              <span className="rounded-full bg-[#f1d7a0] px-4 py-2.5 text-[#173c39]">vollständig inklusive</span>
-              <span className="rounded-full border border-white/20 px-4 py-2.5 text-white">keine Zusatzbuchung nötig</span>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="grid gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
@@ -305,7 +284,6 @@ export const Zepter13 = () => {
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-3 text-sm font-semibold text-white/80">
             <span className="rounded-full border border-white/20 px-4 py-2.5">Gesprächsphase seit 21. Oktober 2026</span>
             <span className="rounded-full border border-white/20 px-4 py-2.5">Programmstart wird bekannt gegeben</span>
-            <span className="rounded-full border border-white/20 px-4 py-2.5">Rauhnachtsprogramm inklusive</span>
           </div>
           <a href={introCallUrl} target="_blank" rel="noopener noreferrer" className="mt-9 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f1d7a0] px-8 py-4 text-center font-bold text-[#173c39] transition hover:bg-white">Kostenfrei kennenlernen <ArrowRight size={18} className="shrink-0" /></a>
         </div>

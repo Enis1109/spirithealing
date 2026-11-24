@@ -1,0 +1,8 @@
+import { Link } from 'react-router-dom';
+export const conversationTherapyUrl = 'https://calendly.com/selcan1975/gesprachs-und-verhaltenstherapie-bei-selcan';
+export const ConversationTherapyOffer = ({ showDetails = true }) => <section id="gespraechstherapie" lang="de" data-no-translate className="mx-auto my-12 w-full max-w-6xl scroll-mt-28 px-4 sm:px-6" aria-labelledby="conversation-offer">
+    <div className="grid overflow-hidden rounded-3xl border border-[#d4c6a6] bg-[#f8f2e7] text-[#173c39] sm:grid-cols-[1fr_.45fr]">
+        <div className="p-7 sm:p-9"><p className="text-xs font-bold uppercase tracking-[.16em] text-[#84632b]">Mit Selcan</p><h2 id="conversation-offer" className="mt-3 font-serif text-3xl">Gesprächs- und Verhaltenstherapie</h2><p className="mt-4 max-w-2xl leading-7">Ein Raum für dein Anliegen, deine Gefühle und die Muster, die dich im Alltag beschäftigen. Gemeinsam schauen wir auf die Dynamik hinter deinem aktuellen Konflikt.</p><p className="mt-5 text-xl font-bold">90 Minuten · 90 €</p><div className="mt-6 flex flex-wrap gap-3"><a href={conversationTherapyUrl} className="inline-flex min-h-12 items-center rounded-full bg-[#075d60] px-6 py-3 font-bold text-white hover:bg-[#043f42]">Termin mit Selcan wählen</a>{showDetails && <Link to="/gespraechstherapie" className="inline-flex min-h-12 items-center px-4 font-semibold underline underline-offset-4">Mehr zur Gesprächstherapie</Link>}</div></div>
+        <img src="/gespr/gespr.jpeg" alt="Raum für ein persönliches Gespräch" className="h-full max-h-64 w-full object-cover sm:max-h-none" loading="lazy"/>
+    </div>
+</section>;

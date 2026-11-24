@@ -13,7 +13,7 @@ test("calendar uses Berlin day boundaries and lists all four constellation days"
         eventsOnDay(day).find(e => e.id === `constellation-${day}`)?.date),
     ["2026-12-12", "2026-12-13", "2027-01-30", "2027-01-31"]);
     assert.equal(eventsOnDay("2026-10-09").some(e => e.id === "berlin"), false);
-    assert.equal(eventsOnDay("2026-10-06")[0].href, replayFunnel.path);
+    assert.equal(eventsOnDay("2026-10-06")[0].href, "/mitglieder?tab=library&media=vortrag-inneres-drehbuch-2026-10-06");
     assert.equal(eventIsPast(eventsOnDay("2026-10-06")[0], new Date("2026-10-07T10:00Z")), true);
 });
 test("weekly group appears every Sunday in grid and month list, including after DST changes", () => {

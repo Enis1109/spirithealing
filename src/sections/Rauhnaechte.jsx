@@ -96,7 +96,7 @@ const meetings = [
 
 const included = [
   [Headphones, "Zwölf Meditationen per E-Mail", "Vom 25. Dezember bis 5. Januar bekommst du jeden Abend eine geführte Meditation und einen kurzen Begleittext von uns."],
-  [BookOpen, "Dein Raunächte-Workbook", "Für jede der zwölf Nächte gibt es eine Doppelseite mit einer Aufgabe für den Abend und Platz für deine Wahrnehmungen, Träume und Fragen."],
+  [BookOpen, "Dein Raunächte-Workbook als PDF", "Du erhältst es per E-Mail zum Download. Für jede der zwölf Nächte gibt es eine Doppelseite mit einer Aufgabe für den Abend und Platz für deine Wahrnehmungen, Träume und Fragen."],
   [MoonStar, "Das Ritual der 13 Wünsche", "In jeder Nacht öffnest du einen Wunsch und hältst ihn beim passenden Monat fest. Aus dem letzten Wunsch formulierst du am Abschlussabend deine Jahresessenz."],
   [Video, "Drei Live-Abende mit Meditation", "Wir meditieren gemeinsam bei der Eröffnung, bei der Zwischenreflexion und am Abschlussabend."],
 ]
@@ -106,6 +106,9 @@ const primary = "inline-flex min-h-12 items-center justify-center gap-3 rounded-
 const gold = "inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#efdca8] px-6 py-3.5 text-sm font-bold text-[#123b35] transition hover:bg-[#fff0c7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#efdca8]"
 
 const heroMotion = `
+  .raun-snow { position: fixed; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+  .raun-snow span { position: absolute; top: -12px; width: var(--size); height: var(--size); border-radius: 50%; background: #fff; opacity: .65; box-shadow: 0 0 3px #a5bbb080; animation: raun-snowfall var(--duration) linear var(--delay) infinite; }
+  @keyframes raun-snowfall { from { transform: translate3d(0,-2vh,0); } to { transform: translate3d(35px,105vh,0); } }
   .raun-portrait { animation: raun-portrait-arrives 1.35s cubic-bezier(.2,.65,.3,1) both; }
   .raun-kolibri {
     transform-origin: 53% 49%;
@@ -146,6 +149,7 @@ const heroMotion = `
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .raun-snow { display: none; }
     .raun-portrait, .raun-detail-in { animation: none; }
     .raun-kolibri, .raun-flight-play { display: none; animation: none; }
   }
@@ -197,6 +201,7 @@ export function Rauhnaechte() {
   return (
     <main ref={page} data-no-translate className="min-h-screen bg-[#fbf8f0] text-[#163d35]">
       <style>{heroMotion}</style>
+      <div className="raun-snow" aria-hidden="true">{Array.from({ length: 26 }, (_, i) => <span key={i} style={{ left: `${(i * 37 + 5) % 100}%`, '--size': `${3 + i % 4}px`, '--duration': `${10 + i % 7}s`, '--delay': `${-(i * 1.7) % 16}s` }} />)}</div>
       <a href="#inhalt" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-3">Zum Inhalt</a>
       <header className="border-b border-[#dedacb] bg-[#fffdf7]">
         <div className={`${width} flex min-h-19 items-center justify-between gap-4`}>
@@ -233,7 +238,7 @@ export function Rauhnaechte() {
               <img className="raun-portrait h-full w-full object-cover object-[50%_43%]" src="/rauhnaechte-spirit-healing.png" alt="Sabine und Selcan im Kerzenlicht bei einem winterlichen Raunachtsritual" fetchPriority="high" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#112d28]/85 via-transparent to-transparent" aria-hidden="true" />
             </div>
-            <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[clamp(7rem,15vw,10rem)] w-[clamp(7rem,15vw,10rem)]" aria-hidden="true">
+            <div className="pointer-events-none absolute bottom-8 left-5 z-10 h-20 w-20 sm:left-8 sm:h-24 sm:w-24" aria-hidden="true">
               <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="absolute inset-0 h-full w-full rounded-full drop-shadow-[0_7px_11px_#10251d55]" />
               <span className="raun-kolibri absolute inset-0 block">
                 <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="raun-kolibri-body absolute inset-0 h-full w-full" />
@@ -241,7 +246,7 @@ export function Rauhnaechte() {
               </span>
             </div>
             <button type="button" data-raun-flight-play className="raun-flight-play absolute right-4 top-4 z-20 min-h-10 rounded-full bg-[#fffdf7]/95 px-3.5 text-xs font-bold text-[#164942] shadow-sm hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white">Kolibri fliegen lassen</button>
-            <figcaption className="absolute inset-x-0 bottom-4 py-6 pl-29 pr-5 text-sm text-white sm:pl-38"><strong className="block font-serif text-xl font-normal sm:text-2xl">Sabine &amp; Selcan</strong><span>Begleiten dich durch die Raunächte</span></figcaption>
+            <figcaption className="absolute inset-x-0 bottom-4 py-6 pl-29 pr-5 text-sm text-white sm:pl-36"><strong className="block font-serif text-xl font-normal sm:text-2xl">Sabine &amp; Selcan</strong><span>Begleiten dich durch die Raunächte</span></figcaption>
           </figure>
         </div>
       </section>
@@ -333,6 +338,7 @@ export function Rauhnaechte() {
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Schreiben zwischen den Jahren</p>
             <h2 id="workbook-heading" className="max-w-lg font-serif text-[clamp(2.2rem,4.1vw,4.05rem)] leading-[1.02] tracking-[-0.044em]">Dein Workbook für die Raunächte</h2>
+            <p className="mt-4 leading-7 text-[#405d55]">Du erhältst dein Workbook als PDF per E-Mail zum Download. Du kannst es bei Bedarf selbst ausdrucken. Es wird kein gedrucktes Workbook per Post verschickt.</p>
             <p className="mt-4 leading-7 text-[#405d55]">Auf der Doppelseite jeder Nacht findest du den Monat, zu dem sie gehört. Dort trägst du deinen gezogenen Wunsch ein, hältst fest, was du gespürt oder geträumt hast, und bearbeitest die Aufgabe für den Abend. Wenn der Monat 2027 beginnt, kannst du den Wunsch und deine Notizen wieder aufschlagen.</p>
             <ul className="mt-5 space-y-2 text-sm leading-6 text-[#405d55]">
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Rückblick auf 2026 und 13 Wunschzettel zum Ausschneiden</li>
@@ -383,7 +389,7 @@ export function Rauhnaechte() {
               <div className="mt-5"><Price offerActive={offerActive} remainingMs={remainingMs} /></div>
               <p className="mt-3 text-sm leading-6 text-[#49625b]">Einmalzahlung für deine Begleitung von der Eröffnung bis zum Abschluss. Das Workbook begleitet dich in allen zwölf Nächten. Am letzten Abend hältst du deine Jahresessenz und einen ersten Schritt für dein Vorhaben fest.</p>
               <ul className="mb-7 mt-5 space-y-2 text-sm leading-6">
-                {["Zwölf geführte Meditationen mit Begleittext per E-Mail", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit gemeinsamer Meditation"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
+                {["Zwölf geführte Meditationen mit Begleittext per E-Mail", "Workbook als PDF per E-Mail und 13-Wünsche-Ritual", "Drei Live-Abende mit gemeinsamer Meditation"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
               </ul>
               <div className="mt-auto">
                 <a href={checkout} onClick={(event) => {

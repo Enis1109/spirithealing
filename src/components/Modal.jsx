@@ -2,7 +2,7 @@ import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-export const Modal = ({ open, onClose, title, closeLabel, children }) => {
+export const Modal = ({ open, onClose, title, closeLabel, children, className = "", decoration = null }) => {
     const titleId = useId();
     const dialogRef = useRef(null);
     const onCloseRef = useRef(onClose);
@@ -60,12 +60,13 @@ export const Modal = ({ open, onClose, title, closeLabel, children }) => {
                 if (event.target === event.currentTarget) onClose();
             }}
         >
+            {decoration}
             <section
                 ref={dialogRef}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby={titleId}
-                className="max-h-[94dvh] w-full overflow-y-auto rounded-t-[2rem] bg-[#f7f1e7] p-5 text-muted-foreground shadow-2xl sm:max-w-3xl sm:rounded-[2rem] sm:p-8 lg:max-w-4xl"
+                className={`max-h-[94dvh] w-full overflow-y-auto rounded-t-[2rem] bg-[#f7f1e7] p-5 text-muted-foreground shadow-2xl sm:max-w-3xl sm:rounded-[2rem] sm:p-8 lg:max-w-4xl ${className}`}
             >
                 <div className="flex items-start justify-between gap-4">
                     <h2 id={titleId} className="text-2xl font-bold leading-tight sm:text-3xl">{title}</h2>

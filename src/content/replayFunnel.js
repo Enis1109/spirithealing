@@ -11,8 +11,8 @@ export const berlinDate = (now = new Date()) => new Intl.DateTimeFormat("en-CA",
 // Open conversation phase since 21 October. Publish cohort dates only after confirmation.
 export const programLiveEvents = [];
 export const publicEvents = [
-    { id: "july-recording", date: "2026-07-26", title: "Wer entscheidet eigentlich dein Leben?", detail: "Vortrag mit Workbook im kostenlosen Mitgliederbereich", href: "/gratis-meditationen", replay: true },
-    { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Vortrag 1 und Workbook im Aufzeichnungsbereich", href: replayFunnel.path, replay: true },
+    { id: "july-recording", date: "2026-07-26", title: "Wer entscheidet eigentlich dein Leben?", detail: "Vortrag mit Workbook im kostenlosen Mitgliederbereich", href: "/mitglieder?tab=library&media=vortrag-wer-entscheidet-dein-leben", replay: true },
+    { id: "october-recording", date: "2026-10-06", time: "19:30", title: replayFunnel.title, detail: "Vortrag 1 und Workbook im kostenlosen Mitgliederbereich", href: "/mitglieder?tab=library&media=vortrag-inneres-drehbuch-2026-10-06", replay: true },
     ...constellationDays.map((day) => ({
         id: `constellation-${day.id}`, date: day.date, ...(constellationTime ? { time: constellationTime } : {}),
         constellationDayId: day.id,
@@ -21,11 +21,11 @@ export const publicEvents = [
         href: constellationDayPath(day),
         action: "Termin und Teilnahme ansehen",
     })),
-    { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine inneren Anteile", detail: "Vortrag 2 und Meditation im kostenlosen Mitgliederbereich", href: "/gratis-meditationen", replay: true },
+    { id: "second-live", date: "2026-10-20", time: "20:00", title: "Eine Stufe tiefer: Deine inneren Anteile", detail: "Vortrag 2 und Meditation im kostenlosen Mitgliederbereich", href: "/mitglieder?tab=library&media=vortrag-innere-anteile-2026-10-20", replay: true },
     { id: familyLecture.key, date: familyLecture.date, time: "20:00", title: familyLecture.title,
-        detail: "Kostenloser Vortrag mit Sabine & Selcan · online über Zoom · auf Deutsch", href: familyLecture.path,
-        action: "Kostenlos zum Vortrag anmelden" },
-    { id: "third-live", date: "2026-11-03", time: "20:00", title: "Bindungsmuster verstehen", detail: "Nähe, Rückzug und innere Anteile · dritter kostenloser Live-Abend zum 13-Wochen-Programm mit Sabine & Selcan · online über Zoom · mit Meditation", href: "/live-vortrag/3-november", action: "Kostenlos zum Vortrag anmelden" },
+        detail: "Aufzeichnung im kostenlosen Mitgliederbereich", href: "/mitglieder?tab=library&media=familienaufstellung-2026-10-27", replay: true },
+    { id: "third-live", date: "2026-11-03", time: "20:00", title: "Bindungsmuster verstehen", detail: "Aufzeichnung im kostenlosen Mitgliederbereich", href: "/mitglieder?tab=library&media=bindungsmuster-2026-11-03", replay: true },
+    { id: "november-17-recording", date: "2026-11-17", time: "20:00", title: "Wie bleibe ich bei mir, wenn mir jemand wichtig ist?", detail: "Aufzeichnung im kostenlosen Mitgliederbereich", href: "/mitglieder?tab=library&media=bei-mir-bleiben-vortrag-2026-11-17", replay: true },
     { id: "onboarding", date: "2026-10-21", title: "Gesprächsphase zum 13-Wochen-Programm", detail: "Seit dem 21. Oktober führen wir persönliche Kennenlerngespräche. Jetzt kostenfrei und unverbindlich kennenlernen; der Programmstart wird bekannt gegeben.", href: "/13-wochen-programm#teilnahme", action: "Kostenfreies Kennenlernen ansehen" },
     ...programLiveEvents,
     { id: "rauhnaechte", date: "2026-12-23", lastDate: "2027-01-06", title: "Rauhnächte mit Sabine & Selcan", detail: "23. Dezember 2026 bis 6. Januar 2027", href: "/rauhnaechte" },

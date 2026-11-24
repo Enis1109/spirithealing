@@ -6,24 +6,22 @@ import { LANGUAGE_SWITCHER_ENABLED, useLanguage } from "@/i18n/LanguageContext";
 
 const navLinks = {
     de: [
-        { href: "/13-wochen-programm", label: "13-Wochen-Programm", featured: true },
         { href: "/coaching", label: "Prozessbegleitung" },
         { href: "/therapie", label: "Integrative Therapie" },
         { href: "/aufstellungsarbeit", label: "Aufstellungsarbeit" },
+        { href: "/13-wochen-programm", label: "13-Wochen-Programm" },
         { href: "/about", label: "Über uns" },
         { href: "/vortraege-seminare", label: "Vorträge & Seminare" },
-        { href: "/mitglieder", label: "Mitgliederbereich", member: true },
         { href: "/prices", label: "Preise & Termine" },
         { href: "/faq", label: "FAQ" },
     ],
     tr: [
-        { href: "/13-wochen-programm", label: "13 Haftalık Program", featured: true },
         { href: "/coaching", label: "Süreç Danışmanlığı" },
         { href: "/therapie", label: "Bütüncül Terapi" },
         { href: "/aufstellungsarbeit?lang=tr", label: "Dizim çalışması" },
+        { href: "/13-wochen-programm", label: "13 Haftalık Program" },
         { href: "/about", label: "Hakkımızda" },
         { href: "/vortraege-seminare", label: "Seminerler & Eğitimler" },
-        { href: "/mitglieder", label: "Üye alanı", member: true },
         { href: "/prices", label: "Ücretler & Randevular" },
         { href: "/faq", label: "SSS" },
     ],
@@ -104,7 +102,9 @@ export const Navbar = () => {
                     ))}
                 </div>
             </div>
-            <div className="hidden 2xl:flex items-center gap-3">
+            <div className="hidden 2xl:flex items-center gap-2">
+                <Link to="/rauhnaechte" className="rounded-full bg-primary px-3 py-2 text-sm font-bold text-primary-foreground">Rauhnächte</Link>
+                <Link to="/mitglieder" className="inline-flex items-center gap-1.5 rounded-full bg-[#efd498] px-3 py-2 text-sm font-bold text-[#183c36]"><LockKeyhole size={15} aria-hidden="true"/>{language === "tr" ? "Üye alanı" : "Mitgliederbereich"}</Link>
                         {LANGUAGE_SWITCHER_ENABLED && <LanguageSwitcher language={language} setLanguage={setLanguage}/>}
                         <Button size="sm" to="/termin-buchen">
                             {language === "tr" ? "Randevu al" : "Termin buchen"}
@@ -112,12 +112,13 @@ export const Navbar = () => {
                     </div>
             <div className="flex items-center gap-2 2xl:hidden">
                 <Link
-                    to="/13-wochen-programm"
+                    to="/rauhnaechte"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-3 py-2 text-xs font-bold text-primary-foreground sm:px-4 sm:text-sm"
                 >
-                    {language === "tr" ? "13 Haftalık Program" : "13-Wochen-Programm"}
+                    Rauhnächte
                 </Link>
+                <Link to="/mitglieder" onClick={() => setIsMobileMenuOpen(false)} className="inline-flex min-h-11 items-center justify-center gap-1 rounded-full bg-[#efd498] px-3 py-2 text-xs font-bold text-[#183c36] sm:text-sm" aria-label={language === "tr" ? "Üye alanı" : "Mitgliederbereich"}><LockKeyhole size={14} aria-hidden="true"/>{language === "tr" ? "Üye alanı" : "Mitglieder"}</Link>
             <button
                 type="button"
                 className="flex min-h-11 min-w-11 items-center justify-center rounded-full bg-surface/65 p-2 text-muted-foreground shadow-sm 2xl:hidden"

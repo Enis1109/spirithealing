@@ -1,4 +1,4 @@
-import { createElement, useEffect, useMemo, useState } from "react";
+import { createElement, useEffect, useMemo, useRef, useState } from "react";
 import { ExperienceGroup } from './ExperienceGroup';
 import {
     ArrowRight,
@@ -446,6 +446,7 @@ export const MemberApp = ({
     const [activeFilter, setActiveFilter] = useState("all");
     const [librarySearch, setLibrarySearch] = useState("");
     const [activeItem, setActiveItem] = useState(null);
+    const requestedMedia = useRef(new URLSearchParams(window.location.search).get("media"));
     const [installPrompt, setInstallPrompt] = useState(null);
     const [funnelSummary, setFunnelSummary] = useState(null);
     const [contentState, setContentState] = useState(() => Object.fromEntries(
@@ -489,6 +490,15 @@ export const MemberApp = ({
         { ...contentDefinitions.workbook, available: workbookAvailable, downloadUrl: "/api/members/workbook" },
         { ...contentDefinitions.deepening, available: false },
     ]), [extraMedia, meditations, recordingAvailable, recordingEmbedUrl, workbookAvailable]);
+
+    useEffect(() => {
+        if (!requestedMedia.current) return;
+        const item = items.find(entry => entry.key === requestedMedia.current && entry.available && (entry.access === "free" || isPremiumMember));
+        if (!item) return;
+        requestedMedia.current = null;
+        setActiveView("library");
+        setActiveItem(item);
+    }, [items, isPremiumMember]);
 
     const availableItems = items.filter((item) => item.available);
     const favoriteCount = Object.values(contentState).filter((entry) => entry.favorite).length;

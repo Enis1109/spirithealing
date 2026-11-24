@@ -14,6 +14,7 @@ export const Gsp = () => {
                         <h3 className="text-muted-foreground pt-2">
                             Manche Menschen brauchen keinen Ratschlag. Sondern einen Raum, in dem sie nicht bewertet werden. 
                         </h3>
+                        <p className="mt-5"><a href="/gespraechstherapie" className="font-bold text-primary underline underline-offset-4">Mit Selcan · 90 Minuten · 90 € · Zum Angebot</a></p>
                         <br/>
                         <p className="max-w-2xl text-lg leading-8 text-muted-foreground">Viele Menschen können ihre Gefühle sehr genau erklären und bleiben ihnen trotzdem innerlich fern. Sie wissen, was passiert – aber nicht, wie sie im entscheidenden Moment bei sich bleiben können.</p>
                         <blockquote className="mt-6 border-l-2 border-primary pl-5 text-lg font-semibold leading-8 text-muted-foreground">

@@ -1,3 +1,5 @@
+import { BlackFridayOffers } from "@/components/BlackFridayOffers";
+import { ConversationTherapyOffer } from "@/components/ConversationTherapyOffer";
 import {
     ArrowRight,
     CalendarDays,
@@ -341,6 +343,7 @@ export const Pricing = () => {
                     </div>
                 </div>
             </section>
+            <BlackFridayOffers/>
 
             <div className="mx-auto w-full max-w-6xl space-y-24 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
                 {copy.sections.map((section) => {
@@ -372,6 +375,7 @@ export const Pricing = () => {
                     );
                 })}
 
+                <ConversationTherapyOffer/>
                 <section aria-labelledby="pricing-packages">
                     <div className="max-w-3xl">
                         <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{copy.packagesEyebrow}</p>
