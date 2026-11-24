@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Check, Headphones, MoonStar, PanelsTopLeft, Video } from "lucide-react"
 import { contactOfferUrl } from "../lib/contactOffers.js"
@@ -48,6 +48,35 @@ function useLaunchClock() {
   return [remainingMs, setRemainingMs]
 }
 
+function bindRaunFlight(root) {
+  const stage = root?.querySelector("[data-raun-flight-stage]")
+  const bird = stage?.querySelector(".raun-kolibri")
+  if (!stage || !bird || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined
+
+  function play() {
+    window.removeEventListener("scroll", onScroll)
+    bird.classList.remove("is-flying")
+    void bird.offsetWidth
+    bird.classList.add("is-flying")
+  }
+
+  function onScroll() {
+    const { top, bottom, height } = stage.getBoundingClientRect()
+    const visible = Math.min(window.innerHeight, bottom) - Math.max(0, top)
+    if (visible >= Math.min(height * 0.5, 240)) play()
+  }
+
+  const trigger = stage.querySelector("[data-raun-flight-play]")
+  trigger.addEventListener("click", play)
+  stage.addEventListener("raun-flight-replay", play)
+  window.addEventListener("scroll", onScroll, { passive: true })
+  return () => {
+    trigger.removeEventListener("click", play)
+    stage.removeEventListener("raun-flight-replay", play)
+    window.removeEventListener("scroll", onScroll)
+  }
+}
+
 const months = [
   ["Januar", "Kraft sammeln", "Welche Aufgabe darf weniger Raum bekommen, damit dein Vorhaben Platz findet?"],
   ["Februar", "Resonanz finden", "Mit wem möchtest du deine Idee zum ersten Mal teilen?"],
@@ -65,15 +94,15 @@ const months = [
 
 const meetings = [
   { date: "23. Dezember", time: "2026-12-23T19:00:00+01:00", title: "Eröffnung", description: "Wir meditieren gemeinsam und bereiten die 13 Wünsche vor. Das Ziehen beginnt in der ersten Raunacht am 25. Dezember." },
-  { date: "30. Dezember", time: "2026-12-30T19:00:00+01:00", title: "Zwischenreflexion", description: "Wir schauen auf die ersten Nächte und hören darauf, was für dein Vorhaben deutlicher geworden ist." },
-  { date: "6. Januar", time: "2027-01-06T19:00:00+01:00", title: "Abschluss", description: "Du öffnest den 13. Wunsch und gibst deiner Jahresessenz Worte. Im Anschluss stellen wir dir unsere Jahresbegleitung vor." },
+  { date: "30. Dezember", time: "2026-12-30T19:00:00+01:00", title: "Zwischenreflexion", description: "In einer gemeinsamen Meditation nehmen wir die ersten Nächte auf und hören darauf, was für dein Vorhaben deutlicher geworden ist." },
+  { date: "6. Januar", time: "2027-01-06T19:00:00+01:00", title: "Abschluss", description: "Nach der gemeinsamen Meditation öffnest du den 13. Wunsch und gibst deiner Jahresessenz Worte. Im Anschluss stellen wir dir unsere Jahresbegleitung vor." },
 ]
 
 const included = [
   [Headphones, "Zwölf Meditationen per E-Mail", "Vom 25. Dezember bis 5. Januar bekommst du jeden Abend eine geführte Meditation mit einem Impuls für den jeweiligen Monat."],
-  [BookOpen, "Dein Raunächte-Workbook", "Zwölf astrologische Monatsausblicke, Platz für deine Wahrnehmungen und eine Frage zu deinem Vorhaben."],
+  [BookOpen, "Dein Raunächte-Workbook", "Mit Rückblick auf 2026, Vorbereitung der 13 Wünsche und einer Doppelseite pro Monat. Dazu kommen astrologische Ausblicke, Übungen, Platz für Träume und Fragen für die Umsetzung deines Vorhabens."],
   [MoonStar, "Das Ritual der 13 Wünsche", "Du bereitest deine Wünsche vor. Am letzten Abend bleibt ein Wunsch, aus dem du deine Jahresessenz formulierst."],
-  [Video, "Drei Live-Abende mit uns", "Wir eröffnen den Raum gemeinsam, treffen uns zur Zwischenreflexion und schließen die Raunächte zusammen ab."],
+  [Video, "Drei Live-Abende mit Meditation", "Wir meditieren gemeinsam bei der Eröffnung, bei der Zwischenreflexion und am Abschlussabend."],
 ]
 
 const width = "mx-auto max-w-[78rem] px-5 sm:px-9 lg:px-12"
@@ -83,25 +112,39 @@ const gold = "inline-flex min-h-12 items-center justify-center gap-3 rounded-ful
 const heroMotion = `
   .raun-portrait { animation: raun-portrait-arrives 1.35s cubic-bezier(.2,.65,.3,1) both; }
   .raun-kolibri {
-    clip-path: polygon(31.1% 35.8%, 35.7% 35.6%, 41.7% 36.7%, 45% 35.1%, 48.5% 35%, 51.3% 37.2%, 52.4% 41.4%, 53.4% 43.4%, 55.1% 36.7%, 58.6% 31.1%, 63.2% 24.8%, 64.9% 18.9%, 65.8% 22.8%, 65.6% 28.2%, 67.2% 23%, 67.3% 27.8%, 64.4% 32.6%, 67.9% 28%, 66.7% 32.2%, 74% 24.4%, 77.7% 19.9%, 79.1% 14.8%, 80.1% 19.3%, 79.3% 23.8%, 76.7% 27.9%, 81.9% 24.7%, 81.5% 28.1%, 78.8% 32.4%, 74.2% 36.6%, 80.9% 32.6%, 79.5% 35.6%, 76.6% 38.4%, 72.5% 41%, 77.7% 39.8%, 75.4% 42.6%, 72.5% 44.4%, 73.9% 44.7%, 70.5% 46.5%, 73.2% 46.3%, 69.3% 49.3%, 66.9% 50.1%, 64% 49.9%, 67% 51.6%, 63.6% 51.6%, 60.5% 50.1%, 62.8% 56.5%, 65.9% 64.3%, 67.1% 69.8%, 65.8% 75.3%, 61.8% 80.3%, 57.1% 84%, 56.5% 86.1%, 58.5% 88.2%, 56.4% 88.1%, 56.1% 85.2%, 58.4% 80.7%, 62.1% 75.7%, 63.8% 69.1%, 60% 74.5%, 54.5% 79.9%, 48% 84.2%, 46.8% 87.5%, 47.6% 90.5%, 45.3% 88.8%, 45.6% 83.9%, 48.5% 79.3%, 50.7% 77.4%, 43.9% 78.9%, 37.4% 79.6%, 33.4% 82.4%, 32.8% 86.2%, 36.5% 89%, 39.7% 87.6%, 39.8% 84.9%, 37.2% 83.6%, 36.6% 85.8%, 35.6% 84.3%, 37.4% 82.5%, 40.2% 82.7%, 41% 85.7%, 39.8% 88.7%, 36.3% 90%, 32.2% 88.8%, 30.9% 85.3%, 31.5% 81.8%, 34.8% 77.7%, 41.1% 75.8%, 46% 76.1%, 41.4% 74.9%, 37.6% 72.4%, 37% 68.8%, 38.6% 65.4%, 41.2% 64.1%, 44.9% 64.7%, 47.1% 67%, 45.9% 70%, 43.9% 70.2%, 45.3% 68.5%, 44.9% 67.1%, 41.9% 66.9%, 39.6% 68.8%, 40.2% 72%, 45.3% 74.3%, 50.6% 74.3%, 54.1% 72%, 57.3% 69.1%, 59.6% 64.5%, 58.9% 60.2%, 56.7% 57.8%, 54.2% 57.5%, 54.7% 59.7%, 52.5% 59.6%, 51.8% 58.3%, 52.9% 57.1%, 49.1% 55.5%, 46.3% 52.7%, 44.8% 49.2%, 43.9% 44.4%, 42.6% 41%, 40.3% 38.9%, 36.3% 37%);
     transform-origin: 53% 49%;
     opacity: 0;
-    animation: raun-kolibri-flight 2.65s .9s both;
+    filter: drop-shadow(0 3px 6px #2a23147a);
+  }
+  .raun-kolibri-body { clip-path: polygon(31.1% 35.8%, 35.7% 35.6%, 41.7% 36.7%, 45% 35.1%, 48.5% 35%, 51.3% 37.2%, 52.4% 41.4%, 53.4% 43.4%, 55% 43.3%, 58.5% 44.7%, 60.5% 50.1%, 62.8% 56.5%, 65.9% 64.3%, 67.1% 69.8%, 65.8% 75.3%, 61.8% 80.3%, 57.1% 84%, 56.5% 86.1%, 58.5% 88.2%, 56.4% 88.1%, 56.1% 85.2%, 58.4% 80.7%, 62.1% 75.7%, 63.8% 69.1%, 60% 74.5%, 54.5% 79.9%, 48% 84.2%, 46.8% 87.5%, 47.6% 90.5%, 45.3% 88.8%, 45.6% 83.9%, 48.5% 79.3%, 50.7% 77.4%, 43.9% 78.9%, 37.4% 79.6%, 33.4% 82.4%, 32.8% 86.2%, 36.5% 89%, 39.7% 87.6%, 39.8% 84.9%, 37.2% 83.6%, 36.6% 85.8%, 35.6% 84.3%, 37.4% 82.5%, 40.2% 82.7%, 41% 85.7%, 39.8% 88.7%, 36.3% 90%, 32.2% 88.8%, 30.9% 85.3%, 31.5% 81.8%, 34.8% 77.7%, 41.1% 75.8%, 46% 76.1%, 41.4% 74.9%, 37.6% 72.4%, 37% 68.8%, 38.6% 65.4%, 41.2% 64.1%, 44.9% 64.7%, 47.1% 67%, 45.9% 70%, 43.9% 70.2%, 45.3% 68.5%, 44.9% 67.1%, 41.9% 66.9%, 39.6% 68.8%, 40.2% 72%, 45.3% 74.3%, 50.6% 74.3%, 54.1% 72%, 57.3% 69.1%, 59.6% 64.5%, 58.9% 60.2%, 56.7% 57.8%, 54.2% 57.5%, 54.7% 59.7%, 52.5% 59.6%, 51.8% 58.3%, 52.9% 57.1%, 49.1% 55.5%, 46.3% 52.7%, 44.8% 49.2%, 43.9% 44.4%, 42.6% 41%, 40.3% 38.9%, 36.3% 37%); }
+  .raun-kolibri-wings {
+    clip-path: polygon(52.2% 46.5%, 53.4% 43.4%, 55.1% 36.7%, 58.6% 31.1%, 63.2% 24.8%, 64.9% 18.9%, 65.8% 22.8%, 65.6% 28.2%, 67.2% 23%, 67.3% 27.8%, 64.4% 32.6%, 67.9% 28%, 66.7% 32.2%, 74% 24.4%, 77.7% 19.9%, 79.1% 14.8%, 80.1% 19.3%, 79.3% 23.8%, 76.7% 27.9%, 81.9% 24.7%, 81.5% 28.1%, 78.8% 32.4%, 74.2% 36.6%, 80.9% 32.6%, 79.5% 35.6%, 76.6% 38.4%, 72.5% 41%, 77.7% 39.8%, 75.4% 42.6%, 72.5% 44.4%, 73.9% 44.7%, 70.5% 46.5%, 73.2% 46.3%, 69.3% 49.3%, 66.9% 50.1%, 64% 49.9%, 67% 51.6%, 63.6% 51.6%, 60.5% 50.1%, 56% 49%);
+    transform-origin: 54% 46%;
+  }
+  .raun-kolibri.is-flying { animation: raun-kolibri-flight 4.35s both; }
+  .raun-kolibri.is-flying .raun-kolibri-wings {
+    animation: raun-kolibri-wing .19s ease-in-out alternate 23 both;
   }
   @keyframes raun-portrait-arrives {
     from { transform: scale(1.035); }
     to { transform: scale(1); }
   }
   @keyframes raun-kolibri-flight {
-    0%, 8% { transform: translate(0, 0) scale(1); opacity: 0; }
-    16% { transform: translate(5%, -11%) scale(1.13) rotate(-7deg); opacity: 1; animation-timing-function: cubic-bezier(.16,.5,.58,1); }
-    44% { transform: translate(68%, -106%) scale(1.34) rotate(-14deg); opacity: 1; animation-timing-function: cubic-bezier(.37,.04,.64,.95); }
-    72% { transform: translate(133%, -156%) scale(1.37) rotate(5deg); opacity: .95; animation-timing-function: ease-in; }
-    100% { transform: translate(220%, -191%) scale(1.12) rotate(11deg); opacity: 0; }
+    0%, 3% { transform: translate(0, 0) scale(1); opacity: 0; }
+    12% { transform: translate(6%, -23%) scale(1.12) rotate(-7deg); opacity: 1; animation-timing-function: cubic-bezier(.12,.58,.38,.96); }
+    35% { transform: translate(68%, -94%) scale(1.47) rotate(-11deg); opacity: 1; animation-timing-function: ease-in-out; }
+    48% { transform: translate(81%, -110%) scale(1.42) rotate(4deg); opacity: 1; animation-timing-function: ease-in-out; }
+    62% { transform: translate(94%, -100%) scale(1.43) rotate(-4deg); opacity: 1; animation-timing-function: cubic-bezier(.38,.02,.72,.72); }
+    86% { transform: translate(161%, -159%) scale(1.18) rotate(12deg); opacity: 1; }
+    100% { transform: translate(229%, -209%) scale(.98) rotate(16deg); opacity: 0; }
+  }
+  @keyframes raun-kolibri-wing {
+    from { transform: skewX(6deg) scaleY(1.04) rotate(4deg); }
+    to { transform: skewX(-17deg) scaleY(.55) rotate(-13deg); }
   }
   @media (prefers-reduced-motion: reduce) {
     .raun-portrait { animation: none; }
-    .raun-kolibri { display: none; animation: none; }
+    .raun-kolibri, .raun-flight-play { display: none; animation: none; }
   }
 `
 
@@ -132,7 +175,7 @@ function Price({ offerActive, remainingMs, compact = false }) {
       <p className="text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Black Friday Week</p>
       <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1">
         <p className={`${compact ? "text-4xl" : "text-6xl"} font-serif font-semibold leading-none`}>{launchPrice} €</p>
-        <p className="pb-0.5 text-sm font-semibold text-[#49625b]"><s className="mr-1 text-xl decoration-[#9c7335] decoration-2">{standardPrice} €</s> ab 28.11.</p>
+        <p className="pb-0.5 text-sm font-semibold text-[#49625b]"><s className="mr-1 text-xl decoration-[#9c7335] decoration-2">{standardPrice} €</s> regulär nach der Aktion</p>
       </div>
       <div className="mt-3"><Countdown remainingMs={remainingMs} /></div>
       <p className="mt-2 text-xs leading-5 text-[#49625b]">Aktionspreis bis 27.11.2026, 23:59 Uhr deutscher Zeit.</p>
@@ -141,13 +184,15 @@ function Price({ offerActive, remainingMs, compact = false }) {
 }
 
 export function Rauhnaechte() {
+  const page = useRef(null)
   const [remainingMs, setRemainingMs] = useLaunchClock()
   const offerActive = remainingMs > 0
   const checkout = checkoutFor(offerActive)
   const contact = contactOfferUrl("raunachtWebsite")
+  useEffect(() => bindRaunFlight(page.current), [])
 
   return (
-    <main data-no-translate className="min-h-screen bg-[#fbf8f0] text-[#163d35]">
+    <main ref={page} data-no-translate className="min-h-screen bg-[#fbf8f0] text-[#163d35]">
       <style>{heroMotion}</style>
       <a href="#inhalt" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-3">Zum Inhalt</a>
       <header className="border-b border-[#dedacb] bg-[#fffdf7]">
@@ -180,15 +225,19 @@ export function Rauhnaechte() {
             </div>
           </div>
 
-          <figure className="relative mx-auto w-full max-w-[37rem] pb-4 pl-3 sm:pl-6">
+          <figure data-raun-flight-stage className="relative mx-auto w-full max-w-[37rem] pb-4 pl-3 sm:pl-6">
             <div className="relative isolate aspect-[5/5.7] overflow-hidden rounded-[2rem] bg-[#24463d] shadow-[0_22px_55px_#263f342e] sm:rounded-[2.7rem]">
               <img className="raun-portrait h-full w-full object-cover object-[50%_43%]" src="/rauhnaechte-spirit-healing.png" alt="Sabine und Selcan im Kerzenlicht bei einem winterlichen Raunachtsritual" fetchPriority="high" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#112d28]/85 via-transparent to-transparent" aria-hidden="true" />
             </div>
             <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[clamp(7rem,15vw,10rem)] w-[clamp(7rem,15vw,10rem)]" aria-hidden="true">
               <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="absolute inset-0 h-full w-full rounded-full drop-shadow-[0_7px_11px_#10251d55]" />
-              <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="raun-kolibri absolute inset-0 h-full w-full" />
+              <span className="raun-kolibri absolute inset-0 block">
+                <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="raun-kolibri-body absolute inset-0 h-full w-full" />
+                <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="raun-kolibri-wings absolute inset-0 h-full w-full" />
+              </span>
             </div>
+            <button type="button" data-raun-flight-play className="raun-flight-play absolute right-4 top-4 z-20 min-h-10 rounded-full bg-[#fffdf7]/95 px-3.5 text-xs font-bold text-[#164942] shadow-sm hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white">Kolibri fliegen lassen</button>
             <figcaption className="absolute inset-x-0 bottom-4 py-6 pl-29 pr-5 text-sm text-white sm:pl-38"><strong className="block font-serif text-xl font-normal sm:text-2xl">Sabine &amp; Selcan</strong><span>Begleiten dich durch die Raunächte</span></figcaption>
           </figure>
         </div>
@@ -261,7 +310,7 @@ export function Rauhnaechte() {
 
       <section id="termine" className={`${width} scroll-mt-6 py-16 lg:py-24`}>
         <h2 className="font-serif text-[clamp(2.45rem,4.25vw,4rem)] leading-none tracking-[-0.04em]">Unsere Live-Abende</h2>
-        <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#49625b]"><Video size={18} aria-hidden="true" /> Jeweils 19 Uhr deutscher Zeit · online über Zoom</p>
+        <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#49625b]"><Video size={18} aria-hidden="true" /> Geführte Meditation an jedem Abend · jeweils 19 Uhr deutscher Zeit · online über Zoom</p>
         <ol className="mt-8 grid gap-4 lg:grid-cols-3">
           {meetings.map(({ date, time, title, description }) => (
             <li key={time} className="rounded-[1.5rem] border border-[#e2dccc] bg-white/75 p-6 sm:p-7">
