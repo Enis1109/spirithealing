@@ -120,8 +120,8 @@ export const pageMeta = {
       noindex: true,
     },
     "/rauhnaechte": {
-      title: "Rauhnächte 2026/2027: Begleitung & Rituale | Spirit Healing",
-      description: "Zwölf geführte Rauhnächte mit Meditationen, Ritualen, Journal, täglichen Impulsen und Live-Begleitung von Sabine und Selcan. Jetzt online buchen.",
+      title: "Raunächte 2026/27 für dein Vorhaben | Spirit Healing",
+      description: "Zwölf Raunächte für dein Vorhaben 2027. Mit täglichen Meditationen, astrologischen Monatsimpulsen, Workbook und drei Live-Abenden mit Sabine und Selcan.",
       ...rauhnaechteImage,
       contentLanguage: "de",
     },
@@ -197,8 +197,8 @@ export const pageMeta = {
       noindex: true,
     },
     "/rauhnaechte": {
-      title: "Rauhnächte 2026/2027: Begleitung & Rituale | Spirit Healing",
-      description: "Zwölf geführte Rauhnächte mit Meditationen, Ritualen, Journal, täglichen Impulsen und Live-Begleitung von Sabine und Selcan.",
+      title: "Raunächte 2026/27 für dein Vorhaben | Spirit Healing",
+      description: "Zwölf Raunächte für dein Vorhaben 2027. Mit täglichen Meditationen, astrologischen Monatsimpulsen, Workbook und drei Live-Abenden mit Sabine und Selcan.",
       ...rauhnaechteImage,
       contentLanguage: "de",
     },
@@ -501,7 +501,7 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
     graph.push({
       "@type": "Course",
       "@id": `${url}#course`,
-      name: "Die Rauhnächte mit Spirit Healing 2026/2027",
+      name: "Raunächte mit Spirit Healing 2026/27",
       description: meta.description,
       url,
       provider: { "@id": organizationId },
@@ -512,10 +512,6 @@ export const structuredDataForPath = (pathname, language = "de", providedMeta) =
         endDate: "2027-01-06",
         inLanguage: "de",
       },
-      offers: [
-        { "@type": "Offer", name: "Rauhnächte-Begleitung", price: "222", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#rauhnaechte-buchen` },
-        { "@type": "Offer", name: "Rauhnächte persönlich", price: "444", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${url}#rauhnaechte-buchen` },
-      ],
     })
   }
 

@@ -4,6 +4,7 @@ export const contactOffers = Object.freeze({
     firstSabine: { practitioner: "sabine", de: "Erstsitzung mit Sabine", tr: "Sabine ile ilk seans" },
     firstSelcan: { practitioner: "selcan", de: "Erstsitzung mit Selcan", tr: "Selcan ile ilk seans" },
     followSabine: { practitioner: "sabine", de: "Folgesitzung mit Sabine", tr: "Sabine ile devam seansı" },
+    raunachtWebsite: { practitioner: null, de: "Raunächte Website-Special", tr: "Raunächte web sayfası özel teklifi" },
 });
 export const getContactOffer = code => typeof code === "string" && Object.hasOwn(contactOffers, code) ? contactOffers[code] : null;
 export const contactOfferFromSearch = search => {

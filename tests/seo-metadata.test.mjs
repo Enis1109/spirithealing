@@ -84,8 +84,8 @@ test("adds truthful structured data for the main offers", () => {
 
   const rauhnaechte = JSON.stringify(structuredDataForPath("/rauhnaechte", "de"))
   assert.match(rauhnaechte, /"Course"/u)
-  assert.match(rauhnaechte, /"222"/u)
-  assert.match(rauhnaechte, /"444"/u)
+  assert.match(rauhnaechte, /"startDate":"2026-12-23"/u)
+  assert.doesNotMatch(rauhnaechte, /"offers"/u)
 
   const zepter = JSON.stringify(structuredDataForPath("/13-wochen-programm", "de"))
   assert.match(zepter, /"Course"/u)
@@ -98,7 +98,7 @@ test("adds truthful structured data for the main offers", () => {
 test("places route-specific SEO in the initial HTML response", () => {
   const shell = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8")
   const rauhnaechte = injectSeoIntoDocument(shell, "/rauhnaechte")
-  assert.match(rauhnaechte, /<title>Rauhnächte 2026\/2027: Begleitung &amp; Rituale \| Spirit Healing<\/title>/u)
+  assert.match(rauhnaechte, /<title>Raunächte 2026\/27 für dein Vorhaben \| Spirit Healing<\/title>/u)
   assert.match(rauhnaechte, /rel="canonical" href="https:\/\/spirit-healing\.tr\/rauhnaechte"/u)
   assert.match(rauhnaechte, /property="og:image" content="https:\/\/spirit-healing\.tr\/rauhnaechte-spirit-healing\.png"/u)
   assert.match(rauhnaechte, /data-spirit-healing-seo="true"/u)

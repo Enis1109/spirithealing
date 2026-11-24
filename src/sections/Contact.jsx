@@ -117,16 +117,26 @@ export const Contact = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const offerCode = contactOfferFromSearch(searchParams.toString());
     const appointment = Boolean(offerCode);
+    const websiteInquiry = offerCode === "raunachtWebsite";
     const [modalOpen, setModalOpen] = useState(appointment);
     const [draft, setDraft] = useState({});
     const submitting = useRef(false);
-    const requestCopy = language === "tr" ? {
+    let requestCopy = language === "tr" ? {
         title: "Randevu talep et", intro: "İsim ve e-posta adresin yeterli. Kişisel veya sağlık bilgilerini paylaşman gerekmez. Bu talep kesin bir rezervasyon değildir; tarihi birlikte belirleyeceğiz.",
         offer: "İstediğin görüşme", general: "Başka bir soru", message: "Mesajın (isteğe bağlı)", placeholder: "Örneğin uygun olduğun zamanlar (isteğe bağlı)",
     } : {
         title: "Termin anfragen", intro: "Name und E-Mail genügen. Persönliche oder gesundheitliche Angaben sind nicht erforderlich. Dies ist eine Anfrage; den Termin stimmen wir gemeinsam ab.",
         offer: "Gewünschte Sitzung", general: "Eine andere Frage", message: "Nachricht (optional)", placeholder: "Zum Beispiel passende Zeiten (freiwillig)",
     };
+    if (websiteInquiry) {
+        requestCopy = language === "tr" ? {
+            title: "Web sayfası hakkında bilgi al", intro: "Adın ve e-posta adresin yeterli. Projen hakkında bize yazabilirsin. Bu form bir ön görüşme talebi içindir.",
+            offer: "İlgilendiğin teklif", general: "Başka bir soru", message: "Projen (isteğe bağlı)", placeholder: "Sayfanda hangi hizmeti veya projeyi tanıtmak istiyorsun?",
+        } : {
+            title: "Website-Special anfragen", intro: "Name und E-Mail genügen. Du kannst uns kurz von deinem Vorhaben erzählen. Wir melden uns, um gemeinsam zu klären, wie deine Seite aussehen könnte.",
+            offer: "Gewünschtes Angebot", general: "Eine andere Frage", message: "Dein Vorhaben (optional)", placeholder: "Welches Angebot möchtest du auf deiner Seite zeigen?",
+        };
+    }
     const changeOffer = event => {
         const next = new URLSearchParams(searchParams);
         next.delete("offer");
