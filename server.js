@@ -23,6 +23,7 @@ import {
     sendZepterBankTransferConfirmation,
     sendLiveTalkEmail,
     sendExperienceReminder,
+    sendRaunaechteWelcome,
 } from "./server/mailer.js";
 import { createLiveTalkService, initializeLiveTalk, startLiveTalkWorker } from "./server/liveTalk.js";
 import { initializeNewsletterCampaigns, newsletterCampaignOverview } from "./server/newsletterCampaigns.js";
@@ -175,6 +176,7 @@ import { injectSeoIntoDocument } from "./server/frontendSeo.js";
 import { initializeBerlinMeasurement, recordMeasurement, startBerlinMeasurementCleanup,
     berlinMeasurementSummary } from "./server/berlinMeasurement.js";
 import { berlinWebhookConfig, registerBerlinWebhook } from "./server/berlinWebhook.js";
+import { initializeRaunaechteWelcome, raunaechteCheckoutFor, recordRaunaechtePurchase, startRaunaechteWelcomeWorker } from "./server/raunaechteWelcome.js";
 import { eraseBerlinPayment, berlinPaymentHash } from "./server/berlinErasure.js";
 import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
 import { initializeConstellationAvailability, getConstellationAvailability } from "./server/constellationAvailability.js";
@@ -239,10 +241,23 @@ const berlinMeasurementEnabled = process.env.BERLIN_MEASUREMENT_ENABLED === "tru
 const berlinMetaSettings = metaConfig(process.env);
 const berlinWebhookSettings = berlinWebhookConfig(process.env);
 registerBerlinWebhook(app, { db: database, config: berlinWebhookSettings,
+    recordPurchase: recordRaunaechtePurchase,
     ready: async () => { await startupPromise; return !startupError; } });
 // GHSA-27r3-jxmh-p828: browser/API clients send uncompressed bodies. Reject encoded
 // requests before decompression; do not weaken limits or run a broad package update.
 app.use(express.json({ limit: "64kb", type: "application/json", inflate: false }));
+
+app.get("/api/raunaechte/checkout", async (request, response) => {
+    response.set("Cache-Control", "no-store");
+    await startupPromise;
+    if (startupError || !berlinWebhookSettings.enabled || !berlinWebhookSettings.expectedLive) {
+        return response.status(503).type("text/plain").send("Die Buchung ist gerade nicht erreichbar. Bitte versuche es in ein paar Minuten erneut.");
+    }
+    const checkout = raunaechteCheckoutFor({ price: request.query.preis,
+        paymentLink: process.env.VITE_RAUHNAECHTE_2026_STRIPE_URL,
+        promoCode: process.env.VITE_RAUHNAECHTE_2026_PROMO_CODE });
+    return response.redirect(303, checkout || "/rauhnaechte#rauhnaechte-buchen");
+});
 
 app.get("/robots.txt", (_request, response) => {
     response.type("text/plain").sendFile(path.join(currentDirectory, "public", "robots.txt"));
@@ -1955,6 +1970,10 @@ const initializeServices = async () => {
     memberWiedergeburtPath = meditations.wiedergeburt;
     memberIchBinLichtPath = meditations.ichBinLicht;
     await initializeDatabase();
+    if (berlinWebhookSettings.enabled && berlinWebhookSettings.expectedLive) {
+        await initializeRaunaechteWelcome(database);
+        startRaunaechteWelcomeWorker(database, sendRaunaechteWelcome);
+    }
     try {
         if (siteMeasurementEnabled) await initializeSiteMeasurement(database);
         else await cleanSiteMeasurement(database);

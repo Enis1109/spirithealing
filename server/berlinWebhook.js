@@ -38,7 +38,7 @@ export function berlinWebhookConfig(env) {
 }
 
 // Register before the site's express.json middleware. Tests exercise this exact route.
-export function registerBerlinWebhook(app, { db, config, ready = async () => true }) {
+export function registerBerlinWebhook(app, { db, config, ready = async () => true, recordPurchase }) {
   app.post('/api/berlin/stripe-webhook',
     express.raw({ type: 'application/json', limit: '256kb', inflate: false }), async (request, response) => {
       response.set('Cache-Control', 'no-store');
@@ -48,6 +48,9 @@ export function registerBerlinWebhook(app, { db, config, ready = async () => tru
       catch { return response.status(400).json({ ok: false }); }
       try {
         if (!await ready()) return response.status(503).json({ ok: false });
+        if (config.expectedLive && recordPurchase && await recordPurchase(db, event)) {
+          return response.json({ ok: true, result: 'raunaechte' });
+        }
         const booking = await recordConstellationBooking(db, event, config.expectedLive);
         if (booking) return response.json({ ok: true, result: 'booking' });
         const result = await recordStripeEvent(db, event, config.expectedLive, config.linkMap);

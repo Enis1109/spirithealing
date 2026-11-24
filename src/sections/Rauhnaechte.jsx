@@ -22,26 +22,8 @@ function TikTokIcon({ size, ...props }) {
   )
 }
 
-function paymentUrl(value) {
-  if (!value) return null
-  try {
-    const url = new URL(value)
-    return url.protocol === "https:" && !url.username && !url.password
-      && ["book.stripe.com", "buy.stripe.com"].includes(url.hostname) ? url : null
-  } catch {
-    return null
-  }
-}
-
-const stripeCheckout = paymentUrl(import.meta.env.VITE_RAUHNAECHTE_2026_STRIPE_URL)
-const stripePromotion = import.meta.env.VITE_RAUHNAECHTE_2026_PROMO_CODE
-
 function checkoutFor(offerActive) {
-  if (!stripeCheckout || (offerActive && !stripePromotion)) return null
-  const url = new URL(stripeCheckout)
-  url.searchParams.delete("prefilled_promo_code")
-  if (offerActive) url.searchParams.set("prefilled_promo_code", stripePromotion)
-  return url.href
+  return `/api/raunaechte/checkout?preis=${offerActive ? launchPrice : standardPrice}`
 }
 
 function useLaunchClock() {
@@ -404,15 +386,13 @@ export function Rauhnaechte() {
                 {["Zwölf geführte Meditationen mit Begleittext per E-Mail", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit gemeinsamer Meditation"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
               </ul>
               <div className="mt-auto">
-                {checkout ? (
-                  <a href={checkout} onClick={(event) => {
-                    const currentRemainingMs = Math.max(0, offerEnds - Date.now())
-                    if ((currentRemainingMs > 0) !== offerActive) {
-                      event.preventDefault()
-                      setRemainingMs(currentRemainingMs)
-                    }
-                  }} className={primary}>Für {offerActive ? launchPrice : standardPrice} € buchen <ArrowRight size={17} aria-hidden="true" /></a>
-                ) : <p role="status" className="text-sm font-semibold">Die Online-Buchung wird vorbereitet.</p>}
+                <a href={checkout} onClick={(event) => {
+                  const currentRemainingMs = Math.max(0, offerEnds - Date.now())
+                  if ((currentRemainingMs > 0) !== offerActive) {
+                    event.preventDefault()
+                    setRemainingMs(currentRemainingMs)
+                  }
+                }} className={primary}>Für {offerActive ? launchPrice : standardPrice} € buchen <ArrowRight size={17} aria-hidden="true" /></a>
               </div>
             </article>
 
