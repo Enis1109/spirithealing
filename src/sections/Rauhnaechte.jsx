@@ -73,21 +73,6 @@ function bindRaunFlight(root) {
   }
 }
 
-const months = [
-  ["Januar", "Kraft sammeln", "Welche Aufgabe darf weniger Raum bekommen, damit dein Vorhaben Platz findet?"],
-  ["Februar", "Resonanz finden", "Mit wem möchtest du deine Idee zum ersten Mal teilen?"],
-  ["März", "Eigene Worte finden", "Wie klingt dein Vorhaben, wenn du es in einem Satz aussprichst?"],
-  ["April", "Den ersten Schritt wagen", "Was kannst du im Kleinen ausprobieren?"],
-  ["Mai", "Eine Form wählen", "Welcher Umfang lässt sich mit deinem Alltag gut verbinden?"],
-  ["Juni", "Klarer einladen", "Was sollen andere verstehen, wenn du von deinem Vorhaben erzählst?"],
-  ["Juli", "Dranbleiben", "Welcher Rhythmus trägt dich auch dann, wenn die erste Begeisterung nachlässt?"],
-  ["August", "Sichtbar werden", "Was möchtest du mit deiner eigenen Stimme nach außen tragen?"],
-  ["September", "Resonanz prüfen", "Wo kommst du tatsächlich mit den passenden Menschen ins Gespräch?"],
-  ["Oktober", "Absprachen klären", "Welche Zusage oder Grenze braucht von dir klare Worte?"],
-  ["November", "Struktur geben", "Was braucht dein Vorhaben an Zeit, Geld und Unterstützung?"],
-  ["Dezember", "Würdigen und weitergehen", "Was ist entstanden, und was möchtest du ins nächste Jahr mitnehmen?"],
-]
-
 const meetings = [
   { date: "23. Dezember", time: "2026-12-23T19:00:00+01:00", title: "Eröffnung", description: "Wir meditieren gemeinsam und bereiten die 13 Wünsche vor. Das Ziehen beginnt in der ersten Raunacht am 25. Dezember." },
   { date: "30. Dezember", time: "2026-12-30T19:00:00+01:00", title: "Zwischenreflexion", description: "In einer gemeinsamen Meditation nehmen wir die ersten Nächte auf und hören darauf, was für dein Vorhaben deutlicher geworden ist." },
@@ -345,23 +330,6 @@ export function Rauhnaechte() {
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Zwölf Doppelseiten zum Schreiben und Ausprobieren in den Nächten</li>
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Am Ende Platz für deine Jahresessenz, deinen ersten Schritt und die Weiterarbeit in 2027</li>
             </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="themen" className="scroll-mt-6 border-y border-[#d7dfd2] bg-[#edf2e9] py-15 lg:py-21">
-        <div className={`${width} grid gap-8 lg:grid-cols-[.75fr_1.25fr] lg:gap-16`}>
-          <div>
-            <h2 className="font-serif text-[clamp(2.35rem,4vw,3.9rem)] leading-[1.02] tracking-[-0.04em]">Ein Blick in dein Jahr</h2>
-            <p className="mt-4 max-w-md leading-7 text-[#49625b]">Wähle einen Monat und lies, welche Frage wir in dieser Raunacht mit in die Meditation nehmen.</p>
-          </div>
-          <div className="grid content-start gap-2 sm:grid-cols-2">
-            {months.map(([month, theme, prompt]) => (
-              <details key={month} name="raun-monate" className="group self-start rounded-xl border border-[#cedbcf] bg-[#fbfdf7] p-3.5 open:border-[#7f9d8c] open:bg-white">
-                <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span>{month} <span className="font-normal text-[#49625b]">· {theme}</span></span><span className="text-lg leading-none text-[#456b5b] transition group-open:rotate-45" aria-hidden="true">+</span></summary>
-                <p className="mt-2 border-t border-[#dce6da] pt-2 text-sm leading-6 text-[#405d55]">{prompt}</p>
-              </details>
-            ))}
           </div>
         </div>
       </section>
