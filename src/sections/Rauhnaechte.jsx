@@ -99,8 +99,8 @@ const meetings = [
 ]
 
 const included = [
-  [Headphones, "Zwölf Meditationen per E-Mail", "Vom 25. Dezember bis 5. Januar bekommst du jeden Abend eine geführte Meditation mit einem Impuls für den jeweiligen Monat."],
-  [BookOpen, "Dein Raunächte-Workbook", "Mit Rückblick auf 2026, Vorbereitung der 13 Wünsche und einer Doppelseite pro Monat. Dazu kommen astrologische Ausblicke, Übungen, Platz für Träume und Fragen für die Umsetzung deines Vorhabens."],
+  [Headphones, "Zwölf Meditationen per E-Mail", "Vom 25. Dezember bis 5. Januar bekommst du jeden Abend eine geführte Meditation und einen kurzen Begleittext von uns."],
+  [BookOpen, "Dein Raunächte-Workbook", "Mit Rückblick auf 2026, Vorbereitung der 13 Wünsche und einer Doppelseite pro Monat für deine Beobachtungen und Entscheidungen."],
   [MoonStar, "Das Ritual der 13 Wünsche", "Du bereitest deine Wünsche vor. Am letzten Abend bleibt ein Wunsch, aus dem du deine Jahresessenz formulierst."],
   [Video, "Drei Live-Abende mit Meditation", "Wir meditieren gemeinsam bei der Eröffnung, bei der Zwischenreflexion und am Abschlussabend."],
 ]
@@ -142,8 +142,15 @@ const heroMotion = `
     from { transform: skewX(6deg) scaleY(1.04) rotate(4deg); }
     to { transform: skewX(-17deg) scaleY(.55) rotate(-13deg); }
   }
+  @supports (animation-timeline: view()) {
+    .raun-detail-in { animation: raun-detail-in linear both; animation-timeline: view(); animation-range: entry 4% cover 28%; }
+    @keyframes raun-detail-in {
+      from { opacity: .72; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .raun-portrait { animation: none; }
+    .raun-portrait, .raun-detail-in { animation: none; }
     .raun-kolibri, .raun-flight-play { display: none; animation: none; }
   }
 `
@@ -204,8 +211,7 @@ export function Rauhnaechte() {
           <nav aria-label="Auf dieser Seite" className="hidden items-center gap-7 text-sm font-semibold md:flex">
             <a href="#jahreswechsel" className="hover:underline">Jahreswechsel</a>
             <a href="#programm" className="hover:underline">Programm</a>
-            <a href="#termine" className="hover:underline">Termine</a>
-            <a href="#website-special" className="hover:underline">Website-Special</a>
+            <a href="#workbook" className="hover:underline">Workbook</a>
           </nav>
           <a href="#rauhnaechte-buchen" className={`${primary} shrink-0 !px-4 sm:!px-6`}>Zur Buchung <ArrowUpRight size={15} aria-hidden="true" /></a>
         </div>
@@ -257,13 +263,13 @@ export function Rauhnaechte() {
             <article className="rounded-[1.6rem] border border-[#d3ddcf] bg-[#fffdf7] p-6 sm:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#765820]">Rückblick auf 2026</p>
               <h3 className="mt-3 font-serif text-3xl leading-tight sm:text-4xl">Was hat uns getragen?</h3>
-              <p className="mt-4 leading-7 text-[#405d55]">2026 konnte sich herausfordernd anfühlen, weil manche Entscheidungen anstanden, während das Neue erst langsam Form annahm. Im Februar trafen sich Saturn und Neptun am Anfang des Widders. Für uns steht diese Begegnung für die Frage, wie etwas, das wir innerlich längst ahnen, im gelebten Leben eine Form bekommt.</p>
+              <p className="mt-4 leading-7 text-[#405d55]">2026 konnte sich herausfordernd anfühlen, weil Entscheidungen anstanden, während das Neue erst langsam Form annahm. Vielleicht hast du längst gespürt, dass etwas in deinem Leben eine andere Richtung braucht. Gleichzeitig liefen die Arbeit, die Familie und die Vereinbarungen weiter. Es kostet Kraft, all das zu halten und einer Ahnung Raum zu geben, für die du erst noch Worte finden musst.</p>
               <p className="mt-4 leading-7 text-[#405d55]">Vielleicht hast du in diesem Jahr gemerkt, wie gut du Verantwortung übernehmen, mitdenken oder für Verbindung sorgen kannst. Und wie müde du wirst, wenn jede dieser Fähigkeiten automatisch denselben Auftrag bekommt. Zwischen den Jahren darfst du würdigen, was du getragen hast, und dir die Frage stellen: Wofür will ich diese Kraft heute einsetzen?</p>
             </article>
             <article className="rounded-[1.6rem] border border-[#d3ddcf] bg-[#fffdf7] p-6 sm:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#765820]">Ausblick auf 2027</p>
               <h3 className="mt-3 font-serif text-3xl leading-tight sm:text-4xl">Was möchte durch mich Gestalt annehmen?</h3>
-              <p className="mt-4 leading-7 text-[#405d55]">Im Januar wird Mars rückläufig. Wir lesen darin eine Zeit, in der du prüfen darfst, wohin deine Kraft bisher geflossen ist. Anfang April wird er im Löwen wieder direktläufig. Das nehmen wir als Einladung, deinem Ausdruck einen sichtbaren Schritt zu geben. Ende Juli wechselt Jupiter vom Löwen in die Jungfrau. Welche Form kann dein Vorhaben im Alltag tragen?</p>
+              <p className="mt-4 leading-7 text-[#405d55]">Am Anfang des neuen Jahres kannst du dir Zeit geben, deine Kraft neu einzuteilen. Dann kommt ein Moment, in dem du ausprobieren darfst, was du lange in dir bewegt hast. Wenn es nach und nach sichtbar wird, stellt sich eine praktische Frage. Welche Form passt zu deinem Leben, sodass dein Vorhaben auch in einer ganz gewöhnlichen Woche seinen Platz behält?</p>
               <p className="mt-4 leading-7 text-[#405d55]">Vielleicht heißt das für dich, zum ersten Mal auszusprechen, was du anbieten möchtest. Vielleicht brauchst du eine klare Abmachung über Zeit, damit dein Vorhaben einen Platz bekommt. Du kannst deine Richtung aus dem wählen, was du im Körper wahrnimmst, was dir wirklich wichtig ist und wofür du bereit bist, Verantwortung zu übernehmen.</p>
             </article>
           </div>
@@ -278,7 +284,7 @@ export function Rauhnaechte() {
       <section id="programm" className={`${width} scroll-mt-6 py-16 lg:py-24`}>
         <div className="grid gap-5 lg:grid-cols-[.95fr_1.05fr] lg:items-end lg:gap-14">
           <h2 className="max-w-[37rem] font-serif text-[clamp(2.5rem,4.25vw,4.25rem)] leading-[1.02] tracking-[-0.045em]">Zwölf Nächte für dein Vorhaben</h2>
-          <p className="max-w-[38rem] leading-relaxed text-[#49625b] sm:text-lg">Du nimmst ein Vorhaben mit in den Kreis. In jeder Nacht lauschen wir auf die Zeitqualität eines Monats. Nach der Meditation hältst du fest, was du wahrgenommen hast und welche Handlung sich daraus für dich ergibt.</p>
+          <p className="max-w-[38rem] leading-relaxed text-[#49625b] sm:text-lg">Du nimmst ein Vorhaben mit in den Kreis. Jede Nacht öffnet einen anderen Blick auf dein Jahr. Nach der Meditation hältst du fest, was du wahrgenommen hast und welche Handlung sich daraus für dich ergibt.</p>
         </div>
         <div className="mt-9 grid gap-px overflow-hidden rounded-[1.7rem] border border-[#dedacb] bg-[#dedacb] sm:grid-cols-2 lg:grid-cols-4">
           {included.map(([Icon, title, description]) => (
@@ -288,6 +294,46 @@ export function Rauhnaechte() {
               <p className="mt-3 text-sm leading-6 text-[#49625b]">{description}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="abend-ablauf" className="bg-[#153c35] py-15 text-[#fffaf0] lg:py-22">
+        <div className={`${width} grid items-center gap-9 lg:grid-cols-[.95fr_1.05fr] lg:gap-15`}>
+          <figure className="raun-detail-in overflow-hidden rounded-[1.7rem] border border-[#d9c69c]/25 bg-[#234840] shadow-[0_14px_45px_#0e242029]">
+            <img src="/traumasensibel/steg.jpg" alt="Eine Person sitzt in der Abenddämmerung auf einem Steg am Wasser" loading="lazy" className="aspect-[1.38] h-full w-full object-cover" />
+          </figure>
+          <div>
+            <h2 id="abend-ablauf" className="max-w-lg font-serif text-[clamp(2.2rem,4vw,4rem)] leading-[1.02] tracking-[-0.04em]">Eine Nacht, die dir gehört</h2>
+            <p className="mt-4 leading-7 text-[#e6eee4]">Wenn der Tag leiser wird, machst du dir einen Platz. Vielleicht ist dein Kopf noch bei einem Gespräch oder bei dem, was morgen ansteht. Die Meditation gibt dir einen Moment, in dem du den Boden spürst und bemerkst, was du heute alles mitgebracht hast.</p>
+            <ol className="mt-6 space-y-3 text-sm leading-6 text-[#f5f3e9]">
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Hören.</strong> Du öffnest unseren Abendimpuls und nimmst dein Vorhaben mit in die Meditation.</li>
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Festhalten.</strong> Du schreibst auf, was du wahrgenommen hast. Vielleicht ist es ein Satz, ein Traumbild oder eine Frage, die dich durch den nächsten Monat begleitet.</li>
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Übergeben.</strong> Du ziehst einen gefalteten Wunschzettel und gibst ihn ungelesen ab. Ein Wunsch bleibt bis zum Abschluss bei dir.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section id="workbook" aria-labelledby="workbook-heading" className="scroll-mt-6 border-b border-[#e2dac4] bg-[#f6f0e0] py-16 lg:py-24">
+        <div className={`${width} grid items-center gap-9 lg:grid-cols-[1.05fr_.95fr] lg:gap-18`}>
+          <figure className="raun-detail-in relative isolate mx-auto min-h-[21rem] w-full max-w-[33rem] overflow-hidden rounded-[1.65rem] border border-[#e0d2b1] bg-[radial-gradient(ellipse_at_20%_8%,#fcf9ee_10%,#e3d6b7_100%)] sm:min-h-[25.5rem]">
+            <img src="/raunaechte-workbook-innenseite.jpg" alt="" loading="lazy" className="absolute left-[45%] top-[13%] w-[45%] rotate-[10deg] rounded-sm border border-[#d7c5a1] shadow-[0_16px_32px_#55412538]" />
+            <img src="/raunaechte-workbook-cover.jpg" alt="Cover des Raunächte-Workbooks für 2027 mit Sabine und Selcan" loading="lazy" className="absolute left-[15%] top-[9%] w-[46%] -rotate-[7deg] rounded-sm border border-[#d7c5a1] shadow-[0_18px_34px_#55412557]" />
+          </figure>
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Dein Raunächte-Workbook</p>
+            <h2 id="workbook-heading" className="max-w-lg font-serif text-[clamp(2.2rem,4.1vw,4.05rem)] leading-[1.02] tracking-[-0.044em]">Ein Buch, zu dem du im neuen Jahr zurückkehren kannst</h2>
+            <p className="mt-4 leading-7 text-[#405d55]">In den Raunächten sammelst du darin Träume, Sätze und Fragen zu deinem Vorhaben. Wenn der jeweilige Monat beginnt, schlägst du deine Seite wieder auf. Du kannst nachlesen, was dir damals wichtig war, und heute entscheiden, welcher Schritt zu deinem Leben passt.</p>
+            <ul className="mt-5 space-y-2 text-sm leading-6 text-[#405d55]">
+              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Rückblick auf 2026 und 13 Wunschzettel zum Ausschneiden</li>
+              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Zwölf Doppelseiten für Meditation, Wahrnehmung und deinen nächsten Schritt</li>
+              <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Eine Seite für deine Jahresessenz und Raum für die ersten sieben Tage</li>
+            </ul>
+            <details className="mt-6 rounded-xl border border-[#d2c5a2] bg-[#fffdf7] px-4 py-3">
+              <summary className="cursor-pointer font-semibold text-[#164942]">Eine Innenseite ansehen</summary>
+              <img src="/raunaechte-workbook-innenseite.jpg" alt="Workbook-Innenseite mit Fragen und Schreibplatz für den nächsten Schritt im Januar" loading="lazy" className="mx-auto mt-4 w-full max-w-sm rounded-sm border border-[#dbd4c4]" />
+            </details>
+          </div>
         </div>
       </section>
 
@@ -331,7 +377,7 @@ export function Rauhnaechte() {
               <div className="mt-5"><Price offerActive={offerActive} remainingMs={remainingMs} /></div>
               <p className="mt-3 text-sm text-[#49625b]">Einmalzahlung für die vollständige Gruppenbegleitung.</p>
               <ul className="mb-7 mt-5 space-y-2 text-sm leading-6">
-                {["Zwölf Meditationen und Astro-Impulse", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit Sabine und Selcan"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
+                {["Zwölf geführte Meditationen mit Begleittext per E-Mail", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit gemeinsamer Meditation"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
               </ul>
               <div className="mt-auto">
                 {checkout ? (

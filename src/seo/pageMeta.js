@@ -121,7 +121,7 @@ export const pageMeta = {
     },
     "/rauhnaechte": {
       title: "Raunächte 2026/27 für dein Vorhaben | Spirit Healing",
-      description: "Zwölf Raunächte für dein Vorhaben 2027. Mit täglichen Meditationen, astrologischen Monatsimpulsen, Workbook und drei Live-Abenden mit Sabine und Selcan.",
+      description: "Zwölf Raunächte für dein Vorhaben 2027. Mit täglichen Meditationen und Begleittexten, Workbook und drei gemeinsamen Live-Abenden mit Sabine und Selcan.",
       ...rauhnaechteImage,
       contentLanguage: "de",
     },
@@ -198,7 +198,7 @@ export const pageMeta = {
     },
     "/rauhnaechte": {
       title: "Raunächte 2026/27 für dein Vorhaben | Spirit Healing",
-      description: "Zwölf Raunächte für dein Vorhaben 2027. Mit täglichen Meditationen, astrologischen Monatsimpulsen, Workbook und drei Live-Abenden mit Sabine und Selcan.",
+      description: "Zwölf Raunächte für dein Vorhaben 2027. Mit täglichen Meditationen und Begleittexten, Workbook und drei gemeinsamen Live-Abenden mit Sabine und Selcan.",
       ...rauhnaechteImage,
       contentLanguage: "de",
     },
