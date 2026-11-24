@@ -1,20 +1,18 @@
 const program = 'raunaechte_welcome_2026_27';
 const offerEnds = Date.parse('2026-11-28T00:00:00+01:00');
 export const raunaechtePayment = Object.freeze({
-  paymentLink: 'https://buy.stripe.com/6oU6oJekaaOx6p52Bh83C1a',
-  paymentLinkId: 'plink_1UfNa1Q90vf7AvfH0Nr6uMCv',
-  promoCode: 'RAUNAECHTE88',
+  sale: { url: 'https://buy.stripe.com/9B628t7VM4q94gXdfV83C1b', id: 'plink_1UfNkYQ90vf7AvfHM52gDiAf', amount: 8800 },
+  regular: { url: 'https://buy.stripe.com/6oU6oJekaaOx6p52Bh83C1a', id: 'plink_1UfNa1Q90vf7AvfH0Nr6uMCv', amount: 11100 },
 });
 
-export function raunaechteCheckoutFor({ price, paymentLink, promoCode, now = Date.now() }) {
-  const inPromotion = now < offerEnds;
-  if (price !== (inPromotion ? '88' : '111') || !paymentLink || (inPromotion && !promoCode)) return null;
+export function raunaechteCheckoutFor({ price, payment = raunaechtePayment, now = Date.now() }) {
+  const offer = now < offerEnds ? payment.sale : payment.regular;
+  if (price !== String(offer.amount / 100)) return null;
   try {
-    const url = new URL(paymentLink);
+    const url = new URL(offer.url);
     if (url.protocol !== 'https:' || !['book.stripe.com', 'buy.stripe.com'].includes(url.hostname)
       || url.username || url.password) return null;
     url.searchParams.delete('prefilled_promo_code');
-    if (inPromotion) url.searchParams.set('prefilled_promo_code', promoCode);
     return url.href;
   } catch {
     return null;
@@ -38,9 +36,10 @@ export async function recordRaunaechtePurchase(db, event) {
   const object = event.data?.object;
   if (event.livemode !== true || object?.metadata?.fulfillment !== program) return false;
   const isInvoice = event.type === 'invoice.paid' && object.object === 'invoice';
+  const checkoutOffer = Object.values(raunaechtePayment).find(offer => offer.id === object.payment_link);
   const isCheckout = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)
     && object.object === 'checkout.session' && object.mode === 'payment'
-    && object.payment_link === raunaechtePayment.paymentLinkId;
+    && checkoutOffer;
   if (!isInvoice && !isCheckout) return false;
   if (!isInvoice && object.payment_status !== 'paid') return true;
 
@@ -49,7 +48,8 @@ export async function recordRaunaechtePurchase(db, event) {
   const idPattern = isInvoice ? /^in_[a-z0-9]+$/i : /^cs_live_[a-z0-9]+$/i;
   const invoiceUrl = isInvoice ? stripeInvoiceUrl(object.invoice_pdf) : null;
   if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    || !idPattern.test(object.id) || object.currency !== 'eur' || ![8800, 11100].includes(amount)
+    || !idPattern.test(object.id) || object.currency !== 'eur'
+    || (isInvoice ? ![8800, 11100].includes(amount) : amount !== checkoutOffer.amount)
     || (isInvoice && (object.status !== 'paid' || !invoiceUrl))) {
     console.error('Raunächte: paid checkout needs review', event.id);
     throw new Error('raunaechte_invalid_paid_checkout');

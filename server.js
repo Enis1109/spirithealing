@@ -176,7 +176,7 @@ import { injectSeoIntoDocument } from "./server/frontendSeo.js";
 import { initializeBerlinMeasurement, recordMeasurement, startBerlinMeasurementCleanup,
     berlinMeasurementSummary } from "./server/berlinMeasurement.js";
 import { berlinWebhookConfig, registerBerlinWebhook } from "./server/berlinWebhook.js";
-import { initializeRaunaechteWelcome, raunaechteCheckoutFor, raunaechtePayment, recordRaunaechtePurchase, startRaunaechteWelcomeWorker } from "./server/raunaechteWelcome.js";
+import { initializeRaunaechteWelcome, raunaechteCheckoutFor, recordRaunaechtePurchase, startRaunaechteWelcomeWorker } from "./server/raunaechteWelcome.js";
 import { eraseBerlinPayment, berlinPaymentHash } from "./server/berlinErasure.js";
 import { registerConsent, revokeConsent } from "./server/berlinConsent.js";
 import { initializeConstellationAvailability, getConstellationAvailability } from "./server/constellationAvailability.js";
@@ -253,7 +253,7 @@ app.get("/api/raunaechte/checkout", async (request, response) => {
     if (startupError || !berlinWebhookSettings.enabled || !berlinWebhookSettings.expectedLive) {
         return response.status(503).type("text/plain").send("Die Buchung ist gerade nicht erreichbar. Bitte versuche es in ein paar Minuten erneut.");
     }
-    const checkout = raunaechteCheckoutFor({ ...raunaechtePayment, price: request.query.preis });
+    const checkout = raunaechteCheckoutFor({ price: request.query.preis });
     return response.redirect(303, checkout || "/rauhnaechte#rauhnaechte-buchen");
 });
 

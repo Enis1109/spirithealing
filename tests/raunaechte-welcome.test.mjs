@@ -2,19 +2,19 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { deliverRaunaechteWelcomes, raunaechteCheckoutFor, raunaechtePayment, recordRaunaechtePurchase } from '../server/raunaechteWelcome.js';
 
-test('checks the advertised price before redirecting and removes the expired promotion', () => {
+test('checks the advertised price and switches to the regular payment link at the deadline', () => {
   const ends = Date.parse('2026-11-28T00:00:00+01:00');
-  const settings = { paymentLink: 'https://book.stripe.com/example', promoCode: 'PROMO' };
-  assert.equal(raunaechteCheckoutFor({ ...settings, price: '88', now: ends - 1 }), 'https://book.stripe.com/example?prefilled_promo_code=PROMO');
-  assert.equal(raunaechteCheckoutFor({ ...settings, price: '88', now: ends }), null);
-  assert.equal(raunaechteCheckoutFor({ ...settings, price: '111', now: ends }), settings.paymentLink);
-  assert.equal(raunaechteCheckoutFor({ ...settings, paymentLink: 'https://book.stripe.com.example.org', price: '111', now: ends }), null);
+  assert.equal(raunaechteCheckoutFor({ price: '88', now: ends - 1 }), raunaechtePayment.sale.url);
+  assert.equal(raunaechteCheckoutFor({ price: '88', now: ends }), null);
+  assert.equal(raunaechteCheckoutFor({ price: '111', now: ends }), raunaechtePayment.regular.url);
+  const payment = { ...raunaechtePayment, regular: { url: 'https://book.stripe.com.example.org', amount: 11100 } };
+  assert.equal(raunaechteCheckoutFor({ payment, price: '111', now: ends }), null);
 });
 
 const paidEvent = {
   id: 'evt_raunacht', livemode: true, type: 'checkout.session.completed',
   data: { object: {
-    id: 'cs_live_raunacht', payment_link: raunaechtePayment.paymentLinkId, payment_status: 'paid',
+    id: 'cs_live_raunacht', payment_link: raunaechtePayment.sale.id, payment_status: 'paid',
     object: 'checkout.session', mode: 'payment',
     amount_total: 8800, currency: 'eur', metadata: { fulfillment: 'raunaechte_welcome_2026_27' },
     customer_details: { email: '  raunaechte@example.org  ' },
