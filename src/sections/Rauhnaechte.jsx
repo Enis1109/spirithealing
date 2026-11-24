@@ -1,12 +1,26 @@
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Check, Headphones, MoonStar, PanelsTopLeft, Video } from "lucide-react"
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Check, Facebook, Headphones, Instagram, MoonStar, PanelsTopLeft, Video, Youtube } from "lucide-react"
 import { contactOfferUrl } from "../lib/contactOffers.js"
 
 const offerEnds = Date.parse("2026-11-28T00:00:00+01:00")
 const standardPrice = 111
 const launchPrice = 88
 const websitePrice = 600
+const socialProfiles = [
+  [TikTokIcon, "TikTok", "https://www.tiktok.com/@spirit4healing"],
+  [Youtube, "YouTube", "https://www.youtube.com/@spirit4healing"],
+  [Facebook, "Facebook", "https://www.facebook.com/profile.php?id=61588723230682"],
+  [Instagram, "Instagram", "https://www.instagram.com/spirit4healing/"],
+]
+
+function TikTokIcon({ size, ...props }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" {...props}>
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+    </svg>
+  )
+}
 
 function paymentUrl(value) {
   if (!value) return null
@@ -101,7 +115,7 @@ const meetings = [
 const included = [
   [Headphones, "Zwölf Meditationen per E-Mail", "Vom 25. Dezember bis 5. Januar bekommst du jeden Abend eine geführte Meditation und einen kurzen Begleittext von uns."],
   [BookOpen, "Dein Raunächte-Workbook", "Für jede der zwölf Nächte gibt es eine Doppelseite mit einer Aufgabe für den Abend und Platz für deine Wahrnehmungen, Träume und Fragen."],
-  [MoonStar, "Das Ritual der 13 Wünsche", "Du bereitest deine Wünsche vor. Am letzten Abend bleibt ein Wunsch, aus dem du deine Jahresessenz formulierst."],
+  [MoonStar, "Das Ritual der 13 Wünsche", "In jeder Nacht öffnest du einen Wunsch und hältst ihn beim passenden Monat fest. Aus dem letzten Wunsch formulierst du am Abschlussabend deine Jahresessenz."],
   [Video, "Drei Live-Abende mit Meditation", "Wir meditieren gemeinsam bei der Eröffnung, bei der Zwischenreflexion und am Abschlussabend."],
 ]
 
@@ -180,9 +194,9 @@ function Price({ offerActive, remainingMs, compact = false }) {
   return offerActive ? (
     <div>
       <p className="text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Black Friday Week</p>
-      <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1">
+      <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <p className={`${compact ? "text-4xl" : "text-6xl"} font-serif font-semibold leading-none`}>{launchPrice} €</p>
-        <p className="pb-0.5 text-sm font-semibold text-[#49625b]"><s className="mr-1 text-xl decoration-[#9c7335] decoration-2">{standardPrice} €</s> regulär nach der Aktion</p>
+        <s className={`${compact ? "text-2xl" : "text-4xl"} font-serif font-semibold leading-none text-[#49625b] decoration-[#9c7335] decoration-2`}>{standardPrice} €</s>
       </div>
       <div className="mt-3"><Countdown remainingMs={remainingMs} /></div>
       <p className="mt-2 text-xs leading-5 text-[#49625b]">Aktionspreis bis 27.11.2026, 23:59 Uhr deutscher Zeit.</p>
@@ -321,9 +335,9 @@ export function Rauhnaechte() {
             <h2 id="abend-ablauf" className="max-w-lg font-serif text-[clamp(2.2rem,4vw,4rem)] leading-[1.02] tracking-[-0.04em]">Eine Nacht, die dir gehört</h2>
             <p className="mt-4 leading-7 text-[#e6eee4]">Wenn der Tag leiser wird, machst du dir einen Platz. Vielleicht ist dein Kopf noch bei einem Gespräch oder bei dem, was morgen ansteht. Die Meditation gibt dir einen Moment, in dem du den Boden spürst und bemerkst, was du heute alles mitgebracht hast.</p>
             <ol className="mt-6 space-y-3 text-sm leading-6 text-[#f5f3e9]">
-              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Hören.</strong> Du öffnest unseren Abendimpuls und nimmst dein Vorhaben mit in die Meditation.</li>
-              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Festhalten.</strong> Du schreibst auf, was du wahrgenommen hast, und nimmst dir einen Moment für die Aufgabe dieser Nacht. Vielleicht bleibt dir ein Satz, ein Traumbild oder eine Frage.</li>
-              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Übergeben.</strong> Du ziehst einen gefalteten Wunschzettel und gibst ihn ungelesen ab. Ein Wunsch bleibt bis zum Abschluss bei dir.</li>
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Öffnen und nachspüren.</strong> Du ziehst einen Wunschzettel, öffnest ihn und liest deinen Wunsch. Wenn du ihn vor der Meditation ziehst, kannst du ihn mit hineinnehmen. Du kannst ihn auch danach ziehen und ihm in Ruhe nachspüren.</li>
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Festhalten.</strong> Du trägst den Wunsch im Workbook beim Monat dieser Nacht ein. Die erste Nacht steht für Januar, die zweite für Februar und so weiter. Dort ist auch Platz für deine Wahrnehmungen und die Aufgabe des Abends.</li>
+              <li className="border-t border-white/20 pt-3"><strong className="text-[#efdca8]">Übergeben.</strong> Wenn dein Wunsch im Workbook steht, übergibst du den Zettel dem Feuer. Der letzte Wunsch bleibt bis zum gemeinsamen Abschluss bei dir.</li>
             </ol>
           </div>
         </div>
@@ -337,7 +351,7 @@ export function Rauhnaechte() {
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Schreiben zwischen den Jahren</p>
             <h2 id="workbook-heading" className="max-w-lg font-serif text-[clamp(2.2rem,4.1vw,4.05rem)] leading-[1.02] tracking-[-0.044em]">Dein Workbook für die Raunächte</h2>
-            <p className="mt-4 leading-7 text-[#405d55]">Nach jeder Meditation schlägst du die Doppelseite für diese Nacht auf. Du hältst fest, was du gehört, gespürt oder geträumt hast, und bearbeitest die Aufgabe für den Abend. So kannst du am Ende nachlesen, was sich von Nacht zu Nacht in dir verändert hat.</p>
+            <p className="mt-4 leading-7 text-[#405d55]">Auf der Doppelseite jeder Nacht findest du den Monat, zu dem sie gehört. Dort trägst du deinen gezogenen Wunsch ein, hältst fest, was du gespürt oder geträumt hast, und bearbeitest die Aufgabe für den Abend. Wenn der Monat 2027 beginnt, kannst du den Wunsch und deine Notizen wieder aufschlagen.</p>
             <ul className="mt-5 space-y-2 text-sm leading-6 text-[#405d55]">
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Rückblick auf 2026 und 13 Wunschzettel zum Ausschneiden</li>
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Zwölf Doppelseiten zum Schreiben und Ausprobieren in den Nächten</li>
@@ -419,8 +433,15 @@ export function Rauhnaechte() {
       </section>
 
       <footer className="bg-[#10352f] py-8 text-[#eff5ec]">
-        <div className={`${width} flex flex-col gap-4 text-sm sm:flex-row sm:items-center sm:justify-between`}>
+        <div className={`${width} flex flex-col gap-5 text-sm md:flex-row md:flex-wrap md:items-center md:justify-between`}>
           <Link to="/" className="font-semibold">Spirit Healing · Sabine &amp; Selcan</Link>
+          <nav aria-label="Spirit Healing in den sozialen Medien" className="flex flex-wrap items-center gap-2.5">
+            {socialProfiles.map(([Icon, name, href]) => (
+              <a key={name} href={href} target="_blank" rel="noopener noreferrer" aria-label={`Spirit Healing auf ${name}`} title={name} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#efdca8]/45 text-[#efdca8] transition-colors hover:border-[#efdca8] hover:bg-[#efdca8] hover:text-[#10352f] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#efdca8]">
+                <Icon size={19} aria-hidden="true" />
+              </a>
+            ))}
+          </nav>
           <nav aria-label="Rechtliche Hinweise" className="flex flex-wrap gap-x-5 gap-y-3">
             <Link to="/impressum" className="hover:underline">Impressum</Link>
             <Link to="/datenschutz" className="hover:underline">Datenschutz</Link>
