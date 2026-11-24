@@ -209,7 +209,7 @@ export function Rauhnaechte() {
             <span className="text-xs">Spirit Healing</span>
           </Link>
           <nav aria-label="Auf dieser Seite" className="hidden items-center gap-7 text-sm font-semibold md:flex">
-            <a href="#jahreswechsel" className="hover:underline">Jahreswechsel</a>
+            <a href="#raunaechte-qualitaet" className="hover:underline">Die Raunächte</a>
             <a href="#programm" className="hover:underline">Programm</a>
             <a href="#workbook" className="hover:underline">Workbook</a>
           </nav>
@@ -222,12 +222,13 @@ export function Rauhnaechte() {
           <div>
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-[#715520]"><MoonStar size={17} aria-hidden="true" /> Raunächte 2026/27 mit Sabine und Selcan</p>
             <h1 className="mt-5 max-w-[46rem] font-serif text-[clamp(2.85rem,6.15vw,5.9rem)] font-medium leading-[0.98] tracking-[-0.052em]">Was möchtest du 2027 <em className="font-normal text-[#407169]">in die Welt bringen?</em></h1>
-            <p className="mt-6 max-w-[35rem] text-[clamp(1.06rem,1.4vw,1.26rem)] leading-relaxed text-[#405d55]">Vielleicht ist da schon länger der Wunsch, mit deiner Arbeit sichtbarer zu werden oder etwas Eigenes aufzubauen. Du spielst Möglichkeiten durch und jede klingt für einen Moment richtig. Sobald du dich entscheiden willst, meldet sich wieder die Frage, was du damit aufs Spiel setzt. In den Raunächten begleiten wir dich dabei, diese Stimmen zu hören und deinem Vorhaben aus deiner eigenen Kraft eine Richtung zu geben.</p>
+            <p className="mt-6 max-w-[35rem] text-[clamp(1.06rem,1.4vw,1.26rem)] leading-relaxed text-[#405d55]">Die Raunächte sind die zwölf Nächte zwischen den Jahren. Das alte Jahr klingt nach und das neue hat seinen Alltag noch vor sich. In diesem Dazwischen kannst du wahrnehmen, was du lange mit dir getragen hast und was durch dich Gestalt annehmen möchte.</p>
+            <p className="mt-3 max-w-[35rem] leading-7 text-[#405d55]">Wir begleiten dich Abend für Abend. Jede Nacht gehört einem Monat. So bekommt dein Vorhaben Zeit, sich zu klären, und du kannst ihm am Abschlussabend einen ersten Schritt geben.</p>
             <p className="mt-6 flex items-start gap-2.5 text-sm font-semibold"><CalendarDays size={19} className="shrink-0 text-[#715520]" aria-hidden="true" /> 23. Dezember 2026 bis 6. Januar 2027 · online</p>
             <div className="mt-6 border-y border-[#d9cdb3] py-4"><Price offerActive={offerActive} remainingMs={remainingMs} compact /></div>
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <a href="#rauhnaechte-buchen" className={primary}>Bei den Raunächten dabei sein <ArrowRight size={17} aria-hidden="true" /></a>
-              <a href="#programm" className="inline-flex min-h-12 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline">Ablauf ansehen <ArrowDown size={15} aria-hidden="true" /></a>
+              <a href="#raunaechte-qualitaet" className="inline-flex min-h-12 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline">Warum gerade die Raunächte? <ArrowDown size={15} aria-hidden="true" /></a>
             </div>
           </div>
 
@@ -246,6 +247,20 @@ export function Rauhnaechte() {
             <button type="button" data-raun-flight-play className="raun-flight-play absolute right-4 top-4 z-20 min-h-10 rounded-full bg-[#fffdf7]/95 px-3.5 text-xs font-bold text-[#164942] shadow-sm hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white">Kolibri fliegen lassen</button>
             <figcaption className="absolute inset-x-0 bottom-4 py-6 pl-29 pr-5 text-sm text-white sm:pl-38"><strong className="block font-serif text-xl font-normal sm:text-2xl">Sabine &amp; Selcan</strong><span>Begleiten dich durch die Raunächte</span></figcaption>
           </figure>
+        </div>
+      </section>
+
+      <section id="raunaechte-qualitaet" aria-labelledby="raunaechte-qualitaet-heading" className="scroll-mt-6 border-b border-[#e7dfce] bg-[#fffdf7] py-15 lg:py-21">
+        <div className={`${width} grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-16`}>
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Die Zeit zwischen den Jahren</p>
+            <h2 id="raunaechte-qualitaet-heading" className="max-w-md font-serif text-[clamp(2.35rem,4.25vw,4.25rem)] leading-[1.02] tracking-[-0.045em]">Warum gerade die Raunächte?</h2>
+          </div>
+          <div className="space-y-5 border-l-2 border-[#dcc38b] pl-5 text-[#405d55] sm:pl-7">
+            <p className="leading-7 sm:text-lg sm:leading-8">Im Brauchtum steht jede der zwölf Nächte für einen Monat des kommenden Jahres. Die Menschen achteten in dieser Zeit auf ihre Träume und auf das, was ihnen im Alltag auffiel. Uns spricht daran an, wie aufmerksam man an einer Schwelle werden kann. Das Vertraute klingt noch nach, während für das Neue schon Platz da ist.</p>
+            <p className="leading-7 sm:text-lg sm:leading-8">Diese Aufmerksamkeit holen wir in jede Nacht. In der Meditation hörst du darauf, was dein Vorhaben in dir berührt. Beim Schreiben hältst du fest, was sich zeigt. Über die Abende hinweg bemerkst du vielleicht, welcher Wunsch wiederkommt, welche Sorge dich bisher begleitet hat und wofür du deine Kraft heute einsetzen möchtest.</p>
+            <p className="leading-7 sm:text-lg sm:leading-8">Am 6. Januar kommen wir noch einmal zusammen. Du öffnest den Wunsch, der übrig geblieben ist, und findest deinen Satz für das Jahr. Dazu wählst du eine Handlung, mit der du in der ersten Woche beginnen kannst. Die zwölf Monatsseiten im Workbook begleiten dich, wenn du später zu deiner Ausrichtung zurückkehren möchtest.</p>
+          </div>
         </div>
       </section>
 
@@ -276,7 +291,7 @@ export function Rauhnaechte() {
 
           <div className="mt-5 grid gap-4 rounded-[1.6rem] bg-[#164942] p-6 text-[#fffaf0] sm:p-8 lg:grid-cols-[.88fr_1.12fr] lg:items-center lg:gap-10">
             <p className="font-serif text-[clamp(1.6rem,3vw,2.5rem)] leading-tight">Was soll durch dich einen Platz in der Welt bekommen?</p>
-            <p className="leading-7 text-[#f2f4ea]">Wir nehmen diese Frage mit durch die zwölf Nächte. Nach der Meditation hältst du fest, was du gehört hast und wie dein nächster Schritt aussehen könnte. Am Abschlussabend öffnest du den 13. Wunsch. Aus ihm formulierst du die Qualität, die du durch dein Jahr tragen willst, und gibst ihr eine erste Handlung.</p>
+            <p className="leading-7 text-[#f2f4ea]">Ein Vorhaben genügt für den Anfang. Wenn du im Laufe der Nächte klarer siehst, was dich ruft, darf sich seine Form verändern. Vielleicht beginnt es mit einer Idee für deine Arbeit und führt dich zu einer Frage, die dein ganzes Leben berührt.</p>
           </div>
         </div>
       </section>
@@ -300,7 +315,7 @@ export function Rauhnaechte() {
       <section aria-labelledby="abend-ablauf" className="bg-[#153c35] py-15 text-[#fffaf0] lg:py-22">
         <div className={`${width} grid items-center gap-9 lg:grid-cols-[.95fr_1.05fr] lg:gap-15`}>
           <figure className="raun-detail-in overflow-hidden rounded-[1.7rem] border border-[#d9c69c]/25 bg-[#234840] shadow-[0_14px_45px_#0e242029]">
-            <img src="/traumasensibel/steg.jpg" alt="Eine Person sitzt in der Abenddämmerung auf einem Steg am Wasser" loading="lazy" className="aspect-[1.38] h-full w-full object-cover" />
+            <img src="/raunaechte-kaminabend.jpg" alt="Eine Frau im Strickpullover hält eine Tasse und sitzt vor dem Kamin in einer Winternacht" loading="lazy" className="aspect-[1.38] h-full w-full object-cover" />
           </figure>
           <div>
             <h2 id="abend-ablauf" className="max-w-lg font-serif text-[clamp(2.2rem,4vw,4rem)] leading-[1.02] tracking-[-0.04em]">Eine Nacht, die dir gehört</h2>
@@ -316,9 +331,8 @@ export function Rauhnaechte() {
 
       <section id="workbook" aria-labelledby="workbook-heading" className="scroll-mt-6 border-b border-[#e2dac4] bg-[#f6f0e0] py-16 lg:py-24">
         <div className={`${width} grid items-center gap-9 lg:grid-cols-[1.05fr_.95fr] lg:gap-18`}>
-          <figure className="raun-detail-in relative isolate mx-auto min-h-[21rem] w-full max-w-[33rem] overflow-hidden rounded-[1.65rem] border border-[#e0d2b1] bg-[radial-gradient(ellipse_at_20%_8%,#fcf9ee_10%,#e3d6b7_100%)] sm:min-h-[25.5rem]">
-            <img src="/raunaechte-workbook-innenseite.jpg" alt="" loading="lazy" className="absolute left-[45%] top-[13%] w-[45%] rotate-[10deg] rounded-sm border border-[#d7c5a1] shadow-[0_16px_32px_#55412538]" />
-            <img src="/raunaechte-workbook-cover.jpg" alt="Cover des Raunächte-Workbooks für 2027 mit Sabine und Selcan" loading="lazy" className="absolute left-[15%] top-[9%] w-[46%] -rotate-[7deg] rounded-sm border border-[#d7c5a1] shadow-[0_18px_34px_#55412557]" />
+          <figure className="raun-detail-in mx-auto grid min-h-[21rem] w-full max-w-[33rem] place-items-center overflow-hidden rounded-[1.65rem] border border-[#e0d2b1] bg-[radial-gradient(ellipse_at_20%_8%,#fcf9ee_10%,#e3d6b7_100%)] px-8 py-10 sm:min-h-[25.5rem]">
+            <img src="/raunaechte-workbook-cover.jpg" alt="Cover des Raunächte-Workbooks für 2027 mit einem Glas voller gefalteter Wunschzettel auf dem Kaminsims" loading="lazy" className="w-[68%] max-w-[16rem] -rotate-[5deg] rounded-sm border border-[#d7c5a1] shadow-[0_18px_34px_#55412557]" />
           </figure>
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Dein Raunächte-Workbook</p>
@@ -329,10 +343,6 @@ export function Rauhnaechte() {
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Zwölf Doppelseiten für Meditation, Wahrnehmung und deinen nächsten Schritt</li>
               <li className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" /> Eine Seite für deine Jahresessenz und Raum für die ersten sieben Tage</li>
             </ul>
-            <details className="mt-6 rounded-xl border border-[#d2c5a2] bg-[#fffdf7] px-4 py-3">
-              <summary className="cursor-pointer font-semibold text-[#164942]">Eine Innenseite ansehen</summary>
-              <img src="/raunaechte-workbook-innenseite.jpg" alt="Workbook-Innenseite mit Fragen und Schreibplatz für den nächsten Schritt im Januar" loading="lazy" className="mx-auto mt-4 w-full max-w-sm rounded-sm border border-[#dbd4c4]" />
-            </details>
           </div>
         </div>
       </section>
@@ -375,7 +385,7 @@ export function Rauhnaechte() {
             <article className="flex flex-col rounded-[1.8rem] border border-[#d6c6a4] bg-[#fffdf7] p-6 shadow-[0_8px_35px_#4541270c] sm:p-9">
               <h3 className="font-serif text-3xl">Raunächte-Begleitung</h3>
               <div className="mt-5"><Price offerActive={offerActive} remainingMs={remainingMs} /></div>
-              <p className="mt-3 text-sm text-[#49625b]">Einmalzahlung für die vollständige Gruppenbegleitung.</p>
+              <p className="mt-3 text-sm leading-6 text-[#49625b]">Einmalzahlung für deine Begleitung von der Eröffnung bis zum Abschluss. Du nimmst deine Jahresessenz, einen ersten Schritt für dein Vorhaben und das Workbook für alle zwölf Monate mit.</p>
               <ul className="mb-7 mt-5 space-y-2 text-sm leading-6">
                 {["Zwölf geführte Meditationen mit Begleittext per E-Mail", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit gemeinsamer Meditation"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
               </ul>
