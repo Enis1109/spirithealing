@@ -30,11 +30,12 @@ function checkoutFor(offerActive) {
   return url.href
 }
 
-function useLaunchPrice() {
-  const [active, setActive] = useState(() => Date.now() < offerEnds)
+function useLaunchClock() {
+  const [remainingMs, setRemainingMs] = useState(() => Math.max(0, offerEnds - Date.now()))
+  const active = remainingMs > 0
   useEffect(() => {
     if (!active) return undefined
-    const refresh = () => setActive(Date.now() < offerEnds)
+    const refresh = () => setRemainingMs(Math.max(0, offerEnds - Date.now()))
     const interval = window.setInterval(refresh, 1000)
     window.addEventListener("focus", refresh)
     window.addEventListener("pageshow", refresh)
@@ -44,7 +45,7 @@ function useLaunchPrice() {
       window.removeEventListener("pageshow", refresh)
     }
   }, [active])
-  return [active, setActive]
+  return [remainingMs, setRemainingMs]
 }
 
 const months = [
@@ -82,7 +83,7 @@ const gold = "inline-flex min-h-12 items-center justify-center gap-3 rounded-ful
 const heroMotion = `
   .raun-portrait { animation: raun-portrait-arrives 1.35s cubic-bezier(.2,.65,.3,1) both; }
   .raun-kolibri {
-    clip-path: polygon(35.5% 36.3%, 41.5% 35.4%, 46% 34.6%, 48.8% 36%, 52% 39%, 55.7% 33.1%, 59% 26%, 59.7% 19.1%, 62% 23%, 63.3% 29.3%, 69% 25%, 74.3% 20.2%, 78.1% 14.7%, 80.3% 11.3%, 82.4% 14.2%, 85.4% 12.6%, 84% 18.8%, 82.1% 22.8%, 84.1% 26.2%, 81% 29.3%, 77.6% 32.6%, 72.6% 36.3%, 67.1% 39.4%, 61.8% 42%, 57.8% 44.5%, 60% 49%, 64% 53.5%, 66.3% 57.5%, 68.3% 64%, 67% 67.7%, 64.9% 65.3%, 63.7% 70.1%, 59.8% 74.5%, 53.9% 79.3%, 53.2% 75.3%, 54.7% 71.3%, 51% 73.7%, 48.6% 77.6%, 48.2% 74.6%, 44.8% 72.7%, 40.8% 74.1%, 37.7% 74.3%, 34.6% 76.5%, 34.9% 71.7%, 36.8% 67.9%, 41% 64.7%, 46.1% 63.7%, 50.7% 62.1%, 47.9% 60.3%, 42.6% 59.7%, 43.6% 58.4%, 47.1% 58.8%, 51.9% 60.2%, 54% 59.8%, 56% 57.8%, 55.8% 54.5%, 53.6% 52.7%, 50.6% 52.1%, 48% 51.4%, 46.1% 48.7%, 45.1% 44.5%, 45.4% 41.3%, 43.9% 38.8%, 41.9% 37.7%);
+    clip-path: polygon(31.1% 35.8%, 35.7% 35.6%, 41.7% 36.7%, 45% 35.1%, 48.5% 35%, 51.3% 37.2%, 52.4% 41.4%, 53.4% 43.4%, 55.1% 36.7%, 58.6% 31.1%, 63.2% 24.8%, 64.9% 18.9%, 65.8% 22.8%, 65.6% 28.2%, 67.2% 23%, 67.3% 27.8%, 64.4% 32.6%, 67.9% 28%, 66.7% 32.2%, 74% 24.4%, 77.7% 19.9%, 79.1% 14.8%, 80.1% 19.3%, 79.3% 23.8%, 76.7% 27.9%, 81.9% 24.7%, 81.5% 28.1%, 78.8% 32.4%, 74.2% 36.6%, 80.9% 32.6%, 79.5% 35.6%, 76.6% 38.4%, 72.5% 41%, 77.7% 39.8%, 75.4% 42.6%, 72.5% 44.4%, 73.9% 44.7%, 70.5% 46.5%, 73.2% 46.3%, 69.3% 49.3%, 66.9% 50.1%, 64% 49.9%, 67% 51.6%, 63.6% 51.6%, 60.5% 50.1%, 62.8% 56.5%, 65.9% 64.3%, 67.1% 69.8%, 65.8% 75.3%, 61.8% 80.3%, 57.1% 84%, 56.5% 86.1%, 58.5% 88.2%, 56.4% 88.1%, 56.1% 85.2%, 58.4% 80.7%, 62.1% 75.7%, 63.8% 69.1%, 60% 74.5%, 54.5% 79.9%, 48% 84.2%, 46.8% 87.5%, 47.6% 90.5%, 45.3% 88.8%, 45.6% 83.9%, 48.5% 79.3%, 50.7% 77.4%, 43.9% 78.9%, 37.4% 79.6%, 33.4% 82.4%, 32.8% 86.2%, 36.5% 89%, 39.7% 87.6%, 39.8% 84.9%, 37.2% 83.6%, 36.6% 85.8%, 35.6% 84.3%, 37.4% 82.5%, 40.2% 82.7%, 41% 85.7%, 39.8% 88.7%, 36.3% 90%, 32.2% 88.8%, 30.9% 85.3%, 31.5% 81.8%, 34.8% 77.7%, 41.1% 75.8%, 46% 76.1%, 41.4% 74.9%, 37.6% 72.4%, 37% 68.8%, 38.6% 65.4%, 41.2% 64.1%, 44.9% 64.7%, 47.1% 67%, 45.9% 70%, 43.9% 70.2%, 45.3% 68.5%, 44.9% 67.1%, 41.9% 66.9%, 39.6% 68.8%, 40.2% 72%, 45.3% 74.3%, 50.6% 74.3%, 54.1% 72%, 57.3% 69.1%, 59.6% 64.5%, 58.9% 60.2%, 56.7% 57.8%, 54.2% 57.5%, 54.7% 59.7%, 52.5% 59.6%, 51.8% 58.3%, 52.9% 57.1%, 49.1% 55.5%, 46.3% 52.7%, 44.8% 49.2%, 43.9% 44.4%, 42.6% 41%, 40.3% 38.9%, 36.3% 37%);
     transform-origin: 53% 49%;
     opacity: 0;
     animation: raun-kolibri-flight 2.65s .9s both;
@@ -104,18 +105,44 @@ const heroMotion = `
   }
 `
 
-function Price({ offerActive, compact = false }) {
+function Countdown({ remainingMs }) {
+  const seconds = Math.max(0, Math.ceil(remainingMs / 1000))
+  const units = [
+    ["Tage", Math.floor(seconds / 86400)],
+    ["Std.", Math.floor(seconds / 3600) % 24],
+    ["Min.", Math.floor(seconds / 60) % 60],
+    ["Sek.", seconds % 60],
+  ]
+
+  return (
+    <div className="grid w-fit grid-cols-4 gap-1.5" role="timer" aria-label="Zeit bis zum Ende des Aktionspreises" data-raun-countdown={offerEnds}>
+      {units.map(([label, value]) => (
+        <div key={label} className="min-w-[3rem] rounded-lg bg-[#e9f0e7] px-2 py-1.5 text-center sm:min-w-[3.35rem]">
+          <strong data-raun-unit className="block text-lg font-bold leading-none tabular-nums text-[#163d35]">{String(value).padStart(2, "0")}</strong>
+          <span className="mt-0.5 block text-[0.64rem] font-semibold uppercase tracking-wide text-[#49625b]">{label}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Price({ offerActive, remainingMs, compact = false }) {
   return offerActive ? (
     <div>
       <p className="text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Black Friday Week</p>
-      <p className={`${compact ? "text-3xl" : "text-6xl"} mt-1 font-serif font-semibold leading-none`}>{launchPrice} €</p>
-      <p className="mt-2 text-sm leading-6 text-[#49625b]">Bis 27.11.2026, 23:59 Uhr deutscher Zeit. Ab 28.11. {standardPrice} €.</p>
+      <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1">
+        <p className={`${compact ? "text-4xl" : "text-6xl"} font-serif font-semibold leading-none`}>{launchPrice} €</p>
+        <p className="pb-0.5 text-sm font-semibold text-[#49625b]"><s className="mr-1 text-xl decoration-[#9c7335] decoration-2">{standardPrice} €</s> ab 28.11.</p>
+      </div>
+      <div className="mt-3"><Countdown remainingMs={remainingMs} /></div>
+      <p className="mt-2 text-xs leading-5 text-[#49625b]">Aktionspreis bis 27.11.2026, 23:59 Uhr deutscher Zeit.</p>
     </div>
   ) : <p className={`${compact ? "text-3xl" : "text-6xl"} font-serif font-semibold leading-none`}>{standardPrice} €</p>
 }
 
 export function Rauhnaechte() {
-  const [offerActive, setOfferActive] = useLaunchPrice()
+  const [remainingMs, setRemainingMs] = useLaunchClock()
+  const offerActive = remainingMs > 0
   const checkout = checkoutFor(offerActive)
   const contact = contactOfferUrl("raunachtWebsite")
 
@@ -126,10 +153,11 @@ export function Rauhnaechte() {
       <header className="border-b border-[#dedacb] bg-[#fffdf7]">
         <div className={`${width} flex min-h-19 items-center justify-between gap-4`}>
           <Link to="/" aria-label="Spirit Healing · Startseite" className="flex shrink-0 items-center gap-2.5 font-semibold tracking-[0.13em] uppercase">
-            <img src="/Logo.png" alt="" width="46" height="46" className="h-11 w-11 rounded-full object-contain" />
+            <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" width="46" height="46" className="h-11 w-11 rounded-full object-cover" />
             <span className="text-xs">Spirit Healing</span>
           </Link>
           <nav aria-label="Auf dieser Seite" className="hidden items-center gap-7 text-sm font-semibold md:flex">
+            <a href="#jahreswechsel" className="hover:underline">Jahreswechsel</a>
             <a href="#programm" className="hover:underline">Programm</a>
             <a href="#termine" className="hover:underline">Termine</a>
             <a href="#website-special" className="hover:underline">Website-Special</a>
@@ -143,9 +171,9 @@ export function Rauhnaechte() {
           <div>
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-[#715520]"><MoonStar size={17} aria-hidden="true" /> Raunächte 2026/27 mit Sabine und Selcan</p>
             <h1 className="mt-5 max-w-[46rem] font-serif text-[clamp(2.85rem,6.15vw,5.9rem)] font-medium leading-[0.98] tracking-[-0.052em]">Was möchtest du 2027 <em className="font-normal text-[#407169]">in die Welt bringen?</em></h1>
-            <p className="mt-6 max-w-[34rem] text-[clamp(1.06rem,1.4vw,1.26rem)] leading-relaxed text-[#405d55]">Vielleicht willst du mit deiner Arbeit sichtbarer werden, dich selbstständig machen oder einer Idee Raum geben, die dich schon länger ruft. Wir begleiten dich durch zwölf Nächte, damit du hörst, was durch dich Gestalt annehmen möchte, und einen ersten Schritt findest, der zu dir passt.</p>
+            <p className="mt-6 max-w-[35rem] text-[clamp(1.06rem,1.4vw,1.26rem)] leading-relaxed text-[#405d55]">Vielleicht ist da schon länger der Wunsch, mit deiner Arbeit sichtbarer zu werden oder etwas Eigenes aufzubauen. Du spielst Möglichkeiten durch und jede klingt für einen Moment richtig. Sobald du dich entscheiden willst, meldet sich wieder die Frage, was du damit aufs Spiel setzt. In den Raunächten begleiten wir dich dabei, diese Stimmen zu hören und deinem Vorhaben aus deiner eigenen Kraft eine Richtung zu geben.</p>
             <p className="mt-6 flex items-start gap-2.5 text-sm font-semibold"><CalendarDays size={19} className="shrink-0 text-[#715520]" aria-hidden="true" /> 23. Dezember 2026 bis 6. Januar 2027 · online</p>
-            <div className="mt-6 border-y border-[#d9cdb3] py-4"><Price offerActive={offerActive} compact /></div>
+            <div className="mt-6 border-y border-[#d9cdb3] py-4"><Price offerActive={offerActive} remainingMs={remainingMs} compact /></div>
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               <a href="#rauhnaechte-buchen" className={primary}>Bei den Raunächten dabei sein <ArrowRight size={17} aria-hidden="true" /></a>
               <a href="#programm" className="inline-flex min-h-12 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline">Ablauf ansehen <ArrowDown size={15} aria-hidden="true" /></a>
@@ -158,11 +186,43 @@ export function Rauhnaechte() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#112d28]/85 via-transparent to-transparent" aria-hidden="true" />
             </div>
             <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[clamp(7rem,15vw,10rem)] w-[clamp(7rem,15vw,10rem)]" aria-hidden="true">
-              <img src="/Logo.png" alt="" className="absolute inset-0 h-full w-full drop-shadow-[0_7px_11px_#10251d55]" />
-              <img src="/Logo.png" alt="" className="raun-kolibri absolute inset-0 h-full w-full" />
+              <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="absolute inset-0 h-full w-full rounded-full drop-shadow-[0_7px_11px_#10251d55]" />
+              <img src="/Logo-tuerkis.jpeg?v=20260730" alt="" className="raun-kolibri absolute inset-0 h-full w-full" />
             </div>
             <figcaption className="absolute inset-x-0 bottom-4 py-6 pl-29 pr-5 text-sm text-white sm:pl-38"><strong className="block font-serif text-xl font-normal sm:text-2xl">Sabine &amp; Selcan</strong><span>Begleiten dich durch die Raunächte</span></figcaption>
           </figure>
+        </div>
+      </section>
+
+      <section id="jahreswechsel" className="scroll-mt-6 border-b border-[#d9dfd2] bg-[#f0f3ea] py-16 lg:py-24">
+        <div className={width}>
+          <div className="grid gap-6 lg:grid-cols-[.96fr_1.04fr] lg:items-end lg:gap-14">
+            <div>
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Der Übergang von 2026 zu 2027</p>
+              <h2 className="max-w-[34rem] font-serif text-[clamp(2.4rem,4.65vw,4.55rem)] leading-[1.02] tracking-[-0.045em]">Wenn du spürst, dass sich etwas ändern muss</h2>
+            </div>
+            <p className="max-w-[36rem] text-lg leading-8 text-[#405d55]">Morgens denkst du, du könntest endlich anfangen. Abends gehst du im Kopf noch einmal durch, wer sich auf dich verlässt, was du verlieren könntest und ob du schon genug weißt. Ein Teil von dir ist längst bereit. Ein anderer weiß, wie viel du bisher mit deiner Aufmerksamkeit und deiner Kraft zusammengehalten hast. Beide haben etwas zu sagen.</p>
+          </div>
+
+          <div className="mt-9 grid gap-4 lg:grid-cols-2">
+            <article className="rounded-[1.6rem] border border-[#d3ddcf] bg-[#fffdf7] p-6 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#765820]">Rückblick auf 2026</p>
+              <h3 className="mt-3 font-serif text-3xl leading-tight sm:text-4xl">Was hat uns getragen?</h3>
+              <p className="mt-4 leading-7 text-[#405d55]">2026 konnte sich herausfordernd anfühlen, weil manche Entscheidungen anstanden, während das Neue erst langsam Form annahm. Im Februar trafen sich Saturn und Neptun am Anfang des Widders. Für uns steht diese Begegnung für die Frage, wie etwas, das wir innerlich längst ahnen, im gelebten Leben eine Form bekommt.</p>
+              <p className="mt-4 leading-7 text-[#405d55]">Vielleicht hast du in diesem Jahr gemerkt, wie gut du Verantwortung übernehmen, mitdenken oder für Verbindung sorgen kannst. Und wie müde du wirst, wenn jede dieser Fähigkeiten automatisch denselben Auftrag bekommt. Zwischen den Jahren darfst du würdigen, was du getragen hast, und dir die Frage stellen: Wofür will ich diese Kraft heute einsetzen?</p>
+            </article>
+            <article className="rounded-[1.6rem] border border-[#d3ddcf] bg-[#fffdf7] p-6 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#765820]">Ausblick auf 2027</p>
+              <h3 className="mt-3 font-serif text-3xl leading-tight sm:text-4xl">Was möchte durch mich Gestalt annehmen?</h3>
+              <p className="mt-4 leading-7 text-[#405d55]">Im Januar wird Mars rückläufig. Wir lesen darin eine Zeit, in der du prüfen darfst, wohin deine Kraft bisher geflossen ist. Anfang April wird er im Löwen wieder direktläufig. Das nehmen wir als Einladung, deinem Ausdruck einen sichtbaren Schritt zu geben. Ende Juli wechselt Jupiter vom Löwen in die Jungfrau. Welche Form kann dein Vorhaben im Alltag tragen?</p>
+              <p className="mt-4 leading-7 text-[#405d55]">Vielleicht heißt das für dich, zum ersten Mal auszusprechen, was du anbieten möchtest. Vielleicht brauchst du eine klare Abmachung über Zeit, damit dein Vorhaben einen Platz bekommt. Du kannst deine Richtung aus dem wählen, was du im Körper wahrnimmst, was dir wirklich wichtig ist und wofür du bereit bist, Verantwortung zu übernehmen.</p>
+            </article>
+          </div>
+
+          <div className="mt-5 grid gap-4 rounded-[1.6rem] bg-[#164942] p-6 text-[#fffaf0] sm:p-8 lg:grid-cols-[.88fr_1.12fr] lg:items-center lg:gap-10">
+            <p className="font-serif text-[clamp(1.6rem,3vw,2.5rem)] leading-tight">Was soll durch dich einen Platz in der Welt bekommen?</p>
+            <p className="leading-7 text-[#f2f4ea]">Wir nehmen diese Frage mit durch die zwölf Nächte. Nach der Meditation hältst du fest, was du gehört hast und wie dein nächster Schritt aussehen könnte. Am Abschlussabend öffnest du den 13. Wunsch. Aus ihm formulierst du die Qualität, die du durch dein Jahr tragen willst, und gibst ihr eine erste Handlung.</p>
+          </div>
         </div>
       </section>
 
@@ -219,7 +279,7 @@ export function Rauhnaechte() {
           <div className="mt-8 grid items-stretch gap-5 lg:grid-cols-2">
             <article className="flex flex-col rounded-[1.8rem] border border-[#d6c6a4] bg-[#fffdf7] p-6 shadow-[0_8px_35px_#4541270c] sm:p-9">
               <h3 className="font-serif text-3xl">Raunächte-Begleitung</h3>
-              <div className="mt-5"><Price offerActive={offerActive} /></div>
+              <div className="mt-5"><Price offerActive={offerActive} remainingMs={remainingMs} /></div>
               <p className="mt-3 text-sm text-[#49625b]">Einmalzahlung für die vollständige Gruppenbegleitung.</p>
               <ul className="mb-7 mt-5 space-y-2 text-sm leading-6">
                 {["Zwölf Meditationen und Astro-Impulse", "Workbook und 13-Wünsche-Ritual", "Drei Live-Abende mit Sabine und Selcan"].map((item) => <li key={item} className="flex items-start gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-[#527d63]" aria-hidden="true" />{item}</li>)}
@@ -227,10 +287,10 @@ export function Rauhnaechte() {
               <div className="mt-auto">
                 {checkout ? (
                   <a href={checkout} onClick={(event) => {
-                    const currentlyActive = Date.now() < offerEnds
-                    if (currentlyActive !== offerActive) {
+                    const currentRemainingMs = Math.max(0, offerEnds - Date.now())
+                    if ((currentRemainingMs > 0) !== offerActive) {
                       event.preventDefault()
-                      setOfferActive(currentlyActive)
+                      setRemainingMs(currentRemainingMs)
                     }
                   }} className={primary}>Für {offerActive ? launchPrice : standardPrice} € buchen <ArrowRight size={17} aria-hidden="true" /></a>
                 ) : <p role="status" className="text-sm font-semibold">Die Online-Buchung wird vorbereitet.</p>}
@@ -250,7 +310,6 @@ export function Rauhnaechte() {
               </div>
             </article>
           </div>
-          <p className="mt-5 text-sm leading-6 text-[#49625b]">Im <Link to="/13-wochen-programm" className="font-semibold underline underline-offset-3">13-Wochen-Programm</Link> ist die Raunächte-Begleitung bereits enthalten.</p>
         </div>
       </section>
 
