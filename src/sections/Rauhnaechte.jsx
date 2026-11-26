@@ -336,7 +336,7 @@ export function Rauhnaechte() {
 
       <section id="termine" className={`${width} scroll-mt-6 py-16 lg:py-24`}>
         <h2 className="font-serif text-[clamp(2.45rem,4.25vw,4rem)] leading-none tracking-[-0.04em]">Unsere Live-Abende</h2>
-        <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#49625b]"><Video size={18} aria-hidden="true" /> Geführte Meditation an jedem Abend · jeweils 19 Uhr deutscher Zeit · online über Zoom</p>
+        <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#49625b]"><Video size={18} aria-hidden="true" /> Drei Live-Abende mit gemeinsamer Meditation, jeweils um 19 Uhr deutscher Zeit über Zoom.</p>
         <ol className="mt-8 grid gap-4 lg:grid-cols-3">
           {meetings.map(({ date, time, title, description }) => (
             <li key={time} className="rounded-[1.5rem] border border-[#e2dccc] bg-white/75 p-6 sm:p-7">
