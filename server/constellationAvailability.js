@@ -14,6 +14,14 @@ export const constellationLinks = Object.freeze({
   plink_1UPeO7Q90vf7AvfHQFRtScds: { day: '2027-01-31', ticket: 'own' },
 });
 
+// Sabine reported at least five occupied places on each December day on
+// 28 November 2026. The individual reservations have not all been entered in
+// the booking table yet. This is a floor, not an additional booking count.
+export const reportedMinimumOccupied = Object.freeze({
+  '2026-12-12': Object.freeze({ representative: 5, own: 0 }),
+  '2026-12-13': Object.freeze({ representative: 3, own: 2 }),
+});
+
 export async function initializeConstellationAvailability(db) {
   await db.execute(`CREATE TABLE IF NOT EXISTS constellation_bookings (
     session_hash CHAR(64) NOT NULL PRIMARY KEY,
@@ -76,9 +84,12 @@ export async function recordConstellationBooking(db, event, expectedLive) {
 
 export function inventoryFromRows(rows) {
   return Object.fromEntries(constellationDays.map(day => {
-    const remaining = ticket => Math.max(0, constellationCapacity[ticket] - Number(
-      rows.find(row => String(row.event_date).slice(0, 10) === day.id && row.ticket_type === ticket)?.booked || 0,
-    ));
+    const remaining = ticket => {
+      const recorded = Number(rows.find(row => String(row.event_date).slice(0, 10) === day.id
+        && row.ticket_type === ticket)?.booked || 0);
+      const reported = reportedMinimumOccupied[day.id]?.[ticket] || 0;
+      return Math.max(0, constellationCapacity[ticket] - Math.max(recorded, reported));
+    };
     const representative = remaining('representative'), own = remaining('own');
     return [day.id, { representative, own, total: representative + own }];
   }));

@@ -48,8 +48,8 @@ test('existing cash seats and Stripe seats share the displayed inventory', async
   await createCashBooking(db, { day: '2026-12-12', kind: 'returning', name: 'Karin Schuchna', requestKey: randomUUID() }, 1);
   await createCashBooking(db, { day: '2026-12-13', kind: 'own', name: 'Karin Schuchna', requestKey: randomUUID() }, 1);
   const inventory = await getConstellationAvailability(db);
-  assert.deepEqual(inventory['2026-12-12'], { representative: 14, own: 5, total: 19 });
-  assert.deepEqual(inventory['2026-12-13'], { representative: 14, own: 4, total: 18 });
+  assert.deepEqual(inventory['2026-12-12'], { representative: 10, own: 5, total: 15 });
+  assert.deepEqual(inventory['2026-12-13'], { representative: 12, own: 3, total: 15 });
 });
 
 test('repeated submit does not reserve a second seat and sold-out inventory rejects cash booking', async () => {
