@@ -1,5 +1,5 @@
 // The booking deadline is independent of the appointment date.
-export const blackFridayEndsAt = Date.parse('2026-11-28T00:00:00+01:00');
+export const blackFridayEndsAt = Date.parse('2026-12-01T00:00:00+01:00');
 export const blackFridayIsActive = (now = Date.now()) => now < blackFridayEndsAt;
 export const blackFridaySessions = [
     { title: 'Erstsitzung mit Sabine', price: '155,40 €', regular: '222 €', code: 'BLACK30SABINE', href: 'https://calendly.com/spirit-healing/einzelsitzung-sabine' },
