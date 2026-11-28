@@ -15,13 +15,29 @@ const Title = ({ eyebrow, title, intro }) => <header className="max-w-3xl">
 
 const BerlinLink = ({ href, label }) => <Link to={href} className="inline-flex min-h-12 items-center gap-3 rounded-full bg-[#0f7d79] px-6 py-4 font-bold text-white hover:bg-[#075a57]">{label}<ArrowRight size={18}/></Link>
 
+// Earlier published edits added promises and mixed formal and informal address.
+// Only replace those known older versions; a newly edited admin text takes precedence.
+const supersededGermanCopy = {
+  "system.intro": "Eine Familienaufstellung betrachtet eine Reaktion nicht isoliert.",
+  "system.item-1-text": "So, dass Du Deine eigene Geschichte schreiben kannst.",
+  "system.item-2-text": "Somit bist Du von der Last der Verantwortung befreit",
+  "system.item-3-text": "Sichtbarkeit und Erfolg wird für Dich",
+  "system.item-4-text": "Wachstum und Fülle greifbar werden",
+  "process.step-3-text": "Stellvertretende spielen keine Rolle. Sie beschreiben",
+  "process.method-text": "Der Ausgangspunkt bleibt die familiensystemische Dynamik.",
+}
+
 export const ConstellationWork = () => {
   const { content } = usePublishedContent()
   const { search } = useLocation()
   const language = new URLSearchParams(search).get("lang") === "tr" ? "tr" : "de"
   const tr = language === "tr"
   const defaults = tr ? berlinLiveTurkishDefaults : berlinLiveDefaults
-  const text = id => getPublishedValue(content, `${tr ? "berlin-tr" : "berlin"}.${id}`, language, defaults[id])
+  const text = id => {
+    const published = getPublishedValue(content, `${tr ? "berlin-tr" : "berlin"}.${id}`, language, defaults[id])
+    const superseded = !tr && supersededGermanCopy[id]
+    return superseded && published.includes(superseded) ? defaults[id] : published
+  }
   const berlinPath = `/berlin-live${tr ? "?lang=tr" : ""}`
   const berlinCta = tr ? "Berlin’de canlı dizim" : "Live-Aufstellung in Berlin"
 
