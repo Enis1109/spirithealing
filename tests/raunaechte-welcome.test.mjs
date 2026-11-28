@@ -3,8 +3,9 @@ import test from 'node:test';
 import { deliverRaunaechteWelcomes, raunaechteCheckoutFor, raunaechtePayment, recordRaunaechtePurchase } from '../server/raunaechteWelcome.js';
 
 test('checks the advertised price and switches to the regular payment link at the deadline', () => {
-  const ends = Date.parse('2026-11-28T00:00:00+01:00');
+  const ends = Date.parse('2026-11-30T23:00:00Z');
   assert.equal(raunaechteCheckoutFor({ price: '88', now: ends - 1 }), raunaechtePayment.sale.url);
+  assert.equal(raunaechteCheckoutFor({ price: '111', now: ends - 1 }), null);
   assert.equal(raunaechteCheckoutFor({ price: '88', now: ends }), null);
   assert.equal(raunaechteCheckoutFor({ price: '111', now: ends }), raunaechtePayment.regular.url);
   const payment = { ...raunaechtePayment, regular: { url: 'https://book.stripe.com.example.org', amount: 11100 } };
