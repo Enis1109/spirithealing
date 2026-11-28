@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Check, Facebook, Headphones, Instagram, MoonStar, PanelsTopLeft, Video, Youtube } from "lucide-react"
 import { contactOfferUrl } from "../lib/contactOffers.js"
+import { raunaechteOfferEndsAt as offerEnds } from "../../shared/raunaechteOffer.js"
 
-const offerEnds = Date.parse("2026-11-28T00:00:00+01:00")
 const standardPrice = 111
 const launchPrice = 88
 const websitePrice = 600
@@ -164,13 +164,13 @@ function Countdown({ remainingMs }) {
 function Price({ offerActive, remainingMs, compact = false }) {
   return offerActive ? (
     <div>
-      <p className="text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Black Friday Week</p>
+      <p className="text-xs font-bold uppercase tracking-[0.17em] text-[#765820]">Verlängert bis Cyber Monday</p>
       <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <p className={`${compact ? "text-4xl" : "text-6xl"} font-serif font-semibold leading-none`}>{launchPrice} €</p>
         <s className={`${compact ? "text-2xl" : "text-4xl"} font-serif font-semibold leading-none text-[#49625b] decoration-[#9c7335] decoration-2`}>{standardPrice} €</s>
       </div>
       <div className="mt-3"><Countdown remainingMs={remainingMs} /></div>
-      <p className="mt-2 text-xs leading-5 text-[#49625b]">Aktionspreis bis 27.11.2026, 23:59 Uhr deutscher Zeit.</p>
+      <p className="mt-2 text-xs leading-5 text-[#49625b]">Aktionspreis bis Montag, 30.11.2026, 23:59 Uhr deutscher Zeit.</p>
     </div>
   ) : <p className={`${compact ? "text-3xl" : "text-6xl"} font-serif font-semibold leading-none`}>{standardPrice} €</p>
 }

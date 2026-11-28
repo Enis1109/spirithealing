@@ -1,12 +1,13 @@
+import { raunaechteOfferEndsAt } from '../shared/raunaechteOffer.js';
+
 const program = 'raunaechte_welcome_2026_27';
-const offerEnds = Date.parse('2026-11-28T00:00:00+01:00');
 export const raunaechtePayment = Object.freeze({
   sale: { url: 'https://buy.stripe.com/9B628t7VM4q94gXdfV83C1b', id: 'plink_1UfNkYQ90vf7AvfHM52gDiAf', amount: 8800 },
   regular: { url: 'https://buy.stripe.com/6oU6oJekaaOx6p52Bh83C1a', id: 'plink_1UfNa1Q90vf7AvfH0Nr6uMCv', amount: 11100 },
 });
 
 export function raunaechteCheckoutFor({ price, payment = raunaechtePayment, now = Date.now() }) {
-  const offer = now < offerEnds ? payment.sale : payment.regular;
+  const offer = now < raunaechteOfferEndsAt ? payment.sale : payment.regular;
   if (price !== String(offer.amount / 100)) return null;
   try {
     const url = new URL(offer.url);
