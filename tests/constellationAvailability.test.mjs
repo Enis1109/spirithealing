@@ -26,7 +26,8 @@ test('operational inventory counts both representative prices once per completed
   assert.equal(stored.size, 2);
   assert.equal([...stored.values()].some(values => JSON.stringify(values).includes('example.invalid')), false);
   assert.equal(stored.has('cs_live_synthetic'), false);
-  assert.deepEqual(inventoryFromRows([{ event_date: '2026-12-12', ticket_type: 'representative', booked: 2 }])['2026-12-12'], { total: 18, representative: 13, own: 5 });
+  assert.deepEqual(inventoryFromRows([{ event_date: '2026-12-12', ticket_type: 'representative', booked: 2 }])['2026-12-12'], { total: 15, representative: 10, own: 5 });
+  assert.deepEqual(inventoryFromRows([{ event_date: '2026-12-13', ticket_type: 'representative', booked: 4 }, { event_date: '2026-12-13', ticket_type: 'own', booked: 2 }])['2026-12-13'], { total: 14, representative: 11, own: 3 });
   assert.deepEqual(inventoryFromRows([{ event_date: '2026-12-12', ticket_type: 'own', booked: 8 }, { event_date: '2026-12-12', ticket_type: 'representative', booked: 15 }])['2026-12-12'], { total: 0, representative: 0, own: 0 });
 });
 
